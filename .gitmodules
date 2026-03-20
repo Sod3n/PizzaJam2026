@@ -1,0 +1,4 @@
+[submodule "Server/Framework"]
+	path = Server/Framework
+	url = https://github.com/Sod3n/Determenistic.GameFramework.git
+	branch = v2

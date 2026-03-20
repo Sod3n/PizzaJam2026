@@ -1,0 +1,13 @@
+<!-- 
+    Copy this file to Local.props and set your client path.
+    Local.props is gitignored.
+-->
+<Project>
+    <PropertyGroup>
+        <!-- Example for Unity -->
+        <!-- <ClientPath>C:\Projects\MyGame\Client</ClientPath> -->
+        
+        <!-- Example for Godot (referencing the .csproj location or libs folder) -->
+        <!-- <ClientPath>C:\Projects\MyGame\GodotClient\libs</ClientPath> -->
+    </PropertyGroup>
+</Project>

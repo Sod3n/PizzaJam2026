@@ -1,0 +1,21 @@
+<Project Sdk="Godot.NET.Sdk/4.4.0">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>Template.Godot</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteNetLib" Version="2.0.2" />
+    <PackageReference Include="FixedMathSharp" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Server\Template.Shared\Template.Shared.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network\Deterministic.GameFramework.Network.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Server\Framework\2D\Deterministic.GameFramework.TwoD.Physics\external\librapier_uniffi.dylib" Link="librapier_uniffi.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

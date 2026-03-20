@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Deterministic.GameFramework.Reactive.Benchmarks.ArchetypeObserverBenchmarks-20260318-200044</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.13.12, macOS 26.3 (25D125) [Darwin 25.3.0]
+Apple M2 Pro, 1 CPU, 10 logical and 10 physical cores
+.NET SDK 8.0.413
+  [Host]     : .NET 8.0.19 (8.0.1925.36514), Arm64 RyuJIT AdvSIMD
+  DefaultJob : .NET 8.0.19 (8.0.1925.36514), Arm64 RyuJIT AdvSIMD
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                    </th><th>EntityCount</th><th>Mean </th><th>Error</th><th>StdDev</th><th>Median</th><th>Gen0</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>ObserveArchetype_Warmup_FullScan</td><td>100</td><td>746.63 ns</td><td>10.600 ns</td><td>9.397 ns</td><td>742.90 ns</td><td>0.0381</td><td>328 B</td>
+</tr><tr><td>Process_Add_Single_Entity</td><td>100</td><td>41.79 ns</td><td>0.856 ns</td><td>1.608 ns</td><td>41.08 ns</td><td>0.0095</td><td>80 B</td>
+</tr><tr><td>ObserveArchetype_Warmup_FullScan</td><td>1000</td><td>5,804.43 ns</td><td>98.046 ns</td><td>91.712 ns</td><td>5,775.27 ns</td><td>0.0534</td><td>480 B</td>
+</tr><tr><td>Process_Add_Single_Entity</td><td>1000</td><td>40.49 ns</td><td>0.499 ns</td><td>0.389 ns</td><td>40.45 ns</td><td>0.0095</td><td>80 B</td>
+</tr></tbody></table>
+</body>
+</html>

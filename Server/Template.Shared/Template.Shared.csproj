@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.1;net8.0</TargetFrameworks>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>Latest</LangVersion>
+        <RootNamespace>Template.Shared</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
+      <ProjectReference Include="..\Framework\Deterministic.GameFramework.SourceGenerators\Deterministic.GameFramework.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
+    </ItemGroup>
+
+    <!-- Import Local.props if it exists for local overrides (e.g. ClientPath) -->
+    <Import Project="Local.props" Condition="Exists('Local.props')" />
+
+    <!-- Copy netstandard2.1 DLL to Client Plugins folder if ClientPath is defined -->
+    <Target Name="CopyToClient" AfterTargets="Build" Condition="'$(TargetFramework)' == 'netstandard2.1' AND '$(ClientPath)' != ''">
+      <PropertyGroup>
+        <ClientPluginsDir>$(ClientPath)\Assets\Plugins\Template.Shared\</ClientPluginsDir>
+      </PropertyGroup>
+      <MakeDir Directories="$(ClientPluginsDir)" />
+      <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ClientPluginsDir)" SkipUnchangedFiles="true" />
+      <Message Importance="High" Text="Copied Shared DLL to $(ClientPluginsDir)" />
+    </Target>
+
+</Project>

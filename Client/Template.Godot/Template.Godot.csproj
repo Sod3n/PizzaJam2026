@@ -1,0 +1,25 @@
+<Project Sdk="Godot.NET.Sdk/4.6.1">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>Template.Godot</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteNetLib" Version="2.0.2" />
+    <PackageReference Include="FixedMathSharp" Version="2.1.0" />
+    <PackageReference Include="gdUnit4.api" Version="4.3.1" />
+    <PackageReference Include="R3" Version="1.3.0" />
+    <PackageReference Include="ObservableCollections" Version="3.3.4" />
+    <PackageReference Include="ObservableCollections.R3" Version="3.3.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Server\Template.Shared\Template.Shared.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network\Deterministic.GameFramework.Network.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Server\Framework\2D\Deterministic.GameFramework.TwoD.Physics\external\librapier_uniffi.dylib" Link="librapier_uniffi.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
