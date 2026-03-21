@@ -4,6 +4,7 @@ using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
 using FixedMathSharp;
+using Template.Shared.Components;
 
 namespace Template.Shared.Features.Movement;
 
@@ -24,10 +25,20 @@ public class SetMoveDirectionActionService : ActionService<SetMoveDirectionActio
 {
     protected override void ExecuteProcess(SetMoveDirectionAction directionAction, ref CharacterBody2D body, Context ctx)
     {
+        // Check if player is milking
+        if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
+        {
+            ref var playerState = ref ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity);
+            if (playerState.State == (int)PlayerState.Milking)
+            {
+                body.Velocity = Vector2.Zero;
+                return;
+            }
+        }
+
         // Rapier expects Velocity in Units/Second.
-        // Old logic: (Speed / TickRate) * 20 -> Displacement/Tick
-        // New logic: Speed * 20 -> Velocity (Units/Second)
-        body.Velocity = directionAction.Direction * directionAction.Speed * 20;
+        // Reverted to specific client perspective logic: (Speed / TickRate) * 20 -> Displacement/Tick
+        body.Velocity = new Vector2(directionAction.Direction.X, directionAction.Direction.Y * 2) * directionAction.Speed / 2;
         
         // Update Rotation to face direction (only if moving)
         if (directionAction.Speed <= new Float(0.01f) ||

@@ -1,0 +1,516 @@
+{
+  "Name": "Devochka",
+  "Type": "Root",
+  "X": 0,
+  "Y": 0,
+  "Width": 2480,
+  "Height": 1872,
+  "Opacity": 1,
+  "IsVisible": true,
+  "Children": [
+	{
+	  "Name": "\u0424\u043E\u043D",
+	  "Type": "Layer",
+	  "X": 0,
+	  "Y": 0,
+	  "Width": 2480,
+	  "Height": 1872,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "TexturePath": "res://sprites/export/___.png",
+	  "Children": []
+	},
+	{
+	  "Name": "Back hair",
+	  "Type": "Group",
+	  "X": 1016,
+	  "Y": 846,
+	  "Width": 527,
+	  "Height": 256,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "Children": [
+		{
+		  "Name": "\u0421\u043B\u043E\u0439 119",
+		  "Type": "Layer",
+		  "X": 1022,
+		  "Y": 846,
+		  "Width": 512,
+		  "Height": 256,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Back_hair/_____119.png",
+		  "Children": []
+		},
+		{
+		  "Name": "\u0421\u043B\u043E\u0439 118",
+		  "Type": "Layer",
+		  "X": 1016,
+		  "Y": 847,
+		  "Width": 527,
+		  "Height": 254,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Back_hair/_____118.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "Tail",
+	  "Type": "Layer",
+	  "X": 1461,
+	  "Y": 917,
+	  "Width": 199,
+	  "Height": 166,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "TexturePath": "res://sprites/export/Tail.png",
+	  "Children": []
+	},
+	{
+	  "Name": "Rota",
+	  "Type": "Group",
+	  "X": 942,
+	  "Y": 420,
+	  "Width": 658,
+	  "Height": 221,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "Children": [
+		{
+		  "Name": "Rog1",
+		  "Type": "Layer",
+		  "X": 1021,
+		  "Y": 420,
+		  "Width": 499,
+		  "Height": 221,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Rota/Rog1.png",
+		  "Children": []
+		},
+		{
+		  "Name": "Rog2",
+		  "Type": "Layer",
+		  "X": 942,
+		  "Y": 465,
+		  "Width": 658,
+		  "Height": 166,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Rota/Rog2.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "Uni",
+	  "Type": "Layer",
+	  "X": 951,
+	  "Y": 690,
+	  "Width": 632,
+	  "Height": 142,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "TexturePath": "res://sprites/export/Uni.png",
+	  "Children": []
+	},
+	{
+	  "Name": "Body",
+	  "Type": "Layer",
+	  "X": 1042,
+	  "Y": 476,
+	  "Width": 461,
+	  "Height": 904,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "TexturePath": "res://sprites/export/Body.png",
+	  "Children": []
+	},
+	{
+	  "Name": "Face",
+	  "Type": "Group",
+	  "X": 1078,
+	  "Y": 628,
+	  "Width": 394,
+	  "Height": 233,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "Children": [
+		{
+		  "Name": "Eye4",
+		  "Type": "Layer",
+		  "X": 1123,
+		  "Y": 628,
+		  "Width": 349,
+		  "Height": 198,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Face/Eye4.png",
+		  "Children": []
+		},
+		{
+		  "Name": "Eye3",
+		  "Type": "Layer",
+		  "X": 1080,
+		  "Y": 648,
+		  "Width": 371,
+		  "Height": 188,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Face/Eye3.png",
+		  "Children": []
+		},
+		{
+		  "Name": "Eye2",
+		  "Type": "Layer",
+		  "X": 1084,
+		  "Y": 660,
+		  "Width": 365,
+		  "Height": 201,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Face/Eye2.png",
+		  "Children": []
+		},
+		{
+		  "Name": "Eye1",
+		  "Type": "Layer",
+		  "X": 1078,
+		  "Y": 647,
+		  "Width": 373,
+		  "Height": 193,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Face/Eye1.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "\u041D\u0438\u0437",
+	  "Type": "Group",
+	  "X": 1115,
+	  "Y": 1052,
+	  "Width": 313,
+	  "Height": 304,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "Children": [
+		{
+		  "Name": "1",
+		  "Type": "Layer",
+		  "X": 1172,
+		  "Y": 1099,
+		  "Width": 195,
+		  "Height": 55,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/___/1.png",
+		  "Children": []
+		},
+		{
+		  "Name": "2",
+		  "Type": "Layer",
+		  "X": 1137,
+		  "Y": 1093,
+		  "Width": 271,
+		  "Height": 224,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/___/2.png",
+		  "Children": []
+		},
+		{
+		  "Name": "3",
+		  "Type": "Layer",
+		  "X": 1128,
+		  "Y": 1082,
+		  "Width": 295,
+		  "Height": 274,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/___/3.png",
+		  "Children": []
+		},
+		{
+		  "Name": "4",
+		  "Type": "Layer",
+		  "X": 1139,
+		  "Y": 1071,
+		  "Width": 273,
+		  "Height": 128,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/___/4.png",
+		  "Children": []
+		},
+		{
+		  "Name": "5",
+		  "Type": "Layer",
+		  "X": 1115,
+		  "Y": 1069,
+		  "Width": 313,
+		  "Height": 231,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/___/5.png",
+		  "Children": []
+		},
+		{
+		  "Name": "6",
+		  "Type": "Layer",
+		  "X": 1174,
+		  "Y": 1052,
+		  "Width": 189,
+		  "Height": 101,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/___/6.png",
+		  "Children": []
+		},
+		{
+		  "Name": "7",
+		  "Type": "Layer",
+		  "X": 1151,
+		  "Y": 1088,
+		  "Width": 232,
+		  "Height": 89,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/___/7.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "Booba1",
+	  "Type": "Group",
+	  "X": 1166,
+	  "Y": 906,
+	  "Width": 209,
+	  "Height": 126,
+	  "Opacity": 1,
+	  "IsVisible": false,
+	  "Children": [
+		{
+		  "Name": "\u0421\u043B\u043E\u0439 38",
+		  "Type": "Layer",
+		  "X": 1166,
+		  "Y": 906,
+		  "Width": 209,
+		  "Height": 126,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Booba1/_____38.png",
+		  "Children": []
+		},
+		{
+		  "Name": "\u0421\u043B\u043E\u0439 38",
+		  "Type": "Layer",
+		  "X": 1166,
+		  "Y": 906,
+		  "Width": 209,
+		  "Height": 126,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Booba1/_____38.png",
+		  "Children": []
+		},
+		{
+		  "Name": "\u0421\u043B\u043E\u0439 38",
+		  "Type": "Layer",
+		  "X": 1166,
+		  "Y": 906,
+		  "Width": 209,
+		  "Height": 126,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Booba1/_____38.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "Booba2",
+	  "Type": "Group",
+	  "X": 1102,
+	  "Y": 874,
+	  "Width": 337,
+	  "Height": 224,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "Children": [
+		{
+		  "Name": "1",
+		  "Type": "Layer",
+		  "X": 1148,
+		  "Y": 902,
+		  "Width": 245,
+		  "Height": 149,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Booba2/1.png",
+		  "Children": []
+		},
+		{
+		  "Name": "2",
+		  "Type": "Layer",
+		  "X": 1122,
+		  "Y": 874,
+		  "Width": 298,
+		  "Height": 224,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Booba2/2.png",
+		  "Children": []
+		},
+		{
+		  "Name": "3",
+		  "Type": "Layer",
+		  "X": 1102,
+		  "Y": 879,
+		  "Width": 337,
+		  "Height": 191,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Booba2/3.png",
+		  "Children": []
+		},
+		{
+		  "Name": "4",
+		  "Type": "Layer",
+		  "X": 1128,
+		  "Y": 894,
+		  "Width": 285,
+		  "Height": 169,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Booba2/4.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "Megaaaabooba",
+	  "Type": "Group",
+	  "X": 1093,
+	  "Y": 900,
+	  "Width": 355,
+	  "Height": 285,
+	  "Opacity": 1,
+	  "IsVisible": false,
+	  "Children": [
+		{
+		  "Name": "1",
+		  "Type": "Layer",
+		  "X": 1093,
+		  "Y": 908,
+		  "Width": 355,
+		  "Height": 203,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Megaaaabooba/1.png",
+		  "Children": []
+		},
+		{
+		  "Name": "2",
+		  "Type": "Layer",
+		  "X": 1093,
+		  "Y": 900,
+		  "Width": 355,
+		  "Height": 211,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Megaaaabooba/2.png",
+		  "Children": []
+		},
+		{
+		  "Name": "3",
+		  "Type": "Layer",
+		  "X": 1093,
+		  "Y": 908,
+		  "Width": 355,
+		  "Height": 277,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Megaaaabooba/3.png",
+		  "Children": []
+		}
+	  ]
+	},
+	{
+	  "Name": "Hair",
+	  "Type": "Group",
+	  "X": 979,
+	  "Y": 408,
+	  "Width": 562,
+	  "Height": 533,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "Children": [
+		{
+		  "Name": "1",
+		  "Type": "Layer",
+		  "X": 1015,
+		  "Y": 442,
+		  "Width": 512,
+		  "Height": 498,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Hair/1.png",
+		  "Children": []
+		},
+		{
+		  "Name": "2",
+		  "Type": "Layer",
+		  "X": 1016,
+		  "Y": 459,
+		  "Width": 505,
+		  "Height": 478,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Hair/2.png",
+		  "Children": []
+		},
+		{
+		  "Name": "3",
+		  "Type": "Layer",
+		  "X": 1046,
+		  "Y": 485,
+		  "Width": 440,
+		  "Height": 456,
+		  "Opacity": 1,
+		  "IsVisible": true,
+		  "TexturePath": "res://sprites/export/Hair/3.png",
+		  "Children": []
+		},
+		{
+		  "Name": "4",
+		  "Type": "Layer",
+		  "X": 979,
+		  "Y": 408,
+		  "Width": 562,
+		  "Height": 499,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Hair/4.png",
+		  "Children": []
+		},
+		{
+		  "Name": "5",
+		  "Type": "Layer",
+		  "X": 979,
+		  "Y": 408,
+		  "Width": 562,
+		  "Height": 499,
+		  "Opacity": 1,
+		  "IsVisible": false,
+		  "TexturePath": "res://sprites/export/Hair/5.png",
+		  "Children": []
+		}
+	  ]
+	}
+  ]
+}

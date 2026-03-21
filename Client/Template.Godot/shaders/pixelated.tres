@@ -1,0 +1,38 @@
+[gd_resource type="Shader" format=3 uid="uid://dqs54oymgmgn"]
+
+[resource]
+code = "shader_type spatial;
+render_mode cull_disabled, depth_prepass_alpha;
+
+uniform sampler2D albedo_texture : filter_nearest, source_color;
+uniform float wind_strength : hint_range(0.0, 1.0) = 0.1;
+uniform float wind_speed : hint_range(0.0, 5.0) = 1.0;
+uniform float pixels_per_unit = 16.0;
+
+void vertex() {
+    float move = sin(TIME * wind_speed + NODE_POSITION_WORLD.x) * (1.0 - UV.y) * wind_strength;
+    // Snap vertex movement to 3D grid to prevent \"shaky\" mesh edges
+    float unit = 1.0 / pixels_per_unit;
+    VERTEX.x += round(move / unit) * unit;
+}
+
+void fragment() {
+    // 1. Calculate the 'Texel Size'
+    // This tells the shader exactly how big one pixel is on your sprite
+    vec2 tex_size = vec2(textureSize(albedo_texture, 0));
+    
+    // 2. Use 'fwidth' to calculate how much the UV changes across one screen pixel.
+    // This effectively 'snaps' the texture sampling to the screen's grid
+    // even though the sprite is at a 45 degree angle.
+    vec2 pixel_uv = UV * tex_size;
+    vec2 snapped_uv = (floor(pixel_uv) + 0.5) / tex_size;
+    
+    // 3. Sample with the snapped UV
+    vec4 tex = texture(albedo_texture, snapped_uv);
+    
+    if (tex.a < 0.5) discard;
+    
+    ALBEDO = tex.rgb;
+    ALPHA = tex.a;
+    ALPHA_SCISSOR_THRESHOLD = 0.5;
+}"

@@ -16,6 +16,7 @@ public class EntityViewModel : ViewModel
     
     public PlayerEntityModel? Player { get; private set; }
     public CoinComponentModel? Coin { get; private set; }
+    public SkinComponentModel? Skin { get; private set; }
 
     public EntityViewModel(Context context)
     {
@@ -35,6 +36,11 @@ public class EntityViewModel : ViewModel
         {
             InitializeCoin(context);
         }
+
+        if (context.State.HasComponent<SkinComponent>(Entity))
+        {
+            InitializeSkin(context);
+        }
     }
     
     public void InitializePlayer(Context context)
@@ -53,5 +59,13 @@ public class EntityViewModel : ViewModel
         IsCoin = true;
         Coin = new CoinComponentModel(ReactiveSystem.Instance, context);
         Disposables.Add(Coin);
+    }
+
+    public void InitializeSkin(Context context)
+    {
+        if (Skin != null) return;
+        
+        Skin = new SkinComponentModel(ReactiveSystem.Instance, context);
+        Disposables.Add(Skin);
     }
 }

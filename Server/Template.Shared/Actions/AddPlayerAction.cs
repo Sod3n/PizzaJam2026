@@ -38,14 +38,13 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
         }
         
         // Create the Player Entity
-        // Use deterministic position based on UserId to avoid perfect overlap collisions at (0,0)
         // Perfect overlaps can cause non-deterministic physics resolution
         // ERROR FIX: Guid.GetHashCode() is not stable across processes! Use bytes.
         int seed = BitConverter.ToInt32(action.UserId.ToByteArray(), 0);
         var random = new Deterministic.GameFramework.Types.DeterministicRandom((uint)seed);
-        var x = random.NextInt(-200, 200);
-        var y = random.NextInt(-200, 200);
-        var position = new Vector2(x, y);
+        
+        // Find a valid spawn position that doesn't overlap with existing players
+        var position = FindValidSpawnPosition(ctx, random);
 
         // Use PlayerDefinition to ensure consistent setup
         var playerEntity = PlayerDefinition.Create(ctx, action.UserId, position, 0);
@@ -54,5 +53,44 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
 
         // Add Score Component (not in definition yet, specific to gameplay)
         ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });
+    }
+
+    private Vector2 FindValidSpawnPosition(Context ctx, Deterministic.GameFramework.Types.DeterministicRandom random)
+    {
+        const int MaxAttempts = 10;
+        const float MinDistance = 5f; // Radius is 2, so 4 is touching. 5 is safe.
+        const float MinDistanceSq = MinDistance * MinDistance;
+
+        for (int i = 0; i < MaxAttempts; i++)
+        {
+            // Spawn close to center (+/- 10 units)
+            var x = random.NextInt(-10, 10);
+            var y = random.NextInt(-10, 10);
+            var candidate = new Vector2(x, y);
+
+            if (!IsPositionOccupied(ctx, candidate, MinDistanceSq))
+            {
+                return candidate;
+            }
+        }
+
+        // Fallback if crowded: expand range slightly
+        return new Vector2(random.NextInt(-20, 20), random.NextInt(-20, 20));
+    }
+
+    private bool IsPositionOccupied(Context ctx, Vector2 position, float minDistanceSq)
+    {
+        foreach (var entity in ctx.State.Filter<PlayerEntity>())
+        {
+            if (ctx.State.HasComponent<Transform2D>(entity))
+            {
+                ref var transform = ref ctx.State.GetComponent<Transform2D>(entity);
+                if (Vector2.DistanceSquared(position, transform.Position) < minDistanceSq)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://blxgls556ydaj"]
+
+[ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_muct3"]
+[ext_resource type="Script" path="res://Scripts/Visuals/UI.cs" id="3_k554n"]
+[ext_resource type="PackedScene" uid="uid://cuh1yaoty6gvf" path="res://camera.tscn" id="3_lwepe"]
+[ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="4_lwepe"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_trrnh"]
+atlas = ExtResource("4_lwepe")
+region = Rect2(186.21655, 265.5434, 592.3126, 721.4063)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pdtc7"]
+atlas = ExtResource("4_lwepe")
+region = Rect2(148.20313, 959.44507, 630.32605, 599.9065)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0pq82"]
+atlas = ExtResource("4_lwepe")
+region = Rect2(208.95313, 1608.7108, 455.62524, 379.6875)
+
+[node name="Player" type="Node3D" unique_id=1227286794]
+
+[node name="Character" parent="." unique_id=1227223347 instance=ExtResource("1_muct3")]
+transform = Transform3D(0.2, 0, 0, 0, 0.19518183, 0.043635447, 0, -0.043635447, 0.19518183, 0, -0.18061149, 0)
+
+[node name="Camera" parent="." unique_id=2095400398 instance=ExtResource("3_lwepe")]
+transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 4.900643, 4.540252)
+size = 10.0
+pixels_per_meter = 32.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915661]
+script = ExtResource("3_k554n")
+
+[node name="Control" type="Control" parent="Camera/CanvasLayer" unique_id=697887396]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_right = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Grass" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1787843798]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 45.0
+offset_right = 520.0
+offset_bottom = 95.0
+theme_override_font_sizes/normal_font_size = 36
+text = "10"
+
+[node name="Milk" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=438230214]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 134.0
+offset_right = 520.0
+offset_bottom = 184.0
+theme_override_font_sizes/normal_font_size = 36
+text = "10
+"
+
+[node name="Coins" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1451730019]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 229.0
+offset_right = 520.0
+offset_bottom = 279.0
+theme_override_font_sizes/normal_font_size = 36
+text = "10"
+
+[node name="TextureRect" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=1658218569]
+layout_mode = 0
+offset_left = 46.0
+offset_top = 107.0
+offset_right = 116.0
+offset_bottom = 198.0
+texture = SubResource("AtlasTexture_trrnh")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect2" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=708845765]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 38.0
+offset_right = 115.0
+offset_bottom = 109.0
+texture = SubResource("AtlasTexture_pdtc7")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect3" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=199807205]
+layout_mode = 0
+offset_left = 46.0
+offset_top = 221.0
+offset_right = 110.0
+offset_bottom = 283.0
+texture = SubResource("AtlasTexture_0pq82")
+expand_mode = 1
+stretch_mode = 4

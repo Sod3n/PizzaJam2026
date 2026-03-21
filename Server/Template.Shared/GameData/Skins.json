@@ -1,0 +1,210 @@
+{
+  "1": {
+    "id": 1,
+    "path": "Hair/1",
+    "type": "Hair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "2": {
+    "id": 2,
+    "path": "Hair/2",
+    "type": "Hair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "3": {
+    "id": 3,
+    "path": "Hair/3",
+    "type": "Hair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "4": {
+    "id": 4,
+    "path": "Hair/4",
+    "type": "Hair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "5": {
+    "id": 5,
+    "path": "Hair/5",
+    "type": "Hair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "6": {
+    "id": 6,
+    "path": "___/1",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "7": {
+    "id": 7,
+    "path": "___/2",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "8": {
+    "id": 8,
+    "path": "___/3",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "9": {
+    "id": 9,
+    "path": "___/4",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "10": {
+    "id": 10,
+    "path": "___/5",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "11": {
+    "id": 11,
+    "path": "___/6",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "12": {
+    "id": 12,
+    "path": "___/7",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "13": {
+    "id": 13,
+    "path": "Face/Eye1",
+    "type": "Eyes",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "14": {
+    "id": 14,
+    "path": "Face/Eye2",
+    "type": "Eyes",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "15": {
+    "id": 15,
+    "path": "Face/Eye3",
+    "type": "Eyes",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "16": {
+    "id": 16,
+    "path": "Face/Eye4",
+    "type": "Eyes",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "17": {
+    "id": 17,
+    "path": "Rota/Rog1",
+    "type": "Torns",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "18": {
+    "id": 18,
+    "path": "Rota/Rog2",
+    "type": "Torns",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "19": {
+    "id": 19,
+    "path": "Booba1/_____38",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "20": {
+    "id": 20,
+    "path": "Booba2/1",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "21": {
+    "id": 21,
+    "path": "Booba2/2",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "22": {
+    "id": 22,
+    "path": "Booba2/3",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "23": {
+    "id": 23,
+    "path": "Booba2/4",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "24": {
+    "id": 24,
+    "path": "Megaaaabooba/1",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "25": {
+    "id": 25,
+    "path": "Megaaaabooba/2",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 5
+  },
+  "26": {
+    "id": 26,
+    "path": "Megaaaabooba/3",
+    "type": "Top",
+    "weight": 10,
+    "empty": "Bottom1;Bottom2",
+    "exhaust": 5
+  }
+}

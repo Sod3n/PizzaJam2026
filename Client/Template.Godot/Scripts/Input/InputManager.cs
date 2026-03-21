@@ -3,38 +3,37 @@ using System;
 using Template.Godot.Core;
 using Template.Shared.Components;
 using Template.Shared.Features.Movement;
+using Template.Shared.Actions;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.ECS;
-using Deterministic.GameFramework.Reactive;
 
 namespace Template.Godot.Input;
 
 public partial class InputManager : Node
 {
-	[Export] public Core.GameManager GameManager;
-
-	private int _localPlayerEntityId = 0;
-	private IDisposable _subscription;
 	private Vector2 _lastDirection = new Vector2(float.MaxValue, float.MaxValue);
 
 	public override void _Process(double delta)
 	{
-		if (GameManager == null || !GameManager.IsGameRunning) return;
-
-		// Initialize subscription if needed (once game is running and client is ready)
-		if (_subscription == null)
-		{
-			var client = GameManager.GameClient;
-			if (client != null && client.Reactive != null)
-			{
-				_subscription = client.Reactive.ObservableCollection<PlayerEntity>()
-					.Subscribe(OnPlayerAdded, OnPlayerRemoved);
-			}
-		}
-
-		if (_localPlayerEntityId == 0) return;
+		// 1. Check prerequisites
+		if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
+		
+		var localPlayerId = GameManager.Instance.LocalPlayerId;
+		if (localPlayerId == 0) return;
 
 		// 2. Poll Input
+		
+		// Interaction
+		if (global::Godot.Input.IsActionJustPressed("ui_accept"))
+		{
+			var interactAction = new InteractAction 
+			{ 
+				UserId = GameManager.Instance.GameClient.PlayerId 
+			};
+			GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
+		}
+
+		// Movement
 		var direction = Vector2.Zero;
 
 		if (global::Godot.Input.IsActionPressed("ui_up")) direction.Y -= 1;
@@ -62,37 +61,7 @@ public partial class InputManager : Node
 			};
 			
 			// Execute locally (prediction) and send to server
-			GameManager.GameClient.Execute(action, _localPlayerEntityId);
+			GameManager.Instance.GameClient.Execute(action, localPlayerId);
 		}
-	}
-
-	private void OnPlayerAdded(Entity entity)
-	{
-		var client = GameManager.GameClient;
-		var state = GameManager.Game.State;
-		
-		if (!state.HasComponent<PlayerEntity>(entity)) return;
-		
-		ref var player = ref state.GetComponent<PlayerEntity>(entity);
-		
-		// Compare IDs
-		if (player.UserId.ToString() == client.PlayerId.ToString())
-		{
-			_localPlayerEntityId = entity.Id;
-		}
-	}
-
-	private void OnPlayerRemoved(Entity entity)
-	{
-		if (entity.Id == _localPlayerEntityId)
-		{
-			_localPlayerEntityId = 0;
-		}
-	}
-
-	public override void _ExitTree()
-	{
-		_subscription?.Dispose();
-		_subscription = null;
 	}
 }

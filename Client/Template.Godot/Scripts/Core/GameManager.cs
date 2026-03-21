@@ -8,11 +8,14 @@ using Template.Shared.Factories;
 using Template.Shared.Components;
 using Template.Shared.Features.Movement;
 using FixedMathSharp;
+using Deterministic.GameFramework.Reactive;
 
 namespace Template.Godot.Core;
 
 public partial class GameManager : Node
 {
+	public static GameManager Instance { get; private set; }
+
 	[Export] public string ServerIp = "127.0.0.1";
 	[Export] public int ServerPort = 9050;
 	
@@ -21,12 +24,15 @@ public partial class GameManager : Node
 
 	public GameClient GameClient { get; private set; }
 	public Deterministic.GameFramework.Common.Game Game { get; private set; }
+	public int LocalPlayerId { get; private set; }
 
 	private Task _gameLoopTask;
 	private bool _isRunning;
+	private IDisposable _localPlayerSubscription;
 
 	public override void _Ready()
 	{
+		Instance = this;
 		GD.Print("=== Initializing Godot Client ===");
 		
 		// 1. Create Game
@@ -61,6 +67,9 @@ public partial class GameManager : Node
 			GD.Print("Synced! Starting GameLoop...");
 			_gameLoopTask = Game.Loop.Start();
 			_isRunning = true;
+
+			// Find Local Player automatically
+			SetupLocalPlayerDiscovery();
 		}
 		catch (Exception e)
 		{
@@ -68,9 +77,33 @@ public partial class GameManager : Node
 		}
 	}
 
+	private void SetupLocalPlayerDiscovery()
+	{
+		// Simple reactive subscription to find our player entity
+		// We hide this complexity here so InputManager doesn't need to know about it
+		_localPlayerSubscription = GameClient.Reactive.ObservableCollection<PlayerEntity>()
+			.Subscribe(entity => 
+			{
+				if (Game.State.HasComponent<PlayerEntity>(entity))
+				{
+					ref var player = ref Game.State.GetComponent<PlayerEntity>(entity);
+					if (player.UserId.ToString() == GameClient.PlayerId.ToString())
+					{
+						LocalPlayerId = entity.Id;
+						GD.Print($"[GameManager] Found Local Player: {LocalPlayerId}");
+					}
+				}
+			}, 
+			entity => 
+			{
+				if (entity.Id == LocalPlayerId) LocalPlayerId = 0;
+			});
+	}
+
 	public override void _ExitTree()
 	{
 		_isRunning = false;
+		_localPlayerSubscription?.Dispose();
 		Game.Loop.Stop();
 		GameClient?.Dispose();
 	}

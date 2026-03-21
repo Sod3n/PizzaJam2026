@@ -12,7 +12,9 @@ namespace Template.Shared.Definitions;
     typeof(Transform2D), 
     typeof(PlayerEntity), 
     typeof(CharacterBody2D),
-    typeof(CollisionShape2D))]
+    typeof(CollisionShape2D),
+    typeof(SkinComponent),
+    typeof(PlayerStateComponent))]
 public static partial class PlayerDefinition
 {
     public static Entity Create(Context ctx, System.Guid userId, Vector2 position, Float angle)
@@ -41,7 +43,21 @@ public static partial class PlayerDefinition
         body.UpDirection = new Vector2(0, -1);
         
         // Add a collider (defaulting to a small circle for now)
-        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(32));
+        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.5f));
+        
+        // Initialize SkinComponent
+        var random = new DeterministicRandom((uint)entity.Id);
+        var skinComponent = Template.Shared.GameData.GD.SkinsData.GenerateRandomSkin(ref random);
+        ctx.AddComponent(entity, skinComponent);
+
+        // Initialize PlayerStateComponent
+        ctx.AddComponent(entity, new PlayerStateComponent 
+        { 
+            State = (int)PlayerState.Idle,
+            InteractionTarget = Entity.Null,
+            MilkingTimer = 0,
+            ReturnPosition = position
+        });
         
         return entity;
     }

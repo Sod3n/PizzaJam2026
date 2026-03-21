@@ -8,6 +8,8 @@ using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Physics2D.Systems;
 using Template.Shared.Actions;
 using Template.Shared.Definitions;
+using Template.Shared.Debugging;
+using Template.Shared.Components;
 
 namespace Template.Shared.Scenes;
 
@@ -36,6 +38,40 @@ public class GameplayScene : IScene
             var y = (i / 5) * 200 - 200;
             CoinDefinition.Create(context, new Vector2(x, y), 10);
         }
+
+        // DEBUG: Spawn all skins in a line
+        SkinDebugSpawner.SpawnAllSkinsInLine(context, new Vector2(0, -5), 2);
+
+        // Initialize Global Resources
+        var globalRes = state.CreateEntity();
+        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 5 }); // Start with some coins to buy land
+
+        // Spawn Initial Objects
+        
+        // Some Grass
+        GrassDefinition.Create(context, new Vector2(5, 5));
+        GrassDefinition.Create(context, new Vector2(6, 5));
+        GrassDefinition.Create(context, new Vector2(5, 6));
+
+        // A Sell Point
+        SellPointDefinition.Create(context, new Vector2(-5, 5));
+        
+        // A Land Plot
+        LandDefinition.Create(context, new Vector2(0, 10), 3); // Cost 3 coins
+
+        // 1) World should start with 1 cow AND house already spawned
+        var housePos = new Vector2(-5, -5);
+        var houseEntity = HouseDefinition.Create(context, housePos);
+        
+        var cowPos = housePos + new Vector2(2, 2);
+        var cowEntity = CowDefinition.Create(context, cowPos);
+
+        // Link them
+        ref var house = ref state.GetComponent<HouseComponent>(houseEntity);
+        house.CowId = cowEntity;
+
+        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        cow.HouseId = houseEntity;
     }
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)

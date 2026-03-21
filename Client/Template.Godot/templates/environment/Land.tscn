@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://de55uopw2vwaa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eev1s"]
+albedo_color = Color(0.6477677, 0.9999998, 0.4133904, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eev1s"]
+material = SubResource("StandardMaterial3D_eev1s")
+
+[node name="Land" type="Node3D" unique_id=803964944]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1441161272]
+mesh = SubResource("BoxMesh_eev1s")

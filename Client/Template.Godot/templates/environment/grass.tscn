@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://kfx6yeh1o5yq"]
+
+[ext_resource type="Texture2D" uid="uid://ls55pychj80m" path="res://IMG_0375.PNG" id="1_kl2qe"]
+[ext_resource type="Material" uid="uid://p5li51s7a8i3" path="res://shaders/new_shader_material.tres" id="1_q8inm"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="3_2qnaq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_884kg"]
+atlas = ExtResource("1_kl2qe")
+region = Rect2(816, 0, 814, 1754)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gxmxl"]
+atlas = ExtResource("1_kl2qe")
+region = Rect2(2444, 0, 814, 1754)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n4w22"]
+atlas = ExtResource("1_kl2qe")
+region = Rect2(1630, 0, 814, 1754)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d4o4o"]
+atlas = ExtResource("1_kl2qe")
+region = Rect2(2, 0, 814, 1754)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gdsc3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_884kg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gxmxl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n4w22")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d4o4o")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Node3D" type="Node3D" unique_id=1633240425]
+transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405538, 0, 0.13405538, 0.99097383, 0, 0, 0)
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=242018559]
+transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.04185171, 0, -0.04185171, 0.09082089, 0, 0, 0)
+material_override = ExtResource("1_q8inm")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_gdsc3")
+frame_progress = 0.49251503
+script = ExtResource("3_2qnaq")

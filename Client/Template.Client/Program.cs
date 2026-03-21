@@ -46,6 +46,13 @@ public class Program
         try 
         {
             // 3. Connect to Server (without matchId initially)
+        
+            if (args.Length > 0 && args[0] == "test")
+            {
+                await new FarmingTest().Run();
+                return;
+            }
+
             await client.ConnectAsync();
             
             string? choice;

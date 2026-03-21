@@ -20,6 +20,9 @@ public static class TemplateGameFactory
             ServiceLocator.RegisterAssembly(typeof(Deterministic.GameFramework.TwoD.Transform2D).Assembly); // Deterministic.GameFramework.TwoD
             ServiceLocator.RegisterAssembly(typeof(RapierPhysicsSystem).Assembly); // Deterministic.GameFramework.TwoD.Physics
             ServiceLocator.RegisterAssembly(typeof(TemplateGameFactory).Assembly); // Template.Shared
+            
+            // Initialize GameData
+            Template.Shared.GameData.GD.Load();
         }
         
         // 1. Create Game (encapsulates State, Loop, Dispatcher, Scheduler, SceneManager)
