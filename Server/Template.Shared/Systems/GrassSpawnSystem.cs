@@ -11,7 +11,6 @@ public class GrassSpawnSystem : ISystem
 {
     private const int MaxGrass = 50;
     private const int SpawnInterval = 300; // 5 seconds @ 60 ticks
-    private int _timer = 0;
     
     // Spawn Area (roughly matching the walls in GameplayScene)
     private readonly Vector2 _minPos = new Vector2(-900, -900);
@@ -19,9 +18,8 @@ public class GrassSpawnSystem : ISystem
 
     public void Update(EntityWorld state)
     {
-        _timer++;
-        if (_timer < SpawnInterval) return;
-        _timer = 0;
+        var gameTime = state.GetCustomData<IGameTime>();
+        if (gameTime == null || gameTime.CurrentTick % SpawnInterval != 0) return;
 
         // Count existing grass
         int grassCount = 0;
@@ -36,7 +34,6 @@ public class GrassSpawnSystem : ISystem
         var context = new Context(state, Entity.Null, null!);
         
         // Random position
-        var gameTime = state.GetCustomData<IGameTime>();
         uint seed = (uint)state.NextEntityId + (gameTime != null ? (uint)gameTime.CurrentTick : 0);
         var random = new DeterministicRandom(seed);
         

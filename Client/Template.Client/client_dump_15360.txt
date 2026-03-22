@@ -1,0 +1,540 @@
+--- State Dump ---
+Entity 0:
+  World: {  }
+Entity 1:
+  SceneTag: {  }
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CollisionShape2D: { Type: Rectangle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  StaticBody2D: { BodyId: 0, PhysicsMaterialOverride: 0, ConstantLinearVelocity: False, ConstantLinearVelocityValue: (0, 0), ConstantAngularVelocityValue: 0 }
+Entity 2:
+  SceneTag: {  }
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CollisionShape2D: { Type: Rectangle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  StaticBody2D: { BodyId: 1, PhysicsMaterialOverride: 0, ConstantLinearVelocity: False, ConstantLinearVelocityValue: (0, 0), ConstantAngularVelocityValue: 0 }
+Entity 3:
+  SceneTag: {  }
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CollisionShape2D: { Type: Rectangle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  StaticBody2D: { BodyId: 2, PhysicsMaterialOverride: 0, ConstantLinearVelocity: False, ConstantLinearVelocityValue: (0, 0), ConstantAngularVelocityValue: 0 }
+Entity 4:
+  SceneTag: {  }
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CollisionShape2D: { Type: Rectangle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  StaticBody2D: { BodyId: 3, PhysicsMaterialOverride: 0, ConstantLinearVelocity: False, ConstantLinearVelocityValue: (0, 0), ConstantAngularVelocityValue: 0 }
+Entity 5:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 31, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 6:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 32, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 7:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 33, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 8:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 34, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 9:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 35, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 10:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 36, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 11:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 37, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 13:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 39, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 14:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 40, CollisionLayer: 2, CollisionMask: 4294967295, Monitoring: True, Monitorable: False, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CoinComponent: { Value: 10 }
+Entity 15:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 4, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (0, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 14cdca8b-a44d-4892-b1eb-e58ee4838294, Id: Entity(15), Name: Skin_1 }
+Entity 16:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 5, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (2, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 8733cbc1-c078-42e2-9675-5fff2a553154, Id: Entity(16), Name: Skin_2 }
+Entity 17:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 6, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (4, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: f79781f7-7e87-4b7c-898f-3c1e4a891cd6, Id: Entity(17), Name: Skin_3 }
+Entity 18:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 7, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (6, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 0c04ddd8-7ba3-4eeb-be67-760ef843858c, Id: Entity(18), Name: Skin_4 }
+Entity 19:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 8, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (8, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: a7493f2b-5cf1-4a76-9d51-c03eda64365b, Id: Entity(19), Name: Skin_5 }
+Entity 20:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 9, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (10, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: b7fd1bdf-ff9c-41f3-9a21-48f027052ee4, Id: Entity(20), Name: Skin_6 }
+Entity 21:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 10, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (12, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 5c8c8e17-16e6-4465-8dba-ec34bdda957a, Id: Entity(21), Name: Skin_7 }
+Entity 22:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 11, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (14, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 5417102c-7da7-4f3d-aa25-415bc5684d76, Id: Entity(22), Name: Skin_8 }
+Entity 23:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 12, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (16, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: e9d54479-e574-4ca4-88e5-fdd8c3d993ef, Id: Entity(23), Name: Skin_9 }
+Entity 24:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 13, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (18, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 0e56f201-8b1c-4798-b41f-85b072e69059, Id: Entity(24), Name: Skin_10 }
+Entity 25:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 14, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (20, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: e022295d-7c30-4475-849e-28bd8cd29efe, Id: Entity(25), Name: Skin_11 }
+Entity 26:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 15, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (22, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: fdfc28bc-74eb-4a0b-b256-9a5742a23b89, Id: Entity(26), Name: Skin_12 }
+Entity 27:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 16, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (24, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: a3659d75-5b41-4a90-aaa1-c90a6d1b1e50, Id: Entity(27), Name: Skin_13 }
+Entity 28:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 17, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (26, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 5c50ddfd-8682-4768-8b82-24dcb42d38ed, Id: Entity(28), Name: Skin_14 }
+Entity 29:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 18, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (28, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 5474d6f3-ceee-4c0f-a937-c31c1ea8537e, Id: Entity(29), Name: Skin_15 }
+Entity 30:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 19, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (30, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: f44e02cc-63a6-474d-8928-1354ba60c3c5, Id: Entity(30), Name: Skin_16 }
+Entity 31:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 20, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (32, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 1d31c4fe-cf57-4c9f-8112-bc16c02f2a68, Id: Entity(31), Name: Skin_17 }
+Entity 32:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 21, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (34, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: e3f56a58-90ed-485a-b8b0-5fd6cf43c943, Id: Entity(32), Name: Skin_18 }
+Entity 33:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 22, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (36, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 0f1c17a7-72c4-4033-a52c-4197efe2415b, Id: Entity(33), Name: Skin_19 }
+Entity 34:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 23, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (38, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 5942a34b-ef02-4a2b-86a5-34b6d4d7f892, Id: Entity(34), Name: Skin_20 }
+Entity 35:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 24, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (40, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 99c15d19-762a-476b-9751-860bb1982fca, Id: Entity(35), Name: Skin_21 }
+Entity 36:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 25, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (42, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 11c2a0b7-add5-43d5-a364-d65079a83e95, Id: Entity(36), Name: Skin_22 }
+Entity 37:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 26, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (44, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: f0381741-5547-490c-a987-b28241ef9691, Id: Entity(37), Name: Skin_23 }
+Entity 38:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 27, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (46, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 745bf4d2-313b-4762-83b6-6ec949ec8b3a, Id: Entity(38), Name: Skin_24 }
+Entity 39:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 28, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (48, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: fae4b048-90df-4167-b04c-f9ec0bb96bab, Id: Entity(39), Name: Skin_25 }
+Entity 40:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 29, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (50, -5) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 01b0644f-18e9-460e-8452-1ff7683efc31, Id: Entity(40), Name: Skin_26 }
+Entity 41:
+  GlobalResourcesComponent: { Grass: 0, Milk: 0, Coins: 5 }
+Entity 42:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 41, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 43:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 42, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 44:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 43, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 45:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 44, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  SellPointComponent: {  }
+Entity 46:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 45, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Rectangle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  LandComponent: { CurrentCoins: 0, Threshold: 3 }
+Entity 47:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 46, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Rectangle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  HouseComponent: { CowId: Entity(48) }
+Entity 48:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 0, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, 1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 30, IsOnFloor: False, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  CowComponent: { Exhaust: 0, MaxExhaust: 25, IsMilking: False, HouseId: Entity(47), SpawnPosition: (-3, -3) }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+Entity 49:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967334, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 50:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 4294967343, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (-3, 5) }
+  ScoreComponent: { Value: 0 }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 3842cac4-b9a0-8223-0dcc-509a6f75849b, Id: Entity(50), Name: Player }
+Entity 51:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  CharacterBody2D: { Velocity: (0, 0), UpDirection: (0, -1), FloorSnapLength: 0.10000000149011612, WallMinSlideAngle: 0.26179900765419006, FloorMaxAngle: 0.785398006439209, PlatformOnLeave: AddVelocity, SlideOnCeiling: True, MaxSlides: 4, FloorConstantSpeed: False, CollisionLayer: 1, CollisionMask: 1, BodyId: 4294967344, IsOnFloor: True, IsOnCeiling: False, IsOnWall: False, FloorNormal: (0, 0), WallNormal: (0, 0), RealVelocity: (0, 0) }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  PlayerStateComponent: { State: 0, InteractionTarget: Entity(-1), MilkingTimer: 0, ReturnPosition: (-8, -1) }
+  ScoreComponent: { Value: 0 }
+  SkinComponent: { Skins: Deterministic.GameFramework.Types.Dictionary16`2[Deterministic.GameFramework.Types.FixedString32,System.Int32] }
+  PlayerEntity: { UserId: 8420cdcf-d595-ef65-66e7-dff9f98764da, Id: Entity(51), Name: Player }
+Entity 52:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967345, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 53:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967346, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 54:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967347, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 55:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967348, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 56:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967349, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 57:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967350, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 58:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967351, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 59:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967352, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 60:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967353, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 61:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967354, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 62:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967355, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 63:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967356, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 64:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967357, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 65:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967358, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 66:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967359, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 67:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967360, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 68:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967361, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 69:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967362, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 70:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967363, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 71:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967364, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 72:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967365, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 73:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967366, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 74:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967367, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 75:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967368, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 76:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967369, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 77:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967370, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 78:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967371, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 79:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967372, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 80:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967373, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 81:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967374, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 82:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967375, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 83:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967376, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 84:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967377, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 85:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967378, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 86:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967379, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 87:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967380, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 88:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967381, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 89:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967382, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 90:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967383, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 91:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967384, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 92:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967385, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 93:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967386, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 94:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967387, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 95:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967388, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 96:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967389, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }
+Entity 97:
+  Transform2D: { Parent: Entity(-1), DestroyOnUnparent: False }
+  Area2D: { BodyId: 4294967390, CollisionLayer: 4, CollisionMask: 0, Monitoring: True, Monitorable: True, HasOverlappingBodies: False, EnteredMask: 0, ExitedMask: 0, OverlappingEntities: Deterministic.GameFramework.Types.List8`1[System.Int32] }
+  CollisionShape2D: { Type: Circle, Circle: Deterministic.GameFramework.Physics2D.Components.CircleShape2D, Rectangle: Deterministic.GameFramework.Physics2D.Components.RectangleShape2D, Capsule: Deterministic.GameFramework.Physics2D.Components.CapsuleShape2D, Position: (0, 0), Rotation: 0, Disabled: False, OneWayCollision: False }
+  GrassComponent: { Durability: 3, MaxDurability: 3 }

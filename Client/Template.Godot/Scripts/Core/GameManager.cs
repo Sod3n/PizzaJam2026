@@ -9,6 +9,7 @@ using Template.Shared.Components;
 using Template.Shared.Features.Movement;
 using FixedMathSharp;
 using Deterministic.GameFramework.Reactive;
+using Deterministic.GameFramework.TwoD;
 
 namespace Template.Godot.Core;
 
@@ -18,7 +19,7 @@ public partial class GameManager : Node
 
 	[Export] public string ServerIp = "127.0.0.1";
 	[Export] public int ServerPort = 9050;
-	
+
 	// If true, auto-queues. If false, waits for UI (not implemented yet, so defaults true)
 	[Export] public bool AutoConnect = true;
 
@@ -34,14 +35,14 @@ public partial class GameManager : Node
 	{
 		Instance = this;
 		GD.Print("=== Initializing Godot Client ===");
-		
+
 		// 1. Create Game
 		Game = TemplateGameFactory.CreateGame(tickRate: 60);
-		
+
 		// 2. Setup Network
 		var serverUrl = $"{ServerIp}:{ServerPort}";
 		var networkClient = new LiteNetLibNetworkClient();
-		
+
 		GameClient = new GameClient(networkClient, serverUrl, Game);
 		GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
 
@@ -57,13 +58,13 @@ public partial class GameManager : Node
 		{
 			GD.Print("Connecting...");
 			await GameClient.ConnectAsync();
-			
+
 			GD.Print("Enqueuing...");
 			await GameClient.EnqueuePlayerAsync();
-			
+
 			GD.Print("Waiting for match...");
 			await GameClient.WaitForSyncAsync();
-			
+
 			GD.Print("Synced! Starting GameLoop...");
 			_gameLoopTask = Game.Loop.Start();
 			_isRunning = true;
@@ -82,7 +83,7 @@ public partial class GameManager : Node
 		// Simple reactive subscription to find our player entity
 		// We hide this complexity here so InputManager doesn't need to know about it
 		_localPlayerSubscription = GameClient.Reactive.ObservableCollection<PlayerEntity>()
-			.Subscribe(entity => 
+			.Subscribe(entity =>
 			{
 				if (Game.State.HasComponent<PlayerEntity>(entity))
 				{
@@ -93,8 +94,8 @@ public partial class GameManager : Node
 						GD.Print($"[GameManager] Found Local Player: {LocalPlayerId}");
 					}
 				}
-			}, 
-			entity => 
+			},
+			entity =>
 			{
 				if (entity.Id == LocalPlayerId) LocalPlayerId = 0;
 			});

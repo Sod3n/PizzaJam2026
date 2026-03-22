@@ -44,7 +44,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
         var random = new Deterministic.GameFramework.Types.DeterministicRandom((uint)seed);
         
         // Find a valid spawn position that doesn't overlap with existing players
-        var position = FindValidSpawnPosition(ctx, random);
+        var position = FindValidSpawnPosition(ctx, ref random);
 
         // Use PlayerDefinition to ensure consistent setup
         var playerEntity = PlayerDefinition.Create(ctx, action.UserId, position, 0);
@@ -55,7 +55,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
         ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });
     }
 
-    private Vector2 FindValidSpawnPosition(Context ctx, Deterministic.GameFramework.Types.DeterministicRandom random)
+    private Vector2 FindValidSpawnPosition(Context ctx, ref Deterministic.GameFramework.Types.DeterministicRandom random)
     {
         const int MaxAttempts = 10;
         const float MinDistance = 5f; // Radius is 2, so 4 is touching. 5 is safe.

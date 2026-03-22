@@ -40,7 +40,7 @@ public class GameplayScene : IScene
         }
 
         // DEBUG: Spawn all skins in a line
-        SkinDebugSpawner.SpawnAllSkinsInLine(context, new Vector2(0, -5), 2);
+        // SkinDebugSpawner.SpawnAllSkinsInLine(context, new Vector2(0, -5), 2);
 
         // Initialize Global Resources
         var globalRes = state.CreateEntity();

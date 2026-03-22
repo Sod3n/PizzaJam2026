@@ -45,8 +45,8 @@ public static partial class PlayerDefinition
         // Add a collider (defaulting to a small circle for now)
         ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.5f));
         
-        // Initialize SkinComponent
-        var random = new DeterministicRandom((uint)entity.Id);
+        // Initialize SkinComponent with a deterministic seed based on entity ID
+        var random = new DeterministicRandom((uint)entity.Id + 1000); // Offset to avoid identical seeds
         var skinComponent = Template.Shared.GameData.GD.SkinsData.GenerateRandomSkin(ref random);
         ctx.AddComponent(entity, skinComponent);
 

@@ -20,7 +20,12 @@ public class SkinsData : GameData<Skin>
         
         _skinsByType = entries.Values
             .GroupBy(s => s.Type)
-            .ToDictionary(g => g.Key, g => g.ToList());
+            .ToDictionary(g => g.Key, g => 
+            {
+                var list = g.ToList();
+                list.Sort((a, b) => a.Id.CompareTo(b.Id)); // Sort for determinism
+                return list;
+            });
     }
 
     public Skin? Get(int id) => _skins.GetValueOrDefault(id);
@@ -34,8 +39,13 @@ public class SkinsData : GameData<Skin>
             Skins = new Dictionary16<FixedString32, int>()
         };
 
-        foreach (var (type, skins) in _skinsByType)
+        // Sort keys to ensure deterministic iteration order across different OS/environments
+        var sortedTypes = _skinsByType.Keys.ToList();
+        sortedTypes.Sort();
+
+        foreach (var type in sortedTypes)
         {
+            var skins = _skinsByType[type];
             if (skins.Count == 0) continue;
             
             var index = random.NextInt(skins.Count);

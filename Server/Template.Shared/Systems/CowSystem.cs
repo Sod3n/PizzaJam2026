@@ -59,7 +59,8 @@ public class CowSystem : ISystem
                 var gameTime = state.GetCustomData<IGameTime>();
                 if (gameTime != null)
                 {
-                    var random = new DeterministicRandom((uint)(cowEntity.Id + gameTime.CurrentTick));
+                    // Use a more stable seed based on the cow entity and the current tick
+                    var random = new DeterministicRandom((uint)(cowEntity.Id ^ gameTime.CurrentTick));
                     // 1% chance per tick to recover
                     if (random.NextInt(0, 100) == 0)
                     {

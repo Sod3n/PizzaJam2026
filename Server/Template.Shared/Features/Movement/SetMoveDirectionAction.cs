@@ -37,8 +37,8 @@ public class SetMoveDirectionActionService : ActionService<SetMoveDirectionActio
         }
 
         // Rapier expects Velocity in Units/Second.
-        // Reverted to specific client perspective logic: (Speed / TickRate) * 20 -> Displacement/Tick
-        body.Velocity = new Vector2(directionAction.Direction.X, directionAction.Direction.Y * 2) * directionAction.Speed / 2;
+        // Needs to be deterministic math!
+        body.Velocity = new Vector2(directionAction.Direction.X * directionAction.Speed * 0.5f, directionAction.Direction.Y * directionAction.Speed);
         
         // Update Rotation to face direction (only if moving)
         if (directionAction.Speed <= new Float(0.01f) ||

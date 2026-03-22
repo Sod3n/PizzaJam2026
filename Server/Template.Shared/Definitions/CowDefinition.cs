@@ -45,7 +45,7 @@ public static partial class CowDefinition
         });
         
         // Initialize SkinComponent
-        var random = new DeterministicRandom((uint)entity.Id);
+        var random = new DeterministicRandom((uint)entity.Id + 2000); // Offset to avoid identical seeds
         var skinComponent = Template.Shared.GameData.GD.SkinsData.GenerateRandomSkin(ref random);
         ctx.AddComponent(entity, skinComponent);
         
