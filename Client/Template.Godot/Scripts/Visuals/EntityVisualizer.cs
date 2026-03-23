@@ -24,6 +24,7 @@ public partial class EntityVisualizer : Node3D
 	[Export] public PackedScene LandPrefab;
 	[Export] public PackedScene HousePrefab;
 	[Export] public PackedScene SellPointPrefab;
+	[Export] public PackedScene FinalStructurePrefab;
 
 	private readonly CompositeDisposable _disposables = new();
 	private readonly Dictionary<EntityViewModel, Node3D> _spawnedEntities = new();
@@ -87,6 +88,12 @@ public partial class EntityVisualizer : Node3D
             ctx => new SellPointViewModel(ctx),
             _disposables
         );
+        
+        // FinalStructure: Must have FinalStructureComponent and Transform2D
+        var finalStructures = client.Reactive.ObservableList<Template.Shared.Components.FinalStructureComponent, DTransform2D, FinalStructureViewModel>(
+            ctx => new FinalStructureViewModel(ctx),
+            _disposables
+        );
 
 		// 3. Handle Add/Remove for Players
 		players.ObserveAdd().Subscribe(e => OnEntityAdded(e.Value)).AddTo(_disposables);
@@ -118,6 +125,10 @@ public partial class EntityVisualizer : Node3D
         sellPoints.ObserveAdd().Subscribe(e => OnEntityAdded(e.Value)).AddTo(_disposables);
         sellPoints.ObserveRemove().Subscribe(e => OnEntityRemoved(e.Value)).AddTo(_disposables);
         sellPoints.ObserveReset().Subscribe(_ => OnListReset()).AddTo(_disposables);
+        
+        finalStructures.ObserveAdd().Subscribe(e => OnEntityAdded(e.Value)).AddTo(_disposables);
+        finalStructures.ObserveRemove().Subscribe(e => OnEntityRemoved(e.Value)).AddTo(_disposables);
+        finalStructures.ObserveReset().Subscribe(_ => OnListReset()).AddTo(_disposables);
 
 		// Initialize any existing
 		foreach (var vm in players) OnEntityAdded(vm);
@@ -127,6 +138,7 @@ public partial class EntityVisualizer : Node3D
         foreach (var vm in land) OnEntityAdded(vm);
         foreach (var vm in house) OnEntityAdded(vm);
         foreach (var vm in sellPoints) OnEntityAdded(vm);
+        foreach (var vm in finalStructures) OnEntityAdded(vm);
 	}
 
 	private void OnEntityAdded(EntityViewModel vm)
@@ -160,6 +172,21 @@ public partial class EntityVisualizer : Node3D
 					SkinVisualizer.UpdateSkins(visualNode, skins);
 				}).AddTo(vm.Disposables);
 			}
+
+			playerVm.Player.CharacterBody2D.Velocity.Subscribe(v =>
+			{
+				Callable.From(() =>
+				{
+					var isMoving = !v.IsZeroApprox();
+					var characterNode = visualNode.GetNodeOrNull<Node3D>("Character");
+					characterNode?.SetDeferred("enable_bounce", isMoving);
+				}).CallDeferred();
+			}).AddTo(vm.Disposables);
+			
+			playerVm.IsHidden.Subscribe(hidden => 
+			{
+				if (IsInstanceValid(visualNode)) visualNode.SetDeferred("visible", !hidden);
+			}).AddTo(vm.Disposables);
 		}
 		else if (vm is CoinViewModel coinVm)
 		{
@@ -177,6 +204,11 @@ public partial class EntityVisualizer : Node3D
                     SkinVisualizer.UpdateSkins(visualNode, skins);
                 }).AddTo(vm.Disposables);
             }
+            
+            cowVm.IsHidden.Subscribe(hidden => 
+            {
+	            if (IsInstanceValid(visualNode)) visualNode.SetDeferred("visible", !hidden);
+            }).AddTo(vm.Disposables);
         }
         else if (vm is GrassViewModel grassVm)
         {
@@ -185,14 +217,61 @@ public partial class EntityVisualizer : Node3D
         else if (vm is LandViewModel landVm)
         {
             visualNode = LandPrefab?.Instantiate<Node3D>() ?? CreateFallbackVisual(Colors.SandyBrown, 1.0f);
+            
+            landVm.Remaining.Subscribe(x => 
+            {
+                Callable.From(() =>
+                {
+                    if (!IsInstanceValid(visualNode)) return;
+                    
+                    var remainingLabel = visualNode.GetNodeOrNull<Label3D>("Remaining");
+                    remainingLabel?.SetDeferred("text", x.ToString());
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
         }
         else if (vm is HouseViewModel houseVm)
         {
             visualNode = HousePrefab?.Instantiate<Node3D>() ?? CreateFallbackVisual(Colors.Red, 1.2f);
+            
+            houseVm.Capacity.Subscribe(c => 
+            {
+	            Callable.From(() =>
+	            {
+		            if (!IsInstanceValid(visualNode)) return;
+                    
+		            var capacityLabel = visualNode.GetNodeOrNull<Label3D>("Capacity");
+		            capacityLabel?.SetDeferred("text", c);
+	            }).CallDeferred();
+            }).AddTo(vm.Disposables);
         }
         else if (vm is SellPointViewModel sellPointVm)
         {
             visualNode = SellPointPrefab?.Instantiate<Node3D>() ?? CreateFallbackVisual(Colors.Yellow, 0.5f);
+        }
+        else if (vm is FinalStructureViewModel finalStructureVm)
+        {
+            visualNode = FinalStructurePrefab?.Instantiate<Node3D>() ?? CreateFallbackVisual(Colors.Blue, 1.0f);
+            finalStructureVm.Remaining.Subscribe(x => 
+            {
+	            Callable.From(() =>
+	            {
+		            if (!IsInstanceValid(visualNode)) return;
+
+		            if (x <= 0)
+		            {
+			            var node = visualNode.GetNodeOrNull<Node3D>("Node3D");
+			            var finale = visualNode.GetNodeOrNull<Node3D>("Finale");
+			            node.SetDeferred("visible", false);
+			            finale.SetDeferred("visible", true);
+			            var global = GetTree().Root.GetNode("Global");
+			            global.EmitSignal("on_finale");
+			            return;
+		            }
+                    
+		            var remainingLabel = visualNode.GetNodeOrNull<Label3D>("Node3D/Remaining");
+		            remainingLabel?.SetDeferred("text", x.ToString());
+	            }).CallDeferred();
+            }).AddTo(vm.Disposables);
         }
 		else
 		{
@@ -203,24 +282,47 @@ public partial class EntityVisualizer : Node3D
 		// 2. Setup
 		AddChild(visualNode);
 		_spawnedEntities[vm] = visualNode;
+		var pos = vm.Transform.Position.CurrentValue;
+		visualNode.SetDeferred("position",new GVector3((float)pos.X, 0f, (float)pos.Y));
 
 		// 3. Bind Position (Reactive)
-		vm.Transform.Position.Subscribe(pos => 
+		vm.Transform.Position.Subscribe(p => 
 		{
-			// Move visual
-			// We use CallDeferred to ensure thread safety when coming from network thread
+			Callable.From(() =>
+			{
+				if (!IsInstanceValid(visualNode)) return;
+				
+				var tween = visualNode.CreateTween();
+				var nextPos = new GVector3((float)p.X, 0f, (float)p.Y);
+				tween.TweenProperty(visualNode, "position", nextPos, 0.1f);
+			}).CallDeferred();
+		}).AddTo(vm.Disposables);
+		
+		vm.OnInteract.Subscribe(_ => 
+		{
 			Callable.From(() => 
 			{
-				if (IsInstanceValid(visualNode))
+				if (!IsInstanceValid(visualNode)) return;
+				var animate_node = visualNode;
+				if (vm is HouseViewModel houseVm)
 				{
-					// Simple interpolation could go here, for now direct set with tween
-					var tween = visualNode.CreateTween();
-					tween.TweenProperty(visualNode, "position", new GVector3((float)pos.X, 0f, (float)pos.Y), 0.1f);
+					animate_node = animate_node.GetNodeOrNull<Node3D>("AnimatedSprite3D");
 				}
+				if (animate_node.GetMeta("scale_tween").Obj is Tween tw) tw.SetSpeedScale(100000f);
+				
+				var tween = animate_node.CreateTween();
+
+				var origScale = animate_node.GetMeta("orig_scale").Obj is Vector3 s ? s : animate_node.Scale;
+				if(animate_node.GetMeta("orig_scale").Obj == null) animate_node.SetMeta("orig_scale", animate_node.Scale);
+				tween.SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
+
+				tween.TweenProperty(animate_node, "scale", new Vector3(origScale.X * 1.4f, origScale.Y * 0.7f, origScale.Z), 0.1f);
+				tween.Chain().TweenProperty(animate_node, "scale", origScale, 0.1f);
+				animate_node.SetMeta("scale_tween", tween);
 			}).CallDeferred();
 		}).AddTo(vm.Disposables);
 	}
-
+	
 	private void DespawnEntityDeferred(EntityViewModel vm)
 	{
 		if (_spawnedEntities.TryGetValue(vm, out var node))

@@ -6,7 +6,7 @@ namespace Template.Shared.GameData;
 public static partial class GD
 {
     public static SkinsData SkinsData { get; } = new();
-    
+
     private static partial Task LoadModels(string basePath)
     {
         return Task.WhenAll(
@@ -17,5 +17,13 @@ public static partial class GD
     private static partial void LoadModelsSync(string basePath)
     {
         LoadSync(SkinsData, basePath);
+    }
+
+    private static partial void LoadModelsRaw(System.Collections.Generic.Dictionary<string, string> jsonMap)
+    {
+        if (jsonMap.TryGetValue(SkinsData.Path, out var skinsJson))
+        {
+            LoadRaw(SkinsData, skinsJson);
+        }
     }
 }

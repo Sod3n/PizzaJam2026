@@ -19,7 +19,7 @@ public static class GameDataLoader
 
         var json = await File.ReadAllTextAsync(filePath);
         var entries = JsonConvert.DeserializeObject<Dictionary<string, T>>(json, settings);
-        
+
         if (entries == null)
         {
             entries = new Dictionary<string, T>();
@@ -38,7 +38,19 @@ public static class GameDataLoader
 
         var json = File.ReadAllText(filePath);
         var entries = JsonConvert.DeserializeObject<Dictionary<string, T>>(json, settings);
-        
+
+        if (entries == null)
+        {
+            entries = new Dictionary<string, T>();
+        }
+
+        gameData.Load(entries);
+    }
+
+    public static void LoadRaw<T>(GameData<T> gameData, string json, JsonSerializerSettings settings)
+    {
+        var entries = JsonConvert.DeserializeObject<Dictionary<string, T>>(json, settings);
+
         if (entries == null)
         {
             entries = new Dictionary<string, T>();
@@ -61,7 +73,7 @@ public static class GameDataLoader
         {
             assemblyDir = AppContext.BaseDirectory;
         }
-        
+
         // Try to find the path relative to the assembly
         var path = System.IO.Path.Combine(assemblyDir!, relativePath);
         if (Directory.Exists(path))
@@ -74,13 +86,13 @@ public static class GameDataLoader
         var currentDir = new DirectoryInfo(assemblyDir!);
         while (currentDir != null && currentDir.Exists)
         {
-            var target = System.IO.Path.Combine(currentDir.FullName, "Server", "Template.Shared", relativePath);
+            var target = System.IO.Path.GetFullPath(System.IO.Path.Combine(currentDir.FullName, "Server", "Template.Shared", relativePath));
             if (Directory.Exists(target))
             {
                 return target;
             }
-            
-             target = System.IO.Path.Combine(currentDir.FullName, relativePath);
+
+             target = System.IO.Path.GetFullPath(System.IO.Path.Combine(currentDir.FullName, relativePath));
              if (Directory.Exists(target))
             {
                 return target;
@@ -89,6 +101,6 @@ public static class GameDataLoader
             currentDir = currentDir.Parent;
         }
 
-        throw new DirectoryNotFoundException($"Could not find data path '{relativePath}' starting from '{assemblyDir}'");
+        throw new DirectoryNotFoundException($"Could not find data path '{relativePath}' starting from '{assemblyDir}' (Full path: {System.IO.Path.GetFullPath(relativePath)})");
     }
 }

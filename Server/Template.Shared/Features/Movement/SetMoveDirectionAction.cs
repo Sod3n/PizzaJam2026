@@ -29,7 +29,7 @@ public class SetMoveDirectionActionService : ActionService<SetMoveDirectionActio
         if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
         {
             ref var playerState = ref ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity);
-            if (playerState.State == (int)PlayerState.Milking)
+            if (playerState.State != (int)PlayerState.Idle)
             {
                 body.Velocity = Vector2.Zero;
                 return;

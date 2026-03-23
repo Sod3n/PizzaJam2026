@@ -8,8 +8,8 @@ namespace Template.Shared.Factories;
 public static class TemplateGameFactory
 {
     private static bool _appInitialized = false;
-    
-    public static Game CreateGame(int tickRate = 60)
+
+    public static Game CreateGame(int tickRate = 60, string? gameDataPath = null, System.Collections.Generic.Dictionary<string, string>? gameDataJson = null)
     {
         if (!_appInitialized)
         {
@@ -20,11 +20,18 @@ public static class TemplateGameFactory
             ServiceLocator.RegisterAssembly(typeof(Deterministic.GameFramework.TwoD.Transform2D).Assembly); // Deterministic.GameFramework.TwoD
             ServiceLocator.RegisterAssembly(typeof(RapierPhysicsSystem).Assembly); // Deterministic.GameFramework.TwoD.Physics
             ServiceLocator.RegisterAssembly(typeof(TemplateGameFactory).Assembly); // Template.Shared
-            
+
             // Initialize GameData
-            Template.Shared.GameData.GD.Load();
+            if (gameDataJson != null)
+            {
+                Template.Shared.GameData.GD.LoadFromJson(gameDataJson);
+            }
+            else
+            {
+                Template.Shared.GameData.GD.Load(gameDataPath);
+            }
         }
-        
+
         // 1. Create Game (encapsulates State, Loop, Dispatcher, Scheduler, SceneManager)
         var game = new Game(tickRate: tickRate);
 

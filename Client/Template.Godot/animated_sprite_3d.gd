@@ -22,13 +22,15 @@ func _process(_delta: float) -> void:
 	# 2. Look At (Editor & Game)
 	if look_at_camera:
 		var target_cam: Camera3D = null
-		
+
 		# Check if we are in Editor vs Running Game
 		if Engine.is_editor_hint():
 			# Editor camera check
-			var editor_viewport = EditorInterface.get_editor_viewport_3d(0)
-			if editor_viewport:
-				target_cam = editor_viewport.get_camera_3d()
+			var editor_interface = Engine.get_singleton("EditorInterface")
+			if editor_interface:
+				var editor_viewport = editor_interface.get_editor_viewport_3d(0)
+				if editor_viewport:
+					target_cam = editor_viewport.get_camera_3d()
 		else:
 			target_cam = get_viewport().get_camera_3d()
 

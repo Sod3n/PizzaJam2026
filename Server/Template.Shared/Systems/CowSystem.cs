@@ -4,6 +4,7 @@ using Template.Shared.Components;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Physics2D.Components;
+using Deterministic.GameFramework.Utils.Logging;
 
 namespace Template.Shared.Systems;
 
@@ -43,18 +44,8 @@ public class CowSystem : ISystem
             ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
             ref var transform = ref state.GetComponent<Transform2D>(cowEntity);
             
-            if (cow.Exhaust >= cow.MaxExhaust)
+            if (cow is { Exhaust: > 0, IsMilking: false })
             {
-                Vector2? targetPos = null;
-
-                // If exhausted, move to House
-                if (state.HasComponent<Transform2D>(cow.HouseId))
-                {
-                    targetPos = state.GetComponent<Transform2D>(cow.HouseId).Position;
-                }
-                
-                HideEntity(state, cowEntity, targetPos);
-
                 // Decay Exhaust
                 var gameTime = state.GetCustomData<IGameTime>();
                 if (gameTime != null)
@@ -62,21 +53,18 @@ public class CowSystem : ISystem
                     // Use a more stable seed based on the cow entity and the current tick
                     var random = new DeterministicRandom((uint)(cowEntity.Id ^ gameTime.CurrentTick));
                     // 1% chance per tick to recover
-                    if (random.NextInt(0, 100) == 0)
+                    if (random.NextInt(0, 240) == 0)
                     {
                         cow.Exhaust--;
                     }
                 }
             }
-            else
+            else if (!cow.IsMilking)
             {
                 // Cow is fine -> Ensure visible
                 if (state.HasComponent<HiddenComponent>(cowEntity))
                 {
                     UnhideEntity(state, cowEntity);
-                    
-                    // Reset position to spawn point when reappearing
-                    transform.Position = cow.SpawnPosition;
                 }
             }
         }
@@ -84,20 +72,21 @@ public class CowSystem : ISystem
 
     private void HandleEntering(EntityWorld state, Entity playerEntity, ref PlayerStateComponent playerState)
     {
-        // 1. Hide
-        HideEntity(state, playerEntity);
-        if (state.HasComponent<CowComponent>(playerState.InteractionTarget))
-        {
-             HideEntity(state, playerState.InteractionTarget);
-        }
-
         // 2. Timer
         playerState.MilkingTimer++;
         if (playerState.MilkingTimer >= PhaseDurationTicks)
         {
+            ILogger.Log($"[CowSystem] TRANSITION: Entering → Milking");
             playerState.State = (int)PlayerState.Milking;
             playerState.MilkingTimer = 0;
-            System.Console.WriteLine($"[CowSystem] Entering Done. Player {playerEntity.Id} is now Milking.");
+            var cowEntity = playerState.InteractionTarget;
+            ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+            
+            cow.IsMilking = true;
+            
+            HideEntity(state, cowEntity);
+            
+            ILogger.Log($"[CowSystem] Entering Done. Player {playerEntity.Id} is now Milking.");
         }
     }
 
@@ -117,37 +106,21 @@ public class CowSystem : ISystem
             // Unhide
             UnhideEntity(state, playerEntity);
             
-            // Unhide Cow if it exists (and check if it needs to stay hidden due to exhaust?)
-            // Actually, if cow is exhausted, CowSystem update loop will hide it again in the next pass/same pass.
-            // But we should unhide the "interaction hiding" layer.
-            // The CowSystem logic for exhaust handles hiding separately.
-            // But wait, we are using the SAME HiddenComponent?
-            // Yes.
-            // If we remove HiddenComponent here, but the cow is exhausted, the CowSystem Main Loop needs to re-add it?
-            // The CowSystem main loop runs AFTER this loop? Or before?
-            // They are in the same Update function. Players loop first, then Cows loop.
-            // If we unhide here, the Cow loop later will check `if (cow.Exhaust >= cow.MaxExhaust)` and re-hide it if needed.
-            // So it's safe to unhide here.
-            
             if (state.HasComponent<CowComponent>(playerState.InteractionTarget))
             {
-                UnhideEntity(state, playerState.InteractionTarget);
-                
-                // If we moved the cow to house position, we might want to move it back?
-                // Or let the Cow loop handle it?
-                // Cow loop:
-                // else { if (Hidden) Unhide; Reset Pos; }
-                // So yes, Cow loop will handle reset.
+                var cowEntity = playerState.InteractionTarget;
+                ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+                cow.IsMilking = false;
             }
 
             playerState.State = (int)PlayerState.Idle;
             playerState.InteractionTarget = Entity.Null;
             playerState.MilkingTimer = 0;
-            System.Console.WriteLine($"[CowSystem] Exiting Done. Player {playerEntity.Id} is now Idle.");
+            ILogger.Log($"[CowSystem] Exiting Done. Player {playerEntity.Id} is now Idle.");
         }
     }
 
-    private void HideEntity(EntityWorld state, Entity entity, Vector2? positionOverride = null)
+    private void HideEntity(EntityWorld state, Entity entity)
     {
         if (!state.HasComponent<HiddenComponent>(entity))
         {
@@ -171,13 +144,6 @@ public class CowSystem : ISystem
                 PreviousLayer = prevLayer, 
                 PreviousMask = prevMask 
             });
-        }
-        
-        // Always enforce position if provided (even if already hidden, in case target moved)
-        if (positionOverride.HasValue && state.HasComponent<Transform2D>(entity))
-        {
-            ref var transform = ref state.GetComponent<Transform2D>(entity);
-            transform.Position = positionOverride.Value;
         }
     }
 

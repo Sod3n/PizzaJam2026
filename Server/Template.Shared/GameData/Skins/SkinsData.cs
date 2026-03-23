@@ -13,6 +13,8 @@ public class SkinsData : GameData<Skin>
 
     private Dictionary<int, Skin> _skins = new();
     private Dictionary<string, List<Skin>> _skinsByType = new();
+    // Cache the total weight per type for performance
+    private Dictionary<string, int> _totalWeightByType = new();
 
     public override void Load(Dictionary<string, Skin> entries)
     {
@@ -23,9 +25,15 @@ public class SkinsData : GameData<Skin>
             .ToDictionary(g => g.Key, g => 
             {
                 var list = g.ToList();
-                list.Sort((a, b) => a.Id.CompareTo(b.Id)); // Sort for determinism
+                // Sorting by Id ensures the order is consistent before calculating cumulative weight
+                list.Sort((a, b) => a.Id.CompareTo(b.Id)); 
                 return list;
             });
+
+        _totalWeightByType = _skinsByType.ToDictionary(
+            kvp => kvp.Key,
+            kvp => kvp.Value.Sum(s => s.Weight)
+        );
     }
 
     public Skin? Get(int id) => _skins.GetValueOrDefault(id);
@@ -39,20 +47,35 @@ public class SkinsData : GameData<Skin>
             Skins = new Dictionary16<FixedString32, int>()
         };
 
-        // Sort keys to ensure deterministic iteration order across different OS/environments
         var sortedTypes = _skinsByType.Keys.ToList();
         sortedTypes.Sort();
 
         foreach (var type in sortedTypes)
         {
             var skins = _skinsByType[type];
-            if (skins.Count == 0) continue;
+            var totalWeight = _totalWeightByType[type];
             
-            var index = random.NextInt(skins.Count);
-            var skin = skins[index];
+            if (skins.Count == 0 || totalWeight <= 0) continue;
             
-            // Map the Skin Type (e.g. "Hair") to the Slot Name in the component
-            component.Skins.Add(new FixedString32(type), skin.Id);
+            // Get a random value between [0, totalWeight)
+            int targetWeight = random.NextInt(totalWeight);
+            int currentWeightSum = 0;
+            Skin? selectedSkin = null;
+
+            foreach (var skin in skins)
+            {
+                currentWeightSum += skin.Weight;
+                if (targetWeight < currentWeightSum)
+                {
+                    selectedSkin = skin;
+                    break;
+                }
+            }
+
+            // Fallback to last skin if something goes wrong with floating point or rounding
+            selectedSkin ??= skins.Last();
+            
+            component.Skins.Add(new FixedString32(type), selectedSkin.Id);
         }
 
         return component;

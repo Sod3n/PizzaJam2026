@@ -21,7 +21,7 @@
 atlas = ExtResource("1_nhgn6")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qhcqh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_50s2t"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -44,7 +44,7 @@ animations = [{
 atlas = ExtResource("3_dqt6i")
 region = Rect2(0, 0, 512, 498)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_oca4j"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_egwm2"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
@@ -76,7 +76,7 @@ animations = [{
 atlas = ExtResource("3_8pimj")
 region = Rect2(0, 0, 658, 166)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qsyed"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_efe3o"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
@@ -99,7 +99,7 @@ animations = [{
 atlas = ExtResource("4_2gb1b")
 region = Rect2(0, 0, 632, 142)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_57jaa"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7s1ka"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
@@ -122,7 +122,7 @@ animations = [{
 atlas = ExtResource("6_t7j5h")
 region = Rect2(0, 0, 373, 193)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_krs60"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1hf4g"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_50s2t")
@@ -145,7 +145,7 @@ animations = [{
 atlas = ExtResource("7_qhcqh")
 region = Rect2(0, 0, 337, 191)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_tp46v"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cqlcf"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
@@ -164,7 +164,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_okgcy"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qo6bs"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = ExtResource("13_tp46v")
@@ -193,7 +193,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_50s2t"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hm0tp"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/wind_strength = 0.0
@@ -202,7 +202,7 @@ shader_parameter/pixels_per_unit = 32.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_krs60"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_egwm2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4k4ws"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = ExtResource("11_oca4j")
@@ -233,15 +233,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05092001, 4.4320173, 0)
 
 [node name="Body" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=1133601551]
 sorting_offset = -10.0
-material_override = SubResource("ShaderMaterial_qhcqh")
+material_override = SubResource("ShaderMaterial_50s2t")
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_doawl")
+frame_progress = 0.56763655
 script = ExtResource("1_qcpwf")
 
 [node name="Hair" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=610589464]
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, -0.04889219, 2.4860554, 0.30584395)
-material_override = SubResource("ShaderMaterial_oca4j")
+material_override = SubResource("ShaderMaterial_egwm2")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_okgcy")
 frame_progress = 0.12477108
@@ -249,28 +250,28 @@ script = ExtResource("1_qcpwf")
 
 [node name="Torns" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=2031229694]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7818236, 0.28223503)
-material_override = SubResource("ShaderMaterial_qsyed")
+material_override = SubResource("ShaderMaterial_efe3o")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_t7j5h")
 script = ExtResource("1_qcpwf")
 
 [node name="Ears" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=1368322551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.052645445, 2.3044944, 0.28223503)
-material_override = SubResource("ShaderMaterial_57jaa")
+material_override = SubResource("ShaderMaterial_7s1ka")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_oca4j")
 script = ExtResource("1_qcpwf")
 
 [node name="Eyes" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=50470159]
 transform = Transform3D(0.9999998, 0, 0, 0, 0.9999999, 1.4901161e-08, 0, -1.4901161e-08, 0.9999999, 0, 1.8289666, 0.45628178)
-material_override = SubResource("ShaderMaterial_krs60")
+material_override = SubResource("ShaderMaterial_1hf4g")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_3iv28")
 script = ExtResource("1_qcpwf")
 
 [node name="Top" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=2106512903]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3777578, 0.4289323)
-material_override = SubResource("ShaderMaterial_tp46v")
+material_override = SubResource("ShaderMaterial_cqlcf")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_qsyed")
 script = ExtResource("1_qcpwf")
@@ -278,21 +279,21 @@ script = ExtResource("1_qcpwf")
 [node name="Bottom1" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=2120793389]
 transform = Transform3D(0.9999995, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, -0.01645488, -1.7125106, 0.3642925)
 sorting_offset = 1.0
-material_override = SubResource("ShaderMaterial_okgcy")
+material_override = SubResource("ShaderMaterial_qo6bs")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_57jaa")
 script = ExtResource("1_qcpwf")
 
 [node name="Bottom2" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=294789255]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.24774504)
-material_override = SubResource("ShaderMaterial_50s2t")
+material_override = SubResource("ShaderMaterial_hm0tp")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_krs60")
 script = ExtResource("1_qcpwf")
 
 [node name="Tail" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=543932425]
 transform = Transform3D(0.99999934, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 2.5845785, -0.48319483, -0.10802436)
-material_override = SubResource("ShaderMaterial_egwm2")
+material_override = SubResource("ShaderMaterial_4k4ws")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_tp46v")
 script = ExtResource("1_qcpwf")

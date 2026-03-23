@@ -21,17 +21,12 @@ public static partial class HouseDefinition
         
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
         
+        var staticBody = StaticBody2D.Default;
+        ctx.AddComponent(entity, staticBody);
+ 
+        
         // Static collider for walls
         ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2, 2)));
-
-        // Interaction area (if needed, e.g. for interacting with cow inside)
-        ctx.AddComponent(entity, new Area2D 
-        { 
-            Monitoring = true,
-            Monitorable = true,
-            CollisionMask = 0, 
-            CollisionLayer = 4, // Interaction Layer
-        });
         
         return entity;
     }

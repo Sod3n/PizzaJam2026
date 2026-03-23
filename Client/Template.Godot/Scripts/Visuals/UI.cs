@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Threading.Tasks;
 using Template.Godot.Core;
 using Template.Shared.Components;
 using Deterministic.GameFramework.Reactive;
@@ -36,7 +37,6 @@ public partial class UI : CanvasLayer
 
     private void Initialize()
     {
-        _isInitialized = true;
         var client = GameManager.Instance.GameClient;
         var collection = client.Reactive.ObservableList<GlobalResourcesComponent, GlobalResourcesComponentViewModel>(
             ctx => new GlobalResourcesComponentViewModel(ctx),
@@ -60,17 +60,17 @@ public partial class UI : CanvasLayer
     {
         // Bind Grass
         vm.Resources.Grass.Subscribe(g => 
-            Callable.From(() => _grassLabel.Text = $"Grass: {g}").CallDeferred()
+            Callable.From(() => _grassLabel.Text = $"{g}").CallDeferred()
         ).AddTo(_disposables);
 
         // Bind Milk
         vm.Resources.Milk.Subscribe(m => 
-                Callable.From(() => _milkLabel.Text = $"Milk: {m}").CallDeferred()
+                Callable.From(() => _milkLabel.Text = $"{m}").CallDeferred()
         ).AddTo(_disposables);
 
         // Bind Coins
         vm.Resources.Coins.Subscribe(c => 
-                Callable.From(() => _coinLabel.Text = $"Coins: {c}").CallDeferred()
+                Callable.From(() => _coinLabel.Text = $"{c}").CallDeferred()
         ).AddTo(_disposables);
     }
 

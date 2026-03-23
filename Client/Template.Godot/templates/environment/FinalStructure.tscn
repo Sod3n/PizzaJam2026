@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://blnhcjlcy72i3"]
+
+[ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="1_25x1s"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="2_c6usd"]
+[ext_resource type="Texture2D" uid="uid://d4bx820kh3qga" path="res://sprites/image-removebg-preview-2.png" id="2_s1njy"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="3_vrssg"]
+[ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="4_s1njy"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="5_y0sxf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y0sxf"]
+render_priority = 0
+shader = ExtResource("3_vrssg")
+shader_parameter/albedo_texture = ExtResource("2_s1njy")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wwvx5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_s1njy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_y0sxf")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p28da"]
+atlas = ExtResource("1_25x1s")
+region = Rect2(0, 1514, 1033, 757)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j63rn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p28da")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_25x1s")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wwvx5"]
+render_priority = 0
+shader = ExtResource("3_vrssg")
+shader_parameter/albedo_texture = ExtResource("4_s1njy")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ton1d"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_s1njy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_y0sxf")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="FinalStructure" type="Node3D" unique_id=803964944]
+
+[node name="Finale" type="AnimatedSprite3D" parent="." unique_id=1839181731]
+transform = Transform3D(1, 0, 0, 0, 0.9082089, 0.4185171, 0, -0.4185171, 0.9082089, 0, 0.72762764, -0.43979532)
+visible = false
+material_override = SubResource("ShaderMaterial_y0sxf")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_wwvx5")
+script = ExtResource("2_c6usd")
+
+[node name="Node3D" type="Node3D" parent="." unique_id=1547856474]
+
+[node name="Remaining" type="Label3D" parent="Node3D" unique_id=188525676]
+transform = Transform3D(0.7, 0, 0, 0, 0.67212373, 0.19557531, 0, -0.19557531, 0.67212373, -0.080786616, 1.2520609, -0.3480498)
+modulate = Color(1, 1, 0, 1)
+text = "1000"
+font_size = 128
+horizontal_alignment = 0
+
+[node name="Skin2" type="AnimatedSprite3D" parent="Node3D" unique_id=8872794]
+transform = Transform3D(0.2, 0, 0, 0, 0.19203536, 0.05587867, 0, -0.05587867, 0.19203536, -0.29732585, 1.1621141, -0.14114048)
+sorting_offset = -10.0
+alpha_cut = 2
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_j63rn")
+script = ExtResource("2_c6usd")
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Node3D" unique_id=116526206]
+transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.2588017, 4.611277, -2.0273778)
+material_override = SubResource("ShaderMaterial_wwvx5")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_ton1d")
+script = ExtResource("2_c6usd")

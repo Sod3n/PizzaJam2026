@@ -19,6 +19,10 @@ run/main_scene="res://demo.tscn"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Global="*uid://c6aa26vlcpjcm"
+
 [display]
 
 window/size/viewport_width=1920
@@ -39,6 +43,7 @@ enabled=PackedStringArray()
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
 lights_and_shadows/directional_shadow/16_bits=false
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0

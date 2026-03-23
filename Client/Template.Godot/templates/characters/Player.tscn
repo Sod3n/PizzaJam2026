@@ -1,9 +1,137 @@
 [gd_scene format=3 uid="uid://blxgls556ydaj"]
 
 [ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_muct3"]
-[ext_resource type="Script" path="res://Scripts/Visuals/UI.cs" id="3_k554n"]
+[ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="2_chjm5"]
+[ext_resource type="Script" uid="uid://bin2tkdo8ql7q" path="res://Scripts/Visuals/UI.cs" id="3_k554n"]
 [ext_resource type="PackedScene" uid="uid://cuh1yaoty6gvf" path="res://camera.tscn" id="3_lwepe"]
+[ext_resource type="Texture2D" uid="uid://bschpr1nis3nr" path="res://sprites/export/Hair/1.png" id="4_c7qr6"]
 [ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="4_lwepe"]
+[ext_resource type="Texture2D" uid="uid://cffi5cdejfvo1" path="res://sprites/gg.PNG" id="5_0pq82"]
+[ext_resource type="Texture2D" uid="uid://bgig7rtw3c0w5" path="res://sprites/export/Rota.png" id="5_xydrf"]
+[ext_resource type="Texture2D" uid="uid://blbyigq74dg5" path="res://sprites/export/Uni.png" id="6_vhitc"]
+[ext_resource type="Texture2D" uid="uid://cv165mvqi5u2t" path="res://sprites/export/Body.png" id="6_xl50o"]
+[ext_resource type="Texture2D" uid="uid://12vcaqaxgmpk" path="res://sprites/export/Face/Eye1.png" id="7_l3wpo"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="7_rapy0"]
+[ext_resource type="Texture2D" uid="uid://d4h8gkamk6m0t" path="res://sprites/export/Booba2/3.png" id="8_lkh7d"]
+[ext_resource type="Texture2D" uid="uid://d1u56c22sgj4s" path="res://sprites/export/___/6.png" id="9_u7nxn"]
+[ext_resource type="Texture2D" uid="uid://cqfncs3raoqdc" path="res://sprites/export/Tail.png" id="10_6q1hw"]
+[ext_resource type="Script" uid="uid://dshqidlygsd71" path="res://templates/characters/rich_text_label.gd" id="16_c7qr6"]
+[ext_resource type="Texture2D" uid="uid://c55x5qdyrh67t" path="res://sprites/back.png" id="16_xydrf"]
+[ext_resource type="Texture2D" uid="uid://e024qkwcbcl0" path="res://sprites/IMG_0407.PNG" id="18_l3wpo"]
+[ext_resource type="Script" uid="uid://cndtd78smhj8n" path="res://templates/characters/final_dialogue.gd" id="18_vhitc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
+atlas = ExtResource("6_xl50o")
+region = Rect2(0, 0, 461, 904)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c7qr6"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3iv28"]
+atlas = ExtResource("4_c7qr6")
+region = Rect2(0, 0, 512, 498)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xydrf"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dqt6i"]
+atlas = ExtResource("5_xydrf")
+region = Rect2(0, 0, 658, 166)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vhitc"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhcqh"]
+atlas = ExtResource("6_vhitc")
+region = Rect2(0, 0, 632, 142)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l3wpo"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_50s2t"]
+atlas = ExtResource("7_l3wpo")
+region = Rect2(0, 0, 373, 193)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lkh7d"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_50s2t")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_egwm2"]
+atlas = ExtResource("8_lkh7d")
+region = Rect2(0, 0, 337, 191)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u7nxn"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6q1hw"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("9_u7nxn")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6l6fq"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f0udm"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("10_6q1hw")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q472n"]
+atlas = ExtResource("6_xl50o")
+region = Rect2(0, 0, 461, 904)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ei75f"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_0pq82")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q472n")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_trrnh"]
 atlas = ExtResource("4_lwepe")
@@ -19,15 +147,56 @@ region = Rect2(208.95313, 1608.7108, 455.62524, 379.6875)
 
 [node name="Player" type="Node3D" unique_id=1227286794]
 
-[node name="Character" parent="." unique_id=1227223347 instance=ExtResource("1_muct3")]
+[node name="Character" parent="." unique_id=1227223347 node_paths=PackedStringArray("skin_node") instance=ExtResource("1_muct3")]
 transform = Transform3D(0.2, 0, 0, 0, 0.19518183, 0.043635447, 0, -0.043635447, 0.19518183, 0, -0.18061149, 0)
+skin_node = NodePath("ScaleAnchor/Skin2")
+bounce_height = 2.0
+
+[node name="Skin" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223347, 1423863731) index="0" unique_id=1045908558]
+visible = false
+
+[node name="Body" parent="Character/ScaleAnchor/Skin" index="0" unique_id=1133601551]
+material_override = SubResource("ShaderMaterial_c7qr6")
+
+[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
+material_override = SubResource("ShaderMaterial_xydrf")
+
+[node name="Torns" parent="Character/ScaleAnchor/Skin" index="2" unique_id=2031229694]
+material_override = SubResource("ShaderMaterial_vhitc")
+
+[node name="Ears" parent="Character/ScaleAnchor/Skin" index="3" unique_id=1368322551]
+material_override = SubResource("ShaderMaterial_l3wpo")
+
+[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="4" unique_id=50470159]
+material_override = SubResource("ShaderMaterial_lkh7d")
+
+[node name="Top" parent="Character/ScaleAnchor/Skin" index="5" unique_id=2106512903]
+material_override = SubResource("ShaderMaterial_u7nxn")
+
+[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2120793389]
+material_override = SubResource("ShaderMaterial_6q1hw")
+
+[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="7" unique_id=294789255]
+material_override = SubResource("ShaderMaterial_6l6fq")
+
+[node name="Tail" parent="Character/ScaleAnchor/Skin" index="8" unique_id=543932425]
+material_override = SubResource("ShaderMaterial_f0udm")
+
+[node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223347, 1423863731) index="1" unique_id=661096088]
+transform = Transform3D(0.9999998, 0, 0, 0, 0.9999999, 1.4901161e-08, 0, -1.4901161e-08, 0.9999999, 0, 5.2107396, 0.173539)
+sorting_offset = -10.0
+alpha_cut = 2
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_ei75f")
+script = ExtResource("7_rapy0")
 
 [node name="Camera" parent="." unique_id=2095400398 instance=ExtResource("3_lwepe")]
-transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 4.900643, 4.540252)
+transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 10.943492, 17.389597)
 size = 10.0
 pixels_per_meter = 32.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915661]
+visible = false
 script = ExtResource("3_k554n")
 
 [node name="Control" type="Control" parent="Camera/CanvasLayer" unique_id=697887396]
@@ -39,6 +208,14 @@ offset_left = 1.0
 offset_right = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Camera/CanvasLayer/Control" unique_id=144075612]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 31.0
+offset_right = 214.0
+offset_bottom = 293.0
+color = Color(0.21960784, 0.21960784, 0.21960784, 0.8352941)
 
 [node name="Grass" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1787843798]
 layout_mode = 0
@@ -97,3 +274,91 @@ offset_bottom = 283.0
 texture = SubResource("AtlasTexture_0pq82")
 expand_mode = 1
 stretch_mode = 4
+
+[node name="TextureRect4" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=1349411431]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("16_xydrf")
+
+[node name="Character1" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=1294229976]
+layout_mode = 0
+offset_left = -144.0
+offset_top = -134.0
+offset_right = 1035.0
+offset_bottom = 1606.0
+texture = ExtResource("5_0pq82")
+
+[node name="Character2" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=1902925128]
+layout_mode = 0
+offset_left = 301.0
+offset_top = -982.0
+offset_right = 2781.0
+offset_bottom = 2526.0
+texture = ExtResource("18_l3wpo")
+
+[node name="ColorRect2" type="ColorRect" parent="Camera/CanvasLayer/Control" unique_id=1626185416]
+layout_mode = 0
+offset_left = 119.0
+offset_top = 822.0
+offset_right = 1823.0
+offset_bottom = 1030.0
+color = Color(0.21960784, 0.21960784, 0.21960784, 0.8352941)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Camera/CanvasLayer/Control/ColorRect2" unique_id=1831474112]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 25.0
+offset_right = 1646.0
+offset_bottom = 182.0
+theme_override_font_sizes/normal_font_size = 42
+theme_override_font_sizes/bold_font_size = 42
+bbcode_enabled = true
+script = ExtResource("16_c7qr6")
+
+[node name="Timer" type="Timer" parent="Camera/CanvasLayer/Control/ColorRect2/RichTextLabel" unique_id=1031912854]
+
+[node name="Character3" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=14522707]
+layout_mode = 0
+offset_left = -144.0
+offset_top = -134.0
+offset_right = 1035.0
+offset_bottom = 1606.0
+texture = ExtResource("5_0pq82")
+
+[node name="Character4" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=425726022]
+layout_mode = 0
+offset_left = 302.0
+offset_top = -985.0
+offset_right = 2782.0
+offset_bottom = 2523.0
+texture = ExtResource("18_l3wpo")
+
+[node name="ColorRect3" type="ColorRect" parent="Camera/CanvasLayer/Control" unique_id=1921354470]
+visible = false
+layout_mode = 0
+offset_left = 119.0
+offset_top = 822.0
+offset_right = 1823.0
+offset_bottom = 1030.0
+color = Color(0.21960784, 0.21960784, 0.21960784, 0.8352941)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Camera/CanvasLayer/Control/ColorRect3" unique_id=18575145]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 25.0
+offset_right = 1646.0
+offset_bottom = 182.0
+theme_override_font_sizes/normal_font_size = 42
+theme_override_font_sizes/bold_font_size = 42
+bbcode_enabled = true
+script = ExtResource("18_vhitc")
+
+[node name="Timer" type="Timer" parent="Camera/CanvasLayer/Control/ColorRect3/RichTextLabel" unique_id=1725211964]
+
+[editable path="Character"]

@@ -24,20 +24,28 @@ public class GameplayScene : IScene
         
         var state = loop.State;
         
-        // Create Top-Down Walls (Enclosed Arena 2000x2000)
-        CreateWall(state, new Vector2(0, -1000), new Vector2(2200, 100)); // Top
-        CreateWall(state, new Vector2(0, 1000), new Vector2(2200, 100));  // Bottom
-        CreateWall(state, new Vector2(-1000, 0), new Vector2(100, 2000)); // Left
-        CreateWall(state, new Vector2(1000, 0), new Vector2(100, 2000));  // Right
+        float center = 25f;
+        float halfSize = 40f; // 140 / 2
+        float wallThickness = 1f;
+
+        // Top Wall (Horizontal)
+        // Position: (X = CenterX, Y = CenterY - HalfSize)
+        CreateWall(state, new Vector2(center, center - halfSize), new Vector2(halfSize * 2, wallThickness)); 
+
+        // Bottom Wall (Horizontal)
+        // Position: (X = CenterX, Y = CenterY + HalfSize)
+        CreateWall(state, new Vector2(center, center + halfSize), new Vector2(halfSize * 2, wallThickness));
+
+        // Left Wall (Vertical)
+        // Position: (X = CenterX - HalfSize, Y = CenterY)
+        CreateWall(state, new Vector2(center - halfSize, center), new Vector2(wallThickness, halfSize * 2));
+
+        // Right Wall (Vertical)
+        // Position: (X = CenterX + halfSize, Y = CenterY)
+        CreateWall(state, new Vector2(center + halfSize, center), new Vector2(wallThickness, halfSize * 2));
 
         // Spawn some coins
         var context = new Context(state, Entity.Null, null!);
-        for (int i = 0; i < 10; i++)
-        {
-            var x = (i % 5) * 200 - 400;
-            var y = (i / 5) * 200 - 200;
-            CoinDefinition.Create(context, new Vector2(x, y), 10);
-        }
 
         // DEBUG: Spawn all skins in a line
         // SkinDebugSpawner.SpawnAllSkinsInLine(context, new Vector2(0, -5), 2);
@@ -46,32 +54,18 @@ public class GameplayScene : IScene
         var globalRes = state.CreateEntity();
         state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 5 }); // Start with some coins to buy land
 
-        // Spawn Initial Objects
-        
-        // Some Grass
-        GrassDefinition.Create(context, new Vector2(5, 5));
-        GrassDefinition.Create(context, new Vector2(6, 5));
-        GrassDefinition.Create(context, new Vector2(5, 6));
-
         // A Sell Point
         SellPointDefinition.Create(context, new Vector2(-5, 5));
+        FinalStructureDefinition.Create(context, new Vector2(-5, -5), 50);
         
         // A Land Plot
-        LandDefinition.Create(context, new Vector2(0, 10), 3); // Cost 3 coins
-
-        // 1) World should start with 1 cow AND house already spawned
-        var housePos = new Vector2(-5, -5);
-        var houseEntity = HouseDefinition.Create(context, housePos);
-        
-        var cowPos = housePos + new Vector2(2, 2);
-        var cowEntity = CowDefinition.Create(context, cowPos);
-
-        // Link them
-        ref var house = ref state.GetComponent<HouseComponent>(houseEntity);
-        house.CowId = cowEntity;
-
-        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
-        cow.HouseId = houseEntity;
+        for (var i = 0; i < 5; i++)
+        {
+            for (var j = 0; j < 5; j++)
+            {
+                LandDefinition.Create(context, new Vector2(i * 10 + 5, j * 10 + 5), 3);
+            }
+        }
     }
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)

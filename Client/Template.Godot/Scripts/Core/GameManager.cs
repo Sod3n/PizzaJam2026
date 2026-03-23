@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Threading.Tasks;
 using Deterministic.GameFramework.Common;
+using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Network.Client;
 using Deterministic.GameFramework.Network.Interfaces;
 using Template.Shared.Factories;
@@ -10,6 +11,8 @@ using Template.Shared.Features.Movement;
 using FixedMathSharp;
 using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.TwoD;
+using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.Utils.Logging;
 
 namespace Template.Godot.Core;
 
@@ -22,10 +25,12 @@ public partial class GameManager : Node
 
 	// If true, auto-queues. If false, waits for UI (not implemented yet, so defaults true)
 	[Export] public bool AutoConnect = true;
+	[Export] public bool OfflineMode = false;
 
 	public GameClient GameClient { get; private set; }
 	public Deterministic.GameFramework.Common.Game Game { get; private set; }
 	public int LocalPlayerId { get; private set; }
+	public Guid OfflineUserId { get; private set; }
 
 	private Task _gameLoopTask;
 	private bool _isRunning;
@@ -36,8 +41,30 @@ public partial class GameManager : Node
 		Instance = this;
 		GD.Print("=== Initializing Godot Client ===");
 
+		ILogger.SetLogger(new GodotLogger());
+
 		// 1. Create Game
-		Game = TemplateGameFactory.CreateGame(tickRate: 60);
+		// We read the JSON files directly from Godot's virtual filesystem (res://)
+		// and pass them as strings to the shared library. This avoids System.IO issues in exported builds.
+		var gameDataJson = new System.Collections.Generic.Dictionary<string, string>();
+
+		string[] dataFiles = { "Skins.json" };
+		foreach (var fileName in dataFiles)
+		{
+			var path = $"res://GameData/{fileName}";
+			using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
+			if (file != null)
+			{
+				gameDataJson[fileName] = file.GetAsText();
+				GD.Print($"[GameManager] Loaded {fileName} from {path}");
+			}
+			else
+			{
+				GD.PrintErr($"[GameManager] Failed to load {fileName} from {path}");
+			}
+		}
+
+		Game = TemplateGameFactory.CreateGame(tickRate: 60, gameDataJson: gameDataJson);
 
 		// 2. Setup Network
 		var serverUrl = $"{ServerIp}:{ServerPort}";
@@ -46,10 +73,42 @@ public partial class GameManager : Node
 		GameClient = new GameClient(networkClient, serverUrl, Game);
 		GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
 
-		if (AutoConnect)
+		if (OfflineMode)
+		{
+			StartOffline();
+		}
+		else if (AutoConnect)
 		{
 			_ = ConnectAndStart();
 		}
+	}
+
+	private void StartOffline()
+	{
+		GD.Print("Starting in Offline Mode...");
+
+		// 1. Initialize Local Player
+		OfflineUserId = Guid.NewGuid();
+		var context = new Deterministic.GameFramework.DAR.Context(Game.State, Deterministic.GameFramework.ECS.Entity.Null, null!);
+		var playerEntity = Template.Shared.Definitions.PlayerDefinition.Create(
+			context,
+			OfflineUserId,
+			new Deterministic.GameFramework.Types.Vector2(0, 0),
+			0
+		);
+
+		LocalPlayerId = playerEntity.Id;
+		GD.Print($"[GameManager] Offline Player Created: {LocalPlayerId}");
+
+		// 2. Start Loop
+		_gameLoopTask = Game.Loop.Start();
+		_isRunning = true;
+	}
+
+	public void ScheduleOfflineAction<TAction>(TAction action, int targetEntityId) where TAction : struct, IAction
+	{
+		var id = ComponentId<TAction>.DenseId;
+		Game.Scheduler.Schedule(action, id, new Entity(targetEntityId), Game.Loop.CurrentTick + 1);
 	}
 
 	private async Task ConnectAndStart()
@@ -111,4 +170,22 @@ public partial class GameManager : Node
 
 	// Expose for other systems
 	public bool IsGameRunning => _isRunning;
+}
+
+public class GodotLogger : ILogger
+{
+	public void _Log(string message)
+	{
+		GD.Print($"[GodotLogger] {message}");
+	}
+
+	public void _LogWarning(string message)
+	{
+		GD.PrintErr($"[GodotLogger] Warning: {message}");
+	}
+
+	public void _LogError(string message)
+	{
+		GD.PrintErr($"[GodotLogger] Error: {message}");
+	}
 }

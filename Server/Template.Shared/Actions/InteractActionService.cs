@@ -4,211 +4,171 @@ using Deterministic.GameFramework.TwoD;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using Deterministic.GameFramework.Types;
+using Deterministic.GameFramework.Utils.Logging;
 
 namespace Template.Shared.Actions;
 
 public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 {
-    private const float InteractionRange = 2.0f;
-    private const float InteractionRangeSq = InteractionRange * InteractionRange;
+    private static readonly Float InteractionRange = 2.0f;
+    private static readonly Float InteractionRangeSq = InteractionRange * InteractionRange;
 
     protected override void ExecuteProcess(InteractAction action, ref PlayerEntity playerComp, Context ctx)
     {
         Entity playerEntity = ctx.Entity;
 
-        // Verify UserID match (optional security check)
-        if (playerComp.UserId != action.UserId)
-        {
-            System.Console.WriteLine($"[Interact] UserId mismatch. Entity: {playerComp.UserId}, Action: {action.UserId}");
-            return;
-        }
-
-        if (!ctx.State.HasComponent<Transform2D>(playerEntity))
-            return;
+        if (playerComp.UserId != action.UserId) return;
+        if (!ctx.State.HasComponent<Transform2D>(playerEntity)) return;
 
         var playerPos = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
-
-        // 2. Find nearest interactable
         Entity target = FindNearestInteractable(ctx, playerPos);
 
-        if (target == Entity.Null)
-        {
-            // System.Console.WriteLine("[Interact] No target found.");
-            return;
-        }
+        if (target == Entity.Null) return;
 
-        // 3. Handle Interaction based on target type
-        
-        // Get Global Resources
         Entity globalResEntity = GetGlobalResourcesEntity(ctx);
-        if (globalResEntity == Entity.Null) return; // Should not happen if set up correctly
+        if (globalResEntity == Entity.Null) return;
         ref var globalRes = ref ctx.State.GetComponent<GlobalResourcesComponent>(globalResEntity);
+
+        bool success = false;
 
         if (ctx.State.HasComponent<GrassComponent>(target))
         {
-            HandleGrassInteraction(ctx, target, ref globalRes);
+            success = HandleGrassInteraction(ctx, target, ref globalRes);
         }
         else if (ctx.State.HasComponent<CowComponent>(target))
         {
-            HandleCowInteraction(ctx, playerEntity, target, ref globalRes);
+            success = HandleCowInteraction(ctx, playerEntity, target, ref globalRes, ref target);
         }
         else if (ctx.State.HasComponent<SellPointComponent>(target))
         {
-            HandleSellPointInteraction(ctx, ref globalRes);
+            success = HandleSellPointInteraction(ctx, ref globalRes);
         }
         else if (ctx.State.HasComponent<LandComponent>(target))
         {
-            HandleLandInteraction(ctx, target, ref globalRes);
+            success = HandleLandInteraction(ctx, target, ref globalRes);
+        }
+        else if (ctx.State.HasComponent<FinalStructureComponent>(target))
+        {
+            success = HandleFinalStructureInteraction(ctx, target, ref globalRes);
+        }
+
+        // Only mark if the specific interaction logic succeeded AND target still exists
+        if (success)
+        {
+            ctx.State.AddComponent(target, new InteractedComponent());
+            ILogger.Log($"[InteractActionService] Marked {target.Id} as successfully interacted");
         }
     }
 
-    private void HandleGrassInteraction(Context ctx, Entity grassEntity, ref GlobalResourcesComponent globalRes)
+    private bool HandleGrassInteraction(Context ctx, Entity grassEntity, ref GlobalResourcesComponent globalRes)
     {
         ref var grass = ref ctx.State.GetComponent<GrassComponent>(grassEntity);
-        
         grass.Durability -= 1;
         globalRes.Grass += 1;
-        
-        System.Console.WriteLine($"[Interact] Grass harvested. Durability: {grass.Durability}, Global Grass: {globalRes.Grass}");
 
         if (grass.Durability <= 0)
         {
             ctx.State.DeleteEntity(grassEntity);
         }
+        return true; // Always success if grass found
     }
 
-    private void HandleCowInteraction(Context ctx, Entity playerEntity, Entity cowEntity, ref GlobalResourcesComponent globalRes)
+    private bool HandleCowInteraction(Context ctx, Entity playerEntity, Entity cowEntity, ref GlobalResourcesComponent globalRes, ref Entity target)
     {
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
+        if (!ctx.State.HasComponent<PlayerStateComponent>(playerEntity)) return false;
+
+        ref var playerState = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
         
-        // Start Milking Process (From Idle)
-        if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
+        // Attempting to Start Milking
+        if (playerState.State == (int)PlayerState.Idle)
         {
-            ref var playerState = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+            if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust) return false;
+
+            playerState.State = (int)PlayerState.EnteringMilking;
+            playerState.InteractionTarget = cowEntity;
+            playerState.MilkingTimer = 0;
             
-            // 1. Idle -> Entering
-            if (playerState.State == (int)PlayerState.Idle)
+            if (ctx.State.HasComponent<Transform2D>(playerEntity))
+                playerState.ReturnPosition = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+            
+            return true;
+        }
+        
+        // Clicking while Milking
+        if (playerState.State == (int)PlayerState.Milking)
+        {
+            if (globalRes.Grass > 0 && cow.Exhaust < cow.MaxExhaust)
             {
-                // Check initial conditions
-                if (globalRes.Grass <= 0)
-                {
-                    System.Console.WriteLine($"[Interact] Cannot start milking. No grass!");
-                    return;
-                }
+                globalRes.Grass--;
+                globalRes.Milk++;
+                cow.Exhaust++;
                 
-                if (cow.Exhaust >= cow.MaxExhaust)
-                {
-                    System.Console.WriteLine($"[Interact] Cannot start milking. Cow is exhausted ({cow.Exhaust}/{cow.MaxExhaust})!");
-                    return;
-                }
-
-                playerState.State = (int)PlayerState.EnteringMilking;
-                playerState.InteractionTarget = cowEntity;
-                playerState.MilkingTimer = 0;
+                target = ctx.GetComponent<CowComponent>(cowEntity).HouseId;
                 
-                if (ctx.State.HasComponent<Transform2D>(playerEntity))
+                if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
                 {
-                    playerState.ReturnPosition = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+                    playerState.State = (int)PlayerState.ExitingMilking;
+                    playerState.MilkingTimer = 0;
                 }
-
-                System.Console.WriteLine($"[Interact] Entering House (1s)...");
-                return;
-            }
-
-            // 2. Milking -> Produce (Clicker)
-            if (playerState.State == (int)PlayerState.Milking)
-            {
-                // Check Resources
-                if (globalRes.Grass > 0 && cow.Exhaust < cow.MaxExhaust)
-                {
-                    globalRes.Grass--;
-                    globalRes.Milk++;
-                    cow.Exhaust++;
-                    
-                    System.Console.WriteLine($"[Interact] Clicked! Milk Produced. Grass: {globalRes.Grass}, Milk: {globalRes.Milk}, Exhaust: {cow.Exhaust}/{cow.MaxExhaust}");
-                    
-                    // Auto-Exit if run out
-                    if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
-                    {
-                        System.Console.WriteLine($"[Interact] Resources depleted/Full. Exiting House (1s)...");
-                        playerState.State = (int)PlayerState.ExitingMilking;
-                        playerState.MilkingTimer = 0;
-                    }
-                }
-                else
-                {
-                    // Should be caught by the Auto-Exit above, but manual trigger if state desync
-                     System.Console.WriteLine($"[Interact] Cannot milk. Exiting House (1s)...");
-                     playerState.State = (int)PlayerState.ExitingMilking;
-                     playerState.MilkingTimer = 0;
-                }
-                return;
-            }
-
-            // 3. Busy (Entering or Exiting)
-            if (playerState.State == (int)PlayerState.EnteringMilking || playerState.State == (int)PlayerState.ExitingMilking)
-            {
-                 System.Console.WriteLine($"[Interact] Busy ({((PlayerState)playerState.State)})...");
-                 return;
+                return true;
             }
         }
+        
+        return false;
     }
 
-    private void HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes)
+    private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes)
     {
         if (globalRes.Milk > 0)
         {
             globalRes.Milk -= 1;
             globalRes.Coins += 1;
-            System.Console.WriteLine($"[Interact] Sold Milk. Coins: {globalRes.Coins}, Milk: {globalRes.Milk}");
+            return true;
         }
-        else
-        {
-            System.Console.WriteLine($"[Interact] Nothing to sell.");
-        }
+        return false;
     }
 
-    private void HandleLandInteraction(Context ctx, Entity landEntity, ref GlobalResourcesComponent globalRes)
+    private bool HandleLandInteraction(Context ctx, Entity landEntity, ref GlobalResourcesComponent globalRes)
     {
         if (globalRes.Coins > 0)
         {
             ref var land = ref ctx.State.GetComponent<LandComponent>(landEntity);
-            
             globalRes.Coins -= 1;
             land.CurrentCoins += 1;
-            
-            System.Console.WriteLine($"[Interact] Invested in Land. Progress: {land.CurrentCoins}/{land.Threshold}");
 
             if (land.CurrentCoins >= land.Threshold)
             {
-                // Spawn House and Cow
                 var transform = ctx.State.GetComponent<Transform2D>(landEntity);
                 var position = transform.Position;
-                
-                // Destroy Land
                 ctx.State.DeleteEntity(landEntity);
                 
-                // Spawn House
                 var houseEntity = HouseDefinition.Create(ctx, position);
-                
-                // Spawn Cow near House
-                var cowPosition = position + new Vector2(2, 2); // Offset slightly
+                var cowPosition = position + new Vector2(2, 2);
                 var cowEntity = CowDefinition.Create(ctx, cowPosition);
                 
-                // Link Cow and House
                 ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
                 house.CowId = cowEntity;
                 
                 ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
                 cow.HouseId = houseEntity;
-                
-                System.Console.WriteLine($"[Interact] Land purchased! House and Cow spawned.");
             }
+            return true;
         }
-        else
-        {
-            System.Console.WriteLine($"[Interact] Not enough coins to invest in land.");
-        }
+        return false;
+    }
+    
+    private bool HandleFinalStructureInteraction(Context ctx, Entity finalEntity, ref GlobalResourcesComponent globalRes)
+    {
+        if (globalRes.Coins <= 0) return false;
+        
+        ref var final = ref ctx.State.GetComponent<FinalStructureComponent>(finalEntity);
+            
+        if (final.CurrentCoins >= final.Threshold) return false;
+            
+        globalRes.Coins -= 1;
+        final.CurrentCoins += 1;
+        return true;
     }
 
     private Entity FindNearestInteractable(Context ctx, Vector2 position)
@@ -227,6 +187,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         CheckNearest(ctx, position, ctx.State.Filter<CowComponent>(), ref nearest, ref minDistSq);
         CheckNearest(ctx, position, ctx.State.Filter<SellPointComponent>(), ref nearest, ref minDistSq);
         CheckNearest(ctx, position, ctx.State.Filter<LandComponent>(), ref nearest, ref minDistSq);
+        CheckNearest(ctx, position, ctx.State.Filter<FinalStructureComponent>(), ref nearest, ref minDistSq);
 
         return nearest;
     }
@@ -235,18 +196,24 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     {
         foreach (var entity in filter)
         {
-            if (ctx.State.HasComponent<HiddenComponent>(entity)) continue;
-
-            if (ctx.State.HasComponent<Transform2D>(entity))
+            if (ctx.State.HasComponent<HiddenComponent>(entity) && ctx.State.HasComponent<CowComponent>(entity))
             {
-                var targetPos = ctx.State.GetComponent<Transform2D>(entity).Position;
-                var distSq = Vector2.DistanceSquared(pos, targetPos);
-                if (distSq < minDistSq)
+                var cow = ctx.State.GetComponent<CowComponent>(entity);
+                if (!cow.IsMilking)
                 {
-                    minDistSq = distSq;
-                    nearest = entity;
+                    continue;
                 }
             }
+
+            if (!ctx.State.HasComponent<Transform2D>(entity)) continue;
+            
+            var targetPos = ctx.State.GetComponent<Transform2D>(entity).Position;
+            var distSq = Vector2.DistanceSquared(pos, targetPos);
+            
+            if (distSq >= minDistSq) continue;
+            
+            minDistSq = distSq;
+            nearest = entity;
         }
     }
 

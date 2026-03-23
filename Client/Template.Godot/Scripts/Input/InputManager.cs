@@ -13,24 +13,29 @@ public partial class InputManager : Node
 {
 	private Vector2 _lastDirection = new Vector2(float.MaxValue, float.MaxValue);
 
-	public override void _Process(double delta)
+	public override void _PhysicsProcess(double delta)
 	{
 		// 1. Check prerequisites
 		if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
-		
+
 		var localPlayerId = GameManager.Instance.LocalPlayerId;
 		if (localPlayerId == 0) return;
 
 		// 2. Poll Input
-		
+
         // Interaction
         if (global::Godot.Input.IsActionJustPressed("ui_accept"))
         {
-            var interactAction = new InteractAction 
-            { 
-                UserId = GameManager.Instance.GameClient.PlayerId 
-            };
-            GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
+            if (GameManager.Instance.OfflineMode)
+            {
+                var interactAction = new InteractAction { UserId = GameManager.Instance.OfflineUserId };
+                GameManager.Instance.ScheduleOfflineAction(interactAction, localPlayerId);
+            }
+            else
+            {
+                var interactAction = new InteractAction { UserId = GameManager.Instance.GameClient.PlayerId };
+                GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
+            }
         }
 
         // Movement
@@ -45,25 +50,32 @@ public partial class InputManager : Node
         {
             direction = direction.Normalized();
         }
-        
+
         // Convert to rounded fixed-point direction BEFORE checking for changes
         // This avoids float precision issues causing micro-updates
         var fixedDirection = new Deterministic.GameFramework.Types.Vector2((float)direction.X, (float)direction.Y);
-        
+
         // 3. Send Action if changed
         if (direction.DistanceSquaredTo(_lastDirection) > 0.001f)
         {
             _lastDirection = direction;
-            
-            var action = new SetMoveDirectionAction 
-            { 
-                Direction = fixedDirection, 
-                Speed = 10 
+
+            var action = new SetMoveDirectionAction
+            {
+                Direction = fixedDirection,
+                Speed = 10
             };
-            
-            // Execute locally (prediction) and send to server
-            // Do NOT use predict: true for continuous inputs unless the simulation perfectly matches
-            GameManager.Instance.GameClient.Execute(action, localPlayerId);
+
+            if (GameManager.Instance.OfflineMode)
+            {
+                GameManager.Instance.ScheduleOfflineAction(action, localPlayerId);
+            }
+            else
+            {
+                // Execute locally (prediction) and send to server
+                // Do NOT use predict: true for continuous inputs unless the simulation perfectly matches
+                GameManager.Instance.GameClient.Execute(action, localPlayerId);
+            }
         }
 	}
 }

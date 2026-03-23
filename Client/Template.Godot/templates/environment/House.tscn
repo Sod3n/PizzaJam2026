@@ -3,8 +3,9 @@
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="1_eavrv"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="2_s4hiu"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="3_6r21p"]
+[ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="4_s4hiu"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_d3vyn"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6r21p"]
 render_priority = 0
 shader = ExtResource("1_eavrv")
 shader_parameter/albedo_texture = ExtResource("2_s4hiu")
@@ -22,12 +23,53 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_d3vyn"]
+atlas = ExtResource("4_s4hiu")
+region = Rect2(0, 250, 1033, 674)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p28da"]
+atlas = ExtResource("4_s4hiu")
+region = Rect2(0, 1514, 1033, 757)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5xdiy"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d3vyn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p28da")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_s4hiu")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Land" type="Node3D" unique_id=803964944]
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=2003409532]
+[node name="AnimatedSprite3D" type="Node3D" parent="." unique_id=195268530]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=2003409532]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.8720146, -0.43979532)
-material_override = SubResource("ShaderMaterial_d3vyn")
+material_override = SubResource("ShaderMaterial_6r21p")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gevk7")
 frame_progress = 0.54646957
+script = ExtResource("3_6r21p")
+
+[node name="Capacity" type="Label3D" parent="." unique_id=191675808]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
+text = "10/10"
+font_size = 128
+horizontal_alignment = 0
+
+[node name="Skin2" type="AnimatedSprite3D" parent="." unique_id=1627880254]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 2.9802327e-09, 0, -2.9802327e-09, 0.2, -0.74465454, 2.3296936, 0.173539)
+sorting_offset = -10.0
+alpha_cut = 2
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_5xdiy")
 script = ExtResource("3_6r21p")

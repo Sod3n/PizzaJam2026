@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://blxgls556ydaj" path="res://templates/characters/Player.tscn" id="8_n4w22"]
 [ext_resource type="PackedScene" uid="uid://bg7ki6hs4neoa" path="res://templates/environment/House.tscn" id="8_svejp"]
 [ext_resource type="PackedScene" uid="uid://b3a1efqph14je" path="res://templates/environment/SellPoint.tscn" id="9_36gju"]
+[ext_resource type="PackedScene" uid="uid://blnhcjlcy72i3" path="res://templates/environment/FinalStructure.tscn" id="10_svejp"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -151,6 +152,7 @@ buffer = PackedFloat32Array(-1.07601, 0, -1.20455, 2.39808, 0, 1.61516, 0, 0, 1.
 
 [node name="Main" type="Node" parent="." unique_id=2048933969]
 script = ExtResource("1_884kg")
+OfflineMode = true
 
 [node name="InputManager" type="Node" parent="Main" unique_id=366168345]
 script = ExtResource("2_d4o4o")
@@ -242,8 +244,10 @@ GrassPrefab = ExtResource("6_gxmxl")
 LandPrefab = ExtResource("7_gdsc3")
 HousePrefab = ExtResource("8_svejp")
 SellPointPrefab = ExtResource("9_36gju")
+FinalStructurePrefab = ExtResource("10_svejp")
 
 [node name="Ground" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=246230681]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 19)
 
 [node name="Ground" type="Node3D" parent="SubViewportContainer/SubViewport/Ground" unique_id=1089199677]
 

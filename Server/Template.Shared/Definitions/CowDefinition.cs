@@ -34,15 +34,6 @@ public static partial class CowDefinition
         ctx.AddComponent(entity, characterBody);
         
         ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.5f));
-
-        // Interaction area
-        ctx.AddComponent(entity, new Area2D 
-        { 
-            Monitoring = true,
-            Monitorable = true,
-            CollisionMask = 0, 
-            CollisionLayer = 4, // Interaction Layer
-        });
         
         // Initialize SkinComponent
         var random = new DeterministicRandom((uint)entity.Id + 2000); // Offset to avoid identical seeds

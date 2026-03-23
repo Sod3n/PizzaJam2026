@@ -9,12 +9,12 @@ namespace Template.Shared.Systems;
 
 public class GrassSpawnSystem : ISystem
 {
-    private const int MaxGrass = 50;
-    private const int SpawnInterval = 300; // 5 seconds @ 60 ticks
+    private const int MaxGrass = 30;
+    private const int SpawnInterval = 60; // 1 second @ 60 ticks
     
     // Spawn Area (roughly matching the walls in GameplayScene)
-    private readonly Vector2 _minPos = new Vector2(-900, -900);
-    private readonly Vector2 _maxPos = new Vector2(900, 900);
+    private readonly Vector2 _minPos = new Vector2(0, 0);
+    private readonly Vector2 _maxPos = new Vector2(55, 55);
 
     public void Update(EntityWorld state)
     {
@@ -34,7 +34,7 @@ public class GrassSpawnSystem : ISystem
         var context = new Context(state, Entity.Null, null!);
         
         // Random position
-        uint seed = (uint)state.NextEntityId + (gameTime != null ? (uint)gameTime.CurrentTick : 0);
+        uint seed = (uint)state.NextEntityId + ((uint)gameTime.CurrentTick);
         var random = new DeterministicRandom(seed);
         
         var x = random.NextInt((int)_minPos.X, (int)_maxPos.X);
