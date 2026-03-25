@@ -5,9 +5,11 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
 using FixedMathSharp;
 using Template.Shared.Components;
+using System.Runtime.InteropServices;
 
 namespace Template.Shared.Features.Movement;
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 [StableId("495f96cc-8e29-4901-9e83-bd6b5cb0c293")]
 public struct SetMoveDirectionAction : IAction
 {

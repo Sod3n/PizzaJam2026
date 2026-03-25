@@ -6,9 +6,11 @@ using Deterministic.GameFramework.Physics2D.Components;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Template.Shared.Actions;
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 [StableId("34c0145a-7bf6-4f42-bc08-0771b46cd23e")]
 public struct AddPlayerAction : IAction
 {

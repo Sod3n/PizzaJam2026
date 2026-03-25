@@ -2,9 +2,11 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.DAR;
 using Template.Shared.Components;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Template.Shared.Actions;
 
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 [StableId("3a95595e-d3b2-4694-b9a9-b0d2bde23223")]
 public struct RemovePlayerAction : IAction
 {

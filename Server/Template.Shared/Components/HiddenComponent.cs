@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 [StableId("fc48881c-3e29-4bbb-8585-751a65979f96")]
 public struct HiddenComponent : IComponent
 {

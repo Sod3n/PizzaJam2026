@@ -77,8 +77,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework.Network", "Framew
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deterministic.GameFramework.Network.LiteNetLib", "Server\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj", "{8AA7EAC0-3162-4550-894D-54B2A726A3CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deterministic.GameFramework.Network.SignalR", "Server\Framework\Networking\Deterministic.GameFramework.Network.SignalR\Deterministic.GameFramework.Network.SignalR.csproj", "{31E5A2E9-9C54-4831-B551-149E64379C9E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deterministic.GameFramework.Extensions", "Server\Framework\Core\Deterministic.GameFramework.Extensions\Deterministic.GameFramework.Extensions.csproj", "{4A159828-0683-4916-8968-356061386705}"
 EndProject
 Global
@@ -202,10 +200,6 @@ Global
 		{8AA7EAC0-3162-4550-894D-54B2A726A3CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AA7EAC0-3162-4550-894D-54B2A726A3CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AA7EAC0-3162-4550-894D-54B2A726A3CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{31E5A2E9-9C54-4831-B551-149E64379C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31E5A2E9-9C54-4831-B551-149E64379C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31E5A2E9-9C54-4831-B551-149E64379C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31E5A2E9-9C54-4831-B551-149E64379C9E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A159828-0683-4916-8968-356061386705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A159828-0683-4916-8968-356061386705}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A159828-0683-4916-8968-356061386705}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -247,7 +241,6 @@ Global
 		{63B9BF7C-C73E-4982-B53A-8691A560F8AD} = {1544AC87-F882-4175-9341-1438E7CD8EA1}
 		{21D7908E-921F-48F2-AE8C-DF44D08F17E5} = {63B9BF7C-C73E-4982-B53A-8691A560F8AD}
 		{8AA7EAC0-3162-4550-894D-54B2A726A3CB} = {63B9BF7C-C73E-4982-B53A-8691A560F8AD}
-		{31E5A2E9-9C54-4831-B551-149E64379C9E} = {63B9BF7C-C73E-4982-B53A-8691A560F8AD}
 		{4A159828-0683-4916-8968-356061386705} = {84C921EF-2D91-49C7-B26C-42205028A308}
 	EndGlobalSection
 EndGlobal

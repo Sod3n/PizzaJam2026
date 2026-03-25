@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Profiler\Deterministic.GameFramework.Profiler\Deterministic.GameFramework.Profiler.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Ntreev.Library.Psd" Version="1.1.18134.1310" />

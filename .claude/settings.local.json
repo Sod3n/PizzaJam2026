@@ -4,7 +4,18 @@
       "Bash(grep \"\\\\.cs$\")",
       "Bash(dotnet new:*)",
       "Bash(dotnet sln:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(/opt/homebrew/opt/dotnet/libexec/dotnet --list-runtimes)",
+      "Bash(wc -l /Users/a1/Documents/GitHub/PizzaJam2026/Server/Framework/Core/Deterministic.GameFramework.*/*.csproj)",
+      "Bash(dotnet --list-sdks)",
+      "Bash(dotnet --list-runtimes)",
+      "Bash(done)",
+      "Bash(dotnet run:*)",
+      "Bash(/usr/local/share/dotnet/dotnet run:*)",
+      "Bash(sudo ln:*)",
+      "Bash(grep -E \"\\\\.cs$\")",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -name GameClient.cs -o -name GameClient*.cs)",
+      "Bash(dotnet test:*)"
     ]
   }
 }
