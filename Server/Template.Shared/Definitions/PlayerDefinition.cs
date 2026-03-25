@@ -9,12 +9,13 @@ using Deterministic.GameFramework.DAR;
 namespace Template.Shared.Definitions;
 
 [EntityDefinition(
-    typeof(Transform2D), 
-    typeof(PlayerEntity), 
+    typeof(Transform2D),
+    typeof(PlayerEntity),
     typeof(CharacterBody2D),
     typeof(CollisionShape2D),
     typeof(SkinComponent),
-    typeof(PlayerStateComponent))]
+    typeof(PlayerStateComponent),
+    typeof(StateComponent))]
 public static partial class PlayerDefinition
 {
     public static Entity Create(Context ctx, System.Guid userId, Vector2 position, Float angle)
@@ -33,8 +34,8 @@ public static partial class PlayerDefinition
         // Set strict collision mask: Only collide with Layer 1 (Environment)
         // Ignore Layer 2 (Coins)
         var characterBody = CharacterBody2D.Default;
-        characterBody.CollisionMask = 1; 
-        characterBody.CollisionLayer = 1;
+        characterBody.CollisionMask = (uint)CollisionLayer.Physics;
+        characterBody.CollisionLayer = (uint)CollisionLayer.Physics;
         
         ctx.AddComponent(entity, characterBody);
         
@@ -50,13 +51,36 @@ public static partial class PlayerDefinition
         var skinComponent = Template.Shared.GameData.GD.SkinsData.GenerateRandomSkin(ref random);
         ctx.AddComponent(entity, skinComponent);
 
+        // Create interaction zone (child entity with Area2D)
+        var zone = ctx.State.CreateEntity();
+        var zoneTransform = new Transform2D(Vector2.Zero, 0, Vector2.One);
+        zoneTransform.Parent = entity;
+        zoneTransform.DestroyOnUnparent = true;
+        ctx.State.AddComponent(zone, zoneTransform);
+        ctx.State.AddComponent(zone, new Area2D
+        {
+            Monitoring = true,
+            Monitorable = false,
+            CollisionLayer = (uint)CollisionLayer.Zone,
+            CollisionMask = (uint)(CollisionLayer.Physics | CollisionLayer.Interactable),
+        });
+        ctx.State.AddComponent(zone, CollisionShape2D.CreateCircle(2.0f));
+
         // Initialize PlayerStateComponent
-        ctx.AddComponent(entity, new PlayerStateComponent 
-        { 
-            State = (int)PlayerState.Idle,
+        ctx.AddComponent(entity, new PlayerStateComponent
+        {
             InteractionTarget = Entity.Null,
-            MilkingTimer = 0,
-            ReturnPosition = position
+            ReturnPosition = position,
+            InteractionZone = zone
+        });
+
+        // Initialize StateComponent (idle = disabled, empty key)
+        ctx.AddComponent(entity, new StateComponent
+        {
+            Key = "",
+            CurrentTime = 0,
+            MaxTime = 0,
+            IsEnabled = false
         });
         
         return entity;

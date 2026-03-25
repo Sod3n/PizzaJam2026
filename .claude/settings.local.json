@@ -15,7 +15,13 @@
       "Bash(sudo ln:*)",
       "Bash(grep -E \"\\\\.cs$\")",
       "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -name GameClient.cs -o -name GameClient*.cs)",
-      "Bash(dotnet test:*)"
+      "Bash(dotnet test:*)",
+      "Bash(ls /Users/a1/Documents/GitHub/PizzaJam2026/Server/*.sln)",
+      "Bash(ls /Users/a1/Documents/GitHub/PizzaJam2026/*.sln)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f -name *ComponentModel.cs -print)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f \\\\\\(-name *.cs -o -name *.dll \\\\\\) -print)"
     ]
   }
 }

@@ -30,8 +30,8 @@ public static partial class CoinDefinition
         { 
             Monitoring = true,
             Monitorable = false, // Coins don't need to be monitored by others
-            CollisionMask = uint.MaxValue, // Monitor Everything
-            CollisionLayer = 2,
+            CollisionMask = uint.MaxValue,
+            CollisionLayer = (uint)CollisionLayer.Coins,
             OverlappingEntities = new List8<int>()
         });
         

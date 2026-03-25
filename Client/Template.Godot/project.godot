@@ -40,6 +40,13 @@ project/assembly_name="Template.Godot"
 
 enabled=PackedStringArray()
 
+[network]
+
+limits/debugger/max_chars_per_second=327680
+limits/debugger/max_queued_messages=20480
+limits/debugger/max_errors_per_second=4000
+limits/debugger/max_warnings_per_second=4000
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

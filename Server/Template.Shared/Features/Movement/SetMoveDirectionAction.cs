@@ -27,11 +27,11 @@ public class SetMoveDirectionActionService : ActionService<SetMoveDirectionActio
 {
     protected override void ExecuteProcess(SetMoveDirectionAction directionAction, ref CharacterBody2D body, Context ctx)
     {
-        // Check if player is milking
-        if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
+        // Block movement while in any active state (milking, etc.)
+        if (ctx.State.HasComponent<StateComponent>(ctx.Entity))
         {
-            ref var playerState = ref ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity);
-            if (playerState.State != (int)PlayerState.Idle)
+            ref var sc = ref ctx.State.GetComponent<StateComponent>(ctx.Entity);
+            if (sc.IsEnabled)
             {
                 body.Velocity = Vector2.Zero;
                 return;

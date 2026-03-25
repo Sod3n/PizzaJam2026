@@ -29,8 +29,8 @@ public static partial class CowDefinition
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
         
         var characterBody = CharacterBody2D.Default;
-        characterBody.CollisionMask = 1; 
-        characterBody.CollisionLayer = 1;
+        characterBody.CollisionLayer = (uint)CollisionLayer.Physics;
+        characterBody.CollisionMask = (uint)(CollisionLayer.Physics | CollisionLayer.Zone);
         ctx.AddComponent(entity, characterBody);
         
         ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.5f));

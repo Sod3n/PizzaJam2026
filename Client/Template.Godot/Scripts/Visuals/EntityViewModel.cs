@@ -26,6 +26,9 @@ public class EntityViewModel : ViewModel
         Transform = new Transform2DModel(ReactiveSystem.Instance, context);
         Disposables.Add(Transform);
         
-        ReactiveSystem.Instance.ObserveAdd<InteractedComponent>().Where(x => x == Entity).Subscribe(_ => OnInteract.OnNext(Unit.Default)).AddTo(Disposables);
+        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
+            .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == "interacted")
+            .Subscribe(_ => OnInteract.OnNext(Unit.Default)).AddTo(Disposables);
     }
 }
