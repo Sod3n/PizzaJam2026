@@ -21,9 +21,9 @@ public class CowSystem : ISystem
             ref var sc = ref state.GetComponent<StateComponent>(playerEntity);
             ref var playerState = ref state.GetComponent<PlayerStateComponent>(playerEntity);
 
-            if (exit.Key == "milking_enter")
+            if (exit.Key == StateKeys.MilkingEnter)
                 HandleEnterComplete(state, playerEntity, ref sc, ref playerState);
-            else if (exit.Key == "milking_exit")
+            else if (exit.Key == StateKeys.MilkingExit)
                 HandleExitComplete(state, playerEntity, ref sc, ref playerState);
         }
 
@@ -37,7 +37,7 @@ public class CowSystem : ISystem
 
             ref var playerState = ref state.GetComponent<PlayerStateComponent>(playerEntity);
 
-            if (sc.Key == "milking" || sc.Key == "milking_exit")
+            if (sc.Key == StateKeys.Milking || sc.Key == StateKeys.MilkingExit)
             {
                 state.HideEntity( playerEntity);
                 if (state.HasComponent<CowComponent>(playerState.InteractionTarget))
@@ -76,12 +76,12 @@ public class CowSystem : ISystem
     {
         ILogger.Log($"[CowSystem] TRANSITION: milking_enter → milking");
 
-        sc.Key = "milking";
+        sc.Key = StateKeys.Milking;
         sc.CurrentTime = 0;
         sc.MaxTime = 0;
         sc.IsEnabled = true;
 
-        state.AddComponent(playerEntity, new EnterStateComponent { Key = "milking", Age = 0 });
+        state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Milking, Age = 0 });
 
         var cowEntity = playerState.InteractionTarget;
 
@@ -109,7 +109,7 @@ public class CowSystem : ISystem
         sc.MaxTime = 0;
         sc.IsEnabled = false;
 
-        state.AddComponent(playerEntity, new EnterStateComponent { Key = "idle", Age = 0 });
+        state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Idle, Age = 0 });
 
         ILogger.Log($"[CowSystem] Player {playerEntity.Id} is now Idle.");
     }

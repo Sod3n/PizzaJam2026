@@ -9,5 +9,6 @@ namespace Template.Shared.Components;
 public struct EnterStateComponent : IComponent
 {
     public FixedString32 Key;
+    public FixedString32 Param;
     public int Age;
 }

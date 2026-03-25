@@ -7,12 +7,13 @@
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="4_s1njy"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="5_y0sxf"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_y0sxf"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s1njy"]
 render_priority = 0
 shader = ExtResource("3_vrssg")
 shader_parameter/albedo_texture = ExtResource("2_s1njy")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/transparency = 1.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_wwvx5"]
 animations = [{
@@ -46,12 +47,13 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_wwvx5"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y0sxf"]
 render_priority = 0
 shader = ExtResource("3_vrssg")
 shader_parameter/albedo_texture = ExtResource("4_s1njy")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/transparency = 1.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ton1d"]
 animations = [{
@@ -72,7 +74,7 @@ animations = [{
 [node name="Finale" type="AnimatedSprite3D" parent="." unique_id=1839181731]
 transform = Transform3D(1, 0, 0, 0, 0.9082089, 0.4185171, 0, -0.4185171, 0.9082089, 0, 0.72762764, -0.43979532)
 visible = false
-material_override = SubResource("ShaderMaterial_y0sxf")
+material_override = SubResource("ShaderMaterial_s1njy")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_wwvx5")
 script = ExtResource("2_c6usd")
@@ -81,6 +83,9 @@ script = ExtResource("2_c6usd")
 
 [node name="Remaining" type="Label3D" parent="Node3D" unique_id=188525676]
 transform = Transform3D(0.7, 0, 0, 0, 0.67212373, 0.19557531, 0, -0.19557531, 0.67212373, -0.080786616, 1.2520609, -0.3480498)
+no_depth_test = true
+render_priority = 2
+outline_render_priority = 1
 modulate = Color(1, 1, 0, 1)
 text = "1000"
 font_size = 128
@@ -96,7 +101,7 @@ script = ExtResource("2_c6usd")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Node3D" unique_id=116526206]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.2588017, 4.611277, -2.0273778)
-material_override = SubResource("ShaderMaterial_wwvx5")
+material_override = SubResource("ShaderMaterial_y0sxf")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_ton1d")
 script = ExtResource("2_c6usd")

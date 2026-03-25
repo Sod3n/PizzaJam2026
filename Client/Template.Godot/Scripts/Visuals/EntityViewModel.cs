@@ -4,6 +4,7 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.TwoD;
 using R3;
+using Template.Shared;
 using Template.Shared.Components;
 
 namespace Template.Godot.Visuals;
@@ -16,19 +17,29 @@ public class EntityViewModel : ViewModel
     public Transform2DModel Transform { get; }
     
     public Subject<Unit> OnInteract { get; } = new();
+    public Subject<string> OnNotEnoughResource { get; } = new();
 
     public EntityViewModel(Context context)
     {
         Entity = context.Entity;
         EntityViewModels[Entity.Id] = this;
-        
+
         // Always bind Transform for any visual entity
         Transform = new Transform2DModel(ReactiveSystem.Instance, context);
         Disposables.Add(Transform);
-        
+
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
             .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
-                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == "interacted")
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.Interacted)
             .Subscribe(_ => OnInteract.OnNext(Unit.Default)).AddTo(Disposables);
+
+        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
+            .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.NotEnoughResource)
+            .Subscribe(x =>
+            {
+                var param = ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Param;
+                OnNotEnoughResource.OnNext(param);
+            }).AddTo(Disposables);
     }
 }

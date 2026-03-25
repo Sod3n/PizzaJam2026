@@ -21,7 +21,9 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet clean:*)",
       "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f -name *ComponentModel.cs -print)",
-      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f \\\\\\(-name *.cs -o -name *.dll \\\\\\) -print)"
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f \\\\\\(-name *.cs -o -name *.dll \\\\\\) -print)",
+      "Bash(grep -r uid:// /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/sprites/resources/*.import)",
+      "Bash(grep -r \"public struct\" /Users/a1/Documents/GitHub/PizzaJam2026/Server/Template.Shared/Components/*.cs)"
     ]
   }
 }

@@ -6,12 +6,13 @@
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="2_vc6b0"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="3_mcv8w"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1ekv"]
-render_priority = 0
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j63rn"]
+render_priority = -1
 shader = ExtResource("1_j63rn")
 shader_parameter/albedo_texture = ExtResource("2_vc6b0")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/transparency = 1.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_be3pv"]
 animations = [{
@@ -50,13 +51,16 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=356692614]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.2588017, 4.611277, -2.0273778)
-material_override = SubResource("ShaderMaterial_o1ekv")
+material_override = SubResource("ShaderMaterial_j63rn")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_be3pv")
 script = ExtResource("2_gk14f")
 
 [node name="Remaining" type="Label3D" parent="." unique_id=188525676]
-transform = Transform3D(1, 0, 0, 0, 0.9022695, 0.4311726, 0, -0.4311726, 0.9022695, 0.47190738, 1.2941853, -0.4433745)
+transform = Transform3D(1, 0, 0, 0, 0.9022695, 0.4311726, 0, -0.4311726, 0.9022695, 0.47190738, 1.3176328, -0.31620568)
+no_depth_test = true
+render_priority = 2
+outline_render_priority = 1
 modulate = Color(1, 1, 0, 1)
 text = "10"
 font_size = 128

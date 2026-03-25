@@ -70,11 +70,36 @@ public class GameplayScene : IScene
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)
     {
-        var wall = state.CreateEntity();
-        state.AddComponent(wall, new SceneTag());
-        state.AddComponent(wall, new Transform2D(position, 0, Vector2.One));
-        state.AddComponent(wall, new StaticBody2D());
-        state.AddComponent(wall, CollisionShape2D.CreateRectangle(size));
+        Float chunkSize = 10f;
+
+        // Determine if horizontal or vertical wall
+        bool isHorizontal = size.X > size.Y;
+        Float length = isHorizontal ? size.X : size.Y;
+        Float thickness = isHorizontal ? size.Y : size.X;
+
+        int chunkCount = (int)Math.Ceiling((float)length / (float)chunkSize);
+        Float actualChunkLength = length / chunkCount;
+
+        // Start position (left/top edge of the wall)
+        Float startOffset = -length / 2 + actualChunkLength / 2;
+
+        for (int i = 0; i < chunkCount; i++)
+        {
+            Float offset = startOffset + i * actualChunkLength;
+            Vector2 chunkPos = isHorizontal
+                ? new Vector2(position.X + offset, position.Y)
+                : new Vector2(position.X, position.Y + offset);
+            Vector2 chunkSize2 = isHorizontal
+                ? new Vector2(actualChunkLength, thickness)
+                : new Vector2(thickness, actualChunkLength);
+
+            var wall = state.CreateEntity();
+            state.AddComponent(wall, new SceneTag());
+            state.AddComponent(wall, new WallComponent());
+            state.AddComponent(wall, new Transform2D(chunkPos, 0, Vector2.One));
+            state.AddComponent(wall, new StaticBody2D());
+            state.AddComponent(wall, CollisionShape2D.CreateRectangle(chunkSize2));
+        }
     }
 
     public void OnExit(GameSimulation loop)

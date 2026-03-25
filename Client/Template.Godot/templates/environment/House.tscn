@@ -5,12 +5,13 @@
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="3_6r21p"]
 [ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="4_s4hiu"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6r21p"]
-render_priority = 0
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s4hiu"]
+render_priority = -1
 shader = ExtResource("1_eavrv")
 shader_parameter/albedo_texture = ExtResource("2_s4hiu")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/transparency = 1.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_gevk7"]
 animations = [{
@@ -54,7 +55,7 @@ animations = [{
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=2003409532]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.8720146, -0.43979532)
-material_override = SubResource("ShaderMaterial_6r21p")
+material_override = SubResource("ShaderMaterial_s4hiu")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gevk7")
 frame_progress = 0.54646957
@@ -62,6 +63,9 @@ script = ExtResource("3_6r21p")
 
 [node name="Capacity" type="Label3D" parent="." unique_id=191675808]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
+no_depth_test = true
+render_priority = 2
+outline_render_priority = 1
 text = "10/10"
 font_size = 128
 horizontal_alignment = 0

@@ -12,6 +12,8 @@ namespace Template.Shared.Actions;
 
 public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 {
+    public const int NotEnoughResourceDurationTicks = 2;
+
     protected override void ExecuteProcess(InteractAction action, ref PlayerEntity playerComp, Context ctx)
     {
         Entity playerEntity = ctx.Entity;
@@ -24,7 +26,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var sc = ref ctx.State.GetComponent<StateComponent>(playerEntity);
 
         // If already milking, use stored target directly (cow is hidden)
-        if (sc.Key == "milking" && sc.IsEnabled)
+        if (sc.Key == StateKeys.Milking && sc.IsEnabled)
         {
             var cowEntity = playerState.InteractionTarget;
             if (cowEntity == Entity.Null || !ctx.State.HasComponent<CowComponent>(cowEntity)) return;
@@ -34,9 +36,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             ref var globalRes = ref ctx.State.GetComponent<GlobalResourcesComponent>(globalResEntity);
 
             Entity target = cowEntity;
-            if (HandleCowInteraction(ctx, playerEntity, cowEntity, ref globalRes, ref target))
+            if (HandleCowInteraction(ctx, playerEntity, cowEntity, ref globalRes, ref target, out _))
             {
-                ctx.State.AddComponent(target, new EnterStateComponent { Key = "interacted", Age = 0 });
+                ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
                 ILogger.Log($"[InteractActionService] Marked {target.Id} as successfully interacted");
             }
             return;
@@ -54,6 +56,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var globalRes2 = ref ctx.State.GetComponent<GlobalResourcesComponent>(globalResEntity2);
 
         bool success = false;
+        string missingResource = null;
         Entity interactedTarget = nearestTarget;
 
         if (ctx.State.HasComponent<GrassComponent>(nearestTarget))
@@ -62,25 +65,35 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
         else if (ctx.State.HasComponent<CowComponent>(nearestTarget))
         {
-            success = HandleCowInteraction(ctx, playerEntity, nearestTarget, ref globalRes2, ref interactedTarget);
+            success = HandleCowInteraction(ctx, playerEntity, nearestTarget, ref globalRes2, ref interactedTarget, out missingResource);
         }
         else if (ctx.State.HasComponent<SellPointComponent>(nearestTarget))
         {
-            success = HandleSellPointInteraction(ctx, ref globalRes2);
+            success = HandleSellPointInteraction(ctx, ref globalRes2, out missingResource);
         }
         else if (ctx.State.HasComponent<LandComponent>(nearestTarget))
         {
-            success = HandleLandInteraction(ctx, nearestTarget, ref globalRes2);
+            success = HandleLandInteraction(ctx, nearestTarget, ref globalRes2, out missingResource);
         }
         else if (ctx.State.HasComponent<FinalStructureComponent>(nearestTarget))
         {
-            success = HandleFinalStructureInteraction(ctx, nearestTarget, ref globalRes2);
+            success = HandleFinalStructureInteraction(ctx, nearestTarget, ref globalRes2, out missingResource);
         }
 
         if (success)
         {
-            ctx.State.AddComponent(interactedTarget, new EnterStateComponent { Key = "interacted", Age = 0 });
+            ctx.State.AddComponent(interactedTarget, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
             ILogger.Log($"[InteractActionService] Marked {interactedTarget.Id} as successfully interacted");
+        }
+        else if (missingResource != null)
+        {
+            sc.Key = StateKeys.NotEnoughResource;
+            sc.CurrentTime = 0;
+            sc.MaxTime = NotEnoughResourceDurationTicks;
+            sc.IsEnabled = true;
+
+            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = missingResource, Age = 0 });
+            ILogger.Log($"[InteractActionService] Not enough {missingResource} for interaction with {nearestTarget.Id}");
         }
     }
 
@@ -130,8 +143,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
-    private bool HandleCowInteraction(Context ctx, Entity playerEntity, Entity cowEntity, ref GlobalResourcesComponent globalRes, ref Entity target)
+    private bool HandleCowInteraction(Context ctx, Entity playerEntity, Entity cowEntity, ref GlobalResourcesComponent globalRes, ref Entity target, out string missingResource)
     {
+        missingResource = null;
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
         if (!ctx.State.HasComponent<PlayerStateComponent>(playerEntity)) return false;
         if (!ctx.State.HasComponent<StateComponent>(playerEntity)) return false;
@@ -143,16 +157,20 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (!sc.IsEnabled)
         {
             if (cow.IsMilking) return false;
-            if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust) return false;
+            if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
+            {
+                missingResource = StateKeys.Grass;
+                return false;
+            }
 
             cow.IsMilking = true;
 
-            sc.Key = "milking_enter";
+            sc.Key = StateKeys.MilkingEnter;
             sc.CurrentTime = 0;
             sc.MaxTime = CowSystem.PhaseDurationTicks;
             sc.IsEnabled = true;
 
-            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = "milking_enter", Age = 0 });
+            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.MilkingEnter, Age = 0 });
 
             playerState.InteractionTarget = cowEntity;
 
@@ -163,7 +181,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
 
         // Clicking while Milking
-        if (sc.Key == "milking" && sc.IsEnabled)
+        if (sc.Key == StateKeys.Milking && sc.IsEnabled)
         {
             if (globalRes.Grass > 0 && cow.Exhaust < cow.MaxExhaust)
             {
@@ -175,12 +193,12 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
                 if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
                 {
-                    sc.Key = "milking_exit";
+                    sc.Key = StateKeys.MilkingExit;
                     sc.CurrentTime = 0;
                     sc.MaxTime = CowSystem.PhaseDurationTicks;
                     sc.IsEnabled = true;
 
-                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = "milking_exit", Age = 0 });
+                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.MilkingExit, Age = 0 });
                 }
                 return true;
             }
@@ -189,19 +207,22 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return false;
     }
 
-    private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes)
+    private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
+        missingResource = null;
         if (globalRes.Milk > 0)
         {
             globalRes.Milk -= 1;
             globalRes.Coins += 1;
             return true;
         }
+        missingResource = StateKeys.Milk;
         return false;
     }
 
-    private bool HandleLandInteraction(Context ctx, Entity landEntity, ref GlobalResourcesComponent globalRes)
+    private bool HandleLandInteraction(Context ctx, Entity landEntity, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
+        missingResource = null;
         if (globalRes.Coins > 0)
         {
             ref var land = ref ctx.State.GetComponent<LandComponent>(landEntity);
@@ -228,12 +249,18 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             }
             return true;
         }
+        missingResource = StateKeys.Coins;
         return false;
     }
 
-    private bool HandleFinalStructureInteraction(Context ctx, Entity finalEntity, ref GlobalResourcesComponent globalRes)
+    private bool HandleFinalStructureInteraction(Context ctx, Entity finalEntity, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
-        if (globalRes.Coins <= 0) return false;
+        missingResource = null;
+        if (globalRes.Coins <= 0)
+        {
+            missingResource = StateKeys.Coins;
+            return false;
+        }
 
         ref var final = ref ctx.State.GetComponent<FinalStructureComponent>(finalEntity);
 

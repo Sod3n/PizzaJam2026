@@ -6,6 +6,7 @@ extends RichTextLabel
 @onready var dialogue_label: RichTextLabel = $"."
 @onready var type_timer: Timer = $Timer
 @onready var texture_rect_4: TextureRect = $"../../TextureRect4"
+@onready var button: Button = $"../../Button"
 
 # Storage for initial positions
 var pos_left_origin: Vector2
@@ -42,16 +43,17 @@ var is_active: bool = false
 
 func _ready() -> void:
 	type_timer.timeout.connect(_on_timer_timeout)
-	
+	button.pressed.connect(finish_dialogue)
+
 	# --- STORE INITIAL POSITIONS ---
 	pos_left_origin = char_left.position
 	pos_right_origin = char_right.position
-	
+
 	# Setup initial state
 	container.modulate.a = 0
 	char_left.modulate.a = 0
 	char_right.modulate.a = 0
-	
+
 	start_game_intro()
 
 func start_game_intro() -> void:
@@ -119,6 +121,7 @@ func advance_dialogue() -> void:
 
 func finish_dialogue() -> void:
 	is_active = false
+	button.visible = false
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(container, "modulate:a", 0.0, 0.5)
 	tween.tween_property(char_left, "modulate:a", 0.0, 0.5)

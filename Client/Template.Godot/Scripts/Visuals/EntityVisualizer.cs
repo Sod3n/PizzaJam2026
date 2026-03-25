@@ -7,6 +7,7 @@ using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.DAR;
 using ObservableCollections;
 using R3;
+using Template.Shared;
 using Template.Shared.Components;
 
 // Alias to resolve ambiguity between Godot.Transform2D and Deterministic.GameFramework.TwoD.Transform2D
@@ -25,6 +26,8 @@ public partial class EntityVisualizer : Node3D
     [Export] public PackedScene HousePrefab;
     [Export] public PackedScene SellPointPrefab;
     [Export] public PackedScene FinalStructurePrefab;
+    [Export] public PackedScene NotEnoughResourcePrefab;
+    [Export] public PackedScene WallPrefab;
 
     private readonly CompositeDisposable _disposables = new();
     private readonly Dictionary<EntityViewModel, Node3D> _spawnedEntities = new();
@@ -95,6 +98,12 @@ public partial class EntityVisualizer : Node3D
             _disposables
         );
 
+        // Walls: Must have WallComponent and Transform2D
+        var walls = client.Reactive.ObservableList<Template.Shared.Components.WallComponent, DTransform2D, WallViewModel>(
+            ctx => new WallViewModel(ctx),
+            _disposables
+        );
+
         // 3. Handle Add/Remove for Players
         players.ObserveAdd().Subscribe(e => OnEntityAdded(e.Value)).AddTo(_disposables);
         players.ObserveRemove().Subscribe(e => OnEntityRemoved(e.Value)).AddTo(_disposables);
@@ -130,6 +139,10 @@ public partial class EntityVisualizer : Node3D
         finalStructures.ObserveRemove().Subscribe(e => OnEntityRemoved(e.Value)).AddTo(_disposables);
         finalStructures.ObserveReset().Subscribe(_ => OnListReset()).AddTo(_disposables);
 
+        walls.ObserveAdd().Subscribe(e => OnEntityAdded(e.Value)).AddTo(_disposables);
+        walls.ObserveRemove().Subscribe(e => OnEntityRemoved(e.Value)).AddTo(_disposables);
+        walls.ObserveReset().Subscribe(_ => OnListReset()).AddTo(_disposables);
+
         // Initialize any existing
         foreach (var vm in players) OnEntityAdded(vm);
         foreach (var vm in coins) OnEntityAdded(vm);
@@ -139,6 +152,7 @@ public partial class EntityVisualizer : Node3D
         foreach (var vm in house) OnEntityAdded(vm);
         foreach (var vm in sellPoints) OnEntityAdded(vm);
         foreach (var vm in finalStructures) OnEntityAdded(vm);
+        foreach (var vm in walls) OnEntityAdded(vm);
     }
 
     private void OnEntityAdded(EntityViewModel vm)
@@ -291,6 +305,10 @@ public partial class EntityVisualizer : Node3D
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
         }
+        else if (vm is WallViewModel wallVm)
+        {
+            visualNode = WallPrefab?.Instantiate<Node3D>() ?? CreateFallbackVisual(Colors.DarkGray, 0.5f);
+        }
         else
         {
             // Generic Entity with Transform
@@ -337,6 +355,20 @@ public partial class EntityVisualizer : Node3D
                 tween.TweenProperty(animate_node, "scale", new Vector3(origScale.X * 1.4f, origScale.Y * 0.7f, origScale.Z), 0.1f);
                 tween.Chain().TweenProperty(animate_node, "scale", origScale, 0.1f);
                 animate_node.SetMeta("scale_tween", tween);
+            }).CallDeferred();
+        }).AddTo(vm.Disposables);
+
+        vm.OnNotEnoughResource.Subscribe(resourceKey =>
+        {
+            Callable.From(() =>
+            {
+                if (!IsInstanceValid(visualNode)) return;
+                if (NotEnoughResourcePrefab == null) return;
+
+                var instance = NotEnoughResourcePrefab.Instantiate<NotEnoughResourceView>();
+                AddChild(instance);
+                instance.Position = visualNode.Position;
+                instance.Setup(resourceKey);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }
