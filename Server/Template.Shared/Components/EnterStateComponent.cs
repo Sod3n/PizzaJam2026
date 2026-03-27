@@ -1,5 +1,6 @@
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Types;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
@@ -9,6 +10,7 @@ namespace Template.Shared.Components;
 public struct EnterStateComponent : IComponent
 {
     public FixedString32 Key;
+    public StatePhase Phase;
     public FixedString32 Param;
     public int Age;
 }

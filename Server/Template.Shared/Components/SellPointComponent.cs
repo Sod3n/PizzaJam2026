@@ -1,11 +1,13 @@
+// Component struct — source of truth for fields
 using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.TwoD;
+using Deterministic.GameFramework.Types;
 using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
 
-[StructLayout(LayoutKind.Sequential)]
-[StableId("f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c")]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+[StableId("8cc5f1c6-9a7c-0955-8319-05b750929366")]
 public struct SellPointComponent : IComponent
 {
-    // Marker component
 }

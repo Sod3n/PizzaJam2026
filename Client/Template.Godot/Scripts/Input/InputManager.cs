@@ -13,6 +13,17 @@ public partial class InputManager : Node
 {
 	private Vector2 _lastDirection = new Vector2(float.MaxValue, float.MaxValue);
 
+	public override void _Ready()
+	{
+		if (!InputMap.HasAction("alt_interact"))
+		{
+			InputMap.AddAction("alt_interact");
+			var ev = new InputEventKey();
+			ev.Keycode = Key.E;
+			InputMap.ActionAddEvent("alt_interact", ev);
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		// 1. Check prerequisites
@@ -35,6 +46,21 @@ public partial class InputManager : Node
             {
                 var interactAction = new InteractAction { UserId = GameManager.Instance.GameClient.PlayerId };
                 GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
+            }
+        }
+
+        // Alt Interaction (E key - tame/release cow)
+        if (global::Godot.Input.IsActionJustPressed("alt_interact"))
+        {
+            if (GameManager.Instance.OfflineMode)
+            {
+                var altAction = new AltInteractAction { UserId = GameManager.Instance.OfflineUserId };
+                GameManager.Instance.ScheduleOfflineAction(altAction, localPlayerId);
+            }
+            else
+            {
+                var altAction = new AltInteractAction { UserId = GameManager.Instance.GameClient.PlayerId };
+                GameManager.Instance.GameClient.Execute(altAction, localPlayerId);
             }
         }
 

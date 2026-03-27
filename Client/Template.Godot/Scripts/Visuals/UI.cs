@@ -32,6 +32,7 @@ public partial class UI : CanvasLayer
         if (_isInitialized) return;
         if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
 
+        _isInitialized = true;
         Initialize();
     }
 

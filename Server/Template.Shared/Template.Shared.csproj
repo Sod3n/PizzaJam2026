@@ -13,7 +13,30 @@
       <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
       <ProjectReference Include="..\Framework\Deterministic.GameFramework.SourceGenerators\Deterministic.GameFramework.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
+      <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
     </ItemGroup>
+
+    <!-- Run CodeGen before compile to generate components, definitions, and viewmodels from .tscn templates -->
+    <PropertyGroup>
+      <CodeGenProject>$(MSBuildThisFileDirectory)..\..\Tools\Template.CodeGen\Template.CodeGen.csproj</CodeGenProject>
+      <ScenesDir>$(MSBuildThisFileDirectory)..\..\Client\Template.Godot\templates</ScenesDir>
+      <ServerOutput>$(MSBuildThisFileDirectory)</ServerOutput>
+      <ClientOutput>$(MSBuildThisFileDirectory)..\..\Client\Template.Godot\Scripts\Visuals</ClientOutput>
+      <FrameworkOutput>$(MSBuildThisFileDirectory)..\..\Client\Template.Godot\Scripts\Framework\Components</FrameworkOutput>
+    </PropertyGroup>
+
+    <!-- CodeGen: only runs when RunCodeGen=true is passed explicitly (e.g. dotnet build -p:RunCodeGen=true) -->
+    <Target Name="BuildCodeGen" BeforeTargets="ExecCodeGen" Condition="'$(RunCodeGen)' == 'true' AND Exists('$(CodeGenProject)')">
+      <Exec Command="dotnet build &quot;$(CodeGenProject)&quot; -c Release --nologo -v q"
+            ConsoleToMsBuild="true"
+            StandardOutputImportance="Low" />
+    </Target>
+
+    <Target Name="ExecCodeGen" BeforeTargets="BeforeCompile" Condition="'$(RunCodeGen)' == 'true' AND Exists('$(CodeGenProject)') AND Exists('$(ScenesDir)') AND '$(TargetFramework)' == 'net8.0'">
+      <Exec Command="dotnet exec &quot;$(MSBuildThisFileDirectory)..\..\Tools\Template.CodeGen\bin\Release\net8.0\Template.CodeGen.dll&quot; --scenes &quot;$(ScenesDir)&quot; --server-output &quot;$(ServerOutput)&quot; --client-output &quot;$(ClientOutput)&quot; --framework-output &quot;$(FrameworkOutput)&quot;"
+            ConsoleToMsBuild="true"
+            StandardOutputImportance="Low" />
+    </Target>
 
     <!-- Import Local.props if it exists for local overrides (e.g. ClientPath) -->
     <Import Project="Local.props" Condition="Exists('Local.props')" />

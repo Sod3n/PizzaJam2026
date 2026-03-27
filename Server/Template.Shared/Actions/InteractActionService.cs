@@ -4,7 +4,6 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
-using Template.Shared.Systems;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.Utils.Logging;
 
@@ -25,8 +24,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var playerState = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
         ref var sc = ref ctx.State.GetComponent<StateComponent>(playerEntity);
 
-        // If already milking, use stored target directly (cow is hidden)
-        if (sc.Key == StateKeys.Milking && sc.IsEnabled)
+        // If actively milking, use stored target directly (cow is hidden)
+        if (sc.Key == StateKeys.Milking && sc.Phase == StatePhase.Active && sc.IsEnabled)
         {
             var cowEntity = playerState.InteractionTarget;
             if (cowEntity == Entity.Null || !ctx.State.HasComponent<CowComponent>(cowEntity)) return;
@@ -58,6 +57,30 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         bool success = false;
         string missingResource = null;
         Entity interactedTarget = nearestTarget;
+
+        // If player has a following cow, check for special interactions first
+        if (playerState.FollowingCow != Entity.Null)
+        {
+            if (ctx.State.HasComponent<HouseComponent>(nearestTarget))
+            {
+                success = HandleHouseAssign(ctx, playerEntity, nearestTarget, ref playerState, ref sc);
+                if (success) return; // State transition handles everything
+            }
+            else if (ctx.State.HasComponent<CowComponent>(nearestTarget) && nearestTarget != playerState.FollowingCow)
+            {
+                success = HandleCrossbreed(ctx, playerEntity, nearestTarget, ref playerState, ref sc, ref globalRes2, out missingResource);
+                if (success) return; // State transition handles everything
+                if (missingResource != null)
+                {
+                    sc.Key = StateKeys.NotEnoughResource;
+                    sc.CurrentTime = 0;
+                    sc.MaxTime = NotEnoughResourceDurationTicks;
+                    sc.IsEnabled = true;
+                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = missingResource, Age = 0 });
+                    return;
+                }
+            }
+        }
 
         if (ctx.State.HasComponent<GrassComponent>(nearestTarget))
         {
@@ -114,6 +137,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             var entity = new Entity(area.OverlappingEntities[i]);
             if (entity == playerEntity) continue;
             if (entity == zoneEntity) continue;
+            // Skip our own following cow for normal interactions
+            if (entity == playerState.FollowingCow) continue;
             if (!ctx.State.HasComponent<Transform2D>(entity)) continue;
 
             var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
@@ -157,6 +182,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (!sc.IsEnabled)
         {
             if (cow.IsMilking) return false;
+            // Can't milk a cow that's following someone or without a house
+            if (cow.FollowingPlayer != Entity.Null) return false;
+            if (cow.HouseId == Entity.Null) return false;
             if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
             {
                 missingResource = StateKeys.Grass;
@@ -165,12 +193,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
             cow.IsMilking = true;
 
-            sc.Key = StateKeys.MilkingEnter;
-            sc.CurrentTime = 0;
-            sc.MaxTime = CowSystem.PhaseDurationTicks;
-            sc.IsEnabled = true;
-
-            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.MilkingEnter, Age = 0 });
+            StateDefinitions.Begin(ref sc, StateKeys.Milking);
+            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Milking, Phase = sc.Phase, Age = 0 });
 
             playerState.InteractionTarget = cowEntity;
 
@@ -181,7 +205,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
 
         // Clicking while Milking
-        if (sc.Key == StateKeys.Milking && sc.IsEnabled)
+        if (sc.Key == StateKeys.Milking && sc.Phase == StatePhase.Active && sc.IsEnabled)
         {
             if (globalRes.Grass > 0 && cow.Exhaust < cow.MaxExhaust)
             {
@@ -189,22 +213,65 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 globalRes.Milk++;
                 cow.Exhaust++;
 
-                target = ctx.GetComponent<CowComponent>(cowEntity).HouseId;
+                var houseId = ctx.GetComponent<CowComponent>(cowEntity).HouseId;
+                if (houseId != Entity.Null)
+                    target = houseId;
 
                 if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
                 {
-                    sc.Key = StateKeys.MilkingExit;
-                    sc.CurrentTime = 0;
-                    sc.MaxTime = CowSystem.PhaseDurationTicks;
-                    sc.IsEnabled = true;
-
-                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.MilkingExit, Age = 0 });
+                    StateDefinitions.BeginExit(ref sc);
+                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = sc.Key, Phase = sc.Phase, Age = 0 });
                 }
                 return true;
             }
         }
 
         return false;
+    }
+
+    private bool HandleHouseAssign(Context ctx, Entity playerEntity, Entity houseEntity, ref PlayerStateComponent playerState, ref StateComponent sc)
+    {
+        StateDefinitions.Begin(ref sc, StateKeys.Assign);
+        playerState.InteractionTarget = houseEntity;
+
+        ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Assign, Phase = sc.Phase, Age = 0 });
+
+        ILogger.Log($"[InteractActionService] Player {playerEntity.Id} assigning cow {playerState.FollowingCow.Id} to house {houseEntity.Id}");
+        return true;
+    }
+
+    private bool HandleCrossbreed(Context ctx, Entity playerEntity, Entity targetCow, ref PlayerStateComponent playerState, ref StateComponent sc, ref GlobalResourcesComponent globalRes, out string missingResource)
+    {
+        missingResource = null;
+
+        ref var targetCowComp = ref ctx.State.GetComponent<CowComponent>(targetCow);
+
+        // Can't breed with a cow that's being milked or following someone else
+        if (targetCowComp.IsMilking) return false;
+        if (targetCowComp.FollowingPlayer != Entity.Null) return false;
+
+        // Count total cows and houses to check if there's room
+        int cowCount = 0;
+        foreach (var _ in ctx.State.Filter<CowComponent>())
+            cowCount++;
+
+        int houseCount = 0;
+        foreach (var _ in ctx.State.Filter<HouseComponent>())
+            houseCount++;
+
+        if (cowCount >= houseCount)
+        {
+            missingResource = StateKeys.Houses;
+            return false;
+        }
+
+        StateDefinitions.Begin(ref sc, StateKeys.Breed);
+        playerState.InteractionTarget = targetCow;
+
+        ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Breed, Phase = sc.Phase, Age = 0 });
+
+        ILogger.Log($"[InteractActionService] Player {playerEntity.Id} breeding cow {playerState.FollowingCow.Id} with {targetCow.Id}");
+        return true;
     }
 
     private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes, out string missingResource)
@@ -235,15 +302,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 var position = transform.Position;
                 ctx.State.DeleteEntity(landEntity);
 
-                var houseEntity = HouseDefinition.Create(ctx, position);
-                var cowPosition = position + new Vector2(2, 2);
-                var cowEntity = CowDefinition.Create(ctx, cowPosition);
-
-                ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
-                house.CowId = cowEntity;
-
-                ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
-                cow.HouseId = houseEntity;
+                HouseDefinition.Create(ctx, position);
 
                 return false; // Entity deleted, skip interacted marker
             }

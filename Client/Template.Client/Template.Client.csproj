@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\Server\Template.Shared\Template.Shared.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network\Deterministic.GameFramework.Network.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

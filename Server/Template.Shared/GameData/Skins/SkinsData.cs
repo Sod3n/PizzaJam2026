@@ -80,4 +80,62 @@ public class SkinsData : GameData<Skin>
 
         return component;
     }
+
+    public SkinComponent CrossbreedSkin(ref DeterministicRandom random, SkinComponent parentA, SkinComponent parentB)
+    {
+        var component = new SkinComponent
+        {
+            Skins = new Dictionary16<FixedString32, int>()
+        };
+
+        var sortedTypes = _skinsByType.Keys.ToList();
+        sortedTypes.Sort();
+
+        foreach (var type in sortedTypes)
+        {
+            var key = new FixedString32(type);
+            bool aHas = parentA.Skins.ContainsKey(key);
+            bool bHas = parentB.Skins.ContainsKey(key);
+
+            int roll = random.NextInt(100);
+
+            if (roll < 40 && aHas)
+            {
+                // Inherit from parent A
+                component.Skins.Add(key, parentA.Skins[key]);
+            }
+            else if (roll < 80 && bHas)
+            {
+                // Inherit from parent B
+                component.Skins.Add(key, parentB.Skins[key]);
+            }
+            else
+            {
+                // Random mutation
+                var skins = _skinsByType[type];
+                var totalWeight = _totalWeightByType[type];
+
+                if (skins.Count == 0 || totalWeight <= 0) continue;
+
+                int targetWeight = random.NextInt(totalWeight);
+                int currentWeightSum = 0;
+                Skin? selectedSkin = null;
+
+                foreach (var skin in skins)
+                {
+                    currentWeightSum += skin.Weight;
+                    if (targetWeight < currentWeightSum)
+                    {
+                        selectedSkin = skin;
+                        break;
+                    }
+                }
+
+                selectedSkin ??= skins.Last();
+                component.Skins.Add(key, selectedSkin.Id);
+            }
+        }
+
+        return component;
+    }
 }

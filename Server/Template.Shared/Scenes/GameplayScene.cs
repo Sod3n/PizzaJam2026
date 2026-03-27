@@ -10,6 +10,7 @@ using Template.Shared.Actions;
 using Template.Shared.Definitions;
 using Template.Shared.Debugging;
 using Template.Shared.Components;
+using Deterministic.GameFramework.Navigation2D.Components;
 
 namespace Template.Shared.Scenes;
 
@@ -50,6 +51,16 @@ public class GameplayScene : IScene
         // DEBUG: Spawn all skins in a line
         // SkinDebugSpawner.SpawnAllSkinsInLine(context, new Vector2(0, -5), 2);
 
+        // Navigation world - auto-bakes nav mesh from physics obstacles
+        var navWorld = state.CreateEntity();
+        var navWorldComp = NavigationWorld2D.Default;
+        navWorldComp.BoundsMin = new Vector2(center - halfSize, center - halfSize);
+        navWorldComp.BoundsMax = new Vector2(center + halfSize, center + halfSize);
+        navWorldComp.CellSize = 0.5f;
+        navWorldComp.AgentRadius = 0.5f;
+        navWorldComp.ObstacleMask = (uint)CollisionLayer.Physics;
+        state.AddComponent(navWorld, navWorldComp);
+
         // Initialize Global Resources
         var globalRes = state.CreateEntity();
         state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 5 }); // Start with some coins to buy land
@@ -66,6 +77,10 @@ public class GameplayScene : IScene
                 LandDefinition.Create(context, new Vector2(i * 10 + 5, j * 10 + 5), 3);
             }
         }
+
+        // Spawn 2 initial cows for crossbreeding
+        CowDefinition.Create(context, new Vector2(10, 10));
+        CowDefinition.Create(context, new Vector2(14, 10));
     }
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)
