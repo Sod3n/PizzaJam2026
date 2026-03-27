@@ -3,9 +3,11 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class CowComponentNode : Node
 {
     [Export] public int Exhaust;
     [Export] public int MaxExhaust;
     [Export] public bool IsMilking;
+    [Export] public Vector2 SpawnPosition;
 }

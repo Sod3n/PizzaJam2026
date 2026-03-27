@@ -165,7 +165,7 @@ script = ExtResource("fw_player")
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1881591113]
 script = ExtResource("fw_phys")
 BodyType = 0
-ShapeRadius = 0.47306335
+ShapeRadius = 0.46962145
 
 [node name="State" type="Node" parent="Entity" unique_id=561460476]
 script = ExtResource("fw_state")

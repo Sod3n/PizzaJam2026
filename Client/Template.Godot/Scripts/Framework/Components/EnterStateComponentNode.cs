@@ -3,7 +3,10 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class EnterStateComponentNode : Node
 {
+    [Export] public string Key;
+    [Export] public string Param;
     [Export] public int Age;
 }

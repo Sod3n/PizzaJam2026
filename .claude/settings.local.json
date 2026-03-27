@@ -78,7 +78,20 @@
       "Bash(chmod +x sync-libs.sh)",
       "Bash(bash sync-libs.sh)",
       "Bash(ls Client/Template.Godot/lib/*.dll)",
-      "Bash(xargs -I{} basename {})"
+      "Bash(xargs -I{} basename {})",
+      "Read(//Users/a1/Library/Logs/Godot/**)",
+      "Bash(ls -t /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/.godot/mono/crash*)",
+      "Read(//Users/a1/Library/**)",
+      "Bash(find ~/Library/Application Support/Godot -name *.log -mmin -60)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot -name *.log -mmin -60)",
+      "Bash(ls /Applications/Godot*.app)",
+      "Bash(ls /Applications/Godot*.app/Contents/MacOS/*)",
+      "Bash(find ~/Library/Application Support/Godot -name *.log)",
+      "Bash(log show:*)",
+      "Bash(find ~/Library/Logs -name *.crash -mmin -120)",
+      "Bash(find ~/Library/Logs/DiagnosticReports -name *Godot* -mmin -120)",
+      "Bash(find ~/Library/Application Support/Godot -name editor_settings*)",
+      "Read(//Users/a1/**)"
     ]
   }
 }

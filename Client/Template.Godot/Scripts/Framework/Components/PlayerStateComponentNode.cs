@@ -3,6 +3,8 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class PlayerStateComponentNode : Node
 {
+    [Export] public Vector2 ReturnPosition;
 }

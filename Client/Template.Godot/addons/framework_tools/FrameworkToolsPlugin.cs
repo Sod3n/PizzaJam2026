@@ -9,6 +9,7 @@ public partial class FrameworkToolsPlugin : EditorPlugin
     private PhysicsBodyGizmoPlugin _physicsGizmo;
     private NavAgentGizmoPlugin _navGizmo;
     private ReloadCleaner _reloadCleaner;
+    private ComponentInspectorPlugin _componentInspector;
 
     public override void _EnterTree()
     {
@@ -18,6 +19,9 @@ public partial class FrameworkToolsPlugin : EditorPlugin
         _navGizmo = new NavAgentGizmoPlugin(GetUndoRedo());
         AddNode3DGizmoPlugin(_navGizmo);
 
+        _componentInspector = new ComponentInspectorPlugin();
+        AddInspectorPlugin(_componentInspector);
+
         _reloadCleaner = new ReloadCleaner();
         AddChild(_reloadCleaner);
     }
@@ -26,6 +30,8 @@ public partial class FrameworkToolsPlugin : EditorPlugin
     {
         RemoveNode3DGizmoPlugin(_physicsGizmo);
         RemoveNode3DGizmoPlugin(_navGizmo);
+        RemoveInspectorPlugin(_componentInspector);
     }
+
 }
 #endif

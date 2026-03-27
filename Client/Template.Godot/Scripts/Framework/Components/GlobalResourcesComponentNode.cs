@@ -3,6 +3,7 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class GlobalResourcesComponentNode : Node
 {
     [Export] public int Grass;

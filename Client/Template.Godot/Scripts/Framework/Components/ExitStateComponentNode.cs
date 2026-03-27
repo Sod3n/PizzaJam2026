@@ -3,7 +3,9 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class ExitStateComponentNode : Node
 {
+    [Export] public string Key;
     [Export] public int Age;
 }

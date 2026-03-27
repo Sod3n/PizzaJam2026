@@ -10,9 +10,32 @@ namespace Template.CodeGen.Generators;
 /// </summary>
 public static class ComponentNodeGenerator
 {
-    private static readonly HashSet<string> ExportableTypes = new()
+    // Types exported directly (no mapping needed)
+    private static readonly HashSet<string> DirectExportTypes = new()
     {
-        "int", "bool", "float", "byte", "string", "double", "long"
+        "int", "bool", "float", "byte", "string", "double", "long", "uint"
+    };
+
+    // Framework types mapped to Godot-compatible export types
+    private static readonly Dictionary<string, string> MappedExportTypes = new()
+    {
+        { "FixedString32", "string" },
+        { "System.Guid", "string" },
+        { "Vector2", "Vector2" },
+        { "Float", "float" },
+    };
+
+    // Types that are skipped (not useful in editor)
+    private static readonly HashSet<string> SkippedTypes = new()
+    {
+        "Entity",
+    };
+
+    // Fields that shadow Godot.Node base members
+    private static readonly HashSet<string> NodeBaseMembers = new()
+    {
+        "Name", "Owner", "ProcessMode", "ProcessPriority",
+        "PhysicsProcessPriority", "ProcessThreadGroup",
     };
 
     public static string Generate(ComponentDescriptor component)
@@ -23,17 +46,29 @@ public static class ComponentNodeGenerator
         sb.AppendLine();
         sb.AppendLine("namespace Template.Godot.Framework;");
         sb.AppendLine();
+        sb.AppendLine("[Tool]");
         sb.AppendLine($"public partial class {component.ComponentName}Node : Node");
         sb.AppendLine("{");
 
         foreach (var field in component.Fields)
         {
-            if (ExportableTypes.Contains(field.TypeName))
+            if (SkippedTypes.Contains(field.TypeName))
+                continue;
+
+            string? exportType = null;
+
+            if (DirectExportTypes.Contains(field.TypeName))
+                exportType = field.TypeName;
+            else if (MappedExportTypes.TryGetValue(field.TypeName, out var mapped))
+                exportType = mapped;
+
+            if (exportType != null)
             {
+                var newKeyword = NodeBaseMembers.Contains(field.Name) ? "new " : "";
                 if (field.DefaultValue != null)
-                    sb.AppendLine($"    [Export] public {field.TypeName} {field.Name} = {field.DefaultValue};");
+                    sb.AppendLine($"    [Export] public {newKeyword}{exportType} {field.Name} = {field.DefaultValue};");
                 else
-                    sb.AppendLine($"    [Export] public {field.TypeName} {field.Name};");
+                    sb.AppendLine($"    [Export] public {newKeyword}{exportType} {field.Name};");
             }
         }
 

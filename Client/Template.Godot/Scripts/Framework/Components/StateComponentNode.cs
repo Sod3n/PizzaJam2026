@@ -3,8 +3,10 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class StateComponentNode : Node
 {
+    [Export] public string Key;
     [Export] public int CurrentTime;
     [Export] public int MaxTime;
     [Export] public bool IsEnabled;

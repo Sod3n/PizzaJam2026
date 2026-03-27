@@ -3,6 +3,7 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class RejectedComponentNode : Node
 {
     [Export] public int Duration;

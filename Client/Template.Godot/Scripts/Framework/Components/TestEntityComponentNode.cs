@@ -3,9 +3,11 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class TestEntityComponentNode : Node
 {
     [Export] public int Health;
     [Export] public int MaxHealth;
+    [Export] public float Speed;
     [Export] public bool IsAlive;
 }

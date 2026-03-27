@@ -3,6 +3,9 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class HiddenComponentNode : Node
 {
+    [Export] public uint PreviousLayer;
+    [Export] public uint PreviousMask;
 }

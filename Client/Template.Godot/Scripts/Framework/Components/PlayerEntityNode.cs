@@ -3,6 +3,9 @@ using Godot;
 
 namespace Template.Godot.Framework;
 
+[Tool]
 public partial class PlayerEntityNode : Node
 {
+    [Export] public string UserId;
+    [Export] public new string Name;
 }

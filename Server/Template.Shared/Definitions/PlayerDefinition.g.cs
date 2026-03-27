@@ -36,7 +36,7 @@ public static partial class PlayerDefinition
         entityBody.CollisionMask = 1u;
         ctx.AddComponent(entity, entityBody);
 
-        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.47306335f));
+        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.46962145f));
 
         ctx.AddComponent(entity, new StateComponent
         {
@@ -49,6 +49,7 @@ public static partial class PlayerDefinition
         ctx.AddComponent(entity, new PlayerStateComponent
         {
             InteractionTarget = Entity.Null,
+            InteractionTarge10 = Entity.Null,
             ReturnPosition = Vector2.Zero,
             InteractionZone = Entity.Null,
             FollowingCow = Entity.Null,
