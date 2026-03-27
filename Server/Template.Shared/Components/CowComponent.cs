@@ -14,4 +14,5 @@ public struct CowComponent : IComponent
     public bool IsMilking;
     public Entity HouseId;
     public Vector2 SpawnPosition;
+    public Entity FollowingPlayer;
 }

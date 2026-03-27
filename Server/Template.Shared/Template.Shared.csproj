@@ -13,6 +13,7 @@
       <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
       <ProjectReference Include="..\Framework\Deterministic.GameFramework.SourceGenerators\Deterministic.GameFramework.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
+      <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
     </ItemGroup>
 
     <!-- Import Local.props if it exists for local overrides (e.g. ClientPath) -->

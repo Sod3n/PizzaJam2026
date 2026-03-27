@@ -228,6 +228,19 @@ public partial class EntityVisualizer : Node3D
         {
             visualNode = CowPrefab?.Instantiate<Node3D>() ?? CreateFallbackVisual(Colors.SaddleBrown, 0.6f);
 
+            // Create a FlipPivot node for cow (same pattern as player)
+            var cowCharacterNode = visualNode.GetNodeOrNull<Node3D>("Character");
+            var cowFlipPivot = new Node3D { Name = "FlipPivot" };
+            if (cowCharacterNode != null)
+            {
+                var cowCharTransform = cowCharacterNode.Transform;
+                visualNode.RemoveChild(cowCharacterNode);
+                visualNode.AddChild(cowFlipPivot);
+                cowFlipPivot.Transform = cowCharTransform;
+                cowCharacterNode.Transform = global::Godot.Transform3D.Identity;
+                cowFlipPivot.AddChild(cowCharacterNode);
+            }
+
             // Handle Skins for Cow
             if (cowVm.Skin != null)
             {
@@ -236,6 +249,21 @@ public partial class EntityVisualizer : Node3D
                     SkinVisualizer.UpdateSkins(visualNode, skins);
                 }).AddTo(vm.Disposables);
             }
+
+            // Movement animation: bounce + flip (same as player)
+            cowVm.Cow.CharacterBody2D.Velocity.Subscribe(v =>
+            {
+                Callable.From(() =>
+                {
+                    var isMoving = !v.IsZeroApprox();
+                    cowCharacterNode?.SetDeferred("enable_bounce", isMoving);
+
+                    if (v.X < 0)
+                        cowFlipPivot.Scale = new GVector3(-Mathf.Abs(cowFlipPivot.Scale.X), cowFlipPivot.Scale.Y, cowFlipPivot.Scale.Z);
+                    else if (v.X > 0)
+                        cowFlipPivot.Scale = new GVector3(Mathf.Abs(cowFlipPivot.Scale.X), cowFlipPivot.Scale.Y, cowFlipPivot.Scale.Z);
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
 
             cowVm.IsHidden.Subscribe(hidden =>
             {
@@ -377,7 +405,11 @@ public partial class EntityVisualizer : Node3D
     {
         if (_spawnedEntities.TryGetValue(vm, out var node))
         {
-            if (IsInstanceValid(node)) node.QueueFree();
+            if (IsInstanceValid(node))
+            {
+                node.Visible = false;
+                node.QueueFree();
+            }
             _spawnedEntities.Remove(vm);
         }
     }

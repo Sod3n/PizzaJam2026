@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://kfx6yeh1o5yq" path="res://templates/environment/grass.tscn" id="6_gxmxl"]
 [ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="6_n4w22"]
 [ext_resource type="PackedScene" uid="uid://de55uopw2vwaa" path="res://templates/environment/Land.tscn" id="7_gdsc3"]
+[ext_resource type="PackedScene" uid="uid://dpvl77oofc2w3" path="res://templates/characters/Cow.tscn" id="7_jbdfk"]
 [ext_resource type="PackedScene" uid="uid://blxgls556ydaj" path="res://templates/characters/Player.tscn" id="8_n4w22"]
 [ext_resource type="PackedScene" uid="uid://bg7ki6hs4neoa" path="res://templates/environment/House.tscn" id="8_svejp"]
 [ext_resource type="PackedScene" uid="uid://b3a1efqph14je" path="res://templates/environment/SellPoint.tscn" id="9_36gju"]
@@ -240,7 +241,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2050545, 0.33606344, -5.33
 [node name="EntityVisualizer" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1305065505]
 script = ExtResource("3_gdsc3")
 PlayerPrefab = ExtResource("8_n4w22")
-CowPrefab = ExtResource("6_n4w22")
+CowPrefab = ExtResource("7_jbdfk")
 GrassPrefab = ExtResource("6_gxmxl")
 LandPrefab = ExtResource("7_gdsc3")
 HousePrefab = ExtResource("8_svejp")
@@ -1780,154 +1781,157 @@ material_override = ExtResource("5_kem5a")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_884kg")
 
-[node name="Node3D" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=97162560]
+[node name="Node3D5" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1951456567]
+visible = false
+
+[node name="Node3D" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=97162560]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, -1, 0)
 
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D" unique_id=732569999 instance=ExtResource("14_tql22")]
+[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=732569999 instance=ExtResource("14_tql22")]
 
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D" unique_id=123745736 instance=ExtResource("14_tql22")]
+[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=123745736 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1518250210 instance=ExtResource("14_tql22")]
+[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1518250210 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2083579538 instance=ExtResource("14_tql22")]
+[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=2083579538 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
 
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1967564018 instance=ExtResource("14_tql22")]
+[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1967564018 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
 
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D" unique_id=488379845 instance=ExtResource("14_tql22")]
+[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=488379845 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1063673647 instance=ExtResource("14_tql22")]
+[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1063673647 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
 
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D" unique_id=374855196 instance=ExtResource("14_tql22")]
+[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=374855196 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
 
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1316498852 instance=ExtResource("14_tql22")]
+[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1316498852 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
 
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D" unique_id=277390945 instance=ExtResource("14_tql22")]
+[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=277390945 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D" unique_id=653832410 instance=ExtResource("14_tql22")]
+[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=653832410 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
 
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D" unique_id=920310660 instance=ExtResource("14_tql22")]
+[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=920310660 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
 
-[node name="Node3D2" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1555832682]
+[node name="Node3D2" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=1555832682]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 48, -1, 0)
 
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=912051973 instance=ExtResource("14_tql22")]
+[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=912051973 instance=ExtResource("14_tql22")]
 
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=391461626 instance=ExtResource("14_tql22")]
+[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=391461626 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=797955095 instance=ExtResource("14_tql22")]
+[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=797955095 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=212712207 instance=ExtResource("14_tql22")]
+[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=212712207 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
 
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=1339952598 instance=ExtResource("14_tql22")]
+[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=1339952598 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
 
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=573316024 instance=ExtResource("14_tql22")]
+[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=573316024 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=2061518082 instance=ExtResource("14_tql22")]
+[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=2061518082 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
 
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=2131948634 instance=ExtResource("14_tql22")]
+[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=2131948634 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
 
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=52659224 instance=ExtResource("14_tql22")]
+[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=52659224 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
 
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=228949896 instance=ExtResource("14_tql22")]
+[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=228949896 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=201021001 instance=ExtResource("14_tql22")]
+[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=201021001 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
 
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D2" unique_id=939826862 instance=ExtResource("14_tql22")]
+[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=939826862 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
 
-[node name="Node3D3" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=165149302]
+[node name="Node3D3" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=165149302]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 48, -1, 48)
 
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=1175717743 instance=ExtResource("14_tql22")]
+[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1175717743 instance=ExtResource("14_tql22")]
 
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=1770241600 instance=ExtResource("14_tql22")]
+[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1770241600 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=510981367 instance=ExtResource("14_tql22")]
+[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=510981367 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=512143414 instance=ExtResource("14_tql22")]
+[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=512143414 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
 
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=635822555 instance=ExtResource("14_tql22")]
+[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=635822555 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
 
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=717149005 instance=ExtResource("14_tql22")]
+[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=717149005 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=306212982 instance=ExtResource("14_tql22")]
+[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=306212982 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
 
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=1427719756 instance=ExtResource("14_tql22")]
+[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1427719756 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
 
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=2035323944 instance=ExtResource("14_tql22")]
+[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=2035323944 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
 
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=56553191 instance=ExtResource("14_tql22")]
+[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=56553191 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=751018459 instance=ExtResource("14_tql22")]
+[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=751018459 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
 
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D3" unique_id=1498352071 instance=ExtResource("14_tql22")]
+[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1498352071 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
 
-[node name="Node3D4" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1758590932]
+[node name="Node3D4" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=1758590932]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, -1, 48)
 
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=310017805 instance=ExtResource("14_tql22")]
+[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=310017805 instance=ExtResource("14_tql22")]
 
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=1213940435 instance=ExtResource("14_tql22")]
+[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1213940435 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=1016301894 instance=ExtResource("14_tql22")]
+[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1016301894 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
 
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=366326867 instance=ExtResource("14_tql22")]
+[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=366326867 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
 
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=969499099 instance=ExtResource("14_tql22")]
+[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=969499099 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
 
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=1605789392 instance=ExtResource("14_tql22")]
+[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1605789392 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=297438899 instance=ExtResource("14_tql22")]
+[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=297438899 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
 
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=1717841470 instance=ExtResource("14_tql22")]
+[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1717841470 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
 
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=672226063 instance=ExtResource("14_tql22")]
+[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=672226063 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
 
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=36739533 instance=ExtResource("14_tql22")]
+[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=36739533 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=2142160302 instance=ExtResource("14_tql22")]
+[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=2142160302 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
 
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D4" unique_id=1705314353 instance=ExtResource("14_tql22")]
+[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1705314353 instance=ExtResource("14_tql22")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)

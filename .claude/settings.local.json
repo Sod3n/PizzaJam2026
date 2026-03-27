@@ -23,7 +23,21 @@
       "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f -name *ComponentModel.cs -print)",
       "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026 -path *obj* -prune -o -type f \\\\\\(-name *.cs -o -name *.dll \\\\\\) -print)",
       "Bash(grep -r uid:// /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/sprites/resources/*.import)",
-      "Bash(grep -r \"public struct\" /Users/a1/Documents/GitHub/PizzaJam2026/Server/Template.Shared/Components/*.cs)"
+      "Bash(grep -r \"public struct\" /Users/a1/Documents/GitHub/PizzaJam2026/Server/Template.Shared/Components/*.cs)",
+      "Bash(grep -r \"milking_enter\\\\|milking_exit\\\\|milking\" /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/Scripts --include=*.cs)",
+      "Bash(grep -r \"alt\\\\|Alt\\\\|ui_accept\\\\|interact\" /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/Scripts --include=*.cs)",
+      "Bash(grep -E \"GameFactory|^.*Game\\\\.cs$\")",
+      "Bash(grep -E \"\\\\.\\(cs|csproj\\)$\")",
+      "Bash(grep -r \"NavigationAgent2D\\\\|TargetPosition\" /Users/a1/Documents/GitHub/PizzaJam2026/Server/Template.Shared --include=*.cs)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/.godot -name Deterministic.GameFramework.TwoD.Navigation*)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/.godot -name *.dll)",
+      "Bash(md5 /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot/.godot/mono/temp/bin/Debug/Template.Shared.dll)",
+      "Bash(md5 /Users/a1/Documents/GitHub/PizzaJam2026/Server/Template.Server/bin/Debug/net8.0/Template.Shared.dll)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026/Server -name Template.Shared.dll -path */bin/*)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026/Client/Template.Godot -name *Navigation* -o -name *Collision*)",
+      "mcp__godot__add_node",
+      "mcp__godot__update_project_uids",
+      "Bash(git stash:*)"
     ]
   }
 }

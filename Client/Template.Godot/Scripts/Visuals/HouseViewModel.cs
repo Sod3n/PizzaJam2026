@@ -10,14 +10,24 @@ namespace Template.Godot.Visuals;
 public class HouseViewModel : EntityViewModel
 {
     public HouseDefinitionModel House { get; }
-    
-    public ReadOnlyReactiveProperty<string> Capacity { get; }
+
+    public ReactiveProperty<string> Capacity { get; } = new("");
 
     public HouseViewModel(Context context) : base(context)
     {
         House = new HouseDefinitionModel(ReactiveSystem.Instance, context);
         Disposables.Add(House);
 
-        if (EntityViewModels[House.House.CowId.CurrentValue] is CowViewModel cowVm) Capacity = cowVm.Capacity;
+        House.House.CowId.Subscribe(cowId =>
+        {
+            if (cowId != Entity.Null && EntityViewModels.TryGetValue(cowId, out var vm) && vm is CowViewModel cowVm)
+            {
+                cowVm.Capacity.Subscribe(c => Capacity.Value = c).AddTo(Disposables);
+            }
+            else
+            {
+                Capacity.Value = "";
+            }
+        }).AddTo(Disposables);
     }
 }

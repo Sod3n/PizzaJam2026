@@ -71,7 +71,8 @@ public static partial class PlayerDefinition
         {
             InteractionTarget = Entity.Null,
             ReturnPosition = position,
-            InteractionZone = zone
+            InteractionZone = zone,
+            FollowingCow = Entity.Null
         });
 
         // Initialize StateComponent (idle = disabled, empty key)

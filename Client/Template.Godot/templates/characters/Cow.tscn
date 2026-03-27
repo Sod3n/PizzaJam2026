@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dpvl77oofc2w3"]
+
+[ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_7tc83"]
+
+[node name="Cow" type="Node3D" unique_id=1572806839]
+
+[node name="Character" parent="." unique_id=1227223347 instance=ExtResource("1_7tc83")]
