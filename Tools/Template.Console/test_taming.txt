@@ -1,0 +1,24 @@
+# Test: Tame a cow by alt-interacting near it
+print === Taming Flow Test ===
+
+init
+spawn p1 10 10
+list cows
+
+# Teleport player next to cow 0 (cow spawns at 10,10)
+teleport p1 11 10
+tick 5
+
+# Alt-interact to start taming
+alt-interact p1
+assert p1 state taming
+status p1
+
+# Wait for taming to complete (60 ticks)
+tick 61
+assert p1 no-state
+assert p1 following-cow
+status p1
+status cow 0
+
+print === Taming test complete ===

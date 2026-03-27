@@ -6,6 +6,9 @@
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="3_vrssg"]
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="4_s1njy"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="5_y0sxf"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/FinalStructureComponentNode.cs" id="fw_finalstructure"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_s1njy"]
 render_priority = 0
@@ -69,9 +72,26 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="FinalStructure" type="Node3D" unique_id=803964944]
+[node name="FinalStructure" type="Node3D"]
 
-[node name="Finale" type="AnimatedSprite3D" parent="." unique_id=1839181731]
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "FinalStructure"
+StableIdSeed = "finalstructure-entity-seed"
+
+[node name="FinalStructureComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_finalstructure")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+BodyType = 1
+ShapeType = 1
+ShapeWidth = 2.0
+ShapeHeight = 2.0
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="Finale" type="AnimatedSprite3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.9082089, 0.4185171, 0, -0.4185171, 0.9082089, 0, 0.72762764, -0.43979532)
 visible = false
 material_override = SubResource("ShaderMaterial_s1njy")
@@ -79,9 +99,9 @@ alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_wwvx5")
 script = ExtResource("2_c6usd")
 
-[node name="Node3D" type="Node3D" parent="." unique_id=1547856474]
+[node name="Node3D" type="Node3D" parent="."]
 
-[node name="Remaining" type="Label3D" parent="Node3D" unique_id=188525676]
+[node name="Remaining" type="Label3D" parent="Node3D"]
 transform = Transform3D(0.7, 0, 0, 0, 0.67212373, 0.19557531, 0, -0.19557531, 0.67212373, -0.080786616, 1.2520609, -0.3480498)
 no_depth_test = true
 render_priority = 2
@@ -91,7 +111,7 @@ text = "1000"
 font_size = 128
 horizontal_alignment = 0
 
-[node name="Skin2" type="AnimatedSprite3D" parent="Node3D" unique_id=8872794]
+[node name="Skin2" type="AnimatedSprite3D" parent="Node3D"]
 transform = Transform3D(0.2, 0, 0, 0, 0.19203536, 0.05587867, 0, -0.05587867, 0.19203536, -0.29732585, 1.1621141, -0.14114048)
 sorting_offset = -10.0
 alpha_cut = 2
@@ -99,7 +119,7 @@ texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_j63rn")
 script = ExtResource("2_c6usd")
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Node3D" unique_id=116526206]
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Node3D"]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.2588017, 4.611277, -2.0273778)
 material_override = SubResource("ShaderMaterial_y0sxf")
 alpha_cut = 2

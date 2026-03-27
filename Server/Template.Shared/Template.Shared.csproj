@@ -16,6 +16,34 @@
       <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
     </ItemGroup>
 
+    <!-- Run CodeGen before compile to generate components, definitions, and viewmodels from .tscn templates -->
+    <PropertyGroup>
+      <CodeGenProject>$(MSBuildThisFileDirectory)..\..\Tools\Template.CodeGen\Template.CodeGen.csproj</CodeGenProject>
+      <ScenesDir>$(MSBuildThisFileDirectory)..\..\Client\Template.Godot\templates</ScenesDir>
+      <ServerOutput>$(MSBuildThisFileDirectory)</ServerOutput>
+      <ClientOutput>$(MSBuildThisFileDirectory)..\..\Client\Template.Godot\Scripts\Visuals</ClientOutput>
+      <FrameworkOutput>$(MSBuildThisFileDirectory)..\..\Client\Template.Godot\Scripts\Framework\Components</FrameworkOutput>
+    </PropertyGroup>
+
+    <!-- CodeGen: auto-runs when component .cs files or .tscn templates change -->
+    <ItemGroup>
+      <CodeGenInputs Include="$(MSBuildThisFileDirectory)Components\**\*.cs" Exclude="$(MSBuildThisFileDirectory)Components\**\*.g.cs" />
+      <CodeGenInputs Include="$(ScenesDir)\**\*.tscn" />
+    </ItemGroup>
+
+    <Target Name="BuildCodeGen" BeforeTargets="ExecCodeGen" Condition="Exists('$(CodeGenProject)') AND !Exists('$(MSBuildThisFileDirectory)..\..\Tools\Template.CodeGen\bin\Release\net8.0\Template.CodeGen.dll')">
+      <Exec Command="dotnet build &quot;$(CodeGenProject)&quot; -c Release --nologo -v q"
+            ConsoleToMsBuild="true"
+            StandardOutputImportance="Low" />
+    </Target>
+
+    <Target Name="ExecCodeGen" BeforeTargets="BeforeCompile" Condition="Exists('$(CodeGenProject)') AND Exists('$(ScenesDir)') AND '$(TargetFramework)' == 'net8.0'"
+            Inputs="@(CodeGenInputs)" Outputs="$(MSBuildThisFileDirectory)Definitions\*.g.cs">
+      <Exec Command="dotnet exec &quot;$(MSBuildThisFileDirectory)..\..\Tools\Template.CodeGen\bin\Release\net8.0\Template.CodeGen.dll&quot; --scenes &quot;$(ScenesDir)&quot; --server-output &quot;$(ServerOutput)&quot; --client-output &quot;$(ClientOutput)&quot; --framework-output &quot;$(FrameworkOutput)&quot;"
+            ConsoleToMsBuild="true"
+            StandardOutputImportance="Low" />
+    </Target>
+
     <!-- Import Local.props if it exists for local overrides (e.g. ClientPath) -->
     <Import Project="Local.props" Condition="Exists('Local.props')" />
 

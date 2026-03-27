@@ -47,12 +47,8 @@ public class AnimationsSystem : ISystem
     {
         if (s.Phase == StatePhase.Enter)
         {
-            if (def.ActiveDuration != 0)
-                TransitionTo(state, entity, ref s, StatePhase.Active, def.ActiveDuration);
-            else if (def.ExitDuration > 0)
-                TransitionTo(state, entity, ref s, StatePhase.Exit, def.ExitDuration);
-            else
-                Complete(state, entity, ref s);
+            // Always transition to Active after Enter (ActiveDuration 0 = indefinite, handled by timer check)
+            TransitionTo(state, entity, ref s, StatePhase.Active, def.ActiveDuration);
         }
         else if (s.Phase == StatePhase.Active)
         {

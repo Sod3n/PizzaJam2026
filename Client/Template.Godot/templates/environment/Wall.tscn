@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/WallComponentNode.cs" id="fw_wall"]
+
+[node name="Wall" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "Wall"
+StableIdSeed = "wall-entity-seed"
+
+[node name="WallComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_wall")

@@ -1,0 +1,60 @@
+# Test: Full milking flow
+print === Milking Flow Test ===
+
+init
+spawn p1 10 10
+list cows
+resources
+
+# Tame cow 0
+teleport p1 11 10
+tick 5
+alt-interact p1
+assert p1 state taming
+tick 61
+assert p1 following-cow
+status p1
+
+# Find a house and assign cow
+list houses
+# Assign cow to first available house (need to buy land first)
+set-resources 10 0 5
+teleport p1 14 6
+tick 5
+interact p1
+interact p1
+interact p1
+tick 5
+list houses
+
+# Assign cow to house
+teleport p1 14 6
+tick 5
+interact p1
+status p1
+tick 61
+assert p1 no-state
+status cow 0
+
+# Now interact with the housed cow to start milking
+teleport p1 14 6
+tick 10
+interact p1
+status p1
+print --- After first milking interact (should be milking state) ---
+
+# Wait for milking enter phase to complete
+tick 61
+status p1
+print --- After milking enter phase (should be Active) ---
+
+# Now interact during Active phase to actually milk
+interact p1
+status p1
+resources
+print --- After milking interact (grass should decrease, milk increase) ---
+
+interact p1
+status p1
+resources
+print --- After second milking interact ---

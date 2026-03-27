@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Server\Template.Shared\Template.Shared.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.DAR\Deterministic.GameFramework.DAR.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,10 +1,13 @@
+// Component struct — source of truth for fields
 using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.TwoD;
+using Deterministic.GameFramework.Types;
 using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-[StableId("b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e")]
+[StableId("432c54c2-ff73-9454-b2ad-483a305898ca")]
 public struct GrassComponent : IComponent
 {
     public int Durability;

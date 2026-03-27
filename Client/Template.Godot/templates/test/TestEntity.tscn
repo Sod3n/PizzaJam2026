@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://6uby83qedl4u"]
+
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="1_entity"]
+[ext_resource type="Script" uid="uid://bj8br0djdpr5a" path="res://Scripts/Framework/Components/TestEntityComponentNode.cs" id="2_comp"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="3_phys"]
+[ext_resource type="Script" uid="uid://dujhbvljlh6l3" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="4_nav"]
+[ext_resource type="Script" uid="uid://w882ltaxhyd6" path="res://Scripts/Framework/FrameworkState.cs" id="5_state"]
+[ext_resource type="Script" uid="uid://dinx5371fnt6o" path="res://Scripts/Framework/FrameworkSkin.cs" id="6_skin"]
+[ext_resource type="Script" uid="uid://14sy2fkppbx3" path="res://Scripts/Framework/FrameworkVisualBinding.cs" id="7_bind"]
+
+[node name="TestEntity" type="Node3D" unique_id=390625984]
+
+[node name="Entity" type="Node3D" parent="." unique_id=1706375125]
+script = ExtResource("1_entity")
+EntityName = "TestEntity"
+StableIdSeed = "test-verify-seed-001"
+
+[node name="TestComponent" type="Node" parent="Entity" unique_id=1278439069]
+script = ExtResource("2_comp")
+Health = 100
+MaxHealth = 100
+IsAlive = true
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1028682168]
+script = ExtResource("3_phys")
+BodyType = 0
+ShapeRadius = 0.75
+CollisionMask = 3
+
+[node name="NavAgent" type="Node3D" parent="Entity" unique_id=730629582]
+script = ExtResource("4_nav")
+MaxSpeed = 15.0
+Radius = 0.6
+
+[node name="State" type="Node" parent="Entity" unique_id=200234028]
+script = ExtResource("5_state")
+
+[node name="Skin" type="Node" parent="Entity" unique_id=32324812]
+script = ExtResource("6_skin")
+
+[node name="HealthBinding" type="Node" parent="Entity" unique_id=611795724]
+script = ExtResource("7_bind")
+ComponentField = "Health"
+TargetNodePath = NodePath("HealthLabel")

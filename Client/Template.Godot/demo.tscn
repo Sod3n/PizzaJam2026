@@ -2,19 +2,23 @@
 
 [ext_resource type="Script" uid="uid://d0qq7fg0nvuxu" path="res://Scripts/Core/GameManager.cs" id="1_884kg"]
 [ext_resource type="Script" uid="uid://c3uhh25dk0mh8" path="res://Scripts/Input/InputManager.cs" id="2_d4o4o"]
-[ext_resource type="Script" uid="uid://q1gpwdgg0tyh" path="res://Scripts/Visuals/EntityVisualizer.cs" id="3_gdsc3"]
 [ext_resource type="Material" uid="uid://bra6ug2wjmj0j" path="res://BinbunGrass/src/materials/grass_01/grass_ground_01.tres" id="4_6bw2v"]
 [ext_resource type="Material" uid="uid://c2to67v55oatp" path="res://BinbunGrass/src/materials/grass_01/grass_01.tres" id="5_kem5a"]
 [ext_resource type="PackedScene" uid="uid://kfx6yeh1o5yq" path="res://templates/environment/grass.tscn" id="6_gxmxl"]
-[ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="6_n4w22"]
 [ext_resource type="PackedScene" uid="uid://de55uopw2vwaa" path="res://templates/environment/Land.tscn" id="7_gdsc3"]
 [ext_resource type="PackedScene" uid="uid://dpvl77oofc2w3" path="res://templates/characters/Cow.tscn" id="7_jbdfk"]
 [ext_resource type="PackedScene" uid="uid://blxgls556ydaj" path="res://templates/characters/Player.tscn" id="8_n4w22"]
 [ext_resource type="PackedScene" uid="uid://bg7ki6hs4neoa" path="res://templates/environment/House.tscn" id="8_svejp"]
 [ext_resource type="PackedScene" uid="uid://b3a1efqph14je" path="res://templates/environment/SellPoint.tscn" id="9_36gju"]
 [ext_resource type="PackedScene" uid="uid://blnhcjlcy72i3" path="res://templates/environment/FinalStructure.tscn" id="10_svejp"]
-[ext_resource type="PackedScene" uid="uid://dmro2br1j6e5t" path="res://templates/resources/not_enough_resource.tscn" id="11_36gju"]
-[ext_resource type="PackedScene" uid="uid://c44rvvadgos51" path="res://sprites/fence/StylizedFences/fence.tscn" id="14_tql22"]
+[ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
+[ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/FinalStructureView.cs" id="view_finalstructure"]
+[ext_resource type="Script" uid="uid://q2pn1v0kf6de" path="res://Scripts/Visuals/GrassView.cs" id="view_grass"]
+[ext_resource type="Script" uid="uid://0qcopw55cs1e" path="res://Scripts/Visuals/HouseView.cs" id="view_house"]
+[ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/LandView.cs" id="view_land"]
+[ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
+[ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
+[ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -27,108 +31,6 @@ sdfgi_min_cell_size = 0.4
 volumetric_fog_density = 0.1026
 volumetric_fog_emission = Color(0.941176, 0.470588, 0.337255, 1)
 adjustment_saturation = 0.01
-
-[sub_resource type="BoxMesh" id="BoxMesh_gg7it"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r0a1b"]
-albedo_color = Color(0.294118, 0.356863, 0.439216, 1)
-
-[sub_resource type="TorusMesh" id="TorusMesh_5f5u1"]
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_l1uxp"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1dtc4"]
-noise = SubResource("FastNoiseLite_l1uxp")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lr1hu"]
-diffuse_mode = 3
-albedo_color = Color(0.14902, 0.517647, 1, 1)
-roughness = 0.08
-emission = Color(0.831373, 0.156863, 0.270588, 1)
-emission_energy_multiplier = 5.85
-heightmap_texture = SubResource("NoiseTexture2D_1dtc4")
-grow_amount = 0.359
-
-[sub_resource type="Animation" id="Animation_clmft"]
-length = 0.001
-loop_mode = 2
-tracks/0/type = "bezier"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SubViewportContainer/SubViewport/Node3D6/Node3D8/Torus:rotation:x")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/1/type = "bezier"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("SubViewportContainer/SubViewport/Node3D6/Node3D8/Torus:rotation:y")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("SubViewportContainer/SubViewport/Node3D6/Node3D8/Torus:rotation:z")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(6.28319, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-
-[sub_resource type="Animation" id="Animation_b55y7"]
-resource_name = "loop"
-length = 10.0
-loop_mode = 1
-tracks/0/type = "bezier"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SubViewportContainer/SubViewport/Node3D6/Node3D8/Torus:rotation:x")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 12.5664, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 10)
-}
-tracks/1/type = "bezier"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("SubViewportContainer/SubViewport/Node3D6/Node3D8/Torus:rotation:y")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 10)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("SubViewportContainer/SubViewport/Node3D6/Node3D8/Torus:rotation:z")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"handle_modes": PackedInt32Array(0, 0),
-"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 6.28319, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 10)
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_y7lvy"]
-_data = {
-&"RESET": SubResource("Animation_clmft"),
-&"loop": SubResource("Animation_b55y7")
-}
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_gxmxl"]
 size = Vector2(20, 20)
@@ -155,6 +57,7 @@ buffer = PackedFloat32Array(-1.07601, 0, -1.20455, 2.39808, 0, 1.61516, 0, 0, 1.
 
 [node name="Main" type="Node" parent="." unique_id=2048933969]
 script = ExtResource("1_884kg")
+OfflineMode = true
 
 [node name="InputManager" type="Node" parent="Main" unique_id=366168345]
 script = ExtResource("2_d4o4o")
@@ -184,70 +87,6 @@ directional_shadow_split_3 = 0.54
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport" unique_id=6311489]
 environment = SubResource("Environment_t4b23")
-
-[node name="Node3D6" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1748131472]
-visible = false
-
-[node name="Node3D8" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1333958842]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.836847, 0, 0)
-
-[node name="Cube" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/Node3D6/Node3D8" unique_id=1413634432]
-transform = Transform3D(-0.34038, 0, 0.940288, 0, 1, 0, -0.940288, 0, -0.34038, 0, 0, 0.0105325)
-mesh = SubResource("BoxMesh_gg7it")
-skeleton = NodePath("../../../../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_r0a1b")
-
-[node name="Torus" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/Node3D6/Node3D8" unique_id=2128803088]
-transform = Transform3D(0.7, -3.1264658e-06, 0, 3.1264658e-06, 0.7, 0, 0, 0, 0.7, 0, 1.45091, 0)
-mesh = SubResource("TorusMesh_5f5u1")
-skeleton = NodePath("../../../../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_lr1hu")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1203907618]
-root_node = NodePath("../../../..")
-libraries/ = SubResource("AnimationLibrary_y7lvy")
-autoplay = &"loop"
-
-[node name="Character" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1227223347 instance=ExtResource("6_n4w22")]
-transform = Transform3D(0.2, 0, 0, 0, 0.19518183, 0.043635447, 0, -0.043635447, 0.19518183, -4.289742, -0.26667625, -2.5957215)
-
-[node name="Node3D" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1633240425 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405539, 0, 0.13405539, 0.99097383, 0, 0.31279135, -2.0586088)
-
-[node name="Node3D2" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=720790101 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405539, 0, 0.13405539, 0.99097383, -1.7177017, 0.31279135, -2.0586088)
-
-[node name="Node3D3" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=218240295 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405539, 0, 0.13405539, 0.99097383, -2.5337148, 0.30903095, -3.0521655)
-
-[node name="Node3D4" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=2071280083 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405539, 0, 0.13405539, 0.99097383, -2.5337148, 0.43067664, -3.9514036)
-
-[node name="Node3D5" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=725138400 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405539, 0, 0.13405539, 0.99097383, -0.7043958, 0.37831917, -3.9584863)
-
-[node name="Node3D9" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1020574038 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 0.99097383, -0.13405539, 0, 0.13405539, 0.99097383, 1.0685675, 0.33606344, -3.9642024)
-
-[node name="Node3D10" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1438853742 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0685675, 0.33606344, -5.3344307)
-
-[node name="Node3D11" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=368696535 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3911383, 0.33606344, -5.3344307)
-
-[node name="Node3D12" parent="SubViewportContainer/SubViewport/Node3D6" unique_id=1690108273 instance=ExtResource("6_gxmxl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2050545, 0.33606344, -5.3344307)
-
-[node name="EntityVisualizer" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1305065505]
-script = ExtResource("3_gdsc3")
-PlayerPrefab = ExtResource("8_n4w22")
-CowPrefab = ExtResource("7_jbdfk")
-GrassPrefab = ExtResource("6_gxmxl")
-LandPrefab = ExtResource("7_gdsc3")
-HousePrefab = ExtResource("8_svejp")
-SellPointPrefab = ExtResource("9_36gju")
-FinalStructurePrefab = ExtResource("10_svejp")
-NotEnoughResourcePrefab = ExtResource("11_36gju")
 
 [node name="Ground" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=246230681]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 19)
@@ -1781,157 +1620,35 @@ material_override = ExtResource("5_kem5a")
 cast_shadow = 0
 multimesh = SubResource("MultiMesh_884kg")
 
-[node name="Node3D5" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1951456567]
-visible = false
+[node name="Views" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=196273130]
 
-[node name="Node3D" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=97162560]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48, -1, 0)
+[node name="PlayerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1605113672]
+script = ExtResource("view_player")
+Prefab = ExtResource("8_n4w22")
 
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=732569999 instance=ExtResource("14_tql22")]
+[node name="CowView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1614741670]
+script = ExtResource("view_cow")
+Prefab = ExtResource("7_jbdfk")
 
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=123745736 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+[node name="GrassView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1140537540]
+script = ExtResource("view_grass")
+Prefab = ExtResource("6_gxmxl")
 
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1518250210 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+[node name="LandView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=212423943]
+script = ExtResource("view_land")
+Prefab = ExtResource("7_gdsc3")
 
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=2083579538 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
+[node name="HouseView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=825493181]
+script = ExtResource("view_house")
+Prefab = ExtResource("8_svejp")
 
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1967564018 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
+[node name="SellPointView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=377890458]
+script = ExtResource("view_sellpoint")
+Prefab = ExtResource("9_36gju")
 
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=488379845 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
+[node name="FinalStructureView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1649731739]
+script = ExtResource("view_finalstructure")
+Prefab = ExtResource("10_svejp")
 
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1063673647 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
-
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=374855196 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
-
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=1316498852 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
-
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=277390945 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
-
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=653832410 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
-
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D" unique_id=920310660 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
-
-[node name="Node3D2" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=1555832682]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 48, -1, 0)
-
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=912051973 instance=ExtResource("14_tql22")]
-
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=391461626 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=797955095 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
-
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=212712207 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
-
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=1339952598 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
-
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=573316024 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
-
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=2061518082 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
-
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=2131948634 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
-
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=52659224 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
-
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=228949896 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
-
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=201021001 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
-
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D2" unique_id=939826862 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
-
-[node name="Node3D3" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=165149302]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 48, -1, 48)
-
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1175717743 instance=ExtResource("14_tql22")]
-
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1770241600 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=510981367 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
-
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=512143414 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
-
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=635822555 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
-
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=717149005 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
-
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=306212982 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
-
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1427719756 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
-
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=2035323944 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
-
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=56553191 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
-
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=751018459 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
-
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D3" unique_id=1498352071 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
-
-[node name="Node3D4" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D5" unique_id=1758590932]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, -1, 48)
-
-[node name="Fence" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=310017805 instance=ExtResource("14_tql22")]
-
-[node name="Fence2" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1213940435 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="Fence3" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1016301894 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
-
-[node name="Fence4" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=366326867 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
-
-[node name="Fence5" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=969499099 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 16)
-
-[node name="Fence6" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1605789392 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
-
-[node name="Fence7" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=297438899 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
-
-[node name="Fence8" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1717841470 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 28)
-
-[node name="Fence9" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=672226063 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 32)
-
-[node name="Fence10" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=36739533 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
-
-[node name="Fence11" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=2142160302 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 40)
-
-[node name="Fence12" parent="SubViewportContainer/SubViewport/Node3D5/Node3D4" unique_id=1705314353 instance=ExtResource("14_tql22")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
+[node name="WallView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=707402369]
+script = ExtResource("view_wall")

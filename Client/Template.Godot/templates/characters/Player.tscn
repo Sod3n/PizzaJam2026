@@ -19,12 +19,19 @@
 [ext_resource type="Texture2D" uid="uid://c55x5qdyrh67t" path="res://sprites/back.png" id="16_xydrf"]
 [ext_resource type="Texture2D" uid="uid://e024qkwcbcl0" path="res://sprites/IMG_0407.PNG" id="18_l3wpo"]
 [ext_resource type="Script" uid="uid://cndtd78smhj8n" path="res://templates/characters/final_dialogue.gd" id="18_vhitc"]
+[ext_resource type="Script" uid="uid://cefbc5s5mb1ym" path="res://Scripts/Framework/FrameworkChildEntity.cs" id="fw_child"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://bnd6dercnrtkw" path="res://Scripts/Framework/Components/PlayerEntityNode.cs" id="fw_player"]
+[ext_resource type="Script" uid="uid://dd2p6nybks8wq" path="res://Scripts/Framework/Components/PlayerStateComponentNode.cs" id="fw_playerstate"]
+[ext_resource type="Script" uid="uid://dinx5371fnt6o" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
+[ext_resource type="Script" uid="uid://w882ltaxhyd6" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
 atlas = ExtResource("6_xl50o")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_l3wpo"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y80ge"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -36,7 +43,7 @@ shader_parameter/pixels_per_unit = 32.0
 atlas = ExtResource("4_c7qr6")
 region = Rect2(0, 0, 512, 498)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_lkh7d"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xplp5"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
@@ -48,7 +55,7 @@ shader_parameter/pixels_per_unit = 32.0
 atlas = ExtResource("5_xydrf")
 region = Rect2(0, 0, 658, 166)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_u7nxn"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hgbuf"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
@@ -60,7 +67,7 @@ shader_parameter/pixels_per_unit = 32.0
 atlas = ExtResource("6_vhitc")
 region = Rect2(0, 0, 632, 142)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6q1hw"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wl1od"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
@@ -72,7 +79,7 @@ shader_parameter/pixels_per_unit = 32.0
 atlas = ExtResource("7_l3wpo")
 region = Rect2(0, 0, 373, 193)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6l6fq"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ql6fu"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_50s2t")
@@ -84,7 +91,7 @@ shader_parameter/pixels_per_unit = 32.0
 atlas = ExtResource("8_lkh7d")
 region = Rect2(0, 0, 337, 191)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_f0udm"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q4gn4"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
@@ -92,7 +99,7 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_q472n"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_snram"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("9_u7nxn")
@@ -100,14 +107,14 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_y80ge"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qe0ps"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_xplp5"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mfgwx"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("10_6q1hw")
@@ -147,40 +154,74 @@ region = Rect2(208.95313, 1608.7108, 455.62524, 379.6875)
 
 [node name="Player" type="Node3D" unique_id=1227286794]
 
+[node name="Entity" type="Node3D" parent="." unique_id=683149249]
+script = ExtResource("fw_entity")
+EntityName = "Player"
+StableIdSeed = "player-entity-seed"
+
+[node name="PlayerEntity" type="Node" parent="Entity" unique_id=256439165]
+script = ExtResource("fw_player")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1881591113]
+script = ExtResource("fw_phys")
+BodyType = 0
+ShapeRadius = 0.46962145
+
+[node name="State" type="Node" parent="Entity" unique_id=561460476]
+script = ExtResource("fw_state")
+
+[node name="Skin" type="Node" parent="Entity" unique_id=1548874236]
+script = ExtResource("fw_skin")
+
+[node name="PlayerStateComponent" type="Node" parent="Entity" unique_id=1582383701]
+script = ExtResource("fw_playerstate")
+
+[node name="InteractionZone" type="Node" parent="Entity" unique_id=2034575380]
+script = ExtResource("fw_child")
+ChildName = "InteractionZone"
+StoreInComponent = "PlayerStateComponent"
+StoreInField = "InteractionZone"
+
+[node name="Area" type="Node3D" parent="Entity/InteractionZone" unique_id=2001690953]
+script = ExtResource("fw_phys")
+BodyType = 2
+ShapeRadius = 2.0
+CollisionLayer = 8
+CollisionMask = 5
+
 [node name="Character" parent="." unique_id=1227223347 node_paths=PackedStringArray("skin_node") instance=ExtResource("1_muct3")]
 transform = Transform3D(0.2, 0, 0, 0, 0.19518183, 0.043635447, 0, -0.043635447, 0.19518183, 0, -0.18061149, 0)
 skin_node = NodePath("ScaleAnchor/Skin2")
-bounce_height = 2.0
 
 [node name="Skin" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223347, 1423863731) index="0" unique_id=1045908558]
 visible = false
 
 [node name="Body" parent="Character/ScaleAnchor/Skin" index="0" unique_id=1133601551]
-material_override = SubResource("ShaderMaterial_l3wpo")
-
-[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
-material_override = SubResource("ShaderMaterial_lkh7d")
-
-[node name="Torns" parent="Character/ScaleAnchor/Skin" index="2" unique_id=2031229694]
-material_override = SubResource("ShaderMaterial_u7nxn")
-
-[node name="Ears" parent="Character/ScaleAnchor/Skin" index="3" unique_id=1368322551]
-material_override = SubResource("ShaderMaterial_6q1hw")
-
-[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="4" unique_id=50470159]
-material_override = SubResource("ShaderMaterial_6l6fq")
-
-[node name="Top" parent="Character/ScaleAnchor/Skin" index="5" unique_id=2106512903]
-material_override = SubResource("ShaderMaterial_f0udm")
-
-[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2120793389]
-material_override = SubResource("ShaderMaterial_q472n")
-
-[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="7" unique_id=294789255]
 material_override = SubResource("ShaderMaterial_y80ge")
 
-[node name="Tail" parent="Character/ScaleAnchor/Skin" index="8" unique_id=543932425]
+[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
 material_override = SubResource("ShaderMaterial_xplp5")
+
+[node name="Torns" parent="Character/ScaleAnchor/Skin" index="2" unique_id=2031229694]
+material_override = SubResource("ShaderMaterial_hgbuf")
+
+[node name="Ears" parent="Character/ScaleAnchor/Skin" index="3" unique_id=1368322551]
+material_override = SubResource("ShaderMaterial_wl1od")
+
+[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="4" unique_id=50470159]
+material_override = SubResource("ShaderMaterial_ql6fu")
+
+[node name="Top" parent="Character/ScaleAnchor/Skin" index="5" unique_id=2106512903]
+material_override = SubResource("ShaderMaterial_q4gn4")
+
+[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2120793389]
+material_override = SubResource("ShaderMaterial_snram")
+
+[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="7" unique_id=294789255]
+material_override = SubResource("ShaderMaterial_qe0ps")
+
+[node name="Tail" parent="Character/ScaleAnchor/Skin" index="8" unique_id=543932425]
+material_override = SubResource("ShaderMaterial_mfgwx")
 
 [node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223347, 1423863731) index="1" unique_id=661096088]
 transform = Transform3D(0.9999998, 0, 0, 0, 0.9999999, 1.4901161e-08, 0, -1.4901161e-08, 0.9999999, 0, 5.2107396, 0.173539)

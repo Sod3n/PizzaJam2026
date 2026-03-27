@@ -1,12 +1,13 @@
+// Component struct — source of truth for fields
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
-using System.Runtime.InteropServices;
 using Deterministic.GameFramework.Types;
+using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-[StableId("c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f")]
+[StableId("fcf83639-f988-e35a-8fcc-1f0ebc71fb9e")]
 public struct CowComponent : IComponent
 {
     public int Exhaust;

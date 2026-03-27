@@ -22,7 +22,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Global="*uid://c6aa26vlcpjcm"
-DebugVisualizer="*uid://npuo4exylqxf"
+DebugVisualizer="*uid://d01xjuy2b0bpt"
 
 [display]
 
@@ -36,10 +36,11 @@ window/stretch/aspect="expand"
 [dotnet]
 
 project/assembly_name="Template.Godot"
+project/assembly_reload_mode=2
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/debug_tools/plugin.cfg")
+enabled=PackedStringArray("res://addons/framework_tools/plugin.cfg")
 
 [network]
 
