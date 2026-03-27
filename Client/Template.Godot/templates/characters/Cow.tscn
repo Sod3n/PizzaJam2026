@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://dpvl77oofc2w3"]
+
+[ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_7tc83"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/CowComponentNode.cs" id="fw_cow"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="fw_nav"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
+
+[node name="Cow" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "Cow"
+StableIdSeed = "cow-entity-seed"
+
+[node name="CowComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_cow")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+BodyType = 0
+ShapeType = 0
+ShapeRadius = 0.5
+CollisionLayer = 1
+CollisionMask = 9
+
+[node name="NavAgent" type="Node3D" parent="Entity"]
+script = ExtResource("fw_nav")
+MaxSpeed = 10.0
+TargetDesiredDistance = 2.0
+PathDesiredDistance = 1.0
+Radius = 0.5
+
+[node name="State" type="Node" parent="Entity"]
+script = ExtResource("fw_state")
+
+[node name="Skin" type="Node" parent="Entity"]
+script = ExtResource("fw_skin")
+
+[node name="Character" parent="." instance=ExtResource("1_7tc83")]
