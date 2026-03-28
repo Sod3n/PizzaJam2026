@@ -90,7 +90,7 @@ jobs:
             -storepass android -keypass android \
             -dname "CN=CI Build,O=PizzaJam,C=US" 2>/dev/null
 
-          # Point Godot at the Android SDK, Java, and keystore
+          # Point Godot at the Android SDK, Java, and keystore (both debug + release)
           mkdir -p ~/.config/godot
           cat > ~/.config/godot/editor_settings-4.tres << EOF
           [gd_resource type="EditorSettings" format=3]
@@ -101,6 +101,9 @@ jobs:
           export/android/debug_keystore = "$HOME/.android/debug.keystore"
           export/android/debug_keystore_user = "androiddebugkey"
           export/android/debug_keystore_pass = "android"
+          export/android/keystore/release = "$HOME/.android/debug.keystore"
+          export/android/keystore/release_user = "androiddebugkey"
+          export/android/keystore/release_password = "android"
           EOF
 
           # Install Android build template (required for gradle build / C# export)
@@ -128,13 +131,6 @@ jobs:
       - name: Restore .NET packages
         run: dotnet restore
         working-directory: ${{ env.PROJECT_PATH }}
-
-      - name: Test .NET Android build
-        if: matrix.name == 'Android'
-        working-directory: ${{ env.PROJECT_PATH }}
-        continue-on-error: true
-        run: |
-          dotnet publish Template.Godot.csproj -c ExportRelease -p:GodotTargetPlatform=android -v normal 2>&1 | tail -80
 
       - name: Import Godot project
         run: godot --headless --import
