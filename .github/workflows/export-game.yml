@@ -108,6 +108,23 @@ jobs:
           echo "Editor settings:"
           cat ~/.config/godot/editor_settings-4.tres
 
+          # Create export credentials for Android preset (preset.3)
+          # This file is in .godot/ which is gitignored
+          mkdir -p .godot
+          {
+            echo '[preset.3]'
+            echo ''
+            echo 'script_encryption_key=""'
+            echo ''
+            echo '[preset.3.options]'
+            echo ''
+            echo "keystore/release = \"$HOME/.android/debug.keystore\""
+            echo "keystore/release_user = \"androiddebugkey\""
+            echo "keystore/release_password = \"android\""
+          } > .godot/export_credentials.cfg
+          echo "Export credentials:"
+          cat .godot/export_credentials.cfg
+
           # Install Android build template (required for gradle build / C# export)
           TEMPLATES_DIR=$(find ~/.local/share/godot/export_templates -maxdepth 1 -type d -name "*.mono" | head -1)
           if [ -z "$TEMPLATES_DIR" ]; then
