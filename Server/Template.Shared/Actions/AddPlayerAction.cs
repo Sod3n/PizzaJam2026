@@ -55,6 +55,36 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
 
         // Add Score Component (not in definition yet, specific to gameplay)
         ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });
+
+        // Collect unowned cows first, then assign (avoid stale refs during iteration)
+        var unownedCows = new System.Collections.Generic.List<Entity>();
+        foreach (var cowEntity in ctx.State.Filter<CowComponent>())
+        {
+            var cow = ctx.State.GetComponent<CowComponent>(cowEntity);
+            if (cow.FollowingPlayer == Entity.Null && cow.HouseId == Entity.Null)
+                unownedCows.Add(cowEntity);
+        }
+
+        Entity lastInChain = Entity.Null;
+        for (int i = 0; i < unownedCows.Count; i++)
+        {
+            var cowEntity = unownedCows[i];
+            ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
+            cow.FollowingPlayer = playerEntity;
+
+            if (i == 0)
+            {
+                ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+                ps.FollowingCow = cowEntity;
+                cow = ref ctx.State.GetComponent<CowComponent>(cowEntity); // re-get after touching other component
+                cow.FollowTarget = playerEntity;
+            }
+            else
+            {
+                cow.FollowTarget = lastInChain;
+            }
+            lastInChain = cowEntity;
+        }
     }
 
     private Vector2 FindValidSpawnPosition(Context ctx, ref Deterministic.GameFramework.Types.DeterministicRandom random)
@@ -65,9 +95,9 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
 
         for (int i = 0; i < MaxAttempts; i++)
         {
-            // Spawn close to center (+/- 10 units)
-            var x = random.NextInt(-10, 10);
-            var y = random.NextInt(-10, 10);
+            // Spawn left of center to avoid landing on the starting land plot
+            var x = random.NextInt(-15, -5);
+            var y = random.NextInt(-5, 5);
             var candidate = new Vector2(x, y);
 
             if (!IsPositionOccupied(ctx, candidate, MinDistanceSq))

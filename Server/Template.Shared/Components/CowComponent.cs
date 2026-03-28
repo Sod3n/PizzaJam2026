@@ -16,4 +16,5 @@ public struct CowComponent : IComponent
     public Entity HouseId;
     public Vector2 SpawnPosition;
     public Entity FollowingPlayer;
+    public Entity FollowTarget; // Entity this cow actually follows (player or previous cow in chain)
 }

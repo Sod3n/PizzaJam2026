@@ -32,6 +32,7 @@ public static partial class CowDefinition
         component.HouseId = Entity.Null;
         component.SpawnPosition = Vector2.Zero;
         component.FollowingPlayer = Entity.Null;
+        component.FollowTarget = Entity.Null;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

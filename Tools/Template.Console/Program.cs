@@ -77,7 +77,6 @@ public class GameConsole
                 case "move": CmdMove(parts); break;
                 case "teleport": CmdTeleport(parts); break;
                 case "interact": CmdInteract(parts); break;
-                case "alt-interact": CmdAltInteract(parts); break;
                 case "status": CmdStatus(parts); break;
                 case "list": CmdList(parts); break;
                 case "resources": CmdResources(); break;
@@ -191,15 +190,6 @@ public class GameConsole
         System.Console.WriteLine($"Interact → state: Key='{sc.Key}' Phase={sc.Phase} Enabled={sc.IsEnabled}");
     }
 
-    private void CmdAltInteract(string[] parts)
-    {
-        // alt-interact <player>
-        if (parts.Length < 2) { System.Console.WriteLine("Usage: alt-interact <player>"); return; }
-        var (entity, userId) = GetPlayer(parts[1]);
-        DispatchAction(_game, new AltInteractAction { UserId = userId }, entity);
-        var sc = _game.State.GetComponent<StateComponent>(entity);
-        System.Console.WriteLine($"AltInteract → state: Key='{sc.Key}' Phase={sc.Phase} Enabled={sc.IsEnabled}");
-    }
 
     private void CmdStatus(string[] parts)
     {

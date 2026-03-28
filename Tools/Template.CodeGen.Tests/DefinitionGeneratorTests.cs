@@ -137,6 +137,72 @@ public class DefinitionGeneratorTests
         code.Should().Contain("static partial void OnEntityCreated(Context ctx, Entity entity, Dictionary<string, Entity> childEntities);");
     }
 
+    [Fact]
+    public void Generate_EnumField_DefaultIsDefault()
+    {
+        var entity = new EntityDescriptor
+        {
+            EntityName = "Test",
+            Components = new List<ComponentDescriptor>
+            {
+                new()
+                {
+                    ComponentName = "TestComponent",
+                    Fields = new List<FieldDescriptor>
+                    {
+                        new() { Name = "Layer", TypeName = "CollisionLayer", IsEnum = true },
+                    }
+                }
+            }
+        };
+        var code = DefinitionGenerator.Generate(entity);
+        code.Should().Contain("component.Layer = default;");
+    }
+
+    [Fact]
+    public void Generate_EnumField_NumericDefaultIsCast()
+    {
+        var entity = new EntityDescriptor
+        {
+            EntityName = "Test",
+            Components = new List<ComponentDescriptor>
+            {
+                new()
+                {
+                    ComponentName = "TestComponent",
+                    Fields = new List<FieldDescriptor>
+                    {
+                        new() { Name = "Layer", TypeName = "CollisionLayer", IsEnum = true, DefaultValue = "4" },
+                    }
+                }
+            }
+        };
+        var code = DefinitionGenerator.Generate(entity);
+        code.Should().Contain("component.Layer = (CollisionLayer)4;");
+    }
+
+    [Fact]
+    public void Generate_EnumField_NamedDefaultPassedThrough()
+    {
+        var entity = new EntityDescriptor
+        {
+            EntityName = "Test",
+            Components = new List<ComponentDescriptor>
+            {
+                new()
+                {
+                    ComponentName = "TestComponent",
+                    Fields = new List<FieldDescriptor>
+                    {
+                        new() { Name = "Layer", TypeName = "CollisionLayer", IsEnum = true, DefaultValue = "CollisionLayer.Physics" },
+                    }
+                }
+            }
+        };
+        var code = DefinitionGenerator.Generate(entity);
+        code.Should().Contain("component.Layer = CollisionLayer.Physics;");
+    }
+
     private static EntityDescriptor CreateCowEntity() => new()
     {
         EntityName = "Cow",

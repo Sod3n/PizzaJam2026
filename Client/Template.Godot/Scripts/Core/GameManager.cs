@@ -14,6 +14,7 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Profiler;
 using Deterministic.GameFramework.Utils.Logging;
+using FileAccess = Godot.FileAccess;
 
 namespace Template.Godot.Core;
 
@@ -23,15 +24,23 @@ public partial class GameManager : Node
 
     [Export] public string ServerIp = "127.0.0.1";
     [Export] public int ServerPort = 9050;
-
-    // If true, auto-queues. If false, waits for UI (not implemented yet, so defaults true)
-    [Export] public bool AutoConnect = true;
     [Export] public bool OfflineMode = false;
 
     public GameClient GameClient { get; private set; }
     public Deterministic.GameFramework.Common.Game Game { get; private set; }
     public int LocalPlayerId { get; private set; }
     public Guid OfflineUserId { get; private set; }
+    public Guid CurrentLobbyId { get; private set; }
+
+    public event Action<string> OnStatusChanged;
+    public event Action<Guid> OnLobbyCreated;
+    public event Action OnGameStarted;
+    public event Action<string> OnError;
+
+    private const string SaveFilePath = "user://savegame.dat";
+    private const int AutoSaveInterval = 300; // 5 seconds at 60hz
+    private int _autoSaveCounter;
+    private byte[] _pendingLoadState;
 
     private Task _gameLoopTask;
     private bool _isRunning;
@@ -74,21 +83,14 @@ public partial class GameManager : Node
         GameClient = new GameClient(networkClient, serverUrl, Game);
         GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
 
-        if (OfflineMode)
-        {
-            StartOffline();
-        }
-        else if (AutoConnect)
-        {
-            _ = ConnectAndStart();
-        }
+        // Wait for UI to call StartOffline(), CreateLobby(), or JoinLobby()
     }
 
-    private void StartOffline()
+    public void StartOffline()
     {
         GD.Print("Starting in Offline Mode...");
+        OfflineMode = true;
 
-        // 1. Initialize Local Player
         OfflineUserId = Guid.NewGuid();
         var context = new Deterministic.GameFramework.DAR.Context(Game.State, Deterministic.GameFramework.ECS.Entity.Null, null!);
         var playerEntity = Template.Shared.Definitions.PlayerDefinition.Create(
@@ -101,11 +103,50 @@ public partial class GameManager : Node
         LocalPlayerId = playerEntity.Id;
         GD.Print($"[GameManager] Offline Player Created: {LocalPlayerId}");
 
-        // 2. Start Loop
+        Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
-
         GameProfiler.Enable(Game);
+        OnGameStarted?.Invoke();
+    }
+
+    public void StartOfflineFromSave()
+    {
+        var saveData = LoadGameFromDisk();
+        if (saveData == null)
+        {
+            GD.PrintErr("[GameManager] No save file found");
+            OnError?.Invoke("No save file found");
+            return;
+        }
+
+        GD.Print("Starting Offline from save...");
+        OfflineMode = true;
+
+        long savedTick = BitConverter.ToInt64(saveData, 0);
+        byte[] stateData = new byte[saveData.Length - 8];
+        Array.Copy(saveData, 8, stateData, 0, stateData.Length);
+
+        StateSerializer.Deserialize(Game.State, stateData);
+        Game.Loop.ForceSetTick(savedTick);
+        ReactiveSystem.Instance.Reset();
+
+        // Find our player in the restored state
+        OfflineUserId = Guid.NewGuid();
+        var entities = Game.State.Filter<PlayerEntity>();
+        if (entities.Length > 0)
+        {
+            LocalPlayerId = entities[0].Id;
+            ref var player = ref Game.State.GetComponent<PlayerEntity>(entities[0]);
+            OfflineUserId = player.UserId;
+            GD.Print($"[GameManager] Restored Player: {LocalPlayerId}");
+        }
+
+        Game.Loop.OnTick += AutoSaveTick;
+        _gameLoopTask = Game.Loop.Start();
+        _isRunning = true;
+        GameProfiler.Enable(Game);
+        OnGameStarted?.Invoke();
     }
 
     public void ScheduleOfflineAction<TAction>(TAction action, int targetEntityId) where TAction : struct, IAction
@@ -114,29 +155,83 @@ public partial class GameManager : Node
         Game.Scheduler.Schedule(action, id, new Entity(targetEntityId), Game.Loop.CurrentTick + 1);
     }
 
-    private async Task ConnectAndStart()
+    public async Task CreateLobby(string lobbyName)
     {
         try
         {
-            GD.Print("Connecting...");
+            OnStatusChanged?.Invoke("Connecting to server...");
             await GameClient.ConnectAsync();
 
-            GD.Print("Enqueuing...");
-            await GameClient.EnqueuePlayerAsync();
+            OnStatusChanged?.Invoke("Creating lobby...");
+            GameClient.OnLobbyCreated += (lobbyId) =>
+            {
+                CurrentLobbyId = lobbyId;
+                GD.Print($"[GameManager] Lobby created: {lobbyId}");
+                CallDeferred(nameof(EmitLobbyCreated), lobbyId.ToString());
+            };
 
-            GD.Print("Waiting for match...");
+            await GameClient.CreateLobbyAsync(lobbyName);
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"Create lobby failed: {e}");
+            OnError?.Invoke(e.Message);
+        }
+    }
+
+    private void EmitLobbyCreated(string lobbyIdStr)
+    {
+        OnLobbyCreated?.Invoke(Guid.Parse(lobbyIdStr));
+    }
+
+    public async Task StartLobby()
+    {
+        try
+        {
+            OnStatusChanged?.Invoke("Starting match...");
+            await GameClient.StartLobbyMatchAsync(CurrentLobbyId, _pendingLoadState);
+            _pendingLoadState = null;
+
+            OnStatusChanged?.Invoke("Waiting for sync...");
             await GameClient.WaitForSyncAsync();
 
             GD.Print("Synced! Starting GameLoop...");
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
-
-            // Find Local Player automatically
             SetupLocalPlayerDiscovery();
+            OnGameStarted?.Invoke();
         }
         catch (Exception e)
         {
-            GD.PrintErr($"Connection failed: {e}");
+            GD.PrintErr($"Start lobby failed: {e}");
+            OnError?.Invoke(e.Message);
+        }
+    }
+
+    public async Task JoinLobby(Guid lobbyId)
+    {
+        try
+        {
+            OnStatusChanged?.Invoke("Connecting to server...");
+            await GameClient.ConnectAsync();
+
+            OnStatusChanged?.Invoke("Joining lobby...");
+            CurrentLobbyId = lobbyId;
+            await GameClient.JoinLobbyAsync(lobbyId);
+
+            OnStatusChanged?.Invoke("Waiting for host to start...");
+            await GameClient.WaitForSyncAsync();
+
+            GD.Print("Synced! Starting GameLoop...");
+            _gameLoopTask = Game.Loop.Start();
+            _isRunning = true;
+            SetupLocalPlayerDiscovery();
+            OnGameStarted?.Invoke();
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"Join lobby failed: {e}");
+            OnError?.Invoke(e.Message);
         }
     }
 
@@ -163,10 +258,71 @@ public partial class GameManager : Node
             });
     }
 
+    public void SaveGame()
+    {
+        try
+        {
+            byte[] stateData = StateSerializer.Serialize(Game.State);
+            long tick = Game.Loop.CurrentTick;
+
+            byte[] saveData = new byte[8 + stateData.Length];
+            BitConverter.TryWriteBytes(new Span<byte>(saveData, 0, 8), tick);
+            stateData.CopyTo(saveData, 8);
+
+            using var file = FileAccess.Open(SaveFilePath, FileAccess.ModeFlags.Write);
+            if (file != null)
+            {
+                file.StoreBuffer(saveData);
+                GD.Print($"[GameManager] Game saved at tick {tick} ({stateData.Length} bytes)");
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"[GameManager] Save failed: {e.Message}");
+        }
+    }
+
+    public byte[] LoadGameFromDisk()
+    {
+        if (!FileAccess.FileExists(SaveFilePath))
+            return null;
+
+        using var file = FileAccess.Open(SaveFilePath, FileAccess.ModeFlags.Read);
+        if (file == null) return null;
+
+        var data = file.GetBuffer((long)file.GetLength());
+        if (data.Length <= 8) return null;
+
+        GD.Print($"[GameManager] Loaded save file ({data.Length} bytes)");
+        return data;
+    }
+
+    public bool HasSaveFile()
+    {
+        return FileAccess.FileExists(SaveFilePath);
+    }
+
+    public void SetPendingLoadState(byte[] saveData)
+    {
+        _pendingLoadState = saveData;
+    }
+
+    private void AutoSaveTick()
+    {
+        _autoSaveCounter++;
+        if (_autoSaveCounter >= AutoSaveInterval)
+        {
+            _autoSaveCounter = 0;
+            SaveGame();
+        }
+    }
+
     public override void _ExitTree()
     {
         _isRunning = false;
         _localPlayerSubscription?.Dispose();
+        Game.Loop.OnTick -= AutoSaveTick;
+        if (_isRunning) SaveGame();
         Game.Loop.Stop();
         GameClient?.Dispose();
     }

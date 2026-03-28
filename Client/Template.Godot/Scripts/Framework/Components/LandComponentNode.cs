@@ -8,4 +8,8 @@ public partial class LandComponentNode : Node
 {
     [Export] public int CurrentCoins;
     [Export] public int Threshold;
+    [Export] public int Type;
+    [Export] public int Arm;
+    [Export] public int Ring;
+    [Export] public int Locked;
 }

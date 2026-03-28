@@ -233,7 +233,7 @@ script = ExtResource("7_rapy0")
 
 [node name="Camera" parent="." unique_id=2095400398 instance=ExtResource("3_lwepe")]
 transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 10.943492, 17.389597)
-size = 10.0
+size = 20.0
 pixels_per_meter = 32.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915661]

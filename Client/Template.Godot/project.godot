@@ -42,6 +42,10 @@ project/assembly_reload_mode=2
 
 enabled=PackedStringArray("res://addons/framework_tools/plugin.cfg")
 
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
 [network]
 
 limits/debugger/max_chars_per_second=327680

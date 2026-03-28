@@ -74,6 +74,22 @@ public class ComponentGeneratorTests
         ComponentGenerator.MapType("CustomType").Should().Be("CustomType");
     }
 
+    [Fact]
+    public void Generate_EnumField_PassesThroughTypeName()
+    {
+        var comp = new ComponentDescriptor
+        {
+            ComponentName = "TestComponent",
+            StableId = "test-id",
+            Fields = new List<FieldDescriptor>
+            {
+                new() { Name = "Layer", TypeName = "CollisionLayer", IsEnum = true },
+            }
+        };
+        var code = ComponentGenerator.Generate(comp);
+        code.Should().Contain("public CollisionLayer Layer;");
+    }
+
     private static ComponentDescriptor CreateCowComponent() => new()
     {
         ComponentName = "CowComponent",

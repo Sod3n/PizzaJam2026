@@ -91,7 +91,13 @@
       "Bash(find ~/Library/Logs -name *.crash -mmin -120)",
       "Bash(find ~/Library/Logs/DiagnosticReports -name *Godot* -mmin -120)",
       "Bash(find ~/Library/Application Support/Godot -name editor_settings*)",
-      "Read(//Users/a1/**)"
+      "Read(//Users/a1/**)",
+      "Bash(grep -r uid://c6aa26vlcpjcm /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot --include=*.tscn --include=*.cs)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/templates -name *.tscn)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Framework -name \"*.cs\" -type f ! -path \"*/obj/*\" -exec grep -l \"public enum\\\\|private enum\\\\|internal enum\" {})",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy -name *.cs -type f ! -path */Server/Framework/* ! -path */.git/* -exec grep -l \"struct.*IComponent\\\\|struct.*IAction\" {})",
+      "Bash(2)",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Framework -name \"*.cs\" -type f ! -path \"*/obj/*\" -exec wc -l {} +)"
     ]
   }
 }

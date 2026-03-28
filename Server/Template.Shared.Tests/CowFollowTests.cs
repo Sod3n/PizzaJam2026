@@ -52,8 +52,24 @@ public class CowFollowTests
         game.Loop.Simulation.SystemRunner.Update(game.State);
     }
 
+    /// <summary>Helper: tame a cow by moving player near it and interacting.</summary>
+    private void TameCow(Game game, System.Guid userId, Entity player, Entity cow)
+    {
+        var cowPos = game.State.GetComponent<Transform2D>(cow).Position;
+        ref var pt = ref game.State.GetComponent<Transform2D>(player);
+        pt.Position = cowPos + new Vector2(1, 0);
+        RunTicks(game, 5);
+
+        DispatchAction(game, new InteractAction { UserId = userId }, player);
+
+        var sc = game.State.GetComponent<StateComponent>(player);
+        _output.WriteLine($"After tame interact: Key='{sc.Key}' Phase={sc.Phase} Enabled={sc.IsEnabled}");
+
+        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+    }
+
     [Fact]
-    public void AltInteract_NearCow_ShouldEnterTamingState()
+    public void Interact_NearCow_ShouldEnterTamingState()
     {
         var game = CreateGame();
         var userId = System.Guid.NewGuid();
@@ -68,7 +84,7 @@ public class CowFollowTests
         pt.Position = cowPos + new Vector2(1, 0);
         RunTicks(game, 5);
 
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
+        DispatchAction(game, new InteractAction { UserId = userId }, player);
 
         var sc = game.State.GetComponent<StateComponent>(player);
         sc.Key.ToString().Should().Be(StateKeys.Taming);
@@ -76,7 +92,7 @@ public class CowFollowTests
     }
 
     [Fact]
-    public void AltInteract_AfterTamingComplete_CowShouldFollow()
+    public void Interact_AfterTamingComplete_CowShouldFollow()
     {
         var game = CreateGame();
         var userId = System.Guid.NewGuid();
@@ -86,24 +102,100 @@ public class CowFollowTests
         foreach (var e in game.State.Filter<CowComponent>())
         { cow = e; break; }
 
-        var cowPos = game.State.GetComponent<Transform2D>(cow).Position;
-        ref var pt = ref game.State.GetComponent<Transform2D>(player);
-        pt.Position = cowPos + new Vector2(1, 0);
-        RunTicks(game, 5);
-
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
-
-        // Wait for taming_enter to complete (60 ticks)
-        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+        TameCow(game, userId, player, cow);
 
         var cowComp = game.State.GetComponent<CowComponent>(cow);
         cowComp.FollowingPlayer.Should().Be(player);
+        cowComp.FollowTarget.Should().Be(player, "First cow should follow player directly");
 
         var playerState = game.State.GetComponent<PlayerStateComponent>(player);
         playerState.FollowingCow.Should().Be(cow);
 
         var sc = game.State.GetComponent<StateComponent>(player);
         sc.IsEnabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Interact_SecondCow_ShouldFollowFirstCow()
+    {
+        var game = CreateGame();
+        var userId = System.Guid.NewGuid();
+        var player = SpawnPlayer(game, userId);
+
+        var cows = new System.Collections.Generic.List<Entity>();
+        foreach (var e in game.State.Filter<CowComponent>())
+            cows.Add(e);
+        cows.Count.Should().BeGreaterOrEqualTo(2);
+
+        var cow1 = cows[0];
+        var cow2 = cows[1];
+
+        // Tame first cow
+        TameCow(game, userId, player, cow1);
+
+        var cow1Comp = game.State.GetComponent<CowComponent>(cow1);
+        cow1Comp.FollowingPlayer.Should().Be(player);
+        cow1Comp.FollowTarget.Should().Be(player, "First cow follows player");
+
+        // Tame second cow
+        TameCow(game, userId, player, cow2);
+
+        var cow2Comp = game.State.GetComponent<CowComponent>(cow2);
+        cow2Comp.FollowingPlayer.Should().Be(player);
+        cow2Comp.FollowTarget.Should().Be(cow1, "Second cow should follow first cow in chain");
+
+        var playerState = game.State.GetComponent<PlayerStateComponent>(player);
+        playerState.FollowingCow.Should().Be(cow1, "Player's FollowingCow should be the first cow");
+    }
+
+    [Fact]
+    public void InitialCows_ShouldFollowOnPlayerJoin()
+    {
+        var game = CreateGame();
+        var userId = System.Guid.NewGuid();
+
+        // Use AddPlayerAction instead of direct SpawnPlayer to test the join flow
+        var worldEntity = Entity.Null;
+        foreach (var e in game.State.Filter<World>())
+        { worldEntity = e; break; }
+
+        // Count cows before player joins
+        int cowCount = 0;
+        foreach (var _ in game.State.Filter<CowComponent>())
+            cowCount++;
+        _output.WriteLine($"Cows before join: {cowCount}");
+
+        DispatchAction(game, new AddPlayerAction(userId), worldEntity);
+
+        // Find the player
+        Entity player = Entity.Null;
+        foreach (var e in game.State.Filter<PlayerEntity>())
+        {
+            if (game.State.GetComponent<PlayerEntity>(e).UserId == userId)
+            { player = e; break; }
+        }
+        player.Should().NotBe(Entity.Null, "Player should have been created");
+
+        var playerState = game.State.GetComponent<PlayerStateComponent>(player);
+        playerState.FollowingCow.Should().NotBe(Entity.Null, "Player should have a following cow after join");
+
+        // Check that all initial cows are in the follow chain
+        int followingCount = 0;
+        foreach (var cowEntity in game.State.Filter<CowComponent>())
+        {
+            var cow = game.State.GetComponent<CowComponent>(cowEntity);
+            if (cow.FollowingPlayer == player)
+            {
+                followingCount++;
+                _output.WriteLine($"Cow {cowEntity.Id}: FollowTarget={cow.FollowTarget.Id}, FollowingPlayer={cow.FollowingPlayer.Id}");
+            }
+        }
+        followingCount.Should().Be(cowCount, "All initial cows should follow the player");
+
+        // First cow should follow player directly
+        var firstCow = playerState.FollowingCow;
+        var firstCowComp = game.State.GetComponent<CowComponent>(firstCow);
+        firstCowComp.FollowTarget.Should().Be(player, "First cow should follow player directly");
     }
 
     [Fact]
@@ -128,13 +220,7 @@ public class CowFollowTests
         }
 
         // Tame the cow
-        var cowPos = game.State.GetComponent<Transform2D>(cow).Position;
-        ref var pt = ref game.State.GetComponent<Transform2D>(player);
-        pt.Position = cowPos + new Vector2(1, 0);
-        RunTicks(game, 5);
-
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
-        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+        TameCow(game, userId, player, cow);
         game.State.GetComponent<CowComponent>(cow).FollowingPlayer.Should().Be(player);
 
         // Move player away from cow
@@ -212,13 +298,7 @@ public class CowFollowTests
         }
 
         // Tame cow
-        var cowPos = game.State.GetComponent<Transform2D>(cow).Position;
-        ref var pt = ref game.State.GetComponent<Transform2D>(player);
-        pt.Position = cowPos + new Vector2(1, 0);
-        RunTicks(game, 5);
-
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
-        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+        TameCow(game, userId, player, cow);
         game.State.GetComponent<CowComponent>(cow).FollowingPlayer.Should().Be(player);
 
         // Now simulate player moving right at constant velocity
@@ -293,13 +373,7 @@ public class CowFollowTests
         }
 
         // Tame the cow
-        var cowPos = game.State.GetComponent<Transform2D>(cow).Position;
-        ref var pt = ref game.State.GetComponent<Transform2D>(player);
-        pt.Position = cowPos + new Vector2(1, 0);
-        RunTicks(game, 5);
-
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
-        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+        TameCow(game, userId, player, cow);
         game.State.GetComponent<CowComponent>(cow).FollowingPlayer.Should().Be(player);
 
         // Place cow at a known position and a wall between cow and player
@@ -366,9 +440,7 @@ public class CowFollowTests
         // The cow should have moved closer to the player by navigating around the wall
         finalDist.Should().BeLessThan(initialDist, "Cow should navigate around the obstacle to reach the player");
 
-        // Cow should not have gone through the wall — check it actually went around
-        // If nav works, cow's X should have deviated from the straight-line path at some point
-        // At minimum, cow should be substantially closer
+        // Cow should be substantially closer
         ((float)finalDist).Should().BeLessThan(5f, "Cow should reach close to the player after navigating around the wall");
     }
 
@@ -394,13 +466,7 @@ public class CowFollowTests
         }
 
         // Tame the cow
-        var cowPos = game.State.GetComponent<Transform2D>(cow).Position;
-        ref var pt = ref game.State.GetComponent<Transform2D>(player);
-        pt.Position = cowPos + new Vector2(1, 0);
-        RunTicks(game, 5);
-
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
-        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+        TameCow(game, userId, player, cow);
         game.State.GetComponent<CowComponent>(cow).FollowingPlayer.Should().Be(player);
 
         // Create a wide horizontal wall at Y=23
@@ -635,29 +701,11 @@ public class CowFollowTests
         var userId = System.Guid.NewGuid();
         var player = SpawnPlayer(game, userId);
 
-        // Need cows < houses for crossbreeding (2 cows, need 3+ houses)
-        // Give enough coins to buy 3 land plots
-        foreach (var ge in game.State.Filter<GlobalResourcesComponent>())
-        {
-            ref var gr = ref game.State.GetComponent<GlobalResourcesComponent>(ge);
-            gr.Coins = 20;
-        }
-
-        // Buy 3 land plots to create 3 houses
-        var lands = new System.Collections.Generic.List<Entity>();
-        foreach (var e in game.State.Filter<LandComponent>())
-            lands.Add(e);
-
-        for (int p = 0; p < 3 && p < lands.Count; p++)
-        {
-            ref var pt0 = ref game.State.GetComponent<Transform2D>(player);
-            pt0.Position = game.State.GetComponent<Transform2D>(lands[p]).Position;
-            RunTicks(game, 5);
-
-            for (int i = 0; i < 3; i++)
-                DispatchAction(game, new InteractAction { UserId = userId }, player);
-            RunTicks(game, 2);
-        }
+        // Directly create 3 houses (skip land purchasing to keep test focused on crossbreeding)
+        var ctx = new Context(game.State, Entity.Null, null!);
+        HouseDefinition.Create(ctx, new Deterministic.GameFramework.Types.Vector2(-20, 20));
+        HouseDefinition.Create(ctx, new Deterministic.GameFramework.Types.Vector2(-20, 25));
+        HouseDefinition.Create(ctx, new Deterministic.GameFramework.Types.Vector2(-20, 30));
 
         // Get the two cows
         var cows = new System.Collections.Generic.List<Entity>();
@@ -668,18 +716,29 @@ public class CowFollowTests
         var cow1 = cows[0];
         var cow2 = cows[1];
 
-        // Move player near cow1 and alt-interact to tame
-        var cow1Pos = game.State.GetComponent<Transform2D>(cow1).Position;
-        ref var pt2 = ref game.State.GetComponent<Transform2D>(player);
-        pt2.Position = cow1Pos + new Vector2(1, 0);
-        RunTicks(game, 5);
+        // Assign cow2 to a house first (crossbreed only works with housed cows)
+        Entity house = Entity.Null;
+        foreach (var e in game.State.Filter<HouseComponent>())
+        { house = e; break; }
+        house.Should().NotBe(Entity.Null, "Should have at least one house");
 
-        DispatchAction(game, new AltInteractAction { UserId = userId }, player);
-        RunTicks(game, StateDefinitions.PhaseDurationTicks + 1);
+        {
+            ref var cow2Comp = ref game.State.GetComponent<CowComponent>(cow2);
+            cow2Comp.HouseId = house;
+            ref var houseComp = ref game.State.GetComponent<HouseComponent>(house);
+            houseComp.CowId = cow2;
 
+            // Move cow2 near the house
+            var housePos = game.State.GetComponent<Transform2D>(house).Position;
+            ref var cow2T = ref game.State.GetComponent<Transform2D>(cow2);
+            cow2T.Position = housePos + new Vector2(2, 2);
+        }
+
+        // Tame cow1
+        TameCow(game, userId, player, cow1);
         game.State.GetComponent<CowComponent>(cow1).FollowingPlayer.Should().Be(player);
 
-        // Move near cow2, also move cow1 nearby
+        // Move near cow2 (which is now housed)
         var cow2Pos = game.State.GetComponent<Transform2D>(cow2).Position;
         ref var pt3 = ref game.State.GetComponent<Transform2D>(player);
         pt3.Position = cow2Pos + new Vector2(1, 0);

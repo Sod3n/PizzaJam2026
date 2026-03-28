@@ -1,0 +1,226 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/UI/LobbyMenu.cs" id="1_lobby"]
+
+[node name="LobbyMenu" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_lobby")
+
+; === MAIN MENU ===
+[node name="MainMenu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.18, 0.85)
+
+[node name="VBox" type="VBoxContainer" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -120.0
+offset_right = 150.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="MainMenu/VBox"]
+layout_mode = 2
+text = "Pizza Jam 2026"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CreateBtn" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 50)
+text = "Create Lobby"
+
+[node name="JoinBtn" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 50)
+text = "Join Lobby"
+
+[node name="OfflineBtn" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 50)
+text = "Play Offline"
+
+[node name="UseSaveCheck" type="CheckButton" parent="MainMenu/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 40)
+text = "Use last save"
+
+; === CREATE PANEL ===
+[node name="CreatePanel" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="CreatePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.18, 0.85)
+
+[node name="VBox" type="VBoxContainer" parent="CreatePanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -120.0
+offset_right = 200.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="CreatePanel/VBox"]
+layout_mode = 2
+text = "Lobby Created! Share this code:"
+horizontal_alignment = 1
+
+[node name="CodeLabel" type="Label" parent="CreatePanel/VBox"]
+layout_mode = 2
+text = "..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CopyBtn" type="Button" parent="CreatePanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "Copy Code"
+
+[node name="StartBtn" type="Button" parent="CreatePanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+text = "Start Match"
+disabled = true
+
+[node name="BackBtn" type="Button" parent="CreatePanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "Back"
+
+; === JOIN PANEL ===
+[node name="JoinPanel" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="JoinPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.18, 0.85)
+
+[node name="VBox" type="VBoxContainer" parent="JoinPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="JoinPanel/VBox"]
+layout_mode = 2
+text = "Enter Lobby Code:"
+horizontal_alignment = 1
+
+[node name="CodeInput" type="LineEdit" parent="JoinPanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+placeholder_text = "Paste lobby code here..."
+
+[node name="ConfirmBtn" type="Button" parent="JoinPanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 50)
+text = "Join"
+
+[node name="BackBtn" type="Button" parent="JoinPanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "Back"
+
+; === WAITING PANEL ===
+[node name="WaitingPanel" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="ColorRect" parent="WaitingPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.18, 0.85)
+
+[node name="VBox" type="VBoxContainer" parent="WaitingPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -60.0
+offset_right = 150.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="StatusLabel" type="Label" parent="WaitingPanel/VBox"]
+layout_mode = 2
+text = "Please wait..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="BackBtn" type="Button" parent="WaitingPanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "Back"

@@ -24,6 +24,10 @@ public static partial class LandDefinition
         ref var component = ref ctx.GetComponent<LandComponent>(entity);
         component.CurrentCoins = 0;
         component.Threshold = 0;
+        component.Type = 0;
+        component.Arm = 0;
+        component.Ring = 0;
+        component.Locked = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

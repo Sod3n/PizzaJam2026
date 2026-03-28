@@ -22,16 +22,16 @@ public class GameplayScene : IScene
     public void OnEnter(GameSimulation loop)
     {
         Console.WriteLine("[GameplayScene] Entering scene...");
-        
+
         var state = loop.State;
-        
+
         float center = 25f;
         float halfSize = 40f; // 140 / 2
         float wallThickness = 1f;
 
         // Top Wall (Horizontal)
         // Position: (X = CenterX, Y = CenterY - HalfSize)
-        CreateWall(state, new Vector2(center, center - halfSize), new Vector2(halfSize * 2, wallThickness)); 
+        CreateWall(state, new Vector2(center, center - halfSize), new Vector2(halfSize * 2, wallThickness));
 
         // Bottom Wall (Horizontal)
         // Position: (X = CenterX, Y = CenterY + HalfSize)
@@ -65,22 +65,13 @@ public class GameplayScene : IScene
         var globalRes = state.CreateEntity();
         state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 5 }); // Start with some coins to buy land
 
-        // A Sell Point
-        SellPointDefinition.Create(context, new Vector2(-5, 5));
-        FinalStructureDefinition.Create(context, new Vector2(-5, -5), 50);
-        
-        // A Land Plot
-        for (var i = 0; i < 5; i++)
-        {
-            for (var j = 0; j < 5; j++)
-            {
-                LandDefinition.Create(context, new Vector2(i * 10 + 5, j * 10 + 5), 3);
-            }
-        }
+        // Single starting land plot at center — builds into a sell point
+        // Buying it spawns 4 neighbors, which spawn their neighbors, etc.
+        StarGrid.TrySpawnLand(context, 0, 0);
 
-        // Spawn 2 initial cows for crossbreeding
-        CowDefinition.Create(context, new Vector2(10, 10));
-        CowDefinition.Create(context, new Vector2(14, 10));
+        // Spawn 2 initial cows near center
+        CowDefinition.Create(context, new Vector2(2, 2));
+        CowDefinition.Create(context, new Vector2(-2, 2));
     }
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)

@@ -236,6 +236,9 @@ public static class DefinitionGenerator
         {
             if (field.TypeName == "float" && !field.DefaultValue.EndsWith("f", StringComparison.OrdinalIgnoreCase))
                 return field.DefaultValue + "f";
+            // For enum fields with a plain numeric default, cast to the enum type
+            if (field.IsEnum && int.TryParse(field.DefaultValue, out _))
+                return $"({field.TypeName}){field.DefaultValue}";
             return field.DefaultValue;
         }
         return field.TypeName switch

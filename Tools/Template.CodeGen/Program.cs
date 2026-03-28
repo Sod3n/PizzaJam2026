@@ -62,6 +62,16 @@ public class Program
             }
         }
 
+        // Phase 1b: Scan for enum types
+        var knownEnums = EnumParser.ScanDirectories(componentsDir, entitiesDir);
+        foreach (var info in knownEnums.Values)
+            Console.WriteLine($"[CodeGen] Found enum: {info.Name} ({info.Members.Count} members{(info.IsFlags ? ", flags" : "")})");
+
+        // Mark enum fields on known components
+        foreach (var comp in knownComponents.Values)
+            foreach (var field in comp.Fields)
+                ApplyEnumInfo(field, knownEnums);
+
         // Phase 2: Generate ComponentNode editor wrappers
         if (!Directory.Exists(frameworkOutput)) Directory.CreateDirectory(frameworkOutput);
 
@@ -88,6 +98,12 @@ public class Program
                 Console.WriteLine($"[CodeGen] Found entity: {descriptor.EntityName} in {Path.GetFileName(file)}");
             }
         }
+
+        // Mark enum fields on parsed entity components
+        foreach (var entity in entities)
+            foreach (var comp in entity.Components)
+                foreach (var field in comp.Fields)
+                    ApplyEnumInfo(field, knownEnums);
 
         if (entities.Count == 0)
         {
@@ -142,6 +158,15 @@ public class Program
         if (dryRun) Console.WriteLine($"  [dry-run] {path}");
         else { File.WriteAllText(path, content); Console.WriteLine($"  [write] {path}"); }
         return 1;
+    }
+
+    private static void ApplyEnumInfo(FieldDescriptor field, Dictionary<string, EnumInfo> knownEnums)
+    {
+        if (!knownEnums.TryGetValue(field.TypeName, out var info)) return;
+        field.IsEnum = true;
+        field.EnumIsFlags = info.IsFlags;
+        if (info.Members.Count > 0)
+            field.EnumHint = info.BuildHint();
     }
 
     private static string? GetArg(string[] args, string name)

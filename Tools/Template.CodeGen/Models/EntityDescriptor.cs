@@ -33,6 +33,31 @@ public class FieldDescriptor
     public string Name { get; set; } = "";
     public string TypeName { get; set; } = "";
     public string? DefaultValue { get; set; }
+    public bool IsEnum { get; set; }
+    /// <summary>Pre-formatted Godot property hint string for enum fields, e.g. "None:0,Physics:1,Coins:2".</summary>
+    public string? EnumHint { get; set; }
+    /// <summary>Whether the enum uses [Flags] (renders as checkboxes instead of dropdown).</summary>
+    public bool EnumIsFlags { get; set; }
+}
+
+public class EnumInfo
+{
+    public string Name { get; set; } = "";
+    public bool IsFlags { get; set; }
+    public List<EnumMember> Members { get; set; } = new();
+
+    /// <summary>Build the Godot PropertyHint string. For flags, skips 0-value members.</summary>
+    public string BuildHint()
+    {
+        var members = IsFlags ? Members.Where(m => m.Value != 0) : Members;
+        return string.Join(",", members.Select(m => $"{m.Name}:{m.Value}"));
+    }
+}
+
+public class EnumMember
+{
+    public string Name { get; set; } = "";
+    public long Value { get; set; }
 }
 
 public class ChildEntityDescriptor

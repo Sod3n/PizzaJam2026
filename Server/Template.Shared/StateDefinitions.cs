@@ -25,7 +25,6 @@ public static class StateDefinitions
     {
         if (key == StateKeys.Milking) { def = new(PhaseDurationTicks, 0, PhaseDurationTicks); return true; }
         if (key == StateKeys.Taming) { def = new(0, PhaseDurationTicks, 0); return true; }
-        if (key == StateKeys.Release) { def = new(0, PhaseDurationTicks, 0); return true; }
         if (key == StateKeys.Assign) { def = new(0, PhaseDurationTicks, 0); return true; }
         if (key == StateKeys.Breed) { def = new(0, PhaseDurationTicks, 0); return true; }
         def = default;

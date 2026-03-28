@@ -61,14 +61,27 @@ public static class ComponentNodeGenerator
                 exportType = field.TypeName;
             else if (MappedExportTypes.TryGetValue(field.TypeName, out var mapped))
                 exportType = mapped;
+            else if (field.IsEnum)
+                exportType = "int";
 
             if (exportType != null)
             {
                 var newKeyword = NodeBaseMembers.Contains(field.Name) ? "new " : "";
-                if (field.DefaultValue != null)
-                    sb.AppendLine($"    [Export] public {newKeyword}{exportType} {field.Name} = {field.DefaultValue};");
+                string exportAttr;
+                if (field.IsEnum && field.EnumHint != null)
+                {
+                    var hint = field.EnumIsFlags ? "PropertyHint.Flags" : "PropertyHint.Enum";
+                    exportAttr = $"[Export({hint}, \"{field.EnumHint}\")]";
+                }
                 else
-                    sb.AppendLine($"    [Export] public {newKeyword}{exportType} {field.Name};");
+                {
+                    exportAttr = "[Export]";
+                }
+
+                if (field.DefaultValue != null)
+                    sb.AppendLine($"    {exportAttr} public {newKeyword}{exportType} {field.Name} = {field.DefaultValue};");
+                else
+                    sb.AppendLine($"    {exportAttr} public {newKeyword}{exportType} {field.Name};");
             }
         }
 
