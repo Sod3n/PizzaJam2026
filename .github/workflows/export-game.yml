@@ -125,6 +125,13 @@ jobs:
         run: dotnet restore
         working-directory: ${{ env.PROJECT_PATH }}
 
+      - name: Test .NET Android build
+        if: matrix.name == 'Android'
+        working-directory: ${{ env.PROJECT_PATH }}
+        continue-on-error: true
+        run: |
+          dotnet publish -c Release -p:GodotTargetPlatform=android -v normal 2>&1 | tail -60
+
       - name: Import Godot project
         run: godot --headless --import
         working-directory: ${{ env.PROJECT_PATH }}
