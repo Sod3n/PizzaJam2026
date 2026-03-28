@@ -75,22 +75,21 @@ jobs:
         if: matrix.name == 'macOS'
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          # Xcode tools not available on Linux runners
           sed -i 's/codesign\/codesign=3/codesign\/codesign=0/' export_presets.cfg
 
       - name: Configure Android export
         if: matrix.name == 'Android'
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          # Decode release keystore from GitHub secret (strip whitespace for safety)
+          # Generate a signing keystore in CI (fine for itch.io distribution)
           mkdir -p ~/.android
-          echo "$ANDROID_KEYSTORE_BASE64" | tr -d '\n\r ' | base64 -d > ~/.android/release.keystore
+          keytool -genkeypair \
+            -keystore ~/.android/debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=CI Build,O=PizzaJam,C=US" 2>/dev/null
 
-          # Point Godot at the Android SDK, Java, and release keystore
+          # Point Godot at the Android SDK, Java, and keystore
           mkdir -p ~/.config/godot
           cat > ~/.config/godot/editor_settings-4.tres << EOF
           [gd_resource type="EditorSettings" format=3]
@@ -98,12 +97,9 @@ jobs:
           [resource]
           export/android/android_sdk_path = "$ANDROID_HOME"
           export/android/java_sdk_path = "$JAVA_HOME"
-          export/android/keystore/release = "$HOME/.android/release.keystore"
-          export/android/keystore/release_user = "$ANDROID_KEY_ALIAS"
-          export/android/keystore/release_password = "$ANDROID_KEYSTORE_PASSWORD"
-          export/android/keystore/debug = "$HOME/.android/release.keystore"
-          export/android/keystore/debug_user = "$ANDROID_KEY_ALIAS"
-          export/android/keystore/debug_password = "$ANDROID_KEYSTORE_PASSWORD"
+          export/android/debug_keystore = "$HOME/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
           EOF
 
       - name: Restore .NET packages
@@ -116,10 +112,21 @@ jobs:
         continue-on-error: true
 
       - name: Export ${{ matrix.name }}
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
           mkdir -p build
-          godot --headless --export-release "${{ matrix.preset }}" "build/${{ matrix.output }}"
+          # Godot 4.6.1 crashes during shutdown after a successful export
+          # (EditorSettings bug). Ignore exit code and verify output instead.
+          godot --headless --export-release "${{ matrix.preset }}" "build/${{ matrix.output }}" || true
+
+      - name: Verify export output
         working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          if [ ! -f "build/${{ matrix.output }}" ]; then
+            echo "::error::Export failed - build/${{ matrix.output }} not found"
+            exit 1
+          fi
+          echo "Export successful: $(ls -lh build/${{ matrix.output }})"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
