@@ -63,6 +63,21 @@ jobs:
           use-dotnet: true
           include-templates: true
 
+      - name: Fix autoload UID references for CI
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          # Autoloads use UIDs that may not resolve in CI (submodule UID mismatch).
+          # Replace with file paths which always work.
+          sed -i 's|Global="\*uid://c6aa26vlcpjcm"|Global="*res://global.gd"|' project.godot
+          sed -i 's|DebugVisualizer="\*uid://d01xjuy2b0bpt"|DebugVisualizer="*res://addons/framework_tools/DebugVisualizer.cs"|' project.godot
+
+      - name: Disable macOS code signing for CI
+        if: matrix.name == 'macOS'
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: |
+          # Xcode tools not available on Linux runners
+          sed -i 's/codesign\/codesign=3/codesign\/codesign=0/' export_presets.cfg
+
       - name: Configure Android export
         if: matrix.name == 'Android'
         env:
@@ -71,9 +86,9 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          # Decode release keystore from GitHub secret
+          # Decode release keystore from GitHub secret (strip whitespace for safety)
           mkdir -p ~/.android
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > ~/.android/release.keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | tr -d '\n\r ' | base64 -d > ~/.android/release.keystore
 
           # Point Godot at the Android SDK, Java, and release keystore
           mkdir -p ~/.config/godot
