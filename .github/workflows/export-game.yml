@@ -112,6 +112,15 @@ jobs:
           mkdir -p android/build
           unzip -o "$TEMPLATES_DIR/android_source.zip" -d android/build/
 
+          # Create version file (Godot checks this for gradle template)
+          GODOT_VER="${{ inputs.godot_version }}.stable.mono"
+          echo "$GODOT_VER" > android/.build_version
+          echo "Build version: $GODOT_VER"
+
+      - name: Install .NET Android workload
+        if: matrix.name == 'Android'
+        run: dotnet workload install android
+
       - name: Restore .NET packages
         run: dotnet restore
         working-directory: ${{ env.PROJECT_PATH }}
