@@ -119,7 +119,11 @@ jobs:
 
       - name: Install .NET Android workload
         if: matrix.name == 'Android'
-        run: dotnet workload install android
+        run: |
+          # Pin .NET 9 SDK so Android target (net9.0) resolves correctly
+          echo '{"sdk":{"version":"9.0.312","rollForward":"latestFeature"}}' > global.json
+          dotnet workload install android
+        working-directory: ${{ env.PROJECT_PATH }}
 
       - name: Restore .NET packages
         run: dotnet restore
