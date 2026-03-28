@@ -79,6 +79,7 @@ jobs:
 
       - name: Configure Android export
         if: matrix.name == 'Android'
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
           # Generate a signing keystore in CI (fine for itch.io distribution)
           mkdir -p ~/.android
@@ -101,6 +102,15 @@ jobs:
           export/android/debug_keystore_user = "androiddebugkey"
           export/android/debug_keystore_pass = "android"
           EOF
+
+          # Install Android build template (required for gradle build / C# export)
+          TEMPLATES_DIR=$(find ~/.local/share/godot/export_templates -maxdepth 1 -type d -name "*.mono" | head -1)
+          if [ -z "$TEMPLATES_DIR" ]; then
+            TEMPLATES_DIR=$(find ~/.local/share/godot/export_templates -maxdepth 1 -type d | tail -1)
+          fi
+          echo "Using templates from: $TEMPLATES_DIR"
+          mkdir -p android/build
+          unzip -o "$TEMPLATES_DIR/android_source.zip" -d android/build/
 
       - name: Restore .NET packages
         run: dotnet restore
