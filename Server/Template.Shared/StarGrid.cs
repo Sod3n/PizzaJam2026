@@ -64,6 +64,9 @@ public static class StarGrid
         return basePrice * multiplier;
     }
 
+    // Food farm frequency: every Nth house-slot becomes a food farm instead
+    private const int FoodFarmFreq = 5;
+
     public static int GetPriceMultiplier(int landType)
     {
         switch (landType)
@@ -71,6 +74,9 @@ public static class StarGrid
             case LandType.FinalStructure: return 50;
             case LandType.LoveHouse: return 3;
             case LandType.SellPoint: return 1;
+            case LandType.CarrotFarm: return 2;
+            case LandType.AppleOrchard: return 2;
+            case LandType.MushroomCave: return 2;
             default: return 1; // House
         }
     }
@@ -91,7 +97,22 @@ public static class StarGrid
 
         // Use a deterministic hash of grid coords for consistent type assignment
         int hash = System.Math.Abs(gx * 7919 + gy * 104729);
-        return (hash % LoveHouseFreq[arm] == 0) ? LandType.LoveHouse : LandType.House;
+        if (hash % LoveHouseFreq[arm] == 0) return LandType.LoveHouse;
+
+        // Every Nth remaining slot becomes a food farm (cycling through Carrot, Apple, Mushroom)
+        int hash2 = System.Math.Abs(gx * 31337 + gy * 65537);
+        if (hash2 % FoodFarmFreq == 0)
+        {
+            int farmKind = hash2 % 3; // 0=Carrot, 1=Apple, 2=Mushroom
+            return farmKind switch
+            {
+                0 => LandType.CarrotFarm,
+                1 => LandType.AppleOrchard,
+                _ => LandType.MushroomCave
+            };
+        }
+
+        return LandType.House;
     }
 
     /// <summary>
@@ -118,7 +139,8 @@ public static class StarGrid
                 (ctx.State.HasComponent<HouseComponent>(entity) ||
                  ctx.State.HasComponent<LoveHouseComponent>(entity) ||
                  ctx.State.HasComponent<SellPointComponent>(entity) ||
-                 ctx.State.HasComponent<FinalStructureComponent>(entity)))
+                 ctx.State.HasComponent<FinalStructureComponent>(entity) ||
+                 ctx.State.HasComponent<FoodFarmComponent>(entity)))
             {
                 var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
                 float dx = (float)(pos.X - px);

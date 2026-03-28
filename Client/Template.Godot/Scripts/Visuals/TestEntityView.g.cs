@@ -76,6 +76,11 @@ public partial class TestEntityView : Node3D
             {
                 SkinVisualizer.UpdateSkins(visualNode, skins);
             }).AddTo(vm.Disposables);
+
+            vm.Skin.Colors.Subscribe(colors =>
+            {
+                SkinVisualizer.UpdateColors(visualNode, colors);
+            }).AddTo(vm.Disposables);
         }
 
         vm.IsHidden.Subscribe(hidden =>

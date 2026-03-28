@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/FoodSignComponentNode.cs" id="fw_foodsign"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sign"]
+albedo_color = Color(0.9, 0.8, 0.2, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_sign"]
+material = SubResource("StandardMaterial3D_sign")
+top_radius = 0.3
+bottom_radius = 0.3
+height = 0.5
+
+[node name="FoodSign" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "FoodSign"
+StableIdSeed = "foodsign-entity-seed"
+
+[node name="FoodSignComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_foodsign")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+BodyType = 1
+ShapeType = 0
+ShapeRadius = 0.8
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_sign")

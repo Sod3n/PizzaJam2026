@@ -29,6 +29,43 @@ public class CowFollowSystem : ISystem
 
             if (followTarget == Entity.Null || cow.FollowingPlayer == Entity.Null)
             {
+                // Not following anyone — check if cow needs to walk to its house
+                if (cow.HouseId != Entity.Null && !cow.IsMilking
+                    && state.HasComponent<Transform2D>(cow.HouseId) && state.HasComponent<Transform2D>(cowEntity))
+                {
+                    var housePos = state.GetComponent<Transform2D>(cow.HouseId).Position;
+                    var offset = new Vector2(2, 2);
+                    // Love house: second cow goes to the left
+                    if (state.HasComponent<LoveHouseComponent>(cow.HouseId))
+                    {
+                        var lh = state.GetComponent<LoveHouseComponent>(cow.HouseId);
+                        if (lh.CowId2 == cowEntity) offset = new Vector2(-2, 2);
+                    }
+                    var targetHousePos = housePos + offset;
+                    var curPos = state.GetComponent<Transform2D>(cowEntity).Position;
+                    var distSq = (targetHousePos - curPos).SqrMagnitude;
+
+                    if (distSq > (Float)0.01f) // 0.1 * 0.1
+                    {
+                        // Use tight desired distance for house arrival
+                        navAgent.TargetDesiredDistance = 0.1f;
+                        navAgent.TargetPosition = targetHousePos;
+                        navAgent.IsNavigationFinished = false;
+                        cowBody.Velocity = navAgent.Velocity;
+                        if (navAgent.Velocity.SqrMagnitude > (Float)0.01f)
+                        {
+                            ref var ct = ref state.GetComponent<Transform2D>(cowEntity);
+                            ct.Rotation = navAgent.Velocity.ToAngle();
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        // Arrived — restore default desired distance
+                        navAgent.TargetDesiredDistance = 2f;
+                    }
+                }
+
                 if (!navAgent.IsNavigationFinished)
                 {
                     navAgent.IsNavigationFinished = true;

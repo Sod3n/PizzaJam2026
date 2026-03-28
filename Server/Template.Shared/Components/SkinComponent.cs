@@ -10,4 +10,7 @@ public struct SkinComponent : IComponent
 {
     // Maps Slot Name (e.g. "Hair") to Skin ID
     public Dictionary16<FixedString32, int> Skins;
+
+    // Maps Slot Name to packed RGB color (0xRRGGBB)
+    public Dictionary16<FixedString32, int> Colors;
 }

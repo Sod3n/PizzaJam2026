@@ -7,6 +7,12 @@ namespace Template.Godot.Framework;
 public partial class GlobalResourcesComponentNode : Node
 {
     [Export] public int Grass;
+    [Export] public int Carrot;
+    [Export] public int Apple;
+    [Export] public int Mushroom;
     [Export] public int Milk;
+    [Export] public int VitaminShake;
+    [Export] public int AppleYogurt;
+    [Export] public int PurplePotion;
     [Export] public int Coins;
 }

@@ -12,15 +12,21 @@
 [ext_resource type="PackedScene" uid="uid://bg7ki6hs4neoa" path="res://templates/environment/House.tscn" id="8_svejp"]
 [ext_resource type="PackedScene" uid="uid://b3a1efqph14je" path="res://templates/environment/SellPoint.tscn" id="9_36gju"]
 [ext_resource type="PackedScene" uid="uid://blnhcjlcy72i3" path="res://templates/environment/FinalStructure.tscn" id="10_svejp"]
+[ext_resource type="PackedScene" uid="uid://yeyaphli5ypt" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
+[ext_resource type="PackedScene" path="res://templates/environment/FoodFarm.tscn" id="tpl_foodfarm"]
+[ext_resource type="PackedScene" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
+[ext_resource type="PackedScene" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
 [ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/FinalStructureView.cs" id="view_finalstructure"]
+[ext_resource type="Script" uid="uid://bqhe6g3n1ei8l" path="res://Scripts/Visuals/FoodFarmView.cs" id="view_foodfarm"]
+[ext_resource type="Script" uid="uid://f4sfvakprfvw" path="res://Scripts/Visuals/FoodSignView.cs" id="view_foodsign"]
 [ext_resource type="Script" uid="uid://q2pn1v0kf6de" path="res://Scripts/Visuals/GrassView.cs" id="view_grass"]
 [ext_resource type="Script" uid="uid://0qcopw55cs1e" path="res://Scripts/Visuals/HouseView.cs" id="view_house"]
 [ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/LandView.cs" id="view_land"]
+[ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/LoveHouseView.cs" id="view_lovehouse"]
 [ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
-[ext_resource type="PackedScene" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -1671,4 +1677,16 @@ Prefab = ExtResource("10_svejp")
 [node name="WallView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=707402369]
 script = ExtResource("view_wall")
 
-[node name="LobbyMenu" parent="." instance=ExtResource("lobby_menu")]
+[node name="LoveHouseView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1235143303]
+script = ExtResource("view_lovehouse")
+Prefab = ExtResource("tpl_lovehouse")
+
+[node name="FoodFarmView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=379749604]
+script = ExtResource("view_foodfarm")
+Prefab = ExtResource("tpl_foodfarm")
+
+[node name="FoodSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1116882817]
+script = ExtResource("view_foodsign")
+Prefab = ExtResource("tpl_foodsign")
+
+[node name="LobbyMenu" parent="." unique_id=1082308088 instance=ExtResource("lobby_menu")]

@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/FoodFarmComponentNode.cs" id="fw_foodfarm"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_farm"]
+albedo_color = Color(0.2, 0.7, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_farm"]
+material = SubResource("StandardMaterial3D_farm")
+
+[node name="FoodFarm" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "FoodFarm"
+StableIdSeed = "foodfarm-entity-seed"
+
+[node name="FoodFarmComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_foodfarm")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+BodyType = 1
+ShapeType = 0
+ShapeRadius = 1.5
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_farm")

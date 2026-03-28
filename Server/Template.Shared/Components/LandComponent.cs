@@ -12,6 +12,21 @@ public static class LandType
     public const int LoveHouse = 1;
     public const int SellPoint = 2;
     public const int FinalStructure = 3;
+    public const int CarrotFarm = 4;
+    public const int AppleOrchard = 5;
+    public const int MushroomCave = 6;
+
+    /// <summary>Get the FoodType this farm land type produces, or -1 if not a farm.</summary>
+    public static int GetFoodType(int landType)
+    {
+        return landType switch
+        {
+            CarrotFarm => FoodType.Carrot,
+            AppleOrchard => FoodType.Apple,
+            MushroomCave => FoodType.Mushroom,
+            _ => -1
+        };
+    }
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]

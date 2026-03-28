@@ -109,7 +109,9 @@
       "Bash(rm -rf addon_repo codegen_repo)",
       "Bash(mkdir addon_repo codegen_repo)",
       "Bash(cp /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs /tmp/addon_repo/)",
-      "Bash(cp /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/plugin.cfg /tmp/addon_repo/)"
+      "Bash(cp /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/plugin.cfg /tmp/addon_repo/)",
+      "Bash(keytool -genkeypair -v -keystore /Users/a1/Documents/GitHub/PizzaJam2026-copy/release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000 -storepass pizzajam2026 -keypass pizzajam2026 -dname \"CN=PizzaJam, O=PizzaJam, C=US\")",
+      "Bash(gh secret:*)"
     ]
   }
 }

@@ -1,0 +1,114 @@
+name: Export Game
+
+on:
+  workflow_dispatch:
+    inputs:
+      godot_version:
+        description: 'Godot engine version (must match your project)'
+        required: false
+        default: '4.6.1'
+      version:
+        description: 'Build version label (used in artifact names)'
+        required: false
+        default: 'dev'
+
+env:
+  PROJECT_PATH: Client/Template.Godot
+
+jobs:
+  export:
+    name: Export ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            preset: "Windows Desktop"
+            output: "game.exe"
+          - name: Linux
+            preset: "Linux"
+            output: "game.x86_64"
+          - name: macOS
+            preset: "macOS"
+            output: "game.zip"
+          - name: Android
+            preset: "Android"
+            output: "game.apk"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Setup Java 17
+        if: matrix.name == 'Android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ inputs.godot_version }}
+          use-dotnet: true
+          include-templates: true
+
+      - name: Configure Android export
+        if: matrix.name == 'Android'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # Decode release keystore from GitHub secret
+          mkdir -p ~/.android
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > ~/.android/release.keystore
+
+          # Point Godot at the Android SDK, Java, and release keystore
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.tres << EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          export/android/keystore/release = "$HOME/.android/release.keystore"
+          export/android/keystore/release_user = "$ANDROID_KEY_ALIAS"
+          export/android/keystore/release_password = "$ANDROID_KEYSTORE_PASSWORD"
+          export/android/keystore/debug = "$HOME/.android/release.keystore"
+          export/android/keystore/debug_user = "$ANDROID_KEY_ALIAS"
+          export/android/keystore/debug_password = "$ANDROID_KEYSTORE_PASSWORD"
+          EOF
+
+      - name: Restore .NET packages
+        run: dotnet restore
+        working-directory: ${{ env.PROJECT_PATH }}
+
+      - name: Import Godot project
+        run: godot --headless --import
+        working-directory: ${{ env.PROJECT_PATH }}
+        continue-on-error: true
+
+      - name: Export ${{ matrix.name }}
+        run: |
+          mkdir -p build
+          godot --headless --export-release "${{ matrix.preset }}" "build/${{ matrix.output }}"
+        working-directory: ${{ env.PROJECT_PATH }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-${{ inputs.version || 'dev' }}
+          path: ${{ env.PROJECT_PATH }}/build/
+          retention-days: 30

@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/LoveHouseComponentNode.cs" id="fw_lovehouse"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_love"]
+albedo_color = Color(0.9, 0.3, 0.5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_love"]
+material = SubResource("StandardMaterial3D_love")
+
+[node name="LoveHouse" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "LoveHouse"
+StableIdSeed = "lovehouse-entity-seed"
+
+[node name="LoveHouseComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_lovehouse")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_love")

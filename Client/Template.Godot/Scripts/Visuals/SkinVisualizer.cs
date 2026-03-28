@@ -274,4 +274,31 @@ public static class SkinVisualizer
             GD.PrintErr($"[SkinVisualizer] Failed to load texture: {texturePath}");
         }
     }
+
+    public static void UpdateColors(Node3D visualNode, Dictionary16<FixedString32, int> colors)
+    {
+        if (!GodotObject.IsInstanceValid(visualNode)) return;
+
+        Node3D skinContainer = visualNode.GetNodeOrNull<Node3D>("ScaleAnchor/Skin");
+        if (skinContainer == null)
+        {
+            skinContainer = visualNode.GetNodeOrNull<Node3D>("Character/ScaleAnchor/Skin");
+        }
+
+        if (skinContainer == null) return;
+
+        for (int i = 0; i < colors.Count; i++)
+        {
+            var slotName = colors.Keys[i].ToString();
+            var packed = colors.Values[i];
+
+            var spriteNode = skinContainer.GetNodeOrNull<AnimatedSprite3D>(slotName);
+            if (spriteNode == null) continue;
+
+            float r = ((packed >> 16) & 0xFF) / 255f;
+            float g = ((packed >> 8) & 0xFF) / 255f;
+            float b = (packed & 0xFF) / 255f;
+            spriteNode.Modulate = new Color(r, g, b);
+        }
+    }
 }

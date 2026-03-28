@@ -24,6 +24,7 @@ public static partial class GrassDefinition
         ref var component = ref ctx.GetComponent<GrassComponent>(entity);
         component.Durability = 3;
         component.MaxDurability = 3;
+        component.FoodType = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

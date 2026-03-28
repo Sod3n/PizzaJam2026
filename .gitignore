@@ -94,3 +94,7 @@ Desktop.ini
 *~
 .directory
 Client/Template.Godot/lib/
+
+# Keystores
+*.keystore
+*.jks

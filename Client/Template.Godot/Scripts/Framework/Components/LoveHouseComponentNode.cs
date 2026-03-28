@@ -6,4 +6,6 @@ namespace Template.Godot.Framework;
 [Tool]
 public partial class LoveHouseComponentNode : Node
 {
+    [Export] public int BreedProgress;
+    [Export] public int BreedCost;
 }

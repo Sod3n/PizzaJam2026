@@ -6,4 +6,5 @@ namespace Template.Godot.Framework;
 [Tool]
 public partial class HouseComponentNode : Node
 {
+    [Export] public int SelectedFood;
 }

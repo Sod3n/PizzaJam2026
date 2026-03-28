@@ -21,6 +21,7 @@ public static partial class HouseDefinition
 
         ref var component = ref ctx.GetComponent<HouseComponent>(entity);
         component.CowId = Entity.Null;
+        component.SelectedFood = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

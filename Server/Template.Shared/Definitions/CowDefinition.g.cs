@@ -30,9 +30,11 @@ public static partial class CowDefinition
         component.MaxExhaust = 0;
         component.IsMilking = false;
         component.HouseId = Entity.Null;
+        component.PreviousHouseId = Entity.Null;
         component.SpawnPosition = Vector2.Zero;
         component.FollowingPlayer = Entity.Null;
         component.FollowTarget = Entity.Null;
+        component.PreferredFood = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

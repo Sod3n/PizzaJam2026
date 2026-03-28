@@ -12,4 +12,6 @@ public struct LoveHouseComponent : IComponent
 {
     public Entity CowId1;
     public Entity CowId2;
+    public int BreedProgress; // Clicks so far during breeding
+    public int BreedCost;     // Total clicks needed (set from cow exhaust values)
 }

@@ -28,7 +28,10 @@ public static partial class CowDefinition
         }
         if (totalExhaust <= 0) totalExhaust = 10;
 
-        System.Console.WriteLine($"[CowDefinition] Created Cow {entity.Id} with MaxExhaust: {totalExhaust} (Skins: {skinComponent.Skins.Count})");
+        // Assign random food preference (Grass, Carrot, Apple, or Mushroom)
+        component.PreferredFood = random.NextInt(0, 4); // 0-3 inclusive
+
+        System.Console.WriteLine($"[CowDefinition] Created Cow {entity.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {component.PreferredFood} (Skins: {skinComponent.Skins.Count})");
         component.MaxExhaust = totalExhaust;
 
         // Disable avoidance so cow follows player closely

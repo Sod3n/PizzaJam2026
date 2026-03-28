@@ -45,6 +45,17 @@ public class CowSystem : ISystem
                 if (state.HasComponent<CowComponent>(playerState.InteractionTarget))
                     state.HideEntity(playerState.InteractionTarget);
             }
+            else if (sc.Key == StateKeys.Breed)
+            {
+                state.HideEntity(playerEntity);
+                // Hide both cows in the love house
+                if (state.HasComponent<LoveHouseComponent>(playerState.InteractionTarget))
+                {
+                    var lh = state.GetComponent<LoveHouseComponent>(playerState.InteractionTarget);
+                    if (lh.CowId1 != Entity.Null) state.HideEntity(lh.CowId1);
+                    if (lh.CowId2 != Entity.Null) state.HideEntity(lh.CowId2);
+                }
+            }
         }
 
         // Handle Cow Exhaust & Visibility
@@ -66,7 +77,8 @@ public class CowSystem : ISystem
             }
             else if (!cow.IsMilking)
             {
-                if (state.HasComponent<HiddenComponent>(cowEntity))
+                // Don't unhide cows that are in a love house during breeding
+                if (state.HasComponent<HiddenComponent>(cowEntity) && !IsCowInActiveBreeding(state, cowEntity))
                 {
                     state.UnhideEntity(cowEntity);
                 }
@@ -110,15 +122,24 @@ public class CowSystem : ISystem
             ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
             cow.FollowingPlayer = playerEntity;
 
-            // Remove from house if it was in one
+            // Save previous house so cow can return after breeding
             var houseId = cow.HouseId;
+            cow.PreviousHouseId = houseId;
+
+            // Remove from house or love house if it was in one
             if (houseId != Entity.Null && state.HasComponent<HouseComponent>(houseId))
             {
                 ref var house = ref state.GetComponent<HouseComponent>(houseId);
                 house.CowId = Entity.Null;
             }
+            else if (houseId != Entity.Null && state.HasComponent<LoveHouseComponent>(houseId))
+            {
+                ref var loveHouse = ref state.GetComponent<LoveHouseComponent>(houseId);
+                if (loveHouse.CowId1 == cowEntity) loveHouse.CowId1 = Entity.Null;
+                if (loveHouse.CowId2 == cowEntity) loveHouse.CowId2 = Entity.Null;
+            }
 
-            // Re-get cow ref after touching HouseComponent
+            // Re-get cow ref after touching house components
             cow = ref state.GetComponent<CowComponent>(cowEntity);
             cow.HouseId = Entity.Null;
 
@@ -176,22 +197,7 @@ public class CowSystem : ISystem
             cow.FollowTarget = Entity.Null;
             cow.HouseId = houseEntity;
 
-            if (state.HasComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(cowEntity))
-            {
-                ref var body = ref state.GetComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(cowEntity);
-                body.Velocity = Vector2.Zero;
-            }
-
-            if (state.HasComponent<Deterministic.GameFramework.TwoD.Transform2D>(houseEntity) &&
-                state.HasComponent<Deterministic.GameFramework.TwoD.Transform2D>(cowEntity))
-            {
-                var housePos = state.GetComponent<Deterministic.GameFramework.TwoD.Transform2D>(houseEntity).Position;
-                ref var cowTransform = ref state.GetComponent<Deterministic.GameFramework.TwoD.Transform2D>(cowEntity);
-                cowTransform.Position = housePos + new Vector2(2, 2);
-                // Re-get cow ref after touching Transform2D
-                cow = ref state.GetComponent<CowComponent>(cowEntity);
-                cow.SpawnPosition = cowTransform.Position;
-            }
+            // Cow will walk to house via CowFollowSystem navigation
 
             // Re-get house ref and set cow
             house2 = ref state.GetComponent<HouseComponent>(houseEntity);
@@ -269,60 +275,51 @@ public class CowSystem : ISystem
 
     private void HandleLoveHouseBreedComplete(EntityWorld state, Entity playerEntity, Entity loveHouseEntity, ref StateComponent sc, ref PlayerStateComponent playerState)
     {
+        ILogger.Log($"[CowSystem] Love house breed complete for player {playerEntity.Id}");
+
+        state.UnhideEntity(playerEntity);
+
         ref var loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
         var cow1 = loveHouse.CowId1;
         var cow2 = loveHouse.CowId2;
 
+        // Unhide cows
+        if (cow1 != Entity.Null) state.UnhideEntity(cow1);
+        if (cow2 != Entity.Null) state.UnhideEntity(cow2);
+
+        Entity babyCow = Entity.Null;
         if (state.HasComponent<CowComponent>(cow1) && state.HasComponent<CowComponent>(cow2)
             && state.HasComponent<SkinComponent>(cow1) && state.HasComponent<SkinComponent>(cow2))
         {
-            SpawnCrossbredCow(state, playerEntity, cow1, cow2);
+            babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2);
         }
 
-        // Clear love house slots and release both cows (they become free)
+        // Clear love house slots
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
         loveHouse.CowId1 = Entity.Null;
         loveHouse.CowId2 = Entity.Null;
 
-        // Release cow1
-        if (state.HasComponent<CowComponent>(cow1))
+        // Return parent cows to their previous houses
+        ReturnCowToHouse(state, cow1);
+        ReturnCowToHouse(state, cow2);
+
+        // Baby cow follows the player
+        if (babyCow != Entity.Null && state.HasComponent<CowComponent>(babyCow))
         {
-            ref var c1 = ref state.GetComponent<CowComponent>(cow1);
-            c1.HouseId = Entity.Null;
-            c1.FollowingPlayer = playerEntity;
+            ref var baby = ref state.GetComponent<CowComponent>(babyCow);
+            baby.FollowingPlayer = playerEntity;
 
             if (playerState.FollowingCow == Entity.Null)
             {
-                playerState.FollowingCow = cow1;
-                c1 = ref state.GetComponent<CowComponent>(cow1);
-                c1.FollowTarget = playerEntity;
+                playerState.FollowingCow = babyCow;
+                baby = ref state.GetComponent<CowComponent>(babyCow);
+                baby.FollowTarget = playerEntity;
             }
             else
             {
                 Entity lastCow = FindLastCowInChain(state, playerState.FollowingCow);
-                c1 = ref state.GetComponent<CowComponent>(cow1);
-                c1.FollowTarget = lastCow;
-            }
-        }
-
-        // Release cow2
-        if (state.HasComponent<CowComponent>(cow2))
-        {
-            ref var c2 = ref state.GetComponent<CowComponent>(cow2);
-            c2.HouseId = Entity.Null;
-            c2.FollowingPlayer = playerEntity;
-
-            if (playerState.FollowingCow == Entity.Null)
-            {
-                playerState.FollowingCow = cow2;
-                c2 = ref state.GetComponent<CowComponent>(cow2);
-                c2.FollowTarget = playerEntity;
-            }
-            else
-            {
-                Entity lastCow = FindLastCowInChain(state, playerState.FollowingCow);
-                c2 = ref state.GetComponent<CowComponent>(cow2);
-                c2.FollowTarget = lastCow;
+                baby = ref state.GetComponent<CowComponent>(babyCow);
+                baby.FollowTarget = lastCow;
             }
         }
 
@@ -332,7 +329,7 @@ public class CowSystem : ISystem
         ILogger.Log($"[CowSystem] Love house breed complete. Released cows {cow1.Id} and {cow2.Id} back to player {playerEntity.Id}");
     }
 
-    private void SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB)
+    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB)
     {
         var skinA = state.GetComponent<SkinComponent>(parentA);
         var skinB = state.GetComponent<SkinComponent>(parentB);
@@ -363,7 +360,19 @@ public class CowSystem : ISystem
         ref var newCowComp = ref state.GetComponent<CowComponent>(newCow);
         newCowComp.MaxExhaust = totalExhaust;
 
-        ILogger.Log($"[CowSystem] Bred new cow {newCow.Id} with MaxExhaust: {totalExhaust}");
+        // Inherit food preference from parents (50/50 chance, with 10% mutation)
+        var parentACow = state.GetComponent<CowComponent>(parentA);
+        var parentBCow = state.GetComponent<CowComponent>(parentB);
+        int prefRoll = random.NextInt(100);
+        if (prefRoll < 10)
+            newCowComp.PreferredFood = random.NextInt(0, 4); // mutation
+        else if (prefRoll < 55)
+            newCowComp.PreferredFood = parentACow.PreferredFood;
+        else
+            newCowComp.PreferredFood = parentBCow.PreferredFood;
+
+        ILogger.Log($"[CowSystem] Bred new cow {newCow.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {newCowComp.PreferredFood}");
+        return newCow;
     }
 
     /// <summary>Find the last cow in the follow chain starting from firstCow.</summary>
@@ -403,5 +412,51 @@ public class CowSystem : ISystem
             }
         }
         return Entity.Null;
+    }
+
+    /// <summary>Check if a cow is in a love house that's currently being bred.</summary>
+    private bool IsCowInActiveBreeding(EntityWorld state, Entity cowEntity)
+    {
+        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        var houseId = cow.HouseId;
+        if (houseId == Entity.Null || !state.HasComponent<LoveHouseComponent>(houseId)) return false;
+
+        // Check if any player is in breed state targeting this love house
+        foreach (var playerEntity in state.Filter<PlayerStateComponent>())
+        {
+            if (!state.HasComponent<StateComponent>(playerEntity)) continue;
+            var sc = state.GetComponent<StateComponent>(playerEntity);
+            if (!sc.IsEnabled || sc.Key != StateKeys.Breed) continue;
+            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
+            if (ps.InteractionTarget == houseId) return true;
+        }
+        return false;
+    }
+
+    /// <summary>Return a cow to its previous house after breeding. If no previous house, cow becomes free.</summary>
+    private void ReturnCowToHouse(EntityWorld state, Entity cowEntity)
+    {
+        if (!state.HasComponent<CowComponent>(cowEntity)) return;
+
+        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        var prevHouse = cow.PreviousHouseId;
+        cow.FollowingPlayer = Entity.Null;
+        cow.FollowTarget = Entity.Null;
+        cow.PreviousHouseId = Entity.Null;
+
+        if (prevHouse != Entity.Null && state.HasComponent<HouseComponent>(prevHouse))
+        {
+            ref var house = ref state.GetComponent<HouseComponent>(prevHouse);
+            house.CowId = cowEntity;
+            cow = ref state.GetComponent<CowComponent>(cowEntity);
+            cow.HouseId = prevHouse;
+
+            // Cow will walk back to house via CowFollowSystem navigation
+        }
+        else
+        {
+            // No previous house — cow becomes free at its current position
+            cow.HouseId = Entity.Null;
+        }
     }
 }

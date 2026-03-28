@@ -31,6 +31,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             return;
         }
 
+        // If actively breeding, handle breed clicks
+        if (sc.Key == StateKeys.Breed && sc.Phase == StatePhase.Active && sc.IsEnabled)
+        {
+            HandleBreedingClick(ctx, playerEntity, ref playerState, ref sc);
+            return;
+        }
+
         // Skip interaction if in any other active state
         if (sc.IsEnabled) return;
 
@@ -46,32 +53,11 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         string missingResource = null;
         Entity interactedTarget = nearestTarget;
 
-        // Cow interaction → tame (add to follow chain)
+        // Cow interaction → always tame (add to follow chain)
         if (ctx.State.HasComponent<CowComponent>(nearestTarget))
         {
-            ref var targetCow = ref ctx.State.GetComponent<CowComponent>(nearestTarget);
-
-            // If target cow is housed and player has following cow, try crossbreed
-            if (targetCow.HouseId != Entity.Null && playerState.FollowingCow != Entity.Null)
-            {
-                success = HandleCrossbreed(ctx, playerEntity, nearestTarget, ref playerState, ref sc, ref globalRes, out missingResource);
-                if (success) return;
-                if (missingResource != null)
-                {
-                    sc.Key = StateKeys.NotEnoughResource;
-                    sc.CurrentTime = 0;
-                    sc.MaxTime = NotEnoughResourceDurationTicks;
-                    sc.IsEnabled = true;
-                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = missingResource, Age = 0 });
-                    return;
-                }
-            }
-            else
-            {
-                // Free cow → tame it (add to follow chain)
-                success = HandleCowTame(ctx, playerEntity, nearestTarget, ref playerState, ref sc);
-                if (success) return;
-            }
+            success = HandleCowTame(ctx, playerEntity, nearestTarget, ref playerState, ref sc);
+            if (success) return;
         }
         // House interaction
         else if (ctx.State.HasComponent<HouseComponent>(nearestTarget))
@@ -93,18 +79,31 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 }
             }
         }
-        // Love House interaction → breed two following cows
+        // Love House interaction
         else if (ctx.State.HasComponent<LoveHouseComponent>(nearestTarget))
         {
-            if (playerState.FollowingCow != Entity.Null)
+            ref var lh = ref ctx.State.GetComponent<LoveHouseComponent>(nearestTarget);
+            bool bothFull = lh.CowId1 != Entity.Null && lh.CowId2 != Entity.Null;
+            if (bothFull)
             {
-                success = HandleLoveHouseBreed(ctx, playerEntity, nearestTarget, ref playerState, ref sc, ref globalRes, out missingResource);
+                // Both slots full → start breeding
+                success = HandleLoveHouseStartBreed(ctx, playerEntity, nearestTarget, ref playerState, ref sc, ref globalRes, out missingResource);
+                if (success) return;
+            }
+            else if (playerState.FollowingCow != Entity.Null)
+            {
+                // Has following cows and love house has empty slot → assign cow
+                success = HandleLoveHouseAssign(ctx, playerEntity, nearestTarget, ref playerState, ref sc, ref globalRes, out missingResource);
                 if (success) return;
             }
         }
+        else if (ctx.State.HasComponent<FoodSignComponent>(nearestTarget))
+        {
+            success = HandleFoodSignInteraction(ctx, nearestTarget);
+        }
         else if (ctx.State.HasComponent<GrassComponent>(nearestTarget))
         {
-            success = HandleGrassInteraction(ctx, nearestTarget, ref globalRes);
+            success = HandleFoodInteraction(ctx, nearestTarget, ref globalRes);
         }
         else if (ctx.State.HasComponent<SellPointComponent>(nearestTarget))
         {
@@ -146,10 +145,22 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var globalRes = ref ctx.State.GetComponent<GlobalResourcesComponent>(globalResEntity);
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
 
-        if (globalRes.Grass > 0 && cow.Exhaust < cow.MaxExhaust)
+        // Determine which food to use from the house's food sign selection
+        int foodToUse = FoodType.Grass; // default
+        if (cow.HouseId != Entity.Null && ctx.State.HasComponent<HouseComponent>(cow.HouseId))
         {
-            globalRes.Grass--;
-            globalRes.Milk++;
+            var house = ctx.State.GetComponent<HouseComponent>(cow.HouseId);
+            foodToUse = house.SelectedFood;
+        }
+
+        if (globalRes.GetFood(foodToUse) > 0 && cow.Exhaust < cow.MaxExhaust)
+        {
+            bool isPreferred = foodToUse == cow.PreferredFood;
+            int milkAmount = isPreferred ? 3 : 1; // 3x multiplier for preferred food
+
+            globalRes.ConsumeFood(foodToUse);
+            int milkProduct = FoodType.ToMilkProduct(foodToUse);
+            globalRes.AddMilkProduct(milkProduct, milkAmount);
             cow.Exhaust++;
 
             Entity target = cowEntity;
@@ -157,13 +168,31 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 target = cow.HouseId;
 
             ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
-            ILogger.Log($"[InteractActionService] Milking click on cow {cowEntity.Id}");
+            ILogger.Log($"[InteractActionService] Milking click on cow {cowEntity.Id} with food {foodToUse}, preferred={isPreferred}, product={milkProduct}x{milkAmount}");
 
-            if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
+            if (globalRes.GetFood(foodToUse) <= 0 || cow.Exhaust >= cow.MaxExhaust)
             {
                 StateDefinitions.BeginExit(ref sc);
                 ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = sc.Key, Phase = sc.Phase, Age = 0 });
             }
+        }
+    }
+
+    private void HandleBreedingClick(Context ctx, Entity playerEntity, ref PlayerStateComponent playerState, ref StateComponent sc)
+    {
+        var loveHouseEntity = playerState.InteractionTarget;
+        if (loveHouseEntity == Entity.Null || !ctx.State.HasComponent<LoveHouseComponent>(loveHouseEntity)) return;
+
+        ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
+        loveHouse.BreedProgress++;
+
+        ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
+        ILogger.Log($"[InteractActionService] Breed click {loveHouse.BreedProgress}/{loveHouse.BreedCost} at love house {loveHouseEntity.Id}");
+
+        if (loveHouse.BreedProgress >= loveHouse.BreedCost)
+        {
+            StateDefinitions.BeginExit(ref sc);
+            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = sc.Key, Phase = sc.Phase, Age = 0 });
         }
     }
 
@@ -188,11 +217,12 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     {
         missingResource = null;
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
+        ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
 
         if (cow.IsMilking) return false;
-        if (globalRes.Grass <= 0 || cow.Exhaust >= cow.MaxExhaust)
+        if (globalRes.GetFood(house.SelectedFood) <= 0 || cow.Exhaust >= cow.MaxExhaust)
         {
-            missingResource = StateKeys.Grass;
+            missingResource = StateKeys.Food;
             return false;
         }
 
@@ -273,15 +303,33 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return nearest;
     }
 
-    private bool HandleGrassInteraction(Context ctx, Entity grassEntity, ref GlobalResourcesComponent globalRes)
+    private bool HandleFoodSignInteraction(Context ctx, Entity signEntity)
     {
-        ref var grass = ref ctx.State.GetComponent<GrassComponent>(grassEntity);
+        ref var sign = ref ctx.State.GetComponent<FoodSignComponent>(signEntity);
+
+        // Cycle: Grass → Carrot → Apple → Mushroom → Grass
+        sign.SelectedFood = (sign.SelectedFood + 1) % 4;
+
+        // Also update the linked house's SelectedFood
+        if (sign.HouseId != Entity.Null && ctx.State.HasComponent<HouseComponent>(sign.HouseId))
+        {
+            ref var house = ref ctx.State.GetComponent<HouseComponent>(sign.HouseId);
+            house.SelectedFood = sign.SelectedFood;
+        }
+
+        ILogger.Log($"[InteractActionService] Food sign {signEntity.Id} cycled to food type {sign.SelectedFood}");
+        return true;
+    }
+
+    private bool HandleFoodInteraction(Context ctx, Entity foodEntity, ref GlobalResourcesComponent globalRes)
+    {
+        ref var grass = ref ctx.State.GetComponent<GrassComponent>(foodEntity);
         grass.Durability -= 1;
-        globalRes.Grass += 1;
+        globalRes.AddFood(grass.FoodType, 1);
 
         if (grass.Durability <= 0)
         {
-            ctx.State.DeleteEntity(grassEntity);
+            ctx.State.DeleteEntity(foodEntity);
             return false;
         }
         return true;
@@ -298,7 +346,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
-    private bool HandleLoveHouseBreed(Context ctx, Entity playerEntity, Entity loveHouseEntity, ref PlayerStateComponent playerState, ref StateComponent sc, ref GlobalResourcesComponent globalRes, out string missingResource)
+    private bool HandleLoveHouseAssign(Context ctx, Entity playerEntity, Entity loveHouseEntity, ref PlayerStateComponent playerState, ref StateComponent sc, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
 
@@ -319,8 +367,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             { nextCow = ce; break; }
         }
 
-        // Remove cow from follow chain
+        // Remove cow from follow chain, preserve previous house for return after breeding
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowToAssign);
+        if (cow.PreviousHouseId == Entity.Null)
+            cow.PreviousHouseId = cow.HouseId;
         cow.FollowingPlayer = Entity.Null;
         cow.FollowTarget = Entity.Null;
         cow.HouseId = loveHouseEntity;
@@ -331,22 +381,17 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             body.Velocity = Deterministic.GameFramework.Types.Vector2.Zero;
         }
 
-        // Move cow to love house position
-        if (ctx.State.HasComponent<Transform2D>(loveHouseEntity) && ctx.State.HasComponent<Transform2D>(cowToAssign))
-        {
-            var housePos = ctx.State.GetComponent<Transform2D>(loveHouseEntity).Position;
-            ref var cowTransform = ref ctx.State.GetComponent<Transform2D>(cowToAssign);
-            cowTransform.Position = housePos + new Deterministic.GameFramework.Types.Vector2(2, 2);
-        }
-
         // Re-get love house ref after touching other components
         loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
 
-        // Assign to first empty slot
-        if (loveHouse.CowId1 == Entity.Null)
+        // Assign to first empty slot, position cow on corresponding side
+        bool isFirstSlot = loveHouse.CowId1 == Entity.Null;
+        if (isFirstSlot)
             loveHouse.CowId1 = cowToAssign;
         else
             loveHouse.CowId2 = cowToAssign;
+
+        // Cow will walk to love house via CowFollowSystem navigation
 
         // Promote next cow in chain
         if (nextCow != Entity.Null)
@@ -360,39 +405,55 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             playerState.FollowingCow = Entity.Null;
         }
 
-        // Re-check: if both slots now filled, trigger breeding
+        // Show interacted feedback for assignment
+        ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
+        ILogger.Log($"[InteractActionService] Assigned cow {cowToAssign.Id} to love house {loveHouseEntity.Id}");
+
+        return true;
+    }
+
+    private bool HandleLoveHouseStartBreed(Context ctx, Entity playerEntity, Entity loveHouseEntity, ref PlayerStateComponent playerState, ref StateComponent sc, ref GlobalResourcesComponent globalRes, out string missingResource)
+    {
+        missingResource = null;
+
+        ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
+
+        // Count cows vs houses to check room for calf
+        int cowCount = 0;
+        foreach (var _ in ctx.State.Filter<CowComponent>())
+            cowCount++;
+        int houseCount = 0;
+        foreach (var _ in ctx.State.Filter<HouseComponent>())
+            houseCount++;
+
+        if (cowCount >= houseCount)
+        {
+            missingResource = StateKeys.Houses;
+            return false;
+        }
+
+        // Set breed cost based on cow exhaust values
+        int breedCost = 5;
         loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
-        if (loveHouse.CowId1 != Entity.Null && loveHouse.CowId2 != Entity.Null)
+        if (ctx.State.HasComponent<CowComponent>(loveHouse.CowId1) && ctx.State.HasComponent<CowComponent>(loveHouse.CowId2))
         {
-            // Count cows vs houses to check room for calf
-            int cowCount = 0;
-            foreach (var _ in ctx.State.Filter<CowComponent>())
-                cowCount++;
-            int houseCount = 0;
-            foreach (var _ in ctx.State.Filter<HouseComponent>())
-                houseCount++;
-
-            if (cowCount >= houseCount)
-            {
-                missingResource = StateKeys.Houses;
-                return false;
-            }
-
-            // Start breed state with love house as target
-            StateDefinitions.Begin(ref sc, StateKeys.Breed);
-            playerState.InteractionTarget = loveHouseEntity;
-
-            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Breed, Phase = sc.Phase, Age = 0 });
-
-            ILogger.Log($"[InteractActionService] Breeding cows {loveHouse.CowId1.Id} and {loveHouse.CowId2.Id} at love house {loveHouseEntity.Id}");
+            var c1 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId1);
+            var c2 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId2);
+            breedCost = System.Math.Max(3, (c1.MaxExhaust + c2.MaxExhaust) / 2);
         }
-        else
-        {
-            // Just assigned first cow, show interacted feedback
-            ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
-            ILogger.Log($"[InteractActionService] Assigned cow {cowToAssign.Id} to love house {loveHouseEntity.Id}");
-        }
+        loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
+        loveHouse.BreedProgress = 0;
+        loveHouse.BreedCost = breedCost;
 
+        StateDefinitions.Begin(ref sc, StateKeys.Breed);
+        playerState.InteractionTarget = loveHouseEntity;
+
+        if (ctx.State.HasComponent<Transform2D>(playerEntity))
+            playerState.ReturnPosition = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+
+        ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Breed, Phase = sc.Phase, Age = 0 });
+
+        ILogger.Log($"[InteractActionService] Started breeding at love house {loveHouseEntity.Id}, cost={breedCost}");
         return true;
     }
 
@@ -433,9 +494,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
-        if (globalRes.Milk > 0)
+        if (globalRes.ConsumeAnyMilkProduct())
         {
-            globalRes.Milk -= 1;
             globalRes.Coins += 1;
             return true;
         }
@@ -472,6 +532,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                         break;
                     case LandType.FinalStructure:
                         FinalStructureDefinition.Create(ctx, position, 0);
+                        break;
+                    case LandType.CarrotFarm:
+                        FoodFarmDefinition.Create(ctx, position, FoodType.Carrot);
+                        break;
+                    case LandType.AppleOrchard:
+                        FoodFarmDefinition.Create(ctx, position, FoodType.Apple);
+                        break;
+                    case LandType.MushroomCave:
+                        FoodFarmDefinition.Create(ctx, position, FoodType.Mushroom);
                         break;
                     default:
                         HouseDefinition.Create(ctx, position);

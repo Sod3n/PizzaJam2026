@@ -11,4 +11,5 @@ namespace Template.Shared.Components;
 public struct HouseComponent : IComponent
 {
     public Entity CowId;
+    public int SelectedFood; // FoodType constant — set by the food sign
 }

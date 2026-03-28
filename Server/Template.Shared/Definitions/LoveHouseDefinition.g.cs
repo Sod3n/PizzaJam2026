@@ -22,6 +22,8 @@ public static partial class LoveHouseDefinition
         ref var component = ref ctx.GetComponent<LoveHouseComponent>(entity);
         component.CowId1 = Entity.Null;
         component.CowId2 = Entity.Null;
+        component.BreedProgress = 0;
+        component.BreedCost = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

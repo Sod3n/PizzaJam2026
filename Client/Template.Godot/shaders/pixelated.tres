@@ -32,7 +32,7 @@ void fragment() {
     
     if (tex.a < 0.5) discard;
     
-    ALBEDO = tex.rgb;
-    ALPHA = tex.a;
+    ALBEDO = tex.rgb * COLOR.rgb;
+    ALPHA = tex.a * COLOR.a;
     ALPHA_SCISSOR_THRESHOLD = 0.5;
 }"

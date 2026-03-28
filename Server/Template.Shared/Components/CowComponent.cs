@@ -14,7 +14,9 @@ public struct CowComponent : IComponent
     public int MaxExhaust;
     public bool IsMilking;
     public Entity HouseId;
+    public Entity PreviousHouseId; // Saved when entering love house, restored after breeding
     public Vector2 SpawnPosition;
     public Entity FollowingPlayer;
     public Entity FollowTarget; // Entity this cow actually follows (player or previous cow in chain)
+    public int PreferredFood; // FoodType constant — this cow's preferred food gives 3x milk output
 }

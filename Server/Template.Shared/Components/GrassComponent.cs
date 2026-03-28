@@ -12,4 +12,5 @@ public struct GrassComponent : IComponent
 {
     public int Durability;
     public int MaxDurability;
+    public int FoodType; // FoodType.Grass, Carrot, Apple, Mushroom
 }

@@ -1,13 +1,12 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://yeyaphli5ypt"]
 
-[ext_resource type="Script" path="res://Scripts/UI/LobbyMenu.cs" id="1_lobby"]
+[ext_resource type="Script" uid="uid://b77fjsy5h42un" path="res://Scripts/UI/LobbyMenu.cs" id="1_lobby"]
 
-[node name="LobbyMenu" type="CanvasLayer"]
+[node name="LobbyMenu" type="CanvasLayer" unique_id=2052408058]
 layer = 10
 script = ExtResource("1_lobby")
 
-; === MAIN MENU ===
-[node name="MainMenu" type="Control" parent="."]
+[node name="MainMenu" type="Control" parent="." unique_id=84520992]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +14,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BG" type="ColorRect" parent="MainMenu"]
+[node name="BG" type="ColorRect" parent="MainMenu" unique_id=1809826603]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,49 +23,49 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.12, 0.18, 0.85)
 
-[node name="VBox" type="VBoxContainer" parent="MainMenu"]
+[node name="VBox" type="VBoxContainer" parent="MainMenu" unique_id=232184155]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -120.0
-offset_right = 150.0
-offset_bottom = 120.0
+offset_left = -357.0
+offset_top = -268.0
+offset_right = -57.0
+offset_bottom = 9.0
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(2, 2)
 theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="MainMenu/VBox"]
+[node name="Title" type="Label" parent="MainMenu/VBox" unique_id=910164080]
 layout_mode = 2
 text = "Pizza Jam 2026"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CreateBtn" type="Button" parent="MainMenu/VBox"]
-layout_mode = 2
+[node name="CreateBtn" type="Button" parent="MainMenu/VBox" unique_id=439752849]
 custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
 text = "Create Lobby"
 
-[node name="JoinBtn" type="Button" parent="MainMenu/VBox"]
-layout_mode = 2
+[node name="JoinBtn" type="Button" parent="MainMenu/VBox" unique_id=1300932016]
 custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
 text = "Join Lobby"
 
-[node name="OfflineBtn" type="Button" parent="MainMenu/VBox"]
-layout_mode = 2
+[node name="OfflineBtn" type="Button" parent="MainMenu/VBox" unique_id=1719845530]
 custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
 text = "Play Offline"
 
-[node name="UseSaveCheck" type="CheckButton" parent="MainMenu/VBox"]
-layout_mode = 2
+[node name="UseSaveCheck" type="CheckButton" parent="MainMenu/VBox" unique_id=543001680]
 custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
 text = "Use last save"
 
-; === CREATE PANEL ===
-[node name="CreatePanel" type="Control" parent="."]
+[node name="CreatePanel" type="Control" parent="." unique_id=523619050]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -75,7 +74,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BG" type="ColorRect" parent="CreatePanel"]
+[node name="BG" type="ColorRect" parent="CreatePanel" unique_id=546650321]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -84,7 +83,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.12, 0.18, 0.85)
 
-[node name="VBox" type="VBoxContainer" parent="CreatePanel"]
+[node name="VBox" type="VBoxContainer" parent="CreatePanel" unique_id=1046833908]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -99,35 +98,34 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="CreatePanel/VBox"]
+[node name="Title" type="Label" parent="CreatePanel/VBox" unique_id=1515584447]
 layout_mode = 2
 text = "Lobby Created! Share this code:"
 horizontal_alignment = 1
 
-[node name="CodeLabel" type="Label" parent="CreatePanel/VBox"]
+[node name="CodeLabel" type="Label" parent="CreatePanel/VBox" unique_id=1581015226]
 layout_mode = 2
 text = "..."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="CopyBtn" type="Button" parent="CreatePanel/VBox"]
-layout_mode = 2
+[node name="CopyBtn" type="Button" parent="CreatePanel/VBox" unique_id=1380641454]
 custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
 text = "Copy Code"
 
-[node name="StartBtn" type="Button" parent="CreatePanel/VBox"]
-layout_mode = 2
+[node name="StartBtn" type="Button" parent="CreatePanel/VBox" unique_id=1876986413]
 custom_minimum_size = Vector2(0, 50)
-text = "Start Match"
-disabled = true
-
-[node name="BackBtn" type="Button" parent="CreatePanel/VBox"]
 layout_mode = 2
+disabled = true
+text = "Start Match"
+
+[node name="BackBtn" type="Button" parent="CreatePanel/VBox" unique_id=614459732]
 custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
 text = "Back"
 
-; === JOIN PANEL ===
-[node name="JoinPanel" type="Control" parent="."]
+[node name="JoinPanel" type="Control" parent="." unique_id=1028954851]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -136,7 +134,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BG" type="ColorRect" parent="JoinPanel"]
+[node name="BG" type="ColorRect" parent="JoinPanel" unique_id=1511140195]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -145,7 +143,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.12, 0.18, 0.85)
 
-[node name="VBox" type="VBoxContainer" parent="JoinPanel"]
+[node name="VBox" type="VBoxContainer" parent="JoinPanel" unique_id=517579927]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -160,28 +158,27 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="JoinPanel/VBox"]
+[node name="Title" type="Label" parent="JoinPanel/VBox" unique_id=2087699468]
 layout_mode = 2
 text = "Enter Lobby Code:"
 horizontal_alignment = 1
 
-[node name="CodeInput" type="LineEdit" parent="JoinPanel/VBox"]
-layout_mode = 2
+[node name="CodeInput" type="LineEdit" parent="JoinPanel/VBox" unique_id=706020029]
 custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
 placeholder_text = "Paste lobby code here..."
 
-[node name="ConfirmBtn" type="Button" parent="JoinPanel/VBox"]
-layout_mode = 2
+[node name="ConfirmBtn" type="Button" parent="JoinPanel/VBox" unique_id=1583034852]
 custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
 text = "Join"
 
-[node name="BackBtn" type="Button" parent="JoinPanel/VBox"]
-layout_mode = 2
+[node name="BackBtn" type="Button" parent="JoinPanel/VBox" unique_id=470773678]
 custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
 text = "Back"
 
-; === WAITING PANEL ===
-[node name="WaitingPanel" type="Control" parent="."]
+[node name="WaitingPanel" type="Control" parent="." unique_id=157767034]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -190,7 +187,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BG" type="ColorRect" parent="WaitingPanel"]
+[node name="BG" type="ColorRect" parent="WaitingPanel" unique_id=488442357]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -199,7 +196,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.12, 0.18, 0.85)
 
-[node name="VBox" type="VBoxContainer" parent="WaitingPanel"]
+[node name="VBox" type="VBoxContainer" parent="WaitingPanel" unique_id=1893248987]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -214,13 +211,13 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 16
 
-[node name="StatusLabel" type="Label" parent="WaitingPanel/VBox"]
+[node name="StatusLabel" type="Label" parent="WaitingPanel/VBox" unique_id=2123570156]
 layout_mode = 2
 text = "Please wait..."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="BackBtn" type="Button" parent="WaitingPanel/VBox"]
-layout_mode = 2
+[node name="BackBtn" type="Button" parent="WaitingPanel/VBox" unique_id=1992209374]
 custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
 text = "Back"

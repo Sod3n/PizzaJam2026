@@ -8,4 +8,5 @@ public partial class GrassComponentNode : Node
 {
     [Export] public int Durability;
     [Export] public int MaxDurability;
+    [Export] public int FoodType;
 }

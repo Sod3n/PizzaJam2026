@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.DAR;
@@ -137,10 +138,11 @@ public partial class GameManager : Node
         // Find our player in the restored state
         OfflineUserId = Guid.NewGuid();
         var entities = Game.State.Filter<PlayerEntity>();
-        if (entities.Length > 0)
+        var firstEntity = entities.FirstOrDefault();
+        if (firstEntity.Id != 0)
         {
-            LocalPlayerId = entities[0].Id;
-            ref var player = ref Game.State.GetComponent<PlayerEntity>(entities[0]);
+            LocalPlayerId = firstEntity.Id;
+            ref var player = ref Game.State.GetComponent<PlayerEntity>(firstEntity);
             OfflineUserId = player.UserId;
             GD.Print($"[GameManager] Restored Player: {LocalPlayerId}");
         }
