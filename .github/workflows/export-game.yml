@@ -130,7 +130,7 @@ jobs:
         working-directory: ${{ env.PROJECT_PATH }}
         continue-on-error: true
         run: |
-          dotnet publish -c Release -p:GodotTargetPlatform=android -v normal 2>&1 | tail -60
+          dotnet publish Template.Godot.csproj -c ExportRelease -p:GodotTargetPlatform=android -v normal 2>&1 | tail -80
 
       - name: Import Godot project
         run: godot --headless --import
