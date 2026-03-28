@@ -14,6 +14,7 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Profiler;
 using Deterministic.GameFramework.Utils.Logging;
+using Template.Godot.Framework.Editor;
 using FileAccess = Godot.FileAccess;
 
 namespace Template.Godot.Core;
@@ -49,6 +50,8 @@ public partial class GameManager : Node
     public override void _Ready()
     {
         Instance = this;
+        FrameworkDebugBridge.GetState = () => Game?.State;
+        FrameworkDebugBridge.IsRunning = () => _isRunning;
         GD.Print("=== Initializing Godot Client ===");
 
         ILogger.SetLogger(new GodotLogger());

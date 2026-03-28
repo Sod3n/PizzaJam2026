@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Template.Godot.Core;
+using Template.Godot.Framework.Editor;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Navigation2D.Systems;
 using Deterministic.GameFramework.ECS;
@@ -76,7 +76,7 @@ public partial class DebugVisualizer : Node3D
         _navMeshInstance.Visible = _showNavMesh;
         _agentPathsMesh.Visible = _showAgentPaths;
 
-        if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
+        if (FrameworkDebugBridge.IsRunning?.Invoke() != true) return;
 
         if (_showCollisions) DrawCollisions();
         if (_showNavMesh) DrawNavMesh();
@@ -85,7 +85,8 @@ public partial class DebugVisualizer : Node3D
 
     private void DrawCollisions()
     {
-        var state = GameManager.Instance.Game.State;
+        var state = FrameworkDebugBridge.GetState?.Invoke();
+        if (state == null) return;
         var im = new ImmediateMesh();
 
         // Filled shapes
@@ -168,7 +169,8 @@ public partial class DebugVisualizer : Node3D
 
     private void DrawNavMesh()
     {
-        var state = GameManager.Instance.Game.State;
+        var state = FrameworkDebugBridge.GetState?.Invoke();
+        if (state == null) return;
         var navState = state.GetCustomData<NavigationState>();
         if (navState == null) return;
 
@@ -223,7 +225,8 @@ public partial class DebugVisualizer : Node3D
 
     private void DrawAgentPaths()
     {
-        var state = GameManager.Instance.Game.State;
+        var state = FrameworkDebugBridge.GetState?.Invoke();
+        if (state == null) return;
         var navState = state.GetCustomData<NavigationState>();
         if (navState == null) return;
 

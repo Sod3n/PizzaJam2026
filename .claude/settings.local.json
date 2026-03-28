@@ -97,7 +97,19 @@
       "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Framework -name \"*.cs\" -type f ! -path \"*/obj/*\" -exec grep -l \"public enum\\\\|private enum\\\\|internal enum\" {})",
       "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy -name *.cs -type f ! -path */Server/Framework/* ! -path */.git/* -exec grep -l \"struct.*IComponent\\\\|struct.*IAction\" {})",
       "Bash(2)",
-      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Framework -name \"*.cs\" -type f ! -path \"*/obj/*\" -exec wc -l {} +)"
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Framework -name \"*.cs\" -type f ! -path \"*/obj/*\" -exec wc -l {} +)",
+      "Bash(grep -r \"Server\\\\|\\\\.\\\\./\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs)",
+      "Bash(grep -r \"res://\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs)",
+      "Bash(grep -r \"using\\\\|namespace\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs)",
+      "Bash(grep -r \"Template\\\\.Godot\\\\|Template\\\\.Shared\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs)",
+      "Bash(grep -r \"FrameworkPhysicsBody\\\\|FrameworkNavAgent\\\\|FrameworkCollisionShapeType\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs)",
+      "Bash(gh repo:*)",
+      "Bash(gh auth:*)",
+      "Read(//private/tmp/**)",
+      "Bash(rm -rf addon_repo codegen_repo)",
+      "Bash(mkdir addon_repo codegen_repo)",
+      "Bash(cp /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/*.cs /tmp/addon_repo/)",
+      "Bash(cp /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/addons/framework_tools/plugin.cfg /tmp/addon_repo/)"
     ]
   }
 }

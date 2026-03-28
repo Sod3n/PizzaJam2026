@@ -2,3 +2,9 @@
 	path = Server/Framework
 	url = https://github.com/Sod3n/Determenistic.GameFramework.git
 	branch = v2
+[submodule "Client/Template.Godot/addons/framework_tools"]
+	path = Client/Template.Godot/addons/framework_tools
+	url = https://github.com/Sod3n/Determenistic.GameFramework.Godot.Addon.git
+[submodule "Tools/CodeGen"]
+	path = Tools/CodeGen
+	url = https://github.com/Sod3n/Determenistic.GameFramework.Godot.CodeGen.git

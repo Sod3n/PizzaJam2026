@@ -4,21 +4,30 @@ using Godot;
 namespace Template.Godot.Framework.Editor;
 
 /// <summary>
-/// Monitors Template.Shared.dll for changes and restarts the editor
+/// Monitors the shared game DLL for changes and restarts the editor
 /// before Godot's reload_assemblies can crash.
+/// Configure the DLL name via Project Settings → Framework Tools → Shared Dll Name.
 /// </summary>
 [Tool]
 public partial class ReloadCleaner : Node
 {
+    private const string DllSetting = "framework_tools/shared_dll_name";
+    private const string DefaultDllName = "Template.Shared.dll";
+    private const string VmTypeSetting = "framework_tools/entity_viewmodel_type";
+
     private System.DateTime _sharedDllTimestamp;
     private string _sharedDllPath;
     private bool _restartPending;
 
     public override void _Ready()
     {
+        var dllName = ProjectSettings.HasSetting(DllSetting)
+            ? (string)ProjectSettings.GetSetting(DllSetting)
+            : DefaultDllName;
+
         var projectPath = ProjectSettings.GlobalizePath("res://");
         _sharedDllPath = System.IO.Path.Combine(projectPath,
-            ".godot/mono/temp/bin/Debug/Template.Shared.dll");
+            $".godot/mono/temp/bin/Debug/{dllName}");
         _sharedDllTimestamp = GetDllTimestamp();
     }
 
@@ -30,7 +39,7 @@ public partial class ReloadCleaner : Node
         if (current != _sharedDllTimestamp)
         {
             _restartPending = true;
-            GD.Print("Template.Shared.dll changed. Restarting editor to avoid reload crash...");
+            GD.Print($"{System.IO.Path.GetFileName(_sharedDllPath)} changed. Restarting editor to avoid reload crash...");
             // Restart before reload_assemblies gets called from CallQueue
             EditorInterface.Singleton.RestartEditor(true);
         }
@@ -49,7 +58,10 @@ public partial class ReloadCleaner : Node
         {
             try
             {
-                var entityVmType = System.Type.GetType("Template.Godot.Visuals.EntityViewModel, Template.Godot");
+                var vmTypeStr = ProjectSettings.HasSetting(VmTypeSetting)
+                    ? (string)ProjectSettings.GetSetting(VmTypeSetting)
+                    : "Template.Godot.Visuals.EntityViewModel, Template.Godot";
+                var entityVmType = System.Type.GetType(vmTypeStr);
                 var dict = entityVmType?.GetProperty("EntityViewModels")?.GetValue(null);
                 if (dict is System.Collections.IDictionary d) d.Clear();
             }

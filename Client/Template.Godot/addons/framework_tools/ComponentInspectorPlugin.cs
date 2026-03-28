@@ -5,12 +5,14 @@ namespace Template.Godot.Framework.Editor;
 
 /// <summary>
 /// Adds an "Open Source Struct" button to the inspector when a ComponentNode is selected,
-/// linking directly to the IComponent .cs file in Server/Template.Shared/Components/.
+/// linking directly to the IComponent .cs source file.
+/// Configure the path via Project Settings → Framework Tools → Components Dir.
 /// </summary>
 [Tool]
 public partial class ComponentInspectorPlugin : EditorInspectorPlugin
 {
-    private const string ComponentsDir = "../../Server/Template.Shared/Components/";
+    private const string SettingPath = "framework_tools/components_dir";
+    private const string DefaultComponentsDir = "../../Server/Template.Shared/Components/";
 
     public override bool _CanHandle(GodotObject @object)
     {
@@ -25,8 +27,12 @@ public partial class ComponentInspectorPlugin : EditorInspectorPlugin
         if (!className.EndsWith("Node") || className.Length <= 4) return;
         var componentName = className[..^4];
 
+        var componentsDir = ProjectSettings.HasSetting(SettingPath)
+            ? (string)ProjectSettings.GetSetting(SettingPath)
+            : DefaultComponentsDir;
+
         var projectPath = ProjectSettings.GlobalizePath("res://");
-        var structPath = System.IO.Path.Combine(projectPath, ComponentsDir, componentName + ".cs");
+        var structPath = System.IO.Path.Combine(projectPath, componentsDir, componentName + ".cs");
         structPath = System.IO.Path.GetFullPath(structPath);
 
         GD.Print($"[ComponentInspector] class={className} component={componentName} path={structPath} exists={System.IO.File.Exists(structPath)}");
