@@ -27,6 +27,7 @@ public partial class GameManager : Node
     [Export] public string ServerIp = "127.0.0.1";
     [Export] public int ServerPort = 9050;
     [Export] public bool OfflineMode = false;
+    public bool IsLoadedFromSave { get; private set; }
 
     public GameClient GameClient { get; private set; }
     public Deterministic.GameFramework.Common.Game Game { get; private set; }

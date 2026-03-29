@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://bgt7qedtjqn55"]
+
+[ext_resource type="Texture2D" uid="uid://cdkl1kj6ba6ss" path="res://sprites/props/barrel.png" id="1"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="2_o2sov"]
+[ext_resource type="Texture2D" uid="uid://dignhqgly4aoy" path="res://sprites/props/tree_1.png" id="3_kdq62"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="3_srbby"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="4_jp8i0"]
+[ext_resource type="Texture2D" uid="uid://xwvgykbhbyw3" path="res://sprites/props/flowers.png" id="4_vu4u3"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="5_dr6rv"]
+[ext_resource type="Texture2D" uid="uid://dbjadv156adjm" path="res://sprites/props/bush_2.png" id="5_n7n12"]
+[ext_resource type="Texture2D" uid="uid://df1ukad2f1sei" path="res://sprites/props/bush_1.png" id="6_oats5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kdq62"]
+render_priority = 0
+shader = ExtResource("2_o2sov")
+shader_parameter/albedo_texture = ExtResource("1")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vu4u3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_kdq62")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_vu4u3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_n7n12")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_oats5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_srbby")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_jp8i0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Barrel" type="Node3D" unique_id=343917729]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=676996787]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0, 0.4782728, -0.43979532)
+material_override = SubResource("ShaderMaterial_kdq62")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_vu4u3")
+script = ExtResource("5_dr6rv")

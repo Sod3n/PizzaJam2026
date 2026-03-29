@@ -19,13 +19,30 @@ public partial class NotEnoughResourceView : Node3D
     {
         if (_sprite == null) return;
 
-        var frames = new SpriteFrames();
-        frames.AddAnimation(resourceKey);
-        frames.AddFrame(resourceKey, GD.Load<Texture2D>($"res://sprites/resources/{resourceKey}.png"));
-        frames.SetAnimationLoop(resourceKey, false);
-        _sprite.SpriteFrames = frames;
-        _sprite.Animation = resourceKey;
-        _sprite.Frame = 0;
+        // Map resource key to icon filename
+        var iconName = resourceKey switch
+        {
+            "food" => "grass",  // generic food icon
+            _ => resourceKey    // milk, coins, houses etc.
+        };
+
+        var texture = GD.Load<Texture2D>($"res://sprites/export/icons/{iconName}.png");
+        if (texture == null)
+        {
+            // Fallback — try loading from resources folder
+            texture = GD.Load<Texture2D>($"res://sprites/resources/{iconName}.png");
+        }
+
+        if (texture != null)
+        {
+            var frames = new SpriteFrames();
+            frames.AddAnimation(resourceKey);
+            frames.AddFrame(resourceKey, texture);
+            frames.SetAnimationLoop(resourceKey, false);
+            _sprite.SpriteFrames = frames;
+            _sprite.Animation = resourceKey;
+            _sprite.Frame = 0;
+        }
 
         Animate();
     }

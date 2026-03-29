@@ -51,6 +51,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         bool success = false;
         string missingResource = null;
+        string gainedResource = null;
         Entity interactedTarget = nearestTarget;
 
         // Cow interaction → always tame (add to follow chain)
@@ -103,11 +104,14 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
         else if (ctx.State.HasComponent<GrassComponent>(nearestTarget))
         {
+            var foodType = ctx.State.GetComponent<GrassComponent>(nearestTarget).FoodType;
             success = HandleFoodInteraction(ctx, nearestTarget, ref globalRes);
+            if (success) gainedResource = FoodTypeToKey(foodType);
         }
         else if (ctx.State.HasComponent<SellPointComponent>(nearestTarget))
         {
             success = HandleSellPointInteraction(ctx, ref globalRes, out missingResource);
+            if (success) gainedResource = StateKeys.Coins;
         }
         else if (ctx.State.HasComponent<LandComponent>(nearestTarget))
         {
@@ -120,8 +124,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (success)
         {
-            ctx.State.AddComponent(interactedTarget, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
-            ILogger.Log($"[InteractActionService] Marked {interactedTarget.Id} as successfully interacted");
+            ctx.State.AddComponent(interactedTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = gainedResource ?? "", Age = 0 });
+            if (gainedResource != null)
+                ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.GainedResource, Param = gainedResource, Age = 0 });
+            ILogger.Log($"[InteractActionService] Marked {interactedTarget.Id} as successfully interacted, gained: {gainedResource}");
         }
         else if (missingResource != null)
         {
@@ -130,7 +136,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             sc.MaxTime = NotEnoughResourceDurationTicks;
             sc.IsEnabled = true;
 
-            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = missingResource, Age = 0 });
+            // Show not-enough popup above target, not above player
+            ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = missingResource, Age = 0 });
             ILogger.Log($"[InteractActionService] Not enough {missingResource} for interaction with {nearestTarget.Id}");
         }
     }
@@ -206,6 +213,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         StateDefinitions.Begin(ref sc, StateKeys.Taming);
         ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Taming, Phase = sc.Phase, Age = 0 });
+        ctx.State.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
 
         playerState.InteractionTarget = cowEntity;
 
@@ -522,6 +530,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 int gridY = land.Ring; // grid Y coord stored in Ring
                 ctx.State.DeleteEntity(landEntity);
 
+                // Destroy nearby props to clear space for the new building
+                DestroyNearbyProps(ctx, position, 4f);
+
                 switch (landType)
                 {
                     case LandType.LoveHouse:
@@ -558,6 +569,22 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return false;
     }
 
+    private static void DestroyNearbyProps(Context ctx, Vector2 position, float radius)
+    {
+        float radiusSq = radius * radius;
+        var toDelete = new System.Collections.Generic.List<Entity>();
+        foreach (var entity in ctx.State.Filter<PropComponent>())
+        {
+            var propPos = ctx.State.GetComponent<Transform2D>(entity).Position;
+            float dx = (float)(propPos.X - position.X);
+            float dy = (float)(propPos.Y - position.Y);
+            if (dx * dx + dy * dy < radiusSq)
+                toDelete.Add(entity);
+        }
+        foreach (var entity in toDelete)
+            ctx.State.DeleteEntity(entity);
+    }
+
     private bool HandleFinalStructureInteraction(Context ctx, Entity finalEntity, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
@@ -575,6 +602,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         final.CurrentCoins += 1;
         return true;
     }
+
+    private static string FoodTypeToKey(int foodType) => foodType switch
+    {
+        FoodType.Grass => StateKeys.Grass,
+        FoodType.Carrot => StateKeys.Carrot,
+        FoodType.Apple => StateKeys.Apple,
+        FoodType.Mushroom => StateKeys.Mushroom,
+        _ => StateKeys.Food
+    };
 
     private Entity GetGlobalResourcesEntity(Context ctx)
     {

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://kfx6yeh1o5yq"]
 
-[ext_resource type="Texture2D" uid="uid://ls55pychj80m" path="res://IMG_0375.PNG" id="1_kl2qe"]
-[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="3_2qnaq"]
-[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="4_832on"]
+[ext_resource type="Texture2D" uid="uid://ls55pychj80m" path="res://sprites/IMG_0375.PNG" id="1_kl2qe"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="3_2qnaq"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_832on"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://1d35rfotwyk0" path="res://Scripts/Framework/Components/GrassComponentNode.cs" id="fw_grass"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
@@ -11,13 +11,12 @@
 atlas = ExtResource("1_kl2qe")
 region = Rect2(816, 0, 814, 1754)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_vjnfi"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_832on"]
 render_priority = 0
 shader = ExtResource("4_832on")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_884kg")
 shader_parameter/wind_strength = 1.0
 shader_parameter/wind_speed = 2.0000000223518
-shader_parameter/transparency = 1.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gxmxl"]
 atlas = ExtResource("1_kl2qe")
@@ -70,8 +69,8 @@ CollisionLayer = 4
 CollisionMask = 8
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=702612390]
-transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.04185171, 0, -0.04185171, 0.09082089, 0, 0, 0)
-material_override = SubResource("ShaderMaterial_vjnfi")
+transform = Transform3D(0.165, 0, 0, 0, 0.14985448, 0.069055334, 0, -0.069055334, 0.14985448, 0, 0.70060617, -0.39274752)
+material_override = SubResource("ShaderMaterial_832on")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gdsc3")
 frame_progress = 0.49251503

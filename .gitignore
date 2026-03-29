@@ -98,3 +98,11 @@ Client/Template.Godot/lib/
 # Keystores
 *.keystore
 *.jks
+
+# Large binary / editor source files
+*.psd
+*.kra
+*.xcf
+
+# Stale project files
+*.csproj.old

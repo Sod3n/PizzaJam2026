@@ -114,7 +114,13 @@
       "Bash(gh secret:*)",
       "Bash(gh workflow:*)",
       "Bash(gh run:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(grep -E \"\\\\.\\(tscn|cs\\)$\")",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts/Visuals -name *ViewModel.cs -type f)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(sips -g pixelWidth -g pixelHeight $f)",
+      "Read(//Users/a1/Documents/GitHub/PizzaJam2026-copy/**)"
     ]
   }
 }

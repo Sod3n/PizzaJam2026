@@ -1,0 +1,480 @@
+{
+  "Name": "icons",
+  "Type": "Root",
+  "X": 0,
+  "Y": 0,
+  "Width": 1162,
+  "Height": 4318,
+  "Opacity": 1,
+  "IsVisible": true,
+  "Children": [
+    {
+      "Name": "\u0424\u043E\u043D",
+      "Type": "Layer",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "TexturePath": "res://sprites/export/icons/___.png",
+      "Children": []
+    },
+    {
+      "Name": "\u0421\u043B\u043E\u0439 1",
+      "Type": "Layer",
+      "X": 129,
+      "Y": 308,
+      "Width": 769,
+      "Height": 1662,
+      "Opacity": 1,
+      "IsVisible": false,
+      "TexturePath": "res://sprites/export/icons/_____1.png",
+      "Children": []
+    },
+    {
+      "Name": "\u0421\u043B\u043E\u0439 3",
+      "Type": "Layer",
+      "X": 129,
+      "Y": 0,
+      "Width": 1033,
+      "Height": 2272,
+      "Opacity": 1,
+      "IsVisible": false,
+      "TexturePath": "res://sprites/export/icons/_____3.png",
+      "Children": []
+    },
+    {
+      "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+      "Type": "Group",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "Children": [
+        {
+          "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+          "Type": "Group",
+          "X": 0,
+          "Y": 0,
+          "Width": 1162,
+          "Height": 4318,
+          "Opacity": 1,
+          "IsVisible": true,
+          "Children": [
+            {
+              "Name": "\u0421\u043B\u043E\u0439 14",
+              "Type": "Layer",
+              "X": 369,
+              "Y": 460,
+              "Width": 458,
+              "Height": 377,
+              "Opacity": 1,
+              "IsVisible": false,
+              "TexturePath": "res://sprites/export/icons/____________/_____14.png",
+              "Children": []
+            },
+            {
+              "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+              "Type": "Group",
+              "X": 0,
+              "Y": 0,
+              "Width": 1162,
+              "Height": 4318,
+              "Opacity": 1,
+              "IsVisible": true,
+              "Children": [
+                {
+                  "Name": "\u0421\u043B\u043E\u0439 4",
+                  "Type": "Layer",
+                  "X": 402,
+                  "Y": 346,
+                  "Width": 362,
+                  "Height": 548,
+                  "Opacity": 1,
+                  "IsVisible": true,
+                  "TexturePath": "res://sprites/export/icons/____________/_____4.png",
+                  "Children": []
+                },
+                {
+                  "Name": "\u0421\u043B\u043E\u0439 2",
+                  "Type": "Layer",
+                  "X": 398,
+                  "Y": 343,
+                  "Width": 390,
+                  "Height": 553,
+                  "Opacity": 1,
+                  "IsVisible": true,
+                  "TexturePath": "res://sprites/export/icons/____________/_____2.png",
+                  "Children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "\u0421\u043B\u043E\u0439 14",
+      "Type": "Layer",
+      "X": 369,
+      "Y": 978,
+      "Width": 458,
+      "Height": 377,
+      "Opacity": 1,
+      "IsVisible": false,
+      "TexturePath": "res://sprites/export/icons/_____14.png",
+      "Children": []
+    },
+    {
+      "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+      "Type": "Group",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "Children": [
+        {
+          "Name": "\u0421\u043B\u043E\u0439 7",
+          "Type": "Layer",
+          "X": 307,
+          "Y": 1041,
+          "Width": 561,
+          "Height": 448,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____7.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 6",
+          "Type": "Layer",
+          "X": 292,
+          "Y": 999,
+          "Width": 612,
+          "Height": 493,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____6.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 11",
+          "Type": "Layer",
+          "X": 422,
+          "Y": 1153,
+          "Width": 350,
+          "Height": 202,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____11.png",
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+      "Type": "Group",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "Children": [
+        {
+          "Name": "\u0421\u043B\u043E\u0439 14",
+          "Type": "Layer",
+          "X": 370,
+          "Y": 1557,
+          "Width": 458,
+          "Height": 377,
+          "Opacity": 1,
+          "IsVisible": false,
+          "TexturePath": "res://sprites/export/icons/____________/_____14.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 10",
+          "Type": "Layer",
+          "X": 366,
+          "Y": 1632,
+          "Width": 400,
+          "Height": 314,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____10.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 9",
+          "Type": "Layer",
+          "X": 365,
+          "Y": 1629,
+          "Width": 404,
+          "Height": 321,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____9.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 12",
+          "Type": "Layer",
+          "X": 353,
+          "Y": 1738,
+          "Width": 434,
+          "Height": 212,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____12.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 13",
+          "Type": "Layer",
+          "X": 381,
+          "Y": 1633,
+          "Width": 318,
+          "Height": 254,
+          "Opacity": 0.76862746,
+          "IsVisible": false,
+          "TexturePath": "res://sprites/export/icons/____________/_____13.png",
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Name": "\u0421\u043B\u043E\u0439 20",
+      "Type": "Layer",
+      "X": 299,
+      "Y": 2222,
+      "Width": 549,
+      "Height": 1872,
+      "Opacity": 0.1254902,
+      "IsVisible": true,
+      "TexturePath": "res://sprites/export/icons/_____20.png",
+      "Children": []
+    },
+    {
+      "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+      "Type": "Group",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "Children": [
+        {
+          "Name": "\u0421\u043B\u043E\u0439 24",
+          "Type": "Layer",
+          "X": 425,
+          "Y": 2224,
+          "Width": 295,
+          "Height": 359,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____24.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 33",
+          "Type": "Layer",
+          "X": 0,
+          "Y": 0,
+          "Width": 1162,
+          "Height": 4318,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____33.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 21",
+          "Type": "Layer",
+          "X": 423,
+          "Y": 2221,
+          "Width": 304,
+          "Height": 369,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____21.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 32",
+          "Type": "Layer",
+          "X": 519,
+          "Y": 2262,
+          "Width": 111,
+          "Height": 135,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____32.png",
+          "Children": []
+        }
+      ]
+    },
+    {
+      "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+      "Type": "Group",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "Children": [
+        {
+          "Name": "\u0421\u043B\u043E\u0439 26",
+          "Type": "Layer",
+          "X": 465,
+          "Y": 2774,
+          "Width": 245,
+          "Height": 620,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____26.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 22",
+          "Type": "Layer",
+          "X": 457,
+          "Y": 2754,
+          "Width": 270,
+          "Height": 649,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____22.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 30",
+          "Type": "Layer",
+          "X": 489,
+          "Y": 2889,
+          "Width": 195,
+          "Height": 463,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____30.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 34",
+          "Type": "Layer",
+          "X": 290,
+          "Y": 3157,
+          "Width": 591,
+          "Height": 350,
+          "Opacity": 0.28627452,
+          "IsVisible": false,
+          "TexturePath": "res://sprites/export/icons/____________/_____34.png",
+          "Children": []
+        },
+        {
+          "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+          "Type": "Group",
+          "X": 0,
+          "Y": 0,
+          "Width": 1162,
+          "Height": 4318,
+          "Opacity": 1,
+          "IsVisible": true,
+          "Children": [
+            {
+              "Name": "\u0421\u043B\u043E\u0439 36",
+              "Type": "Layer",
+              "X": 299,
+              "Y": 3163,
+              "Width": 562,
+              "Height": 340,
+              "Opacity": 1,
+              "IsVisible": true,
+              "TexturePath": "res://sprites/export/icons/____________/_____36.png",
+              "Children": []
+            },
+            {
+              "Name": "\u0421\u043B\u043E\u0439 35",
+              "Type": "Layer",
+              "X": 290,
+              "Y": 3159,
+              "Width": 581,
+              "Height": 351,
+              "Opacity": 1,
+              "IsVisible": true,
+              "TexturePath": "res://sprites/export/icons/____________/_____35.png",
+              "Children": []
+            },
+            {
+              "Name": "\u0421\u043B\u043E\u0439 38",
+              "Type": "Layer",
+              "X": 330,
+              "Y": 3190,
+              "Width": 486,
+              "Height": 267,
+              "Opacity": 1,
+              "IsVisible": true,
+              "TexturePath": "res://sprites/export/icons/____________/_____38.png",
+              "Children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "\u041D\u043E\u0432\u0430\u044F \u0433\u0440\u0443\u043F\u043F\u0430",
+      "Type": "Group",
+      "X": 0,
+      "Y": 0,
+      "Width": 1162,
+      "Height": 4318,
+      "Opacity": 1,
+      "IsVisible": true,
+      "Children": [
+        {
+          "Name": "\u0421\u043B\u043E\u0439 26",
+          "Type": "Layer",
+          "X": 304,
+          "Y": 3622,
+          "Width": 523,
+          "Height": 475,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____26.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 23",
+          "Type": "Layer",
+          "X": 300,
+          "Y": 3615,
+          "Width": 531,
+          "Height": 486,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____23.png",
+          "Children": []
+        },
+        {
+          "Name": "\u0421\u043B\u043E\u0439 28",
+          "Type": "Layer",
+          "X": 333,
+          "Y": 3662,
+          "Width": 475,
+          "Height": 392,
+          "Opacity": 1,
+          "IsVisible": true,
+          "TexturePath": "res://sprites/export/icons/____________/_____28.png",
+          "Children": []
+        }
+      ]
+    }
+  ]
+}

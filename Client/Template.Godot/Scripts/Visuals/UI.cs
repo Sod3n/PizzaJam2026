@@ -18,6 +18,12 @@ public partial class UI : CanvasLayer
     private RichTextLabel _grassLabel;
     private RichTextLabel _milkLabel;
     private RichTextLabel _coinLabel;
+    private RichTextLabel _carrotLabel;
+    private RichTextLabel _appleLabel;
+    private RichTextLabel _mushroomLabel;
+    private RichTextLabel _vitaminShakeLabel;
+    private RichTextLabel _appleYogurtLabel;
+    private RichTextLabel _purplePotionLabel;
 
     public override void _Ready()
     {
@@ -25,6 +31,12 @@ public partial class UI : CanvasLayer
         _grassLabel = GetNode<RichTextLabel>("Control/Grass");
         _milkLabel = GetNode<RichTextLabel>("Control/Milk");
         _coinLabel = GetNode<RichTextLabel>("Control/Coins");
+        _carrotLabel = GetNode<RichTextLabel>("Control/Carrot");
+        _appleLabel = GetNode<RichTextLabel>("Control/Apple");
+        _mushroomLabel = GetNode<RichTextLabel>("Control/Mushroom");
+        _vitaminShakeLabel = GetNode<RichTextLabel>("Control/VitaminShake");
+        _appleYogurtLabel = GetNode<RichTextLabel>("Control/AppleYogurt");
+        _purplePotionLabel = GetNode<RichTextLabel>("Control/PurplePotion");
     }
 
     public override void _Process(double delta)
@@ -45,7 +57,7 @@ public partial class UI : CanvasLayer
             );
 
         // 1. Handle Future Adds
-        collection.ObserveAdd().Subscribe(evt => 
+        collection.ObserveAdd().Subscribe(evt =>
         {
             BindResources(evt.Value);
         }).AddTo(_disposables);
@@ -59,19 +71,40 @@ public partial class UI : CanvasLayer
 
     private void BindResources(GlobalResourcesComponentViewModel vm)
     {
-        // Bind Grass
-        vm.Resources.Grass.Subscribe(g => 
+        vm.Resources.Grass.Subscribe(g =>
             Callable.From(() => _grassLabel.Text = $"{g}").CallDeferred()
         ).AddTo(_disposables);
 
-        // Bind Milk
-        vm.Resources.Milk.Subscribe(m => 
+        vm.Resources.Milk.Subscribe(m =>
                 Callable.From(() => _milkLabel.Text = $"{m}").CallDeferred()
         ).AddTo(_disposables);
 
-        // Bind Coins
-        vm.Resources.Coins.Subscribe(c => 
+        vm.Resources.Coins.Subscribe(c =>
                 Callable.From(() => _coinLabel.Text = $"{c}").CallDeferred()
+        ).AddTo(_disposables);
+
+        vm.Resources.Carrot.Subscribe(v =>
+            Callable.From(() => _carrotLabel.Text = $"{v}").CallDeferred()
+        ).AddTo(_disposables);
+
+        vm.Resources.Apple.Subscribe(v =>
+            Callable.From(() => _appleLabel.Text = $"{v}").CallDeferred()
+        ).AddTo(_disposables);
+
+        vm.Resources.Mushroom.Subscribe(v =>
+            Callable.From(() => _mushroomLabel.Text = $"{v}").CallDeferred()
+        ).AddTo(_disposables);
+
+        vm.Resources.VitaminShake.Subscribe(v =>
+            Callable.From(() => _vitaminShakeLabel.Text = $"{v}").CallDeferred()
+        ).AddTo(_disposables);
+
+        vm.Resources.AppleYogurt.Subscribe(v =>
+            Callable.From(() => _appleYogurtLabel.Text = $"{v}").CallDeferred()
+        ).AddTo(_disposables);
+
+        vm.Resources.PurplePotion.Subscribe(v =>
+            Callable.From(() => _purplePotionLabel.Text = $"{v}").CallDeferred()
         ).AddTo(_disposables);
     }
 

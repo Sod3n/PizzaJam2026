@@ -19,6 +19,7 @@ public partial class WallView : Node3D
 
     private readonly CompositeDisposable _disposables = new();
     private readonly Dictionary<WallViewModel, Node3D> _spawnedEntities = new();
+    [Export] public float DespawnDelay = 0f;
 
     private bool _registered;
 
@@ -72,8 +73,19 @@ public partial class WallView : Node3D
     {
         if (_spawnedEntities.TryGetValue(vm, out var node))
         {
-            if (IsInstanceValid(node)) { node.Visible = false; node.QueueFree(); }
             _spawnedEntities.Remove(vm);
+            if (IsInstanceValid(node))
+            {
+                OnDespawned(vm, node);
+                if (DespawnDelay > 0f)
+                {
+                    GetTree().CreateTimer(DespawnDelay).Timeout += () => { if (IsInstanceValid(node)) node.QueueFree(); };
+                }
+                else
+                {
+                    node.QueueFree();
+                }
+            }
         }
     }
 
@@ -96,6 +108,9 @@ public partial class WallView : Node3D
 
     /// <summary>Called after entity visual is spawned and positioned. Add custom bindings here.</summary>
     partial void OnSpawned(WallViewModel vm, Node3D visualNode);
+
+    /// <summary>Called when entity is being removed. Play disappear animations here. Set DespawnDelay in the editor to defer QueueFree.</summary>
+    partial void OnDespawned(WallViewModel vm, Node3D visualNode);
 
     public override void _ExitTree()
     {

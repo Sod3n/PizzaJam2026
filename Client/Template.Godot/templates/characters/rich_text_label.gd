@@ -54,6 +54,15 @@ func _ready() -> void:
 	char_left.modulate.a = 0
 	char_right.modulate.a = 0
 
+	# Skip intro if loaded from save (tick > 120)
+	var game_mgr = get_node_or_null("/root/GameManager")
+	if game_mgr and game_mgr.Game and game_mgr.Game.Loop.CurrentTick > 120:
+		container.visible = false
+		char_left.visible = false
+		char_right.visible = false
+		texture_rect_4.visible = false
+		button.visible = false
+		return
 	start_game_intro()
 
 func start_game_intro() -> void:

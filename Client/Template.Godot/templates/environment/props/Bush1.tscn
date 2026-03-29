@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://bchydbc8gnk5j"]
+
+[ext_resource type="Texture2D" uid="uid://df1ukad2f1sei" path="res://sprites/props/bush_1.png" id="1"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="2_gcxic"]
+[ext_resource type="Texture2D" uid="uid://cdkl1kj6ba6ss" path="res://sprites/props/barrel.png" id="3_6wvva"]
+[ext_resource type="Texture2D" uid="uid://dignhqgly4aoy" path="res://sprites/props/tree_1.png" id="4_14ul4"]
+[ext_resource type="Texture2D" uid="uid://xwvgykbhbyw3" path="res://sprites/props/flowers.png" id="5_4qi3p"]
+[ext_resource type="Texture2D" uid="uid://dbjadv156adjm" path="res://sprites/props/bush_2.png" id="6_8u07r"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="7_3krvo"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="8_ec7o7"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="9_o5jlb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_t30yj"]
+render_priority = 0
+shader = ExtResource("2_gcxic")
+shader_parameter/albedo_texture = ExtResource("1")
+shader_parameter/wind_strength = 0.9999999776485
+shader_parameter/wind_speed = 2.0000000223518
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1fpm0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_6wvva")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_14ul4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_4qi3p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_8u07r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_3krvo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ec7o7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Bush1" type="Node3D" unique_id=1320642221]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=769111545]
+transform = Transform3D(0.06, 0, 0, 0, 0.054492533, 0.025111027, 0, -0.025111027, 0.054492533, 0, 0.30517304, -0.43979532)
+material_override = SubResource("ShaderMaterial_t30yj")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_1fpm0")
+script = ExtResource("9_o5jlb")

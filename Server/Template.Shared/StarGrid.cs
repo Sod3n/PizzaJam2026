@@ -61,7 +61,7 @@ public static class StarGrid
         int type = GetBuildingType(gx, gy);
         int multiplier = GetPriceMultiplier(type);
 
-        return basePrice * multiplier;
+        return basePrice * multiplier * 10;
     }
 
     // Food farm frequency: every Nth house-slot becomes a food farm instead

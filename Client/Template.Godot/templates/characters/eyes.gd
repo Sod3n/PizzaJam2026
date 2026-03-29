@@ -1,4 +1,4 @@
-extends "res://animated_sprite_3d.gd"
+extends "res://Scripts/GDScript/animated_sprite_3d.gd"
 
 @export var duration: float = 1.0
 

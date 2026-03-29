@@ -24,7 +24,7 @@ public static class StateDefinitions
     public static bool TryGet(FixedString32 key, out StateDefinition def)
     {
         if (key == StateKeys.Milking) { def = new(PhaseDurationTicks, 0, PhaseDurationTicks); return true; }
-        if (key == StateKeys.Taming) { def = new(0, PhaseDurationTicks, 0); return true; }
+        if (key == StateKeys.Taming) { def = new(0, 12, 0); return true; } // ~0.2s
         if (key == StateKeys.Assign) { def = new(0, PhaseDurationTicks, 0); return true; }
         if (key == StateKeys.Breed) { def = new(PhaseDurationTicks, 0, PhaseDurationTicks); return true; }
         def = default;

@@ -31,7 +31,10 @@ void fragment() {
     vec4 tex = texture(albedo_texture, snapped_uv);
     
     if (tex.a < 0.5) discard;
-    
+
+    // Fix normal when character is flipped (negative scale)
+    if (!FRONT_FACING) NORMAL = -NORMAL;
+
     ALBEDO = tex.rgb * COLOR.rgb;
     ALPHA = tex.a * COLOR.a;
     ALPHA_SCISSOR_THRESHOLD = 0.5;

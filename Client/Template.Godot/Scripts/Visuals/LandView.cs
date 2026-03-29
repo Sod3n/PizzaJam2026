@@ -7,6 +7,8 @@ public partial class LandView
 {
     partial void OnSpawned(LandViewModel vm, Node3D visualNode)
     {
+        DespawnDelay = 0.3f;
+        ViewHelpers.PlayAppear(visualNode);
         vm.Remaining.Subscribe(x =>
         {
             Callable.From(() =>
@@ -18,5 +20,10 @@ public partial class LandView
 
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
+    }
+
+    partial void OnDespawned(LandViewModel vm, Node3D visualNode)
+    {
+        ViewHelpers.PlayDisappear(visualNode, 0.3f, freeAfter: false);
     }
 }

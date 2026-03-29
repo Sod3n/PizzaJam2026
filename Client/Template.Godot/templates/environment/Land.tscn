@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://de55uopw2vwaa"]
 
 [ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="1_fy16n"]
-[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="1_j63rn"]
-[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="2_gk14f"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_j63rn"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="2_gk14f"]
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="2_vc6b0"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="3_mcv8w"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]

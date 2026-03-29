@@ -4,6 +4,7 @@ public static class StateKeys
 {
     public const string Idle = "idle";
     public const string Interacted = "interacted";
+    public const string GainedResource = "gained_resource";
     public const string NotEnoughResource = "not_enough_resource";
     public const string Milking = "milking";
     public const string Taming = "taming";

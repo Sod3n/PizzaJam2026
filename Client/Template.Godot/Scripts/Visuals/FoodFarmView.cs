@@ -4,6 +4,13 @@ public partial class FoodFarmView
 {
     partial void OnSpawned(FoodFarmViewModel vm, global::Godot.Node3D visualNode)
     {
+        DespawnDelay = 0.3f;
+        ViewHelpers.PlayAppear(visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
+    }
+
+    partial void OnDespawned(FoodFarmViewModel vm, global::Godot.Node3D visualNode)
+    {
+        ViewHelpers.PlayDisappear(visualNode, 0.3f, freeAfter: false);
     }
 }

@@ -15,18 +15,20 @@ public class SkinsData : GameData<Skin>
     private Dictionary<string, List<Skin>> _skinsByType = new();
     // Cache the total weight per type for performance
     private Dictionary<string, int> _totalWeightByType = new();
+    // Track how many times each skin has been spawned globally to decay its weight
+    private Dictionary<int, int> _spawnCounts = new();
 
     public override void Load(Dictionary<string, Skin> entries)
     {
         _skins = entries.Values.ToDictionary(e => e.Id);
-        
+
         _skinsByType = entries.Values
             .GroupBy(s => s.Type)
-            .ToDictionary(g => g.Key, g => 
+            .ToDictionary(g => g.Key, g =>
             {
                 var list = g.ToList();
                 // Sorting by Id ensures the order is consistent before calculating cumulative weight
-                list.Sort((a, b) => a.Id.CompareTo(b.Id)); 
+                list.Sort((a, b) => a.Id.CompareTo(b.Id));
                 return list;
             });
 
@@ -39,6 +41,40 @@ public class SkinsData : GameData<Skin>
     public Skin? Get(int id) => _skins.GetValueOrDefault(id);
 
     public Dictionary<int, Skin> GetAll() => _skins;
+
+    private int GetEffectiveWeight(Skin skin)
+    {
+        _spawnCounts.TryGetValue(skin.Id, out int count);
+        int weight = skin.Weight;
+        for (int i = 0; i < count && weight > 1; i++)
+            weight = System.Math.Max(1, weight / 2);
+        return weight;
+    }
+
+    private void RecordSpawn(int skinId)
+    {
+        _spawnCounts.TryGetValue(skinId, out int count);
+        _spawnCounts[skinId] = count + 1;
+    }
+
+    private Skin PickWeightedSkin(ref DeterministicRandom random, List<Skin> skins)
+    {
+        int totalWeight = 0;
+        foreach (var skin in skins)
+            totalWeight += GetEffectiveWeight(skin);
+
+        if (totalWeight <= 0) return skins.Last();
+
+        int target = random.NextInt(totalWeight);
+        int sum = 0;
+        foreach (var skin in skins)
+        {
+            sum += GetEffectiveWeight(skin);
+            if (target < sum)
+                return skin;
+        }
+        return skins.Last();
+    }
 
     public SkinComponent GenerateRandomSkin(ref DeterministicRandom random)
     {
@@ -54,34 +90,28 @@ public class SkinsData : GameData<Skin>
         foreach (var type in sortedTypes)
         {
             var skins = _skinsByType[type];
-            var totalWeight = _totalWeightByType[type];
+            if (skins.Count == 0) continue;
 
-            if (skins.Count == 0 || totalWeight <= 0) continue;
-
-            // Get a random value between [0, totalWeight)
-            int targetWeight = random.NextInt(totalWeight);
-            int currentWeightSum = 0;
-            Skin? selectedSkin = null;
-
-            foreach (var skin in skins)
-            {
-                currentWeightSum += skin.Weight;
-                if (targetWeight < currentWeightSum)
-                {
-                    selectedSkin = skin;
-                    break;
-                }
-            }
-
-            // Fallback to last skin if something goes wrong with floating point or rounding
-            selectedSkin ??= skins.Last();
+            var selectedSkin = PickWeightedSkin(ref random, skins);
 
             var key = new FixedString32(type);
             component.Skins.Add(key, selectedSkin.Id);
+            RecordSpawn(selectedSkin.Id);
 
             var palette = GetColorPalette(type);
             if (palette != null)
                 component.Colors.Add(key, PickWeightedColor(ref random, palette));
+        }
+
+        // BackHair shares Hair color
+        var hairKey = new FixedString32("Hair");
+        var backHairKey = new FixedString32("BackHair");
+        if (component.Colors.ContainsKey(hairKey) && component.Skins.ContainsKey(backHairKey))
+        {
+            if (component.Colors.ContainsKey(backHairKey))
+                component.Colors[backHairKey] = component.Colors[hairKey];
+            else
+                component.Colors.Add(backHairKey, component.Colors[hairKey]);
         }
 
         // Body isn't in skins data but exists as a sprite node — give it a skin tone
@@ -113,20 +143,23 @@ public class SkinsData : GameData<Skin>
             var palette = GetColorPalette(type);
 
             int roll = random.NextInt(100);
+            int selectedId = 0;
 
-            if (roll < 40 && aHas)
+            if (roll < 10 && aHas)
             {
-                // Inherit from parent A
-                component.Skins.Add(key, parentA.Skins[key]);
+                // Inherit from parent A (10%)
+                selectedId = parentA.Skins[key];
+                component.Skins.Add(key, selectedId);
                 if (palette != null)
                     component.Colors.Add(key, parentA.Colors.ContainsKey(key)
                         ? parentA.Colors[key]
                         : PickWeightedColor(ref random, palette));
             }
-            else if (roll < 80 && bHas)
+            else if (roll < 20 && bHas)
             {
-                // Inherit from parent B
-                component.Skins.Add(key, parentB.Skins[key]);
+                // Inherit from parent B (10%)
+                selectedId = parentB.Skins[key];
+                component.Skins.Add(key, selectedId);
                 if (palette != null)
                     component.Colors.Add(key, parentB.Colors.ContainsKey(key)
                         ? parentB.Colors[key]
@@ -134,31 +167,29 @@ public class SkinsData : GameData<Skin>
             }
             else
             {
-                // Random mutation
+                // Random mutation (80%)
                 var skins = _skinsByType[type];
-                var totalWeight = _totalWeightByType[type];
+                if (skins.Count == 0) continue;
 
-                if (skins.Count == 0 || totalWeight <= 0) continue;
-
-                int targetWeight = random.NextInt(totalWeight);
-                int currentWeightSum = 0;
-                Skin? selectedSkin = null;
-
-                foreach (var skin in skins)
-                {
-                    currentWeightSum += skin.Weight;
-                    if (targetWeight < currentWeightSum)
-                    {
-                        selectedSkin = skin;
-                        break;
-                    }
-                }
-
-                selectedSkin ??= skins.Last();
-                component.Skins.Add(key, selectedSkin.Id);
+                var selectedSkin = PickWeightedSkin(ref random, skins);
+                selectedId = selectedSkin.Id;
+                component.Skins.Add(key, selectedId);
                 if (palette != null)
                     component.Colors.Add(key, PickWeightedColor(ref random, palette));
             }
+
+            RecordSpawn(selectedId);
+        }
+
+        // BackHair shares Hair color
+        var hairKey = new FixedString32("Hair");
+        var backHairKey = new FixedString32("BackHair");
+        if (component.Colors.ContainsKey(hairKey) && component.Skins.ContainsKey(backHairKey))
+        {
+            if (component.Colors.ContainsKey(backHairKey))
+                component.Colors[backHairKey] = component.Colors[hairKey];
+            else
+                component.Colors.Add(backHairKey, component.Colors[hairKey]);
         }
 
         // Crossbreed skin tone for Body + Top
@@ -166,9 +197,9 @@ public class SkinsData : GameData<Skin>
         var topKey = new FixedString32("Top");
         int skinToneRoll = random.NextInt(100);
         int skinTone;
-        if (skinToneRoll < 40 && parentA.Colors.ContainsKey(bodyKey))
+        if (skinToneRoll < 10 && parentA.Colors.ContainsKey(bodyKey))
             skinTone = parentA.Colors[bodyKey];
-        else if (skinToneRoll < 80 && parentB.Colors.ContainsKey(bodyKey))
+        else if (skinToneRoll < 20 && parentB.Colors.ContainsKey(bodyKey))
             skinTone = parentB.Colors[bodyKey];
         else
             skinTone = PickWeightedColor(ref random, SkinToneColors);
@@ -223,14 +254,9 @@ public class SkinsData : GameData<Skin>
 
     private static readonly (int Color, int Weight)[] SkinToneColors =
     {
-        (0xFFDBC4, 20), // Light
-        (0xF5C5A3, 20), // Fair
-        (0xE8AD84, 18), // Medium light
+        (0xFFDBC4, 80), // Light
         (0xD49A6A, 15), // Medium
-        (0xC08050, 12), // Tan
-        (0x8D5524, 10), // Brown
-        (0x6B3E26, 8),  // Dark brown
-        (0x4A2912, 5),  // Deep brown
+        (0x6B3E26, 5), // Dark
     };
 
     // Returns palette for types handled inside the main loop.
@@ -238,6 +264,7 @@ public class SkinsData : GameData<Skin>
     private static (int Color, int Weight)[]? GetColorPalette(string type) => type switch
     {
         "Hair" => HairColors,
+        "BackHair" => HairColors,
         "Eyes" => EyeColors,
         "Bottom1" => BottomColors,
         _ => null

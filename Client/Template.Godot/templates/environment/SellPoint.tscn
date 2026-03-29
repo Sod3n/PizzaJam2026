@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://b3a1efqph14je"]
 
-[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="1_bh30n"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_bh30n"]
 [ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="2_wujlj"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="3_iidr8"]
-[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="4_ijeiq"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="4_ijeiq"]
 [ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" path="res://Scripts/Framework/Components/SellPointComponentNode.cs" id="fw_sellpoint"]
 [ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]

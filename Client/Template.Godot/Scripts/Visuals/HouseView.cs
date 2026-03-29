@@ -7,6 +7,8 @@ public partial class HouseView
 {
     partial void OnSpawned(HouseViewModel vm, Node3D visualNode)
     {
+        DespawnDelay = 0.3f;
+        ViewHelpers.PlayAppear(visualNode);
         vm.Capacity.Subscribe(c =>
         {
             Callable.From(() =>
@@ -18,5 +20,10 @@ public partial class HouseView
 
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode, visualNode.GetNodeOrNull<Node3D>("AnimatedSprite3D"));
+    }
+
+    partial void OnDespawned(HouseViewModel vm, Node3D visualNode)
+    {
+        ViewHelpers.PlayDisappear(visualNode, 0.3f, freeAfter: false);
     }
 }

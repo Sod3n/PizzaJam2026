@@ -206,5 +206,109 @@
     "weight": 1,
     "empty": "Bottom1;Bottom2",
     "exhaust": 15
+  },
+  "27": {
+    "id": 27,
+    "path": "Hair/_____59",
+    "type": "Hair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "28": {
+    "id": 28,
+    "path": "___/_____54",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "29": {
+    "id": 29,
+    "path": "___/_____55",
+    "type": "Bottom1",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "30": {
+    "id": 30,
+    "path": "Booba1/_____50",
+    "type": "Top",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "31": {
+    "id": 31,
+    "path": "Back_hair/_____60",
+    "type": "BackHair",
+    "weight": 20,
+    "empty": null,
+    "exhaust": 1
+  },
+  "32": {
+    "id": 32,
+    "path": "Back_hair/_____119",
+    "type": "BackHair",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "33": {
+    "id": 33,
+    "path": "Hand/_____46",
+    "type": "Hand",
+    "weight": 20,
+    "empty": null,
+    "exhaust": 1
+  },
+  "34": {
+    "id": 34,
+    "path": "Hand/_____47",
+    "type": "Hand",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "35": {
+    "id": 35,
+    "path": "Hand/_____53",
+    "type": "Hand",
+    "weight": 10,
+    "empty": null,
+    "exhaust": 2
+  },
+  "36": {
+    "id": 36,
+    "path": "Fam_Boy/_____43",
+    "type": "Top",
+    "weight": 5,
+    "empty": null,
+    "exhaust": 7
+  },
+  "37": {
+    "id": 37,
+    "path": "Fam_Boy/_____44",
+    "type": "Top",
+    "weight": 5,
+    "empty": null,
+    "exhaust": 7
+  },
+  "38": {
+    "id": 38,
+    "path": "",
+    "type": "BackHair",
+    "weight": 15,
+    "empty": null,
+    "exhaust": 0
+  },
+  "39": {
+    "id": 39,
+    "path": "",
+    "type": "Hand",
+    "weight": 15,
+    "empty": null,
+    "exhaust": 0
   }
 }

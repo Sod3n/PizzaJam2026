@@ -1,27 +1,42 @@
 [gd_scene format=3 uid="uid://bgfiftgc25jbw"]
 
-[ext_resource type="Texture2D" uid="uid://cv165mvqi5u2t" path="res://sprites/export/Body.png" id="1_nhgn6"]
-[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="1_qcpwf"]
+[ext_resource type="Texture2D" uid="uid://malp5wp2cexr" path="res://sprites/export/Devochka/Body.png" id="1_nhgn6"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="1_qcpwf"]
 [ext_resource type="Script" uid="uid://bpxf1p10k8tdt" path="res://templates/characters/character.gd" id="1_qhcqh"]
 [ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="1_t7j5h"]
-[ext_resource type="Texture2D" uid="uid://bgig7rtw3c0w5" path="res://sprites/export/Rota.png" id="3_8pimj"]
-[ext_resource type="Texture2D" uid="uid://bschpr1nis3nr" path="res://sprites/export/Hair/1.png" id="3_dqt6i"]
-[ext_resource type="Texture2D" uid="uid://blbyigq74dg5" path="res://sprites/export/Uni.png" id="4_2gb1b"]
-[ext_resource type="Texture2D" uid="uid://ddpem0l884csa" path="res://sprites/export/Hair/5.png" id="6_57jaa"]
-[ext_resource type="Texture2D" uid="uid://q0rd64py5o82" path="res://sprites/export/Hair/3.png" id="6_krs60"]
-[ext_resource type="Texture2D" uid="uid://12vcaqaxgmpk" path="res://sprites/export/Face/Eye1.png" id="6_t7j5h"]
-[ext_resource type="Texture2D" uid="uid://bwryx7smc5ky4" path="res://sprites/export/Hair/4.png" id="7_krs60"]
-[ext_resource type="Texture2D" uid="uid://d4h8gkamk6m0t" path="res://sprites/export/Booba2/3.png" id="7_qhcqh"]
-[ext_resource type="Texture2D" uid="uid://0iw1ohts7ia5" path="res://sprites/export/___/7.png" id="8_oca4j"]
-[ext_resource type="Texture2D" uid="uid://dvhwq23f6csc1" path="res://sprites/export/___/3.png" id="11_3iv28"]
+[ext_resource type="Texture2D" uid="uid://c38chmolijnlk" path="res://sprites/export/Devochka/Rota/Rog2.png" id="3_8pimj"]
+[ext_resource type="Texture2D" uid="uid://pbxh4yjmurfo" path="res://sprites/export/Devochka/Hair/1.png" id="3_dqt6i"]
+[ext_resource type="Texture2D" uid="uid://b8y15hqgl65go" path="res://sprites/export/Devochka/Uni.png" id="4_2gb1b"]
+[ext_resource type="Texture2D" uid="uid://ckkbdcirju3e" path="res://sprites/export/Devochka/Hair/5.png" id="6_57jaa"]
+[ext_resource type="Texture2D" uid="uid://do0pdrw3eawrq" path="res://sprites/export/Devochka/Hair/3.png" id="6_krs60"]
+[ext_resource type="Texture2D" uid="uid://c15ifeuaiel6k" path="res://sprites/export/Devochka/Face/Eye1.png" id="6_t7j5h"]
+[ext_resource type="Texture2D" uid="uid://k8hgb8jqc8km" path="res://sprites/export/Devochka/Hair/4.png" id="7_krs60"]
+[ext_resource type="Texture2D" uid="uid://bmuf1vcojhaxr" path="res://sprites/export/Devochka/Booba2/3.png" id="7_qhcqh"]
+[ext_resource type="Texture2D" uid="uid://ctq5iwlicvsla" path="res://sprites/export/Devochka/___/7.png" id="8_oca4j"]
+[ext_resource type="Texture2D" uid="uid://crjr7f6kr7t11" path="res://sprites/export/Devochka/Back_hair/_____119.png" id="9_efe3o"]
+[ext_resource type="Texture2D" uid="uid://b14muxf6pyihb" path="res://sprites/export/Devochka/___/3.png" id="11_3iv28"]
+[ext_resource type="Texture2D" uid="uid://d2mmnsm3177lb" path="res://sprites/export/Devochka/Face/Eye3.png" id="11_egwm2"]
 [ext_resource type="Texture2D" uid="uid://cqfncs3raoqdc" path="res://sprites/export/Tail.png" id="11_oca4j"]
-[ext_resource type="Texture2D" uid="uid://d1u56c22sgj4s" path="res://sprites/export/___/6.png" id="13_tp46v"]
+[ext_resource type="Texture2D" uid="uid://cvhrq1sb311cg" path="res://sprites/export/Devochka/Face/Eye2.png" id="12_efe3o"]
+[ext_resource type="Texture2D" uid="uid://bedw5shxii0f0" path="res://sprites/export/Devochka/Face/Eye4.png" id="13_7s1ka"]
+[ext_resource type="Texture2D" uid="uid://sog52td2kolw" path="res://sprites/export/Devochka/___/6.png" id="13_tp46v"]
+[ext_resource type="Texture2D" uid="uid://3vbcgbnc71yu" path="res://sprites/export/Devochka/Hand/_____46.png" id="17_7s1ka"]
+[ext_resource type="Texture2D" uid="uid://dc0tf5aj6y2mc" path="res://sprites/vfx/MoveVFX/frame_01.png" id="22_4wcoa"]
+[ext_resource type="Texture2D" uid="uid://8fejvsbg1qw8" path="res://sprites/vfx/MoveVFX/frame_02.png" id="23_gc23q"]
+[ext_resource type="Texture2D" uid="uid://phd24vrsm0pe" path="res://sprites/vfx/MoveVFX/frame_03.png" id="24_4411t"]
+[ext_resource type="Texture2D" uid="uid://depgdyq4ml75e" path="res://sprites/vfx/MoveVFX/frame_04.png" id="25_c43ke"]
+[ext_resource type="Texture2D" uid="uid://dcmweu3t55wp6" path="res://sprites/vfx/MoveVFX/frame_05.png" id="26_q5213"]
+[ext_resource type="Texture2D" uid="uid://bd283ilefqa30" path="res://sprites/vfx/MoveVFX/frame_06.png" id="27_jreuv"]
+[ext_resource type="Texture2D" uid="uid://d27yip7aldnlg" path="res://sprites/vfx/MoveVFX/frame_07.png" id="28_ri7rb"]
+[ext_resource type="Texture2D" uid="uid://bntdfnd74fthp" path="res://sprites/vfx/MoveVFX/frame_08.png" id="29_s05y6"]
+[ext_resource type="Texture2D" uid="uid://6t0top5xgt8d" path="res://sprites/vfx/MoveVFX/frame_09.png" id="30_kd5ea"]
+[ext_resource type="Texture2D" uid="uid://cqteay7amreip" path="res://sprites/vfx/MoveVFX/frame_10.png" id="31_wbgrb"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
 atlas = ExtResource("1_nhgn6")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_tp46v"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jx0cw"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -44,7 +59,7 @@ animations = [{
 atlas = ExtResource("3_dqt6i")
 region = Rect2(0, 0, 512, 498)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_okgcy"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_46hfo"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
@@ -72,11 +87,42 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ame3o"]
+render_priority = 0
+shader = ExtResource("1_t7j5h")
+shader_parameter/albedo_texture = ExtResource("9_efe3o")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qo6bs"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_efe3o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3iv28")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_krs60")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_57jaa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_krs60")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqt6i"]
 atlas = ExtResource("3_8pimj")
 region = Rect2(0, 0, 658, 166)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_50s2t"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qpg8d"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
@@ -99,7 +145,7 @@ animations = [{
 atlas = ExtResource("4_2gb1b")
 region = Rect2(0, 0, 632, 142)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_egwm2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ksve6"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
@@ -118,21 +164,33 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_50s2t"]
-atlas = ExtResource("6_t7j5h")
-region = Rect2(0, 0, 373, 193)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_efe3o"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yvc7h"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
-shader_parameter/albedo_texture = SubResource("AtlasTexture_50s2t")
+shader_parameter/albedo_texture = ExtResource("11_egwm2")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_50s2t"]
+atlas = ExtResource("6_t7j5h")
+region = Rect2(0, 0, 373, 193)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_3iv28"]
 animations = [{
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_egwm2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_efe3o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_7s1ka")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_t7j5h")
+}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_50s2t")
 }],
@@ -145,7 +203,7 @@ animations = [{
 atlas = ExtResource("7_qhcqh")
 region = Rect2(0, 0, 337, 191)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_7s1ka"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b45fo"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
@@ -164,7 +222,29 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1hf4g"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y8vdi"]
+render_priority = 0
+shader = ExtResource("1_t7j5h")
+shader_parameter/albedo_texture = ExtResource("17_7s1ka")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hm0tp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_7s1ka")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_egwm2")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_e0ate"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = ExtResource("13_tp46v")
@@ -193,7 +273,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_cqlcf"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d6slt"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/wind_strength = 0.0
@@ -202,7 +282,7 @@ shader_parameter/pixels_per_unit = 32.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_krs60"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qo6bs"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_au5ld"]
 render_priority = 0
 shader = ExtResource("1_t7j5h")
 shader_parameter/albedo_texture = ExtResource("11_oca4j")
@@ -221,11 +301,50 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_oklx7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("22_4wcoa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_gc23q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_4411t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_c43ke")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_q5213")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_jreuv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_ri7rb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_s05y6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_kd5ea")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_wbgrb")
+}],
+"loop": false,
+"name": &"default",
+"speed": 24.0
+}]
+
 [node name="Character" type="CharacterBody3D" unique_id=1227223347 node_paths=PackedStringArray("skin_node")]
 transform = Transform3D(0.2, 0, 0, 0, 0.19518183, 0.043635447, 0, -0.043635447, 0.19518183, 0, -0.19223237, 0)
 script = ExtResource("1_qhcqh")
 skin_node = NodePath("ScaleAnchor/Skin")
 duration = 0.5
+move_effect_y_offset = 0.5
 bounce_height = 2.0
 
 [node name="ScaleAnchor" type="Node3D" parent="." unique_id=1423863731]
@@ -235,7 +354,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05092001, 4.4320173, 0)
 
 [node name="Body" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=1133601551]
 sorting_offset = -10.0
-material_override = SubResource("ShaderMaterial_tp46v")
+material_override = SubResource("ShaderMaterial_jx0cw")
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_doawl")
@@ -244,58 +363,81 @@ script = ExtResource("1_qcpwf")
 
 [node name="Hair" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=610589464]
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, -0.04889219, 2.4860554, 0.30584395)
-material_override = SubResource("ShaderMaterial_okgcy")
+material_override = SubResource("ShaderMaterial_46hfo")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_okgcy")
 frame_progress = 0.12477108
 script = ExtResource("1_qcpwf")
 
+[node name="BackHair" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=232127656]
+transform = Transform3D(0.99999845, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, -0.04889219, -0.5572157, -0.5372902)
+material_override = SubResource("ShaderMaterial_ame3o")
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_qo6bs")
+script = ExtResource("1_qcpwf")
+
 [node name="Torns" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=2031229694]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7818236, 0.28223503)
-material_override = SubResource("ShaderMaterial_50s2t")
+material_override = SubResource("ShaderMaterial_qpg8d")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_t7j5h")
 script = ExtResource("1_qcpwf")
 
 [node name="Ears" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=1368322551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.052645445, 2.3044944, 0.28223503)
-material_override = SubResource("ShaderMaterial_egwm2")
+material_override = SubResource("ShaderMaterial_ksve6")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_oca4j")
 script = ExtResource("1_qcpwf")
 
 [node name="Eyes" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=50470159]
-transform = Transform3D(0.9999998, 0, 0, 0, 0.9999999, 1.4901161e-08, 0, -1.4901161e-08, 0.9999999, 0, 1.8289666, 0.45628178)
-material_override = SubResource("ShaderMaterial_efe3o")
+transform = Transform3D(0.9999997, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 0, 1.8267365, 0.455783)
+material_override = SubResource("ShaderMaterial_yvc7h")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_3iv28")
 script = ExtResource("1_qcpwf")
 
 [node name="Top" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=2106512903]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3777578, 0.4289323)
-material_override = SubResource("ShaderMaterial_7s1ka")
+material_override = SubResource("ShaderMaterial_b45fo")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_qsyed")
+script = ExtResource("1_qcpwf")
+
+[node name="Hand" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=599028963]
+transform = Transform3D(0.9999995, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, -0.038223688, -1.389535, 0.20273605)
+material_override = SubResource("ShaderMaterial_y8vdi")
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_hm0tp")
+frame_progress = 0.9592411
 script = ExtResource("1_qcpwf")
 
 [node name="Bottom1" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=2120793389]
 transform = Transform3D(0.9999995, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, -0.01645488, -1.7125106, 0.3642925)
 sorting_offset = 1.0
-material_override = SubResource("ShaderMaterial_1hf4g")
+material_override = SubResource("ShaderMaterial_e0ate")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_57jaa")
 script = ExtResource("1_qcpwf")
 
 [node name="Bottom2" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=294789255]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.24774504)
-material_override = SubResource("ShaderMaterial_cqlcf")
+material_override = SubResource("ShaderMaterial_d6slt")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_krs60")
 script = ExtResource("1_qcpwf")
 
 [node name="Tail" type="AnimatedSprite3D" parent="ScaleAnchor/Skin" unique_id=543932425]
 transform = Transform3D(0.99999934, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 2.5845785, -0.48319483, -0.10802436)
-material_override = SubResource("ShaderMaterial_qo6bs")
+material_override = SubResource("ShaderMaterial_au5ld")
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_tp46v")
+script = ExtResource("1_qcpwf")
+
+[node name="MoveEffect" type="AnimatedSprite3D" parent="." unique_id=898506352]
+transform = Transform3D(0.3, 0, 0, 0, 0.3, 8.940697e-09, 0, -8.940697e-09, 0.3, -2.649671, 1.5972507, -0.14450148)
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_oklx7")
+frame = 9
+frame_progress = 1.0
 script = ExtResource("1_qcpwf")

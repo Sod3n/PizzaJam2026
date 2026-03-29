@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://blnhcjlcy72i3"]
 
 [ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="1_25x1s"]
-[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="2_c6usd"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="2_c6usd"]
 [ext_resource type="Texture2D" uid="uid://d4bx820kh3qga" path="res://sprites/image-removebg-preview-2.png" id="2_s1njy"]
-[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="3_vrssg"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="3_vrssg"]
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="4_s1njy"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="5_y0sxf"]
 [ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]

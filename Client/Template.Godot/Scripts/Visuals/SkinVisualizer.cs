@@ -12,7 +12,22 @@ public static class SkinVisualizer
 {
     private static Dictionary<string, LayerData> _texturePathToLayer;
     private static LayerData _bodyLayerData; // Cache the "Body" layer specifically
-    
+
+    // Per-slot pixel offset corrections (X, Y) — positive Y = up
+    private static readonly Dictionary<string, Vector2> _slotOffsets = new()
+    {
+        { "Hair", new Vector2(0, 5) },
+        { "Eyes", new Vector2(0, 0) },
+        { "Top", new Vector2(0, 10) },
+        { "Bottom1", new Vector2(0, 0) },
+        { "Bottom2", new Vector2(0, 0) },
+        { "Torns", new Vector2(0, 0) },
+        { "Ears", new Vector2(0, 0) },
+        { "Tail", new Vector2(0, 0) },
+        { "BackHair", new Vector2(0, 0) },
+        { "Hand", new Vector2(0, 0) },
+    };
+
     private class LayerData
     {
         public string Name { get; set; }
@@ -23,7 +38,7 @@ public static class SkinVisualizer
         public int Height { get; set; }
         public string TexturePath { get; set; }
         public List<LayerData> Children { get; set; }
-        
+
         [System.Text.Json.Serialization.JsonIgnore]
         public LayerData Parent { get; set; }
     }
@@ -33,7 +48,7 @@ public static class SkinVisualizer
         if (_texturePathToLayer != null) return;
 
         _texturePathToLayer = new Dictionary<string, LayerData>();
-        
+
         // Use FileAccess for Godot resource paths
         using var jsonFile = global::Godot.FileAccess.Open("res://sprites/Devochka.json", global::Godot.FileAccess.ModeFlags.Read);
         if (jsonFile == null)
@@ -43,8 +58,8 @@ public static class SkinVisualizer
         }
 
         string jsonText = jsonFile.GetAsText();
-        
-        try 
+
+        try
         {
             var rootData = JsonSerializer.Deserialize<LayerData>(jsonText);
             if (rootData != null)
@@ -61,13 +76,13 @@ public static class SkinVisualizer
     private static void IndexLayers(LayerData node, LayerData parent)
     {
         node.Parent = parent;
-        
+
         if (!string.IsNullOrEmpty(node.TexturePath))
         {
             // Normalize path to ensure matching
             _texturePathToLayer[node.TexturePath] = node;
         }
-        
+
         // Identify Body Layer - assuming Name is "Body" from JSON
         if (node.Name == "Body")
         {
@@ -105,7 +120,7 @@ public static class SkinVisualizer
 
         // Find Body Node to use as Anchor
         AnimatedSprite3D bodyNode = skinContainer.GetNodeOrNull<AnimatedSprite3D>("Body");
-        
+
         // Establish Anchor Properties
         Vector2 anchorOffset = Vector2.Zero;
         Vector2 anchorPos3D = Vector2.Zero; // 3D Position (X, Y) part
@@ -124,8 +139,8 @@ public static class SkinVisualizer
         }
         else
         {
-             // If Body node doesn't exist yet, we can't get editor offset. Use Zero.
-             // We will create it in the loop if "Body" is in skins.
+            // If Body node doesn't exist yet, we can't get editor offset. Use Zero.
+            // We will create it in the loop if "Body" is in skins.
         }
 
         // Iterate through the skins dictionary
@@ -133,10 +148,10 @@ public static class SkinVisualizer
         {
             var slotName = skins.Keys[i].ToString();
             var skinId = skins.Values[i];
-            
+
             // Get or Create Sprite Node
             var spriteNode = skinContainer.GetNodeOrNull<AnimatedSprite3D>(slotName);
-            
+
             if (spriteNode == null)
             {
                 // Dynamic Creation
@@ -144,7 +159,7 @@ public static class SkinVisualizer
                 spriteNode.Name = slotName;
                 skinContainer.AddChild(spriteNode);
                 spriteNode.Owner = visualNode.Owner; // Propagate ownership if needed (mainly for editor)
-                
+
                 // Copy basic properties from Body if available (PixelSize, Centered, etc)
                 if (bodyNode != null)
                 {
@@ -185,11 +200,18 @@ public static class SkinVisualizer
         var skinDef = SharedGD.SkinsData.Get(skinId);
         if (skinDef == null)
         {
-            return; 
+            return;
         }
 
-        // Assume path in GameData is relative to "res://sprites/export/" 
-        var texturePath = $"res://sprites/export/{skinDef.Path}.png";
+        // Empty path means "no texture" variant — hide the sprite
+        if (string.IsNullOrEmpty(skinDef.Path))
+        {
+            sprite.Visible = false;
+            return;
+        }
+
+        // Assume path in GameData is relative to "res://sprites/export/Devochka/"
+        var texturePath = $"res://sprites/export/Devochka/{skinDef.Path}.png";
         var texture = ResourceLoader.Load<Texture2D>(texturePath);
 
         if (texture != null)
@@ -201,7 +223,7 @@ public static class SkinVisualizer
                 frames = new SpriteFrames();
                 frames.AddAnimation("default");
             }
-            
+
             if (!frames.HasAnimation("default"))
             {
                 frames.AddAnimation("default");
@@ -228,7 +250,7 @@ public static class SkinVisualizer
                     // Calculate Difference in PSD space
                     float diffX = layerData.X - _bodyLayerData.X;
                     float diffY = layerData.Y - _bodyLayerData.Y;
-                    
+
                     // We want to calculate the correct Offset for the Target Sprite
                     // Formula derived:
                     // TargetOffset = AnchorOffset + (DiffSizeCorrection) + (VisualShift)
@@ -241,31 +263,35 @@ public static class SkinVisualizer
                     //   TargetCenter + (-TargetW/2, TargetH/2) = AnchorCenter + (-AnchorW/2, AnchorH/2) + VisualShift
                     //   TargetOffset + ...                     = AnchorOffset + ...
                     //   TargetOffset = AnchorOffset + (TargetW/2 - AnchorW/2, AnchorH/2 - TargetH/2) + VisualShift
-                    
+
                     float targetW = texture.GetWidth();
                     float targetH = texture.GetHeight();
                     // Need reference width/height. Can use _bodyLayerData dims or current Body Texture dims?
                     // Use _bodyLayerData for consistency with "Anchor" concept from JSON.
                     float anchorW = _bodyLayerData.Width;
                     float anchorH = _bodyLayerData.Height;
-                    
+
                     Vector2 visualShift = new Vector2(diffX, -diffY);
-                    
+
                     Vector2 finalOffset = anchorOffset + visualShift;
-                    
+
                     if (sprite.Centered)
                     {
                         float sizeDiffX = (targetW / 2.0f) - (anchorW / 2.0f);
                         float sizeDiffY = (anchorH / 2.0f) - (targetH / 2.0f);
                         finalOffset += new Vector2(sizeDiffX, sizeDiffY);
                     }
-                    
+
+                    // Per-type offset corrections to align with scene
+                    var slotName = sprite.Name;
+                    if (_slotOffsets.TryGetValue(slotName, out var correction))
+                        finalOffset += correction;
                     sprite.Offset = finalOffset;
                 }
                 else
                 {
-                     // Fallback if no body anchor found (e.g. only rendering one part?)
-                     // Just center it or leave default offset?
+                    // Fallback if no body anchor found (e.g. only rendering one part?)
+                    // Just center it or leave default offset?
                 }
             }
         }

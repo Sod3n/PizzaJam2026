@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://bg7ki6hs4neoa"]
 
-[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://sway.gdshader" id="1_eavrv"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_eavrv"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="2_s4hiu"]
-[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://animated_sprite_3d.gd" id="3_6r21p"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="3_6r21p"]
 [ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="4_s4hiu"]
 [ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" path="res://Scripts/Framework/Components/HouseComponentNode.cs" id="fw_house"]

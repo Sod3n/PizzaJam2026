@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://c3uhh25dk0mh8" path="res://Scripts/Input/InputManager.cs" id="2_d4o4o"]
 [ext_resource type="Material" uid="uid://bra6ug2wjmj0j" path="res://BinbunGrass/src/materials/grass_01/grass_ground_01.tres" id="4_6bw2v"]
 [ext_resource type="Material" uid="uid://c2to67v55oatp" path="res://BinbunGrass/src/materials/grass_01/grass_01.tres" id="5_kem5a"]
-[ext_resource type="PackedScene" uid="uid://bmvlbyuutvw3a" path="res://sprites/props/bush.tscn" id="5_oncxo"]
+[ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="5_oncxo"]
 [ext_resource type="PackedScene" uid="uid://kfx6yeh1o5yq" path="res://templates/environment/grass.tscn" id="6_gxmxl"]
 [ext_resource type="PackedScene" uid="uid://de55uopw2vwaa" path="res://templates/environment/Land.tscn" id="7_gdsc3"]
 [ext_resource type="PackedScene" uid="uid://dpvl77oofc2w3" path="res://templates/characters/Cow.tscn" id="7_jbdfk"]
@@ -16,6 +16,12 @@
 [ext_resource type="PackedScene" path="res://templates/environment/FoodFarm.tscn" id="tpl_foodfarm"]
 [ext_resource type="PackedScene" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
 [ext_resource type="PackedScene" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
+[ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="tpl_prop"]
+[ext_resource type="PackedScene" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
+[ext_resource type="PackedScene" path="res://templates/environment/props/Bush1.tscn" id="tpl_bush1"]
+[ext_resource type="PackedScene" path="res://templates/environment/props/Bush2.tscn" id="tpl_bush2"]
+[ext_resource type="PackedScene" path="res://templates/environment/props/Flowers.tscn" id="tpl_flowers"]
+[ext_resource type="PackedScene" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
 [ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/FinalStructureView.cs" id="view_finalstructure"]
 [ext_resource type="Script" uid="uid://bqhe6g3n1ei8l" path="res://Scripts/Visuals/FoodFarmView.cs" id="view_foodfarm"]
@@ -25,6 +31,7 @@
 [ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/LandView.cs" id="view_land"]
 [ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/LoveHouseView.cs" id="view_lovehouse"]
 [ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
+[ext_resource type="Script" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 
@@ -1688,5 +1695,14 @@ Prefab = ExtResource("tpl_foodfarm")
 [node name="FoodSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1116882817]
 script = ExtResource("view_foodsign")
 Prefab = ExtResource("tpl_foodsign")
+
+[node name="PropView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_prop")
+Prefab = ExtResource("tpl_prop")
+BarrelScene = ExtResource("tpl_barrel")
+Bush1Scene = ExtResource("tpl_bush1")
+Bush2Scene = ExtResource("tpl_bush2")
+FlowersScene = ExtResource("tpl_flowers")
+TreeScene = ExtResource("tpl_tree")
 
 [node name="LobbyMenu" parent="." unique_id=1082308088 instance=ExtResource("lobby_menu")]

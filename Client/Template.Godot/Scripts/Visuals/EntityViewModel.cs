@@ -18,6 +18,7 @@ public class EntityViewModel : ViewModel
     
     public Subject<Unit> OnInteract { get; } = new();
     public Subject<string> OnNotEnoughResource { get; } = new();
+    public Subject<string> OnGainedResource { get; } = new();
 
     public EntityViewModel(Context context)
     {
@@ -31,7 +32,20 @@ public class EntityViewModel : ViewModel
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
             .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
                 && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.Interacted)
-            .Subscribe(_ => OnInteract.OnNext(Unit.Default)).AddTo(Disposables);
+            .Subscribe(x =>
+            {
+                OnInteract.OnNext(Unit.Default);
+            }).AddTo(Disposables);
+
+        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
+            .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.GainedResource)
+            .Subscribe(x =>
+            {
+                var param = ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Param;
+                if (!string.IsNullOrEmpty(param))
+                    OnGainedResource.OnNext(param);
+            }).AddTo(Disposables);
 
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
             .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
