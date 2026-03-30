@@ -21,6 +21,30 @@
 	  "Children": []
 	},
 	{
+	  "Name": "\u0421\u043B\u043E\u0439 60",
+	  "Type": "Layer",
+	  "X": 1023,
+	  "Y": 460,
+	  "Width": 477,
+	  "Height": 922,
+	  "Opacity": 1,
+	  "IsVisible": false,
+	  "TexturePath": "res://sprites/export/Devochka/_____60.png",
+	  "Children": []
+	},
+	{
+	  "Name": "\u0421\u043B\u043E\u0439 61",
+	  "Type": "Layer",
+	  "X": 1043,
+	  "Y": 477,
+	  "Width": 457,
+	  "Height": 902,
+	  "Opacity": 1,
+	  "IsVisible": true,
+	  "TexturePath": "res://sprites/export/Devochka/_____61.png",
+	  "Children": []
+	},
+	{
 	  "Name": "Back hair",
 	  "Type": "Group",
 	  "X": 0,
@@ -31,7 +55,7 @@
 	  "IsVisible": true,
 	  "Children": [
 		{
-		  "Name": "\u0421\u043B\u043E\u0439 119",
+		  "Name": "3",
 		  "Type": "Layer",
 		  "X": 1016,
 		  "Y": 846,
@@ -39,11 +63,11 @@
 		  "Height": 256,
 		  "Opacity": 1,
 		  "IsVisible": false,
-		  "TexturePath": "res://sprites/export/Devochka/Back_hair/_____119.png",
+		  "TexturePath": "res://sprites/export/Devochka/Back_hair/3.png",
 		  "Children": []
 		},
 		{
-		  "Name": "\u0421\u043B\u043E\u0439 60",
+		  "Name": "2",
 		  "Type": "Layer",
 		  "X": 971,
 		  "Y": 510,
@@ -51,11 +75,11 @@
 		  "Height": 575,
 		  "Opacity": 1,
 		  "IsVisible": true,
-		  "TexturePath": "res://sprites/export/Devochka/Back_hair/_____60.png",
+		  "TexturePath": "res://sprites/export/Devochka/Back_hair/2.png",
 		  "Children": []
 		},
 		{
-		  "Name": "\u0421\u043B\u043E\u0439 60",
+		  "Name": "1",
 		  "Type": "Layer",
 		  "X": 1428,
 		  "Y": 514,
@@ -63,7 +87,7 @@
 		  "Height": 571,
 		  "Opacity": 1,
 		  "IsVisible": false,
-		  "TexturePath": "res://sprites/export/Devochka/Back_hair/_____60.png",
+		  "TexturePath": "res://sprites/export/Devochka/Back_hair/1.png",
 		  "Children": []
 		}
 	  ]
@@ -158,7 +182,7 @@
 		  "Width": 349,
 		  "Height": 198,
 		  "Opacity": 1,
-		  "IsVisible": true,
+		  "IsVisible": false,
 		  "TexturePath": "res://sprites/export/Devochka/Face/Eye4.png",
 		  "Children": []
 		},
@@ -170,7 +194,7 @@
 		  "Width": 371,
 		  "Height": 188,
 		  "Opacity": 1,
-		  "IsVisible": false,
+		  "IsVisible": true,
 		  "TexturePath": "res://sprites/export/Devochka/Face/Eye3.png",
 		  "Children": []
 		},
@@ -256,7 +280,7 @@
 	  "Width": 2480,
 	  "Height": 1872,
 	  "Opacity": 1,
-	  "IsVisible": false,
+	  "IsVisible": true,
 	  "Children": [
 		{
 		  "Name": "\u0421\u043B\u043E\u0439 43",
@@ -278,7 +302,7 @@
 		  "Width": 281,
 		  "Height": 263,
 		  "Opacity": 1,
-		  "IsVisible": false,
+		  "IsVisible": true,
 		  "TexturePath": "res://sprites/export/Devochka/Fam_Boy/_____44.png",
 		  "Children": []
 		}
@@ -338,7 +362,7 @@
 		  "Width": 406,
 		  "Height": 359,
 		  "Opacity": 1,
-		  "IsVisible": false,
+		  "IsVisible": true,
 		  "TexturePath": "res://sprites/export/Devochka/Booba1/_____50.png",
 		  "Children": []
 		},
@@ -422,7 +446,7 @@
 		  "Width": 245,
 		  "Height": 167,
 		  "Opacity": 1,
-		  "IsVisible": true,
+		  "IsVisible": false,
 		  "TexturePath": "res://sprites/export/Devochka/Booba2/1.png",
 		  "Children": []
 		},
@@ -530,7 +554,7 @@
 		  "Width": 232,
 		  "Height": 89,
 		  "Opacity": 1,
-		  "IsVisible": true,
+		  "IsVisible": false,
 		  "TexturePath": "res://sprites/export/Devochka/___/7.png",
 		  "Children": []
 		},
@@ -590,7 +614,7 @@
 		  "Width": 355,
 		  "Height": 211,
 		  "Opacity": 1,
-		  "IsVisible": false,
+		  "IsVisible": true,
 		  "TexturePath": "res://sprites/export/Devochka/Megaaaabooba/2.png",
 		  "Children": []
 		},
@@ -614,7 +638,7 @@
 		  "Width": 378,
 		  "Height": 335,
 		  "Opacity": 1,
-		  "IsVisible": true,
+		  "IsVisible": false,
 		  "TexturePath": "res://sprites/export/Devochka/Megaaaabooba/1.png",
 		  "Children": []
 		},

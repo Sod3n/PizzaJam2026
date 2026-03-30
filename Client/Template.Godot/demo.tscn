@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://c3uhh25dk0mh8" path="res://Scripts/Input/InputManager.cs" id="2_d4o4o"]
 [ext_resource type="Material" uid="uid://bra6ug2wjmj0j" path="res://BinbunGrass/src/materials/grass_01/grass_ground_01.tres" id="4_6bw2v"]
 [ext_resource type="Material" uid="uid://c2to67v55oatp" path="res://BinbunGrass/src/materials/grass_01/grass_01.tres" id="5_kem5a"]
-[ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="5_oncxo"]
 [ext_resource type="PackedScene" uid="uid://kfx6yeh1o5yq" path="res://templates/environment/grass.tscn" id="6_gxmxl"]
 [ext_resource type="PackedScene" uid="uid://de55uopw2vwaa" path="res://templates/environment/Land.tscn" id="7_gdsc3"]
 [ext_resource type="PackedScene" uid="uid://dpvl77oofc2w3" path="res://templates/characters/Cow.tscn" id="7_jbdfk"]
@@ -12,16 +11,19 @@
 [ext_resource type="PackedScene" uid="uid://bg7ki6hs4neoa" path="res://templates/environment/House.tscn" id="8_svejp"]
 [ext_resource type="PackedScene" uid="uid://b3a1efqph14je" path="res://templates/environment/SellPoint.tscn" id="9_36gju"]
 [ext_resource type="PackedScene" uid="uid://blnhcjlcy72i3" path="res://templates/environment/FinalStructure.tscn" id="10_svejp"]
+[ext_resource type="PackedScene" uid="uid://ci00jj84e50un" path="res://templates/environment/carrot.tscn" id="11_mioy6"]
+[ext_resource type="PackedScene" uid="uid://cyytxfg62tvax" path="res://templates/environment/apple.tscn" id="12_n55vl"]
+[ext_resource type="PackedScene" uid="uid://dvf1flcw08lyw" path="res://templates/environment/mushroom.tscn" id="13_rn1d6"]
 [ext_resource type="PackedScene" uid="uid://yeyaphli5ypt" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
+[ext_resource type="PackedScene" uid="uid://bgt7qedtjqn55" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
+[ext_resource type="PackedScene" uid="uid://bchydbc8gnk5j" path="res://templates/environment/props/Bush1.tscn" id="tpl_bush1"]
+[ext_resource type="PackedScene" uid="uid://dnw7wbnuinko2" path="res://templates/environment/props/Bush2.tscn" id="tpl_bush2"]
+[ext_resource type="PackedScene" uid="uid://w5woq2tbf002" path="res://templates/environment/props/Flowers.tscn" id="tpl_flowers"]
 [ext_resource type="PackedScene" path="res://templates/environment/FoodFarm.tscn" id="tpl_foodfarm"]
 [ext_resource type="PackedScene" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
 [ext_resource type="PackedScene" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
 [ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="tpl_prop"]
-[ext_resource type="PackedScene" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
-[ext_resource type="PackedScene" path="res://templates/environment/props/Bush1.tscn" id="tpl_bush1"]
-[ext_resource type="PackedScene" path="res://templates/environment/props/Bush2.tscn" id="tpl_bush2"]
-[ext_resource type="PackedScene" path="res://templates/environment/props/Flowers.tscn" id="tpl_flowers"]
-[ext_resource type="PackedScene" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
+[ext_resource type="PackedScene" uid="uid://c1nvklhoxhbvc" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
 [ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/FinalStructureView.cs" id="view_finalstructure"]
 [ext_resource type="Script" uid="uid://bqhe6g3n1ei8l" path="res://Scripts/Visuals/FoodFarmView.cs" id="view_foodfarm"]
@@ -31,7 +33,7 @@
 [ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/LandView.cs" id="view_land"]
 [ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/LoveHouseView.cs" id="view_lovehouse"]
 [ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
-[ext_resource type="Script" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
+[ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 
@@ -1636,19 +1638,19 @@ multimesh = SubResource("MultiMesh_884kg")
 
 [node name="Props" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1134196663]
 
-[node name="Bush" parent="SubViewportContainer/SubViewport/Props" unique_id=868900214 instance=ExtResource("5_oncxo")]
+[node name="Bush" parent="SubViewportContainer/SubViewport/Props" unique_id=868900214 instance=ExtResource("tpl_prop")]
 transform = Transform3D(0.1, 0, 0, 0, 0.097590916, 0.021817723, 0, -0.021817723, 0.097590916, 15, 0, 3)
 
-[node name="Bush2" parent="SubViewportContainer/SubViewport/Props" unique_id=1316103281 instance=ExtResource("5_oncxo")]
+[node name="Bush2" parent="SubViewportContainer/SubViewport/Props" unique_id=1316103281 instance=ExtResource("tpl_prop")]
 transform = Transform3D(0.1, 0, 0, 0, 0.097590916, 0.021817723, 0, -0.021817723, 0.097590916, 16, 0, 3)
 
-[node name="Bush3" parent="SubViewportContainer/SubViewport/Props" unique_id=151714007 instance=ExtResource("5_oncxo")]
+[node name="Bush3" parent="SubViewportContainer/SubViewport/Props" unique_id=151714007 instance=ExtResource("tpl_prop")]
 transform = Transform3D(0.1, 0, 0, 0, 0.097590916, 0.021817723, 0, -0.021817723, 0.097590916, 11, 0, 9)
 
-[node name="Bush4" parent="SubViewportContainer/SubViewport/Props" unique_id=2001412861 instance=ExtResource("5_oncxo")]
+[node name="Bush4" parent="SubViewportContainer/SubViewport/Props" unique_id=2001412861 instance=ExtResource("tpl_prop")]
 transform = Transform3D(0.1, 0, 0, 0, 0.097590916, 0.021817723, 0, -0.021817723, 0.097590916, 3, 0, 15)
 
-[node name="Bush5" parent="SubViewportContainer/SubViewport/Props" unique_id=1703073358 instance=ExtResource("5_oncxo")]
+[node name="Bush5" parent="SubViewportContainer/SubViewport/Props" unique_id=1703073358 instance=ExtResource("tpl_prop")]
 transform = Transform3D(0.1, 0, 0, 0, 0.097590916, 0.021817723, 0, -0.021817723, 0.097590916, 17, 0, 12)
 
 [node name="Views" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=196273130]
@@ -1663,6 +1665,9 @@ Prefab = ExtResource("7_jbdfk")
 
 [node name="GrassView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1140537540]
 script = ExtResource("view_grass")
+CarrotPrefab = ExtResource("11_mioy6")
+ApplePrefab = ExtResource("12_n55vl")
+MushroomPrefab = ExtResource("13_rn1d6")
 Prefab = ExtResource("6_gxmxl")
 
 [node name="LandView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=212423943]
@@ -1696,13 +1701,13 @@ Prefab = ExtResource("tpl_foodfarm")
 script = ExtResource("view_foodsign")
 Prefab = ExtResource("tpl_foodsign")
 
-[node name="PropView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="PropView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2051443311]
 script = ExtResource("view_prop")
-Prefab = ExtResource("tpl_prop")
 BarrelScene = ExtResource("tpl_barrel")
 Bush1Scene = ExtResource("tpl_bush1")
 Bush2Scene = ExtResource("tpl_bush2")
 FlowersScene = ExtResource("tpl_flowers")
 TreeScene = ExtResource("tpl_tree")
+Prefab = ExtResource("tpl_prop")
 
 [node name="LobbyMenu" parent="." unique_id=1082308088 instance=ExtResource("lobby_menu")]

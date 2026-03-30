@@ -230,7 +230,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (cow.IsMilking) return false;
         if (globalRes.GetFood(house.SelectedFood) <= 0 || cow.Exhaust >= cow.MaxExhaust)
         {
-            missingResource = StateKeys.Food;
+            missingResource = FoodTypeToKey(house.SelectedFood);
             return false;
         }
 

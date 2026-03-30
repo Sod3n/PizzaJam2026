@@ -52,6 +52,11 @@ public class Program
                 await new FarmingTest().Run();
                 return;
             }
+            if (args.Length > 0 && args[0] == "collision-test")
+            {
+                await new CollisionTest().Run();
+                return;
+            }
 
             await client.ConnectAsync();
             

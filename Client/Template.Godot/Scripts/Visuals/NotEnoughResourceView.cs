@@ -15,23 +15,24 @@ public partial class NotEnoughResourceView : Node3D
         _sprite = GetNode<AnimatedSprite3D>("AnimatedSprite3D");
     }
 
+    private static readonly System.Collections.Generic.Dictionary<string, string> IconPaths = new()
+    {
+        { "grass", "res://sprites/export/icons/Grass_/1.png" },
+        { "carrot", "res://sprites/export/icons/Carrot_/1.png" },
+        { "apple", "res://sprites/export/icons/Apply_/1.png" },
+        { "mushroom", "res://sprites/export/icons/Mashroom/1.png" },
+        { "milk", "res://sprites/export/icons/Milky_/1.png" },
+        { "coins", "res://sprites/export/icons/Money_/1.png" },
+        { "food", "res://sprites/export/icons/Grass_/1.png" },
+    };
+
     public void Setup(string resourceKey)
     {
         if (_sprite == null) return;
 
-        // Map resource key to icon filename
-        var iconName = resourceKey switch
-        {
-            "food" => "grass",  // generic food icon
-            _ => resourceKey    // milk, coins, houses etc.
-        };
-
-        var texture = GD.Load<Texture2D>($"res://sprites/export/icons/{iconName}.png");
-        if (texture == null)
-        {
-            // Fallback — try loading from resources folder
-            texture = GD.Load<Texture2D>($"res://sprites/resources/{iconName}.png");
-        }
+        Texture2D texture = null;
+        if (IconPaths.TryGetValue(resourceKey, out var path))
+            texture = GD.Load<Texture2D>(path);
 
         if (texture != null)
         {

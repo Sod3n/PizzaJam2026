@@ -324,7 +324,20 @@ public static class SkinVisualizer
             float r = ((packed >> 16) & 0xFF) / 255f;
             float g = ((packed >> 8) & 0xFF) / 255f;
             float b = (packed & 0xFF) / 255f;
-            spriteNode.Modulate = new Color(r, g, b);
+
+            bool useReplace = slotName == "Hair" || slotName == "BackHair";
+            if (useReplace)
+            {
+                var mat = spriteNode.MaterialOverride as ShaderMaterial;
+                if (mat != null)
+                    mat.SetShaderParameter("color_replace", new Color(r, g, b));
+                else
+                    spriteNode.Modulate = new Color(r, g, b);
+            }
+            else
+            {
+                spriteNode.Modulate = new Color(r, g, b);
+            }
         }
     }
 }

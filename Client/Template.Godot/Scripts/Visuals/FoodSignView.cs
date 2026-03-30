@@ -6,7 +6,13 @@ namespace Template.Godot.Visuals;
 
 public partial class FoodSignView
 {
-    private static readonly string[] FoodIconNames = { "grass", "carrot", "apple", "mushroom" };
+    private static readonly string[] FoodIconPaths =
+    {
+        "res://sprites/export/icons/Grass_/1.png",
+        "res://sprites/export/icons/Carrot_/1.png",
+        "res://sprites/export/icons/Apply_/1.png",
+        "res://sprites/export/icons/Mashroom/1.png",
+    };
 
     partial void OnSpawned(FoodSignViewModel vm, Node3D visualNode)
     {
@@ -14,7 +20,7 @@ public partial class FoodSignView
         ViewHelpers.PlayAppear(visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
 
-        var sprite = visualNode.GetNodeOrNull<Sprite3D>("FoodIcon");
+        var sprite = visualNode.GetNodeOrNull<AnimatedSprite3D>("FoodIcon");
         if (sprite == null) return;
 
         // Set initial icon
@@ -32,13 +38,20 @@ public partial class FoodSignView
         ViewHelpers.PlayDisappear(visualNode, 0.3f, freeAfter: false);
     }
 
-    private static void UpdateFoodIcon(Sprite3D sprite, int foodType)
+    private static void UpdateFoodIcon(AnimatedSprite3D sprite, int foodType)
     {
-        if (foodType >= 0 && foodType < FoodIconNames.Length)
+        if (foodType >= 0 && foodType < FoodIconPaths.Length)
         {
-            var texture = GD.Load<Texture2D>($"res://sprites/export/icons/{FoodIconNames[foodType]}.png");
+            var texture = GD.Load<Texture2D>(FoodIconPaths[foodType]);
             if (texture != null)
-                sprite.Texture = texture;
+            {
+                var frames = new SpriteFrames();
+                frames.AddAnimation("default");
+                frames.AddFrame("default", texture);
+                sprite.SpriteFrames = frames;
+                sprite.Animation = "default";
+                sprite.Frame = 0;
+            }
         }
     }
 }

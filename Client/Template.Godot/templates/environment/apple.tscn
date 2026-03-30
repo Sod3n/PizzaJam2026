@@ -1,0 +1,137 @@
+[gd_scene format=3 uid="uid://cyytxfg62tvax"]
+
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="1_ky1f1"]
+[ext_resource type="Script" uid="uid://1d35rfotwyk0" path="res://Scripts/Framework/Components/GrassComponentNode.cs" id="2_lqlpb"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="3_oa0h3"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_qu1i0"]
+[ext_resource type="Texture2D" uid="uid://brxjp0wafstr3" path="res://sprites/export/icons/Carrot_Wish_Pit/1.png" id="5_rge75"]
+[ext_resource type="Texture2D" uid="uid://lmtb8dohmyt1" path="res://sprites/export/icons/Apply_/1.png" id="5_svhw3"]
+[ext_resource type="Texture2D" uid="uid://ls55pychj80m" path="res://sprites/IMG_0375.PNG" id="6_hcco4"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="7_p160j"]
+[ext_resource type="Texture2D" uid="uid://dignhqgly4aoy" path="res://sprites/props/tree_1.png" id="9_858d0"]
+[ext_resource type="Texture2D" uid="uid://xwvgykbhbyw3" path="res://sprites/props/flowers.png" id="10_jtnkb"]
+[ext_resource type="Texture2D" uid="uid://dbjadv156adjm" path="res://sprites/props/bush_2.png" id="11_ogcho"]
+[ext_resource type="Texture2D" uid="uid://df1ukad2f1sei" path="res://sprites/props/bush_1.png" id="12_5oxrf"]
+[ext_resource type="Texture2D" uid="uid://cdkl1kj6ba6ss" path="res://sprites/props/barrel.png" id="13_nhcbc"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="14_reql4"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="15_3k8gp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ky1f1"]
+render_priority = 0
+shader = ExtResource("4_qu1i0")
+shader_parameter/albedo_texture = ExtResource("5_svhw3")
+shader_parameter/wind_strength = 0.15999999642376
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_884kg"]
+atlas = ExtResource("6_hcco4")
+region = Rect2(816, 0, 814, 1754)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gxmxl"]
+atlas = ExtResource("6_hcco4")
+region = Rect2(2444, 0, 814, 1754)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n4w22"]
+atlas = ExtResource("6_hcco4")
+region = Rect2(1630, 0, 814, 1754)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d4o4o"]
+atlas = ExtResource("6_hcco4")
+region = Rect2(2, 0, 814, 1754)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gdsc3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_svhw3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_rge75")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_884kg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gxmxl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n4w22")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d4o4o")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a2yru"]
+render_priority = 0
+shader = ExtResource("4_qu1i0")
+shader_parameter/albedo_texture = ExtResource("9_858d0")
+shader_parameter/wind_strength = 0.9999999776485
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_415xm"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_858d0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_jtnkb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_ogcho")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_5oxrf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_nhcbc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_reql4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_3k8gp")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Grass" type="Node3D" unique_id=1394710286]
+
+[node name="Entity" type="Node3D" parent="." unique_id=1060938689]
+script = ExtResource("1_ky1f1")
+EntityName = "Grass"
+StableIdSeed = "grass-entity-seed"
+
+[node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
+script = ExtResource("2_lqlpb")
+Durability = 3
+MaxDurability = 3
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
+script = ExtResource("3_oa0h3")
+ShapeRadius = 1.0
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=702612390]
+transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.6486559, 2.3402631, -0.6169324)
+material_override = SubResource("ShaderMaterial_ky1f1")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_gdsc3")
+frame_progress = 0.49251503
+script = ExtResource("7_p160j")
+
+[node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="." unique_id=1700245007]
+transform = Transform3D(0.15, 0, 0, 0, 0.13623135, 0.06277757, 0, -0.06277757, 0.13623135, 0, 1.8809322, -0.43979532)
+material_override = SubResource("ShaderMaterial_a2yru")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_415xm")
+script = ExtResource("7_p160j")

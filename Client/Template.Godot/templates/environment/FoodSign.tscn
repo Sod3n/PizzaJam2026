@@ -1,39 +1,89 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bu2yqslfpgg4k"]
 
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/FoodSignComponentNode.cs" id="fw_foodsign"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_dpkjo"]
+[ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="5_3ec0u"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="6_nr4m1"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="7_5jc8c"]
+[ext_resource type="Texture2D" uid="uid://lmtb8dohmyt1" path="res://sprites/export/icons/Apply_/1.png" id="8_3ejbo"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://co7c8o5mcavt0" path="res://Scripts/Framework/Components/FoodSignComponentNode.cs" id="fw_foodsign"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sign"]
-albedo_color = Color(0.9, 0.8, 0.2, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dpkjo"]
+render_priority = -1
+shader = ExtResource("4_dpkjo")
+shader_parameter/albedo_texture = ExtResource("5_3ec0u")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_sign"]
-material = SubResource("StandardMaterial3D_sign")
-top_radius = 0.3
-bottom_radius = 0.3
-height = 0.5
+[sub_resource type="SpriteFrames" id="SpriteFrames_1f6sc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_3ec0u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_nr4m1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
-[node name="FoodSign" type="Node3D"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3ec0u"]
+render_priority = -1
+shader = ExtResource("4_dpkjo")
+shader_parameter/albedo_texture = ExtResource("8_3ejbo")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[node name="Entity" type="Node3D" parent="."]
+[sub_resource type="SpriteFrames" id="SpriteFrames_hygnc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_3ejbo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_3ec0u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_nr4m1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="FoodSign" type="Node3D" unique_id=191318127]
+
+[node name="Entity" type="Node3D" parent="." unique_id=1551194688]
 script = ExtResource("fw_entity")
 EntityName = "FoodSign"
 StableIdSeed = "foodsign-entity-seed"
 
-[node name="FoodSignComponent" type="Node" parent="Entity"]
+[node name="FoodSignComponent" type="Node" parent="Entity" unique_id=97465481]
 script = ExtResource("fw_foodsign")
 
-[node name="Physics" type="Node3D" parent="Entity"]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=778205374]
 script = ExtResource("fw_phys")
-BodyType = 1
-ShapeType = 0
 ShapeRadius = 0.8
 CollisionLayer = 4
 CollisionMask = 8
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("CylinderMesh_sign")
-
-[node name="FoodIcon" type="Sprite3D" parent="."]
-transform = Transform3D(0.03, 0, 0, 0, 0.03, 0, 0, 0, 0.03, 0, 0.5, 0)
+[node name="Sign" type="AnimatedSprite3D" parent="." unique_id=529436190]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.18816209, 2.389846, -1.1771166)
+material_override = SubResource("ShaderMaterial_dpkjo")
 alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_1f6sc")
+script = ExtResource("7_5jc8c")
+
+[node name="FoodIcon" type="AnimatedSprite3D" parent="." unique_id=928478463]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0.028004616, 0.78785324, -0.32304233)
+material_override = SubResource("ShaderMaterial_3ec0u")
+modulate = Color(0.45626378, 0.6576143, 1.92523e-07, 1)
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_hygnc")
+frame_progress = 0.0024409618
+script = ExtResource("7_5jc8c")

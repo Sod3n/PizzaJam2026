@@ -1,21 +1,21 @@
 [gd_scene format=3 uid="uid://de55uopw2vwaa"]
 
-[ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="1_fy16n"]
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_j63rn"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="2_gk14f"]
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="2_vc6b0"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="3_mcv8w"]
+[ext_resource type="Texture2D" uid="uid://5l2waaftxb6k" path="res://sprites/export/icons/Money_/1.png" id="8_o1ekv"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://cbukwklhf1rrg" path="res://Scripts/Framework/Components/LandComponentNode.cs" id="fw_land"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1ekv"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_be3pv"]
 render_priority = -1
 shader = ExtResource("1_j63rn")
 shader_parameter/albedo_texture = ExtResource("2_vc6b0")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
-shader_parameter/transparency = 1.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_be3pv"]
 animations = [{
@@ -32,17 +32,19 @@ animations = [{
 }]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_p28da"]
-atlas = ExtResource("1_fy16n")
 region = Rect2(0, 1514, 1033, 757)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_j63rn"]
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("8_o1ekv")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_p28da")
 }, {
 "duration": 1.0,
-"texture": ExtResource("1_fy16n")
+"texture": null
 }],
 "loop": true,
 "name": &"default",
@@ -70,7 +72,7 @@ CollisionMask = 8
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1752989073]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.2588017, 4.611277, -2.0273778)
-material_override = SubResource("ShaderMaterial_o1ekv")
+material_override = SubResource("ShaderMaterial_be3pv")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_be3pv")
 script = ExtResource("2_gk14f")
@@ -85,7 +87,7 @@ text = "10"
 font_size = 128
 
 [node name="Skin2" type="AnimatedSprite3D" parent="." unique_id=1721453585]
-transform = Transform3D(0.2, 0, 0, 0, 0.1804539, 0.086234525, 0, -0.086234525, 0.1804539, -0.22214675, 1.143334, -0.17895031)
+transform = Transform3D(0.19999997, 0, 0, 0, 0.1804539, 0.08623452, 0, -0.08623452, 0.1804539, -0.42980668, 1.3255402, -0.1789503)
 sorting_offset = -10.0
 alpha_cut = 2
 texture_filter = 0

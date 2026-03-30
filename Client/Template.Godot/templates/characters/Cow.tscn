@@ -1,42 +1,35 @@
 [gd_scene format=3 uid="uid://dpvl77oofc2w3"]
 
 [ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_7tc83"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/CowComponentNode.cs" id="fw_cow"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="fw_nav"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
+[ext_resource type="Script" uid="uid://dl84755piumrf" path="res://Scripts/Framework/Components/CowComponentNode.cs" id="fw_cow"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://dujhbvljlh6l3" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="fw_nav"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://dinx5371fnt6o" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
+[ext_resource type="Script" uid="uid://w882ltaxhyd6" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
 
-[node name="Cow" type="Node3D"]
+[node name="Cow" type="Node3D" unique_id=184424069]
 
-[node name="Entity" type="Node3D" parent="."]
+[node name="Entity" type="Node3D" parent="." unique_id=1298725972]
 script = ExtResource("fw_entity")
 EntityName = "Cow"
 StableIdSeed = "cow-entity-seed"
 
-[node name="CowComponent" type="Node" parent="Entity"]
+[node name="CowComponent" type="Node" parent="Entity" unique_id=265019547]
 script = ExtResource("fw_cow")
 
-[node name="Physics" type="Node3D" parent="Entity"]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=984927811]
 script = ExtResource("fw_phys")
 BodyType = 0
-ShapeType = 0
-ShapeRadius = 0.5
-CollisionLayer = 1
-CollisionMask = 9
+CollisionMask = 0
 
-[node name="NavAgent" type="Node3D" parent="Entity"]
+[node name="NavAgent" type="Node3D" parent="Entity" unique_id=1727609195]
 script = ExtResource("fw_nav")
-MaxSpeed = 10.0
-TargetDesiredDistance = 2.0
-PathDesiredDistance = 1.0
-Radius = 0.5
 
-[node name="State" type="Node" parent="Entity"]
+[node name="State" type="Node" parent="Entity" unique_id=300789481]
 script = ExtResource("fw_state")
 
-[node name="Skin" type="Node" parent="Entity"]
+[node name="Skin" type="Node" parent="Entity" unique_id=976082545]
 script = ExtResource("fw_skin")
 
-[node name="Character" parent="." instance=ExtResource("1_7tc83")]
+[node name="Character" parent="." unique_id=1927392941 instance=ExtResource("1_7tc83")]

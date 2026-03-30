@@ -123,8 +123,10 @@ public class CowSystem : ISystem
             cow.FollowingPlayer = playerEntity;
 
             // Save previous house so cow can return after breeding
+            // Only save if it's a milking house, not a love house
             var houseId = cow.HouseId;
-            cow.PreviousHouseId = houseId;
+            if (houseId != Entity.Null && state.HasComponent<HouseComponent>(houseId))
+                cow.PreviousHouseId = houseId;
 
             // Remove from house or love house if it was in one
             if (houseId != Entity.Null && state.HasComponent<HouseComponent>(houseId))

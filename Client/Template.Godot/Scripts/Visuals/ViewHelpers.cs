@@ -112,11 +112,6 @@ public static class ViewHelpers
                 visualNode.AddChild(instance);
                 instance.Position = new GVector3(0, 0.5f, 0);
 
-                // Tint green to indicate gain (vs red/default for not enough)
-                var sprite = instance.GetNodeOrNull<AnimatedSprite3D>("AnimatedSprite3D");
-                if (sprite != null)
-                    sprite.Modulate = new Color(0.5f, 1f, 0.5f, 1f);
-
                 if (instance is NotEnoughResourceView view)
                     view.Setup(resourceKey);
             }).CallDeferred();

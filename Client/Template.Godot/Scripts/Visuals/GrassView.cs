@@ -5,39 +5,37 @@ namespace Template.Godot.Visuals;
 
 public partial class GrassView
 {
-    private static readonly string[] FoodIconPaths =
+    [Export] public PackedScene CarrotPrefab;
+    [Export] public PackedScene ApplePrefab;
+    [Export] public PackedScene MushroomPrefab;
+
+    private PackedScene GetPrefabForFoodType(int foodType) => foodType switch
     {
-        "res://sprites/IMG_0375.PNG",                  // 0 = Grass (original sprite)
-        "res://sprites/export/icons/carrot.png",       // 1 = Carrot
-        "res://sprites/export/icons/apple.png",        // 2 = Apple
-        "res://sprites/export/icons/mushroom.png",     // 3 = Mushroom
+        FoodType.Carrot => CarrotPrefab,
+        FoodType.Apple => ApplePrefab,
+        FoodType.Mushroom => MushroomPrefab,
+        _ => null
     };
 
     partial void OnSpawned(GrassViewModel vm, Node3D visualNode)
     {
         DespawnDelay = 0.3f;
-        ViewHelpers.PlayAppear(visualNode);
-        ViewHelpers.SetupInteractAnimation(vm, visualNode);
 
         var foodType = vm.Grass.Grass.FoodType.CurrentValue;
-        if (foodType > 0 && foodType < FoodIconPaths.Length)
+        var altPrefab = GetPrefabForFoodType(foodType);
+        if (altPrefab != null)
         {
-            var sprite = visualNode.GetNodeOrNull<AnimatedSprite3D>("AnimatedSprite3D");
-            if (sprite != null)
-            {
-                var texture = GD.Load<Texture2D>(FoodIconPaths[foodType]);
-                if (texture != null)
-                {
-                    var frames = new SpriteFrames();
-                    frames.AddAnimation("default");
-                    frames.AddFrame("default", texture);
-                    frames.SetAnimationLoop("default", true);
-                    sprite.SpriteFrames = frames;
-                    sprite.Animation = "default";
-                    sprite.Frame = 0;
-                }
-            }
+            // Replace default visual with food-specific scene
+            var replacement = altPrefab.Instantiate<Node3D>();
+            replacement.Position = visualNode.Position;
+            visualNode.GetParent().AddChild(replacement);
+            _spawnedEntities[vm] = replacement;
+            visualNode.QueueFree();
+            visualNode = replacement;
         }
+
+        ViewHelpers.PlayAppear(visualNode);
+        ViewHelpers.SetupInteractAnimation(vm, visualNode);
     }
 
     partial void OnDespawned(GrassViewModel vm, Node3D visualNode)

@@ -1,26 +1,16 @@
 [gd_scene format=3 uid="uid://dmro2br1j6e5t"]
 
 [ext_resource type="Script" uid="uid://4i5u27vq1ocp" path="res://Scripts/Visuals/NotEnoughResourceView.cs" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="2_246an"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="3_wystq"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_cf2wd"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("2_246an")
-}],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}]
 
 [node name="NotEnoughResource" type="Node3D" unique_id=1022053588]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.314258, 1.6620402)
 script = ExtResource("1_script")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=628481237]
-transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.8720145, 0.5828531)
+transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.04185171, 0, -0.04185171, 0.09082089, 0, 1.8720145, 0.5828531)
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_cf2wd")
 script = ExtResource("3_wystq")

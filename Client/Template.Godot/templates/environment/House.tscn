@@ -3,17 +3,18 @@
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_eavrv"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="2_s4hiu"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="3_6r21p"]
-[ext_resource type="Texture2D" uid="uid://cq03gfosyxtxe" path="res://sprites/icons.PNG" id="4_s4hiu"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/HouseComponentNode.cs" id="fw_house"]
+[ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="6_d3vyn"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://bm7b5tl6sss0d" path="res://Scripts/Framework/Components/HouseComponentNode.cs" id="fw_house"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_s4hiu"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gevk7"]
 render_priority = -1
 shader = ExtResource("1_eavrv")
 shader_parameter/albedo_texture = ExtResource("2_s4hiu")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
-shader_parameter/transparency = 1.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_gevk7"]
 animations = [{
@@ -27,16 +28,17 @@ animations = [{
 }]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_d3vyn"]
-atlas = ExtResource("4_s4hiu")
 region = Rect2(0, 250, 1033, 674)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_p28da"]
-atlas = ExtResource("4_s4hiu")
 region = Rect2(0, 1514, 1033, 757)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_5xdiy"]
 animations = [{
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_d3vyn")
+}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_d3vyn")
 }, {
@@ -44,34 +46,40 @@ animations = [{
 "texture": SubResource("AtlasTexture_p28da")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_s4hiu")
+"texture": null
 }],
 "loop": true,
 "name": &"default",
 "speed": 5.0
 }]
 
-[node name="House" type="Node3D"]
+[node name="House" type="Node3D" unique_id=634424749]
 
-[node name="Entity" type="Node3D" parent="."]
+[node name="Entity" type="Node3D" parent="." unique_id=148113177]
 script = ExtResource("fw_entity")
 EntityName = "House"
 StableIdSeed = "house-entity-seed"
 
-[node name="HouseComponent" type="Node" parent="Entity"]
+[node name="HouseComponent" type="Node" parent="Entity" unique_id=1079522240]
 script = ExtResource("fw_house")
 
-[node name="AnimatedSprite3D" type="Node3D" parent="."]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=2071556656]
+script = ExtResource("fw_phys")
+ShapeType = 1
+ShapeWidth = 2.0
+ShapeHeight = 2.0
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D"]
+[node name="AnimatedSprite3D" type="Node3D" parent="." unique_id=736828588]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=78079650]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.8720146, -0.43979532)
-material_override = SubResource("ShaderMaterial_s4hiu")
+material_override = SubResource("ShaderMaterial_gevk7")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gevk7")
 frame_progress = 0.54646957
 script = ExtResource("3_6r21p")
 
-[node name="Capacity" type="Label3D" parent="."]
+[node name="Capacity" type="Label3D" parent="." unique_id=1555101329]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
 no_depth_test = true
 render_priority = 2
@@ -80,7 +88,7 @@ text = "10/10"
 font_size = 128
 horizontal_alignment = 0
 
-[node name="Skin2" type="AnimatedSprite3D" parent="."]
+[node name="Skin2" type="AnimatedSprite3D" parent="." unique_id=1382611059]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 2.9802327e-09, 0, -2.9802327e-09, 0.2, -0.74465454, 2.3296936, 0.173539)
 sorting_offset = -10.0
 alpha_cut = 2
