@@ -1,30 +1,58 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://csft4r563rued"]
 
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/LoveHouseComponentNode.cs" id="fw_lovehouse"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_yfgae"]
+[ext_resource type="Texture2D" uid="uid://bfkn1x48707v7" path="res://sprites/export/homes/Love_Hotel_.png" id="5_r6cki"]
+[ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="6_urgdw"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="7_bmg8t"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="8_no7kv"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://1ni4ix16yuim" path="res://Scripts/Framework/Components/LoveHouseComponentNode.cs" id="fw_lovehouse"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_love"]
-albedo_color = Color(0.9, 0.3, 0.5, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u1qar"]
+render_priority = -1
+shader = ExtResource("4_yfgae")
+shader_parameter/albedo_texture = ExtResource("5_r6cki")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_love"]
-material = SubResource("StandardMaterial3D_love")
+[sub_resource type="SpriteFrames" id="SpriteFrames_lbt5b"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_r6cki")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_urgdw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_bmg8t")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
-[node name="LoveHouse" type="Node3D"]
+[node name="LoveHouse" type="Node3D" unique_id=138857976]
 
-[node name="Entity" type="Node3D" parent="."]
+[node name="Entity" type="Node3D" parent="." unique_id=646629905]
 script = ExtResource("fw_entity")
 EntityName = "LoveHouse"
 StableIdSeed = "lovehouse-entity-seed"
 
-[node name="LoveHouseComponent" type="Node" parent="Entity"]
+[node name="LoveHouseComponent" type="Node" parent="Entity" unique_id=2023142437]
 script = ExtResource("fw_lovehouse")
 
-[node name="Physics" type="Node3D" parent="Entity"]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=933266033]
 script = ExtResource("fw_phys")
 ShapeType = 1
 ShapeWidth = 2.0
 ShapeHeight = 2.0
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_love")
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1942393034]
+transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.18842411, 1.3655618, -0.80295324)
+material_override = SubResource("ShaderMaterial_u1qar")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_lbt5b")
+script = ExtResource("8_no7kv")

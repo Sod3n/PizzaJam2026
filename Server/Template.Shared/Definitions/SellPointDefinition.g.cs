@@ -26,11 +26,11 @@ public static partial class SellPointDefinition
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
         var entityBody = StaticBody2D.Default;
-        entityBody.CollisionLayer = 4u;
-        entityBody.CollisionMask = 8u;
+        entityBody.CollisionLayer = 1u;
+        entityBody.CollisionMask = 1u;
         ctx.AddComponent(entity, entityBody);
 
-        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(1.5f));
+        ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2.7063417f, 1.8710076f)));
 
         var childEntities = new Dictionary<string, Entity>
         {

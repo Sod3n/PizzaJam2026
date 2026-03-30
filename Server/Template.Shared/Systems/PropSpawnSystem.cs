@@ -89,7 +89,15 @@ public class PropSpawnSystem : ISystem
             // Prevent clusters of same type
             if (IsTooClose(candidatePos, propTypePositions[propType], MinSameTypeDistance)) continue;
 
-            var propEntity = PropDefinition.Create(context, candidatePos);
+            var propEntity = propType switch
+            {
+                0 => BarrelDefinition.Create(context, candidatePos),
+                1 => Bush1Definition.Create(context, candidatePos),
+                2 => Bush2Definition.Create(context, candidatePos),
+                3 => FlowersDefinition.Create(context, candidatePos),
+                4 => TreeDefinition.Create(context, candidatePos),
+                _ => PropDefinition.Create(context, candidatePos),
+            };
             context.State.GetComponent<Components.PropComponent>(propEntity).PropType = propType;
             propPositions.Add(candidatePos);
             propTypePositions[propType].Add(candidatePos);

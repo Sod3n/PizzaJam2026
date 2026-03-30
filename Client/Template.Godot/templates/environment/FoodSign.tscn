@@ -82,7 +82,7 @@ script = ExtResource("7_5jc8c")
 [node name="FoodIcon" type="AnimatedSprite3D" parent="." unique_id=928478463]
 transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0.028004616, 0.78785324, -0.32304233)
 material_override = SubResource("ShaderMaterial_3ec0u")
-modulate = Color(0.45626378, 0.6576143, 1.92523e-07, 1)
+modulate = Color(0.538588, 0.56305635, 0.56306595, 1)
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_hygnc")
 frame_progress = 0.0024409618

@@ -66,7 +66,8 @@ public static class ViewHelpers
         {
             Callable.From(() =>
             {
-                bool isMoving = (float)v.X != 0f || (float)v.Y != 0f;
+                float speedSq = (float)v.X * (float)v.X + (float)v.Y * (float)v.Y;
+                bool isMoving = speedSq > 1f; // ignore tiny velocities from ORCA/separation
                 characterNode?.SetDeferred("enable_bounce", isMoving);
                 float vx = invertFlip ? -(float)v.X : (float)v.X;
                 if (vx < 0)
@@ -113,7 +114,12 @@ public static class ViewHelpers
                 instance.Position = new GVector3(0, 0.5f, 0);
 
                 if (instance is NotEnoughResourceView view)
+                {
                     view.Setup(resourceKey);
+                    var sprite = instance.GetNodeOrNull<AnimatedSprite3D>("AnimatedSprite3D");
+                    if (sprite != null)
+                        sprite.Modulate = new Color(0.85f, 1f, 0.85f);
+                }
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }
@@ -132,10 +138,16 @@ public static class ViewHelpers
                 instance.Position = new GVector3(0, 0.5f, 0);
 
                 if (instance is NotEnoughResourceView view)
+                {
                     view.Setup(resourceKey);
+                    var sprite = instance.GetNodeOrNull<AnimatedSprite3D>("AnimatedSprite3D");
+                    if (sprite != null)
+                        sprite.Modulate = new Color(1f, 0.85f, 0.85f);
+                }
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }
+
 
     public static void SetupMovementAnimation(EntityViewModel vm, R3.ReadOnlyReactiveProperty<global::Godot.Vector2> velocity, Node3D flipPivot, Node3D characterNode, bool invertFlip = false)
     {
@@ -143,7 +155,8 @@ public static class ViewHelpers
         {
             Callable.From(() =>
             {
-                bool isMoving = v.X != 0f || v.Y != 0f;
+                float speedSq = v.X * v.X + v.Y * v.Y;
+                bool isMoving = speedSq > 1f;
                 characterNode?.SetDeferred("enable_bounce", isMoving);
                 float vx = invertFlip ? -v.X : v.X;
                 if (vx < 0)

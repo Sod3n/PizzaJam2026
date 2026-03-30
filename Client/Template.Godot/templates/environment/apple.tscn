@@ -13,7 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://dbjadv156adjm" path="res://sprites/props/bush_2.png" id="11_ogcho"]
 [ext_resource type="Texture2D" uid="uid://df1ukad2f1sei" path="res://sprites/props/bush_1.png" id="12_5oxrf"]
 [ext_resource type="Texture2D" uid="uid://cdkl1kj6ba6ss" path="res://sprites/props/barrel.png" id="13_nhcbc"]
-[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="14_reql4"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/SellPoint.PNG" id="14_reql4"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="15_3k8gp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ky1f1"]
@@ -107,13 +107,13 @@ animations = [{
 
 [node name="Entity" type="Node3D" parent="." unique_id=1060938689]
 script = ExtResource("1_ky1f1")
-EntityName = "Grass"
+EntityName = "Apple"
 StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("2_lqlpb")
-Durability = 3
-MaxDurability = 3
+Durability = 10
+MaxDurability = 10
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("3_oa0h3")

@@ -14,17 +14,18 @@ public static class StarGrid
     public const float InnerRadius = 32f;
     private const int StarPoints = 5;
 
-    // Per-arm LoveHouse frequency: arm 0=balanced, 1=breeding, 2=production, 3=mixed, 4=breeding
-    private static readonly int[] LoveHouseFreq = { 6, 3, 10, 4, 2 };
+    /// <summary>
+    /// Minimum grid distance (Manhattan) between special buildings (LoveHouse, SellPoint).
+    /// Ensures ~10-15 houses between each special building.
+    /// </summary>
+    private const int MinSpecialDistance = 4; // 4 grid steps ≈ 12-16 houses between specials
 
     // Fixed special grid positions that become specific structure types
     public static int? GetFixedType(int gx, int gy)
     {
         if (gx == 0 && gy == 0) return LandType.SellPoint;
-        // Place final structure and love house a few steps from center on different arms
+        if (gx == 1 && gy == 0) return LandType.LoveHouse; // Direct neighbor of starting sell point
         if (gx == 0 && gy == -3) return LandType.FinalStructure;
-        if (gx == 3 && gy == 0) return LandType.LoveHouse;
-        if (gx == -3 && gy == 0) return LandType.LoveHouse;
         return null;
     }
 
@@ -77,7 +78,64 @@ public static class StarGrid
             case LandType.CarrotFarm: return 2;
             case LandType.AppleOrchard: return 2;
             case LandType.MushroomCave: return 2;
+            case LandType.HelperGatherer: return 5;
+            case LandType.HelperSeller: return 5;
+            case LandType.HelperBuilder: return 5;
             default: return 1; // House
+        }
+    }
+
+    // Pre-computed special building positions on a sparse grid.
+    // Uses deterministic hash to place LoveHouses and SellPoints with guaranteed min distance.
+    private static readonly System.Collections.Generic.HashSet<(int, int)> _specialPositions = new();
+    private static bool _specialsComputed;
+
+    private static void EnsureSpecialsComputed()
+    {
+        if (_specialsComputed) return;
+        _specialsComputed = true;
+
+        // Scan the full grid and assign specials with minimum distance
+        int maxCoord = (int)(OuterRadius / GridStep) + 1;
+
+        // Collect all valid grid positions sorted by distance from center
+        var candidates = new System.Collections.Generic.List<(int gx, int gy, int dist)>();
+        for (int gy = -maxCoord; gy <= maxCoord; gy++)
+            for (int gx = -maxCoord; gx <= maxCoord; gx++)
+            {
+                if (!IsInsideStar(gx * GridStep, gy * GridStep)) continue;
+                if (GetFixedType(gx, gy).HasValue) continue; // skip fixed positions
+                candidates.Add((gx, gy, System.Math.Abs(gx) + System.Math.Abs(gy)));
+            }
+        candidates.Sort((a, b) => a.dist.CompareTo(b.dist));
+
+        // Place specials ensuring minimum distance between them
+        // Include fixed positions as already-placed specials
+        var placed = new System.Collections.Generic.List<(int gx, int gy)>();
+        placed.Add((0, 0));   // SellPoint at center
+        placed.Add((1, 0));   // LoveHouse (neighbor of sell point)
+        placed.Add((0, -3));  // FinalStructure
+
+        foreach (var (gx, gy, dist) in candidates)
+        {
+            // Use deterministic hash to decide if this position WANTS to be special
+            int hash = System.Math.Abs(gx * 7919 + gy * 104729);
+            if (hash % 12 != 0) continue; // ~1 in 12 candidates wants to be special
+
+            // Check minimum distance to all existing specials
+            bool tooClose = false;
+            foreach (var (sx, sy) in placed)
+            {
+                if (System.Math.Abs(gx - sx) + System.Math.Abs(gy - sy) < MinSpecialDistance)
+                {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) continue;
+
+            _specialPositions.Add((gx, gy));
+            placed.Add((gx, gy));
         }
     }
 
@@ -87,17 +145,14 @@ public static class StarGrid
         var fixedType = GetFixedType(gx, gy);
         if (fixedType.HasValue) return fixedType.Value;
 
-        float px = gx * GridStep;
-        float py = gy * GridStep;
-        float twoPi = 2f * (float)System.Math.PI;
+        EnsureSpecialsComputed();
 
-        float angle = (float)System.Math.Atan2(py, px) + (float)System.Math.PI / 2f;
-        if (angle < 0) angle += twoPi;
-        int arm = (int)System.Math.Round(angle / (twoPi / 5f)) % 5;
-
-        // Use a deterministic hash of grid coords for consistent type assignment
-        int hash = System.Math.Abs(gx * 7919 + gy * 104729);
-        if (hash % LoveHouseFreq[arm] == 0) return LandType.LoveHouse;
+        if (_specialPositions.Contains((gx, gy)))
+        {
+            // Alternate between LoveHouse and SellPoint based on hash
+            int hash = System.Math.Abs(gx * 7919 + gy * 104729);
+            return (hash % 3 == 0) ? LandType.SellPoint : LandType.LoveHouse;
+        }
 
         // Every Nth remaining slot becomes a food farm (cycling through Carrot, Apple, Mushroom)
         int hash2 = System.Math.Abs(gx * 31337 + gy * 65537);
@@ -110,6 +165,13 @@ public static class StarGrid
                 1 => LandType.AppleOrchard,
                 _ => LandType.MushroomCave
             };
+        }
+
+        // Rare gatherer shops (~1 in 20 remaining slots)
+        int hash3 = System.Math.Abs(gx * 48271 + gy * 99991);
+        if (hash3 % 20 == 0)
+        {
+            return LandType.HelperGatherer;
         }
 
         return LandType.House;

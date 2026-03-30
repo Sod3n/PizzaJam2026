@@ -15,6 +15,9 @@ public static class LandType
     public const int CarrotFarm = 4;
     public const int AppleOrchard = 5;
     public const int MushroomCave = 6;
+    public const int HelperGatherer = 7;
+    public const int HelperSeller = 8;
+    public const int HelperBuilder = 9;
 
     /// <summary>Get the FoodType this farm land type produces, or -1 if not a farm.</summary>
     public static int GetFoodType(int landType)

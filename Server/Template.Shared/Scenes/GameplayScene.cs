@@ -25,8 +25,8 @@ public class GameplayScene : IScene
 
         var state = loop.State;
 
-        float center = 25f;
-        float halfSize = 40f; // 140 / 2
+        float center = 0f;
+        float halfSize = StarGrid.OuterRadius + 5f; // Slightly larger than star bounds
         float wallThickness = 1f;
 
         // Top Wall (Horizontal)
@@ -56,8 +56,9 @@ public class GameplayScene : IScene
         var navWorldComp = NavigationWorld2D.Default;
         navWorldComp.BoundsMin = new Vector2(center - halfSize, center - halfSize);
         navWorldComp.BoundsMax = new Vector2(center + halfSize, center + halfSize);
-        navWorldComp.CellSize = 0.5f;
+        navWorldComp.CellSize = 2.0f;
         navWorldComp.AgentRadius = 0.5f;
+        navWorldComp.ChunkSize = 20f;
         navWorldComp.ObstacleMask = (uint)CollisionLayer.Physics;
         state.AddComponent(navWorld, navWorldComp);
 

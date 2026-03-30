@@ -97,16 +97,23 @@ public partial class GameManager : Node
         OfflineMode = true;
 
         OfflineUserId = Guid.NewGuid();
-        var context = new Deterministic.GameFramework.DAR.Context(Game.State, Deterministic.GameFramework.ECS.Entity.Null, null!);
-        var playerEntity = Template.Shared.Definitions.PlayerDefinition.Create(
-            context,
-            OfflineUserId,
-            new Deterministic.GameFramework.Types.Vector2(0, 0),
-            0
-        );
+        Game.Loop.Schedule(new Template.Shared.Actions.AddPlayerAction(OfflineUserId), Deterministic.GameFramework.ECS.World.Entity);
 
-        LocalPlayerId = playerEntity.Id;
-        GD.Print($"[GameManager] Offline Player Created: {LocalPlayerId}");
+        // Player will be created on first tick — find it after game loop starts
+        Game.Loop.OnTick += () =>
+        {
+            if (LocalPlayerId != 0) return;
+            foreach (var entity in Game.State.Filter<Template.Shared.Components.PlayerEntity>())
+            {
+                var p = Game.State.GetComponent<Template.Shared.Components.PlayerEntity>(entity);
+                if (p.UserId == OfflineUserId)
+                {
+                    LocalPlayerId = entity.Id;
+                    GD.Print($"[GameManager] Offline Player Created: {LocalPlayerId}");
+                    break;
+                }
+            }
+        };
 
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();

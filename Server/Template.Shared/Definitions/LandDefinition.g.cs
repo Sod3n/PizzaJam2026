@@ -32,11 +32,11 @@ public static partial class LandDefinition
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
         var entityBody = StaticBody2D.Default;
-        entityBody.CollisionLayer = 4u;
-        entityBody.CollisionMask = 8u;
+        entityBody.CollisionLayer = 1u;
+        entityBody.CollisionMask = 1u;
         ctx.AddComponent(entity, entityBody);
 
-        ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2f, 2f)));
+        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(1.0860457f));
 
         var childEntities = new Dictionary<string, Entity>
         {

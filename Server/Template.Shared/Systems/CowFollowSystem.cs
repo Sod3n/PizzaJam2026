@@ -80,31 +80,35 @@ public class CowFollowSystem : ISystem
                 continue;
             }
 
-            var targetPos = state.GetComponent<Transform2D>(followTarget).Position;
-            var cowPos = state.GetComponent<Transform2D>(cowEntity).Position;
-            var distToTargetSq = (targetPos - cowPos).SqrMagnitude;
-
-            // Only update nav target when target has moved significantly from last nav target
-            var targetDriftSq = (targetPos - navAgent.TargetPosition).SqrMagnitude;
-            if (targetDriftSq > TargetUpdateThresholdSq || navAgent.IsNavigationFinished)
+            // Use SwarmFollow for crowd behavior
+            // First cow follows player via flow field, chained cows follow their target directly
+            if (state.HasComponent<PlayerEntity>(followTarget))
             {
-                navAgent.TargetPosition = targetPos;
+                SwarmFollow.Follow(state, cowEntity, followTarget);
             }
-
-            // Keep navigation active when not close enough
-            if (distToTargetSq > navAgent.TargetDesiredDistance * navAgent.TargetDesiredDistance)
+            else
             {
-                navAgent.IsNavigationFinished = false;
-            }
+                // Chained cow: simple nav follow toward the cow ahead
+                var targetPos = state.GetComponent<Transform2D>(followTarget).Position;
+                var cowPos = state.GetComponent<Transform2D>(cowEntity).Position;
+                var distToTargetSq = (targetPos - cowPos).SqrMagnitude;
 
-            // Apply navigation velocity to character body
-            cowBody.Velocity = navAgent.Velocity;
+                var targetDriftSq = (targetPos - navAgent.TargetPosition).SqrMagnitude;
+                if ((float)targetDriftSq > TargetUpdateThresholdSq || navAgent.IsNavigationFinished)
+                    navAgent.TargetPosition = targetPos;
 
-            // Face movement direction
-            if (navAgent.Velocity.SqrMagnitude > (Float)0.01f)
-            {
-                ref var cowTransform = ref state.GetComponent<Transform2D>(cowEntity);
-                cowTransform.Rotation = navAgent.Velocity.ToAngle();
+                if ((float)distToTargetSq > navAgent.TargetDesiredDistance * navAgent.TargetDesiredDistance)
+                    navAgent.IsNavigationFinished = false;
+
+                // Velocity lerp for smooth movement
+                var desiredVel = navAgent.Velocity;
+                cowBody.Velocity = cowBody.Velocity + (desiredVel - cowBody.Velocity) * (Float)0.12f;
+
+                if (cowBody.Velocity.SqrMagnitude > (Float)0.01f)
+                {
+                    ref var cowTransform = ref state.GetComponent<Transform2D>(cowEntity);
+                    cowTransform.Rotation = cowBody.Velocity.ToAngle();
+                }
             }
         }
     }

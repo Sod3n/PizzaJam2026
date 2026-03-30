@@ -1,4 +1,5 @@
 using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.TwoD;
 using Template.Shared.Components;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.DAR;
@@ -91,6 +92,7 @@ public class CowSystem : ISystem
         sc.Key = "";
         sc.CurrentTime = 0;
         sc.MaxTime = 0;
+        sc.IsEnabled = false;
         state.AddComponent(entity, new EnterStateComponent { Key = StateKeys.Idle, Age = 0 });
     }
 
@@ -290,10 +292,39 @@ public class CowSystem : ISystem
         if (cow2 != Entity.Null) state.UnhideEntity(cow2);
 
         Entity babyCow = Entity.Null;
+        Entity babyHelper = Entity.Null;
+
         if (state.HasComponent<CowComponent>(cow1) && state.HasComponent<CowComponent>(cow2)
             && state.HasComponent<SkinComponent>(cow1) && state.HasComponent<SkinComponent>(cow2))
         {
-            babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2);
+            // Rare chance (~5%) to get a helper instead of a cow
+            var gameTime = state.GetCustomData<IGameTime>();
+            uint breedSeed = (uint)((cow1.Id * 7919 + cow2.Id * 104729) ^ (gameTime?.CurrentTick ?? 0));
+            var breedRandom = new DeterministicRandom(breedSeed);
+            int roll = breedRandom.NextInt(100);
+
+            if (roll < 5) // 5% chance for a helper
+            {
+                var spawnPos = state.HasComponent<Transform2D>(loveHouseEntity)
+                    ? state.GetComponent<Transform2D>(loveHouseEntity).Position + new Vector2(2, 0)
+                    : new Vector2(0, 0);
+                var ctx = new Context(state, playerEntity, null!);
+
+                int helperRoll = breedRandom.NextInt(3);
+                int helperType = helperRoll switch
+                {
+                    0 => HelperType.Seller,
+                    1 => HelperType.Builder,
+                    _ => HelperType.Assistant
+                };
+
+                babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, helperType, playerEntity);
+                ILogger.Log($"[CowSystem] Rare crossbreed result: {helperType switch { 0 => "Assistant", 2 => "Seller", 3 => "Builder", _ => "Helper" }}!");
+            }
+            else
+            {
+                babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2);
+            }
         }
 
         // Clear love house slots

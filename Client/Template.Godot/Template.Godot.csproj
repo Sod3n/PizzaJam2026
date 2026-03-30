@@ -4,6 +4,17 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
+
+  <!-- Run CodeGen before compilation so scene changes are picked up -->
+  <Target Name="RunCodeGen" BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <CodeGenExe>$([System.IO.Path]::GetFullPath('$(ProjectDir)../../Tools/CodeGen/Template.CodeGen/bin/Release/net8.0/Template.CodeGen'))</CodeGenExe>
+    </PropertyGroup>
+    <Exec Command="&quot;$(CodeGenExe)&quot;"
+          WorkingDirectory="$([System.IO.Path]::GetFullPath('$(ProjectDir)../../'))"
+          ConsoleToMSBuild="true"
+          IgnoreExitCode="true" />
+  </Target>
   <ItemGroup>
     <Folder Include="templates\characters\" />
   </ItemGroup>

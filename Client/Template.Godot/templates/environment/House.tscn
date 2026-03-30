@@ -3,15 +3,16 @@
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_eavrv"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="2_s4hiu"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="3_6r21p"]
+[ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="5_5xdiy"]
 [ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="6_d3vyn"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://bm7b5tl6sss0d" path="res://Scripts/Framework/Components/HouseComponentNode.cs" id="fw_house"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_gevk7"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bwe53"]
 render_priority = -1
 shader = ExtResource("1_eavrv")
-shader_parameter/albedo_texture = ExtResource("2_s4hiu")
+shader_parameter/albedo_texture = ExtResource("5_5xdiy")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
@@ -19,6 +20,9 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 [sub_resource type="SpriteFrames" id="SpriteFrames_gevk7"]
 animations = [{
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_5xdiy")
+}, {
 "duration": 1.0,
 "texture": ExtResource("2_s4hiu")
 }],
@@ -72,8 +76,8 @@ ShapeHeight = 2.0
 [node name="AnimatedSprite3D" type="Node3D" parent="." unique_id=736828588]
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=78079650]
-transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.8720146, -0.43979532)
-material_override = SubResource("ShaderMaterial_gevk7")
+transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.3162969, -0.7434305)
+material_override = SubResource("ShaderMaterial_bwe53")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gevk7")
 frame_progress = 0.54646957

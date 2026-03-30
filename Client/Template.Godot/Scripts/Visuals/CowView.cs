@@ -9,7 +9,7 @@ public partial class CowView
         DespawnDelay = 0.3f;
         ViewHelpers.PlayAppear(visualNode);
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
-        ViewHelpers.SetupMovementAnimation(vm, vm.Cow.CharacterBody2D.Velocity, flipPivot, characterNode, invertFlip: true);
+        ViewHelpers.SetupMovementAnimation(vm, vm.Cow.CharacterBody2D.RealVelocity, flipPivot, characterNode, invertFlip: true);
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
     }

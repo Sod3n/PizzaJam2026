@@ -21,7 +21,8 @@ script = ExtResource("fw_cow")
 [node name="Physics" type="Node3D" parent="Entity" unique_id=984927811]
 script = ExtResource("fw_phys")
 BodyType = 0
-CollisionMask = 0
+CollisionLayer = 4
+CollisionMask = 8
 
 [node name="NavAgent" type="Node3D" parent="Entity" unique_id=1727609195]
 script = ExtResource("fw_nav")

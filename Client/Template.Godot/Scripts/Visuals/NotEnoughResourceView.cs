@@ -24,6 +24,7 @@ public partial class NotEnoughResourceView : Node3D
         { "milk", "res://sprites/export/icons/Milky_/1.png" },
         { "coins", "res://sprites/export/icons/Money_/1.png" },
         { "food", "res://sprites/export/icons/Grass_/1.png" },
+        { "houses", "res://sprites/export/homes/A_bar.png" },
     };
 
     public void Setup(string resourceKey)

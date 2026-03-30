@@ -25,7 +25,6 @@ public partial class GrassView
         var altPrefab = GetPrefabForFoodType(foodType);
         if (altPrefab != null)
         {
-            // Replace default visual with food-specific scene
             var replacement = altPrefab.Instantiate<Node3D>();
             replacement.Position = visualNode.Position;
             visualNode.GetParent().AddChild(replacement);

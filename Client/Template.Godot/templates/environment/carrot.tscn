@@ -59,13 +59,13 @@ animations = [{
 
 [node name="Entity" type="Node3D" parent="." unique_id=1060938689]
 script = ExtResource("1_x74if")
-EntityName = "Grass"
+EntityName = "Carrot"
 StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("2_ho84w")
-Durability = 3
-MaxDurability = 3
+Durability = 10
+MaxDurability = 10
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("3_r3nq2")

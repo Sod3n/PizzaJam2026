@@ -53,6 +53,7 @@ public static partial class PlayerDefinition
             ReturnPosition = Vector2.Zero,
             InteractionZone = Entity.Null,
             FollowingCow = Entity.Null,
+            AssistantHelper = Entity.Null,
         });
 
         // Child entity: InteractionZone

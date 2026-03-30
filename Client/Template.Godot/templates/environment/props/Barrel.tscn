@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://cdkl1kj6ba6ss" path="res://sprites/props/barrel.png" id="1"]
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="2_o2sov"]
 [ext_resource type="Texture2D" uid="uid://dignhqgly4aoy" path="res://sprites/props/tree_1.png" id="3_kdq62"]
-[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="3_srbby"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/SellPoint.PNG" id="3_srbby"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="4_jp8i0"]
 [ext_resource type="Texture2D" uid="uid://xwvgykbhbyw3" path="res://sprites/props/flowers.png" id="4_vu4u3"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="5_dr6rv"]
@@ -16,6 +16,7 @@ shader = ExtResource("2_o2sov")
 shader_parameter/albedo_texture = ExtResource("1")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_vu4u3"]
 animations = [{
@@ -47,6 +48,13 @@ animations = [{
 }]
 
 [node name="Barrel" type="Node3D" unique_id=343917729]
+
+[node name="Entity" type="Node3D" parent="." unique_id=654237716]
+
+[node name="PropComponent" type="Node" parent="Entity" unique_id=280674797]
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=262269592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05350381, 0, -0.16719437)
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=676996787]
 transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0, 0.4782728, -0.43979532)

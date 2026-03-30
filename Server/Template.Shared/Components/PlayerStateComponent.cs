@@ -15,4 +15,5 @@ public struct PlayerStateComponent : IComponent
     public Vector2 ReturnPosition;
     public Entity InteractionZone;
     public Entity FollowingCow;
+    public Entity AssistantHelper;
 }

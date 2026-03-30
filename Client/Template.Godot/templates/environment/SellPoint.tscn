@@ -1,12 +1,10 @@
 [gd_scene format=3 uid="uid://b3a1efqph14je"]
 
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_bh30n"]
-[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="2_wujlj"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/SellPoint.PNG" id="2_wujlj"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="3_iidr8"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="4_ijeiq"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/SellPointComponentNode.cs" id="fw_sellpoint"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://yo263sjf6vnf" path="res://Scripts/Framework/Components/SellPointComponentNode.cs" id="fw_sellpoint"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y8smx"]
 albedo_color = Color(1, 0.9372549, 0, 1)
@@ -14,12 +12,13 @@ albedo_color = Color(1, 0.9372549, 0, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_eev1s"]
 material = SubResource("StandardMaterial3D_y8smx")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pa8po"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wujlj"]
 render_priority = 0
 shader = ExtResource("1_bh30n")
 shader_parameter/albedo_texture = ExtResource("2_wujlj")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_652la"]
 animations = [{
@@ -35,31 +34,23 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="SellPoint" type="Node3D"]
+[node name="SellPoint" type="Node3D" unique_id=1520497427]
 
-[node name="Entity" type="Node3D" parent="."]
-script = ExtResource("fw_entity")
-EntityName = "SellPoint"
-StableIdSeed = "sellpoint-entity-seed"
+[node name="Entity" type="Node3D" parent="." unique_id=1313762873]
 
-[node name="SellPointComponent" type="Node" parent="Entity"]
+[node name="SellPointComponent" type="Node" parent="Entity" unique_id=429680044]
 script = ExtResource("fw_sellpoint")
 
-[node name="Physics" type="Node3D" parent="Entity"]
-script = ExtResource("fw_phys")
-BodyType = 1
-ShapeType = 0
-ShapeRadius = 1.5
-CollisionLayer = 4
-CollisionMask = 8
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1875410463]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26045096, 0, -1.0558813)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1214171442]
 visible = false
 mesh = SubResource("BoxMesh_eev1s")
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=779030819]
 transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0, -0.23889625, -0.43979532)
-material_override = SubResource("ShaderMaterial_pa8po")
+material_override = SubResource("ShaderMaterial_wujlj")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_652la")
 script = ExtResource("4_ijeiq")

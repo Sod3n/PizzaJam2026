@@ -54,8 +54,17 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         string gainedResource = null;
         Entity interactedTarget = nearestTarget;
 
+        // Helper interaction → transfer resources to helper
+        if (ctx.State.HasComponent<HelperComponent>(nearestTarget))
+        {
+            success = HandleHelperInteraction(ctx, nearestTarget, ref globalRes);
+            if (success)
+            {
+                ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+            }
+        }
         // Cow interaction → always tame (add to follow chain)
-        if (ctx.State.HasComponent<CowComponent>(nearestTarget))
+        else if (ctx.State.HasComponent<CowComponent>(nearestTarget))
         {
             success = HandleCowTame(ctx, playerEntity, nearestTarget, ref playerState, ref sc);
             if (success) return;
@@ -115,7 +124,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
         else if (ctx.State.HasComponent<LandComponent>(nearestTarget))
         {
-            success = HandleLandInteraction(ctx, nearestTarget, ref globalRes, out missingResource);
+            success = HandleLandInteraction(ctx, playerEntity, nearestTarget, ref globalRes, out missingResource);
         }
         else if (ctx.State.HasComponent<FinalStructureComponent>(nearestTarget))
         {
@@ -165,6 +174,11 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             bool isPreferred = foodToUse == cow.PreferredFood;
             int milkAmount = isPreferred ? 3 : 1; // 3x multiplier for preferred food
 
+            // Assistant helper doubles milk output
+            if (playerState.AssistantHelper != Entity.Null
+                && ctx.State.HasComponent<HelperComponent>(playerState.AssistantHelper))
+                milkAmount *= 2;
+
             globalRes.ConsumeFood(foodToUse);
             int milkProduct = FoodType.ToMilkProduct(foodToUse);
             globalRes.AddMilkProduct(milkProduct, milkAmount);
@@ -192,6 +206,11 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
         loveHouse.BreedProgress++;
+
+        // Assistant helper adds extra breed progress
+        if (playerState.AssistantHelper != Entity.Null
+            && ctx.State.HasComponent<HelperComponent>(playerState.AssistantHelper))
+            loveHouse.BreedProgress++;
 
         ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
         ILogger.Log($"[InteractActionService] Breed click {loveHouse.BreedProgress}/{loveHouse.BreedCost} at love house {loveHouseEntity.Id}");
@@ -511,7 +530,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return false;
     }
 
-    private bool HandleLandInteraction(Context ctx, Entity landEntity, ref GlobalResourcesComponent globalRes, out string missingResource)
+    private bool HandleLandInteraction(Context ctx, Entity playerEntity, Entity landEntity, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
 
@@ -530,36 +549,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 int gridY = land.Ring; // grid Y coord stored in Ring
                 ctx.State.DeleteEntity(landEntity);
 
-                // Destroy nearby props to clear space for the new building
-                DestroyNearbyProps(ctx, position, 4f);
-
-                switch (landType)
-                {
-                    case LandType.LoveHouse:
-                        LoveHouseDefinition.Create(ctx, position);
-                        break;
-                    case LandType.SellPoint:
-                        SellPointDefinition.Create(ctx, position);
-                        break;
-                    case LandType.FinalStructure:
-                        FinalStructureDefinition.Create(ctx, position, 0);
-                        break;
-                    case LandType.CarrotFarm:
-                        FoodFarmDefinition.Create(ctx, position, FoodType.Carrot);
-                        break;
-                    case LandType.AppleOrchard:
-                        FoodFarmDefinition.Create(ctx, position, FoodType.Apple);
-                        break;
-                    case LandType.MushroomCave:
-                        FoodFarmDefinition.Create(ctx, position, FoodType.Mushroom);
-                        break;
-                    default:
-                        HouseDefinition.Create(ctx, position);
-                        break;
-                }
-
-                // Spawn new land plots at the 4 cardinal neighbors
-                StarGrid.SpawnNeighbors(ctx, gridX, gridY);
+                CompleteLandBuilding(ctx, position, landType, gridX, gridY);
 
                 return false;
             }
@@ -603,6 +593,44 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
+    private bool HandleHelperInteraction(Context ctx, Entity helperEntity, ref GlobalResourcesComponent globalRes)
+    {
+        ref var helper = ref ctx.State.GetComponent<HelperComponent>(helperEntity);
+
+        if (helper.Type == HelperType.Seller)
+        {
+            // Transfer milk products from global to seller's bag
+            int transferred = 0;
+            int capacity = helper.BagCapacity - helper.GetBagTotal();
+
+            while (transferred < capacity && globalRes.Milk > 0) { globalRes.Milk--; helper.BagMilk++; transferred++; }
+            while (transferred < capacity && globalRes.VitaminShake > 0) { globalRes.VitaminShake--; helper.BagVitaminShake++; transferred++; }
+            while (transferred < capacity && globalRes.AppleYogurt > 0) { globalRes.AppleYogurt--; helper.BagAppleYogurt++; transferred++; }
+            while (transferred < capacity && globalRes.PurplePotion > 0) { globalRes.PurplePotion--; helper.BagPurplePotion++; transferred++; }
+
+            if (transferred > 0)
+            {
+                ILogger.Log($"[InteractActionService] Loaded {transferred} milk products into Seller helper {helperEntity.Id}");
+                return true;
+            }
+        }
+        else if (helper.Type == HelperType.Builder)
+        {
+            // Transfer coins from global to builder's bag
+            int capacity = helper.BagCapacity - helper.BagCoins;
+            int toGive = System.Math.Min(capacity, globalRes.Coins);
+            if (toGive > 0)
+            {
+                globalRes.Coins -= toGive;
+                helper.BagCoins += toGive;
+                ILogger.Log($"[InteractActionService] Gave {toGive} coins to Builder helper {helperEntity.Id}");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static string FoodTypeToKey(int foodType) => foodType switch
     {
         FoodType.Grass => StateKeys.Grass,
@@ -619,5 +647,49 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             return entity;
         }
         return Entity.Null;
+    }
+
+    /// <summary>
+    /// Shared logic for completing a land purchase — builds the structure and spawns neighbors.
+    /// Called by both player interaction and builder helper.
+    /// The land entity should already be deleted before calling this.
+    /// </summary>
+    public static void CompleteLandBuilding(Context ctx, Vector2 position, int landType, int gridX, int gridY)
+    {
+        // Destroy nearby props to clear space
+        DestroyNearbyProps(ctx, position, 4f);
+
+        // Find the player entity from context for helper spawning
+        Entity playerEntity = ctx.Entity;
+
+        switch (landType)
+        {
+            case LandType.LoveHouse:
+                LoveHouseDefinition.Create(ctx, position);
+                break;
+            case LandType.SellPoint:
+                SellPointDefinition.Create(ctx, position);
+                break;
+            case LandType.FinalStructure:
+                FinalStructureDefinition.Create(ctx, position, 0);
+                break;
+            case LandType.CarrotFarm:
+                FoodFarmDefinition.Create(ctx, position, FoodType.Carrot);
+                break;
+            case LandType.AppleOrchard:
+                FoodFarmDefinition.Create(ctx, position, FoodType.Apple);
+                break;
+            case LandType.MushroomCave:
+                FoodFarmDefinition.Create(ctx, position, FoodType.Mushroom);
+                break;
+            case LandType.HelperGatherer:
+                HelperDefinition.Create(ctx, position, HelperType.Gatherer, playerEntity);
+                break;
+            default:
+                HouseDefinition.Create(ctx, position);
+                break;
+        }
+
+        StarGrid.SpawnNeighbors(ctx, gridX, gridY);
     }
 }

@@ -6,9 +6,11 @@
 [ext_resource type="Texture2D" uid="uid://df1ukad2f1sei" path="res://sprites/props/bush_1.png" id="4_4dqkj"]
 [ext_resource type="Texture2D" uid="uid://cdkl1kj6ba6ss" path="res://sprites/props/barrel.png" id="5_eu4la"]
 [ext_resource type="Texture2D" uid="uid://dignhqgly4aoy" path="res://sprites/props/tree_1.png" id="6_mn0eg"]
-[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/IMG_0404.PNG" id="7_6c7ci"]
+[ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/SellPoint.PNG" id="7_6c7ci"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="8_ljbry"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="9_8rive"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://c6gpoh2qjm00" path="res://Scripts/Framework/Components/PropComponentNode.cs" id="fw_prop"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kb6mx"]
 render_priority = 0
@@ -47,6 +49,14 @@ animations = [{
 }]
 
 [node name="Flowers" type="Node3D" unique_id=1123717010]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "Flowers"
+StableIdSeed = "flowers-entity-seed"
+
+[node name="PropComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_prop")
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=1581483249]
 transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0.5, 0)

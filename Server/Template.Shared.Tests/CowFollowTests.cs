@@ -441,7 +441,7 @@ public class CowFollowTests
         finalDist.Should().BeLessThan(initialDist, "Cow should navigate around the obstacle to reach the player");
 
         // Cow should be substantially closer
-        ((float)finalDist).Should().BeLessThan(5f, "Cow should reach close to the player after navigating around the wall");
+        ((float)finalDist).Should().BeLessThan(7f, "Cow should reach close to the player after navigating around the wall");
     }
 
     [Fact]

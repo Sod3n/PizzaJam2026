@@ -17,6 +17,7 @@ shader = ExtResource("4_832on")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_884kg")
 shader_parameter/wind_strength = 1.0
 shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gxmxl"]
 atlas = ExtResource("1_kl2qe")
@@ -59,8 +60,8 @@ StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("fw_grass")
-Durability = 3
-MaxDurability = 3
+Durability = 10
+MaxDurability = 10
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("fw_phys")
