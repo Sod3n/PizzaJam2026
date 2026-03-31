@@ -17,7 +17,6 @@ using Xunit.Abstractions;
 
 namespace Template.Shared.Tests;
 
-// No [Collection("Sequential")] — simulations run in parallel
 public class BotSimulationTests
 {
     private static readonly object _createLock = new();
@@ -195,9 +194,9 @@ public class BotSimulationTests
         string buildingsPath = Path.Combine(csvDir, $"buildings_{tag}.csv");
         File.WriteAllText(resourcesPath, metrics.ExportCsv());
         File.WriteAllText(buildingsPath, metrics.ExportBuildingsCsv());
+        File.WriteAllText(Path.Combine(csvDir, $"actions_{tag}.txt"), report);
         _output.WriteLine($"CSV exported to: {csvDir}");
 
-        CowSystem.HelpersEnabled = true; // reset for other tests
     }
 
     /// <summary>

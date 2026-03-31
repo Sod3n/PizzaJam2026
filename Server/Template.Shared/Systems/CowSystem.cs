@@ -9,7 +9,12 @@ namespace Template.Shared.Systems;
 
 public class CowSystem : ISystem
 {
-    public static bool HelpersEnabled = true;
+    [ThreadStatic] private static bool? _helpersEnabled;
+    public static bool HelpersEnabled
+    {
+        get => _helpersEnabled ?? true;
+        set => _helpersEnabled = value;
+    }
     public void Update(EntityWorld state)
     {
         // Handle state completions on players
@@ -368,8 +373,21 @@ public class CowSystem : ISystem
             }
         }
 
-        // Parents stay in love house — player tames them out when ready
-        // (love house slots stay filled so player can see them)
+        // Return parents to their original houses
+        if (cow1 != Entity.Null)
+        {
+            ref var lh2 = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
+            if (lh2.CowId1 == cow1) lh2.CowId1 = Entity.Null;
+            if (lh2.CowId2 == cow1) lh2.CowId2 = Entity.Null;
+            ReturnCowToHouse(state, cow1);
+        }
+        if (cow2 != Entity.Null)
+        {
+            ref var lh3 = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
+            if (lh3.CowId1 == cow2) lh3.CowId1 = Entity.Null;
+            if (lh3.CowId2 == cow2) lh3.CowId2 = Entity.Null;
+            ReturnCowToHouse(state, cow2);
+        }
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
 
         // Baby cow follows the player
@@ -522,7 +540,7 @@ public class CowSystem : ISystem
         return false;
     }
 
-    /// <summary>Return a cow to its previous house after breeding. If no previous house, cow becomes free.</summary>
+    /// <summary>Return a cow to its previous house after breeding. If no previous house, assign to any empty house.</summary>
     private void ReturnCowToHouse(EntityWorld state, Entity cowEntity)
     {
         if (!state.HasComponent<CowComponent>(cowEntity)) return;
@@ -533,18 +551,31 @@ public class CowSystem : ISystem
         cow.FollowTarget = Entity.Null;
         cow.PreviousHouseId = Entity.Null;
 
-        if (prevHouse != Entity.Null && state.HasComponent<HouseComponent>(prevHouse))
+        // Try previous house first, then any empty house
+        Entity targetHouse = Entity.Null;
+        if (prevHouse != Entity.Null && state.HasComponent<HouseComponent>(prevHouse)
+            && state.GetComponent<HouseComponent>(prevHouse).CowId == Entity.Null)
         {
-            ref var house = ref state.GetComponent<HouseComponent>(prevHouse);
-            house.CowId = cowEntity;
-            cow = ref state.GetComponent<CowComponent>(cowEntity);
-            cow.HouseId = prevHouse;
-
-            // Cow will walk back to house via CowFollowSystem navigation
+            targetHouse = prevHouse;
         }
         else
         {
-            // No previous house — cow becomes free at its current position
+            foreach (var e in state.Filter<HouseComponent>())
+            {
+                if (state.GetComponent<HouseComponent>(e).CowId == Entity.Null)
+                { targetHouse = e; break; }
+            }
+        }
+
+        if (targetHouse != Entity.Null)
+        {
+            ref var house = ref state.GetComponent<HouseComponent>(targetHouse);
+            house.CowId = cowEntity;
+            cow = ref state.GetComponent<CowComponent>(cowEntity);
+            cow.HouseId = targetHouse;
+        }
+        else
+        {
             cow.HouseId = Entity.Null;
         }
     }

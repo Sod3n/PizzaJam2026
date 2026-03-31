@@ -19,10 +19,8 @@ public class BotBrain
     private readonly BotCoordinator _coord;
     private readonly bool _selectiveBreeding;
 
-    private enum Phase { Deciding, Approaching, InState, Cooldown }
-    private Phase _phase = Phase.Deciding;
-    private int _phaseTimer;
-    private bool _repeatInteract; // keep interacting with same target until done
+    private readonly BtNode _root;
+    private readonly BtBlackboard _bb = new();
 
     /// <summary>Set to true when the bot wants an InteractAction dispatched this tick.</summary>
     public bool WantsToInteract { get; private set; }
@@ -33,7 +31,7 @@ public class BotBrain
 
     // Per-bot stats: ticks spent on each action
     public readonly Dictionary<string, int> ActionTicks = new();
-    public string LastAction = "";       // decision-level action (set only by MakeDecision)
+    public string LastAction = "";       // decision-level action (set only when a new action is chosen)
     private string _lastTrackLabel = ""; // tick-level tracking (for stats)
     public int TotalMilkClicks;
     public Action<string> DebugLog;
@@ -61,6 +59,7 @@ public class BotBrain
         _botIndex = botIndex;
         _coord = coordinator;
         _selectiveBreeding = selectiveBreeding;
+        _root = BuildTree();
     }
 
     public void PreTick(int tick)
@@ -69,31 +68,7 @@ public class BotBrain
         if (!_game.State.HasComponent<StateComponent>(_player)) return;
         if (!_game.State.HasComponent<PlayerStateComponent>(_player)) return;
 
-        switch (_phase)
-        {
-            case Phase.Approaching:
-                _phaseTimer--;
-                if (_phaseTimer <= 0)
-                {
-                    WantsToInteract = true;
-                    _phase = Phase.InState;
-                }
-                break;
-
-            case Phase.InState:
-                HandleInState();
-                break;
-
-            case Phase.Cooldown:
-                _phaseTimer--;
-                if (_phaseTimer <= 0)
-                    _phase = Phase.Deciding;
-                break;
-
-            case Phase.Deciding:
-                MakeDecision(tick);
-                break;
-        }
+        _root.Tick(_bb);
 
         // Track what the bot is ACTUALLY doing this tick
         string trackLabel = LastAction;
@@ -102,71 +77,194 @@ public class BotBrain
             var dbgSc = _game.State.GetComponent<StateComponent>(_player);
             if (dbgSc.IsEnabled)
                 trackLabel = $"state:{dbgSc.Key}";
-            else if (_phase == Phase.Approaching)
-                trackLabel = $"travel";
-            else if (_phase == Phase.Cooldown)
+            else if (_bb.Get<string>("phase") == "travel")
+                trackLabel = "travel";
+            else if (_bb.Get<string>("phase") == "idle")
                 trackLabel = "IDLE";
         }
         TrackAction(trackLabel);
     }
 
-    private void HandleInState()
-    {
-        var sc = _game.State.GetComponent<StateComponent>(_player);
+    // ─── Blackboard helpers ───
 
-        if (!sc.IsEnabled)
+    private void SetTarget(BtBlackboard bb, Entity target, Func<bool> repeat = null)
+    {
+        bb.Set("target", target);
+        bb.Set("repeat", repeat);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  BEHAVIOUR TREE
+    // ═══════════════════════════════════════════════════════════════════
+
+    private BtNode BuildTree() => new RepeatForever(new Selector(
+        ActiveStateGuard(),
+        UrgentTame(),
+        ContinueBreeding(),
+        AssignFollowing(),
+        QuickLoadBuilder(),
+        ScoreBestAndExecute(),
+        FallbackGather(),
+        IdleCooldown()
+    ));
+
+    /// <summary>Safety: if we somehow start a tick already in a game state, handle it.</summary>
+    private BtNode ActiveStateGuard() => new Sequence(
+        new If(_ => _game.State.GetComponent<StateComponent>(_player).IsEnabled),
+        new WaitForStateNode(this)
+    );
+
+    /// <summary>URGENT: Tame wild cows when empty houses exist and not following a cow.</summary>
+    private BtNode UrgentTame() => new Sequence(
+        new If(_ =>
         {
-            // No game state active — check if we should repeat interact on same target
-            // This keeps the bot at the target (e.g. sell point, land) until done
-            if (_repeatInteract && CurrentTarget != Entity.Null && ShouldKeepRepeating())
+            var ps = _game.State.GetComponent<PlayerStateComponent>(_player);
+            return ps.FollowingCow == Entity.Null && FindEmptyUnclaimedHouse() != Entity.Null;
+        }),
+        new Do(bb =>
+        {
+            var wildCow = FindWildCow();
+            if (wildCow == Entity.Null || !_coord.TryClaim(_botIndex, wildCow))
+                return BtStatus.Failure;
+            LastAction = "tame_wild";
+            SetTarget(bb, wildCow);
+            return BtStatus.Success;
+        }),
+        new ApproachNode(this),
+        new InteractLoopNode(this)
+    );
+
+    /// <summary>URGENT: Continue breeding pipeline — fetch cows and assign to love house.</summary>
+    private BtNode ContinueBreeding() => new Sequence(
+        new If(bb =>
+        {
+            var ps = _game.State.GetComponent<PlayerStateComponent>(_player);
+            return ps.FollowingCow != Entity.Null && bb.Get<bool>("breeding");
+        }),
+        new Do(bb =>
+        {
+            var lh = FindLoveHouseWithEmptySlot();
+            if (lh == Entity.Null)
             {
-                WantsToInteract = true;
-                return; // Stay in InState — don't go to Deciding (avoids urgent section interrupting)
+                bb.Set("breeding", false);
+                _coord.ReleaseBreeder(_botIndex);
+                return BtStatus.Failure;
             }
-            _repeatInteract = false;
-            _phase = Phase.Deciding;
-            return;
-        }
 
-        // During milking Active: click every tick
-        if (sc.Key == StateKeys.Milking && sc.Phase == StatePhase.Active)
+            var ps = _game.State.GetComponent<PlayerStateComponent>(_player);
+            int emptySlots = CountLoveHouseEmptySlots(lh);
+            int followCount = CountFollowingCows(ps.FollowingCow);
+
+            if (followCount < emptySlots)
+            {
+                // Need more cows — fetch the next one before going to love house
+                var nextCow = FindCowForBreeding();
+                if (nextCow != Entity.Null)
+                {
+                    SetTarget(bb, nextCow);
+                    return BtStatus.Success;
+                }
+            }
+
+            // Have enough cows (or can't find more) — go assign to love house
+            LastAction = "assign_lh";
+            SetTarget(bb, lh);
+            return BtStatus.Success;
+        }),
+        new ApproachNode(this),
+        new InteractLoopNode(this)
+    );
+
+    /// <summary>URGENT: Assign following cows to regular houses.</summary>
+    private BtNode AssignFollowing() => new Sequence(
+        new If(_ =>
         {
-            WantsToInteract = true;
-            TotalMilkClicks++;
-        }
-        // During breeding Active: click every tick
-        else if (sc.Key == StateKeys.Breed && sc.Phase == StatePhase.Active)
+            var ps = _game.State.GetComponent<PlayerStateComponent>(_player);
+            return ps.FollowingCow != Entity.Null;
+        }),
+        new Do(bb =>
         {
-            WantsToInteract = true;
-        }
-        // Enter/Exit phases — just wait for state system to advance
-    }
+            var ps = _game.State.GetComponent<PlayerStateComponent>(_player);
+            var assignTarget = FindBestHouseForCow(ps.FollowingCow);
+            if (assignTarget == Entity.Null) return BtStatus.Failure;
 
-    /// <summary>Check if the current repeat interaction should continue.</summary>
-    private bool ShouldKeepRepeating()
-    {
-        // Gathering food: keep going if food entity still exists (has durability left)
-        if (_game.State.HasComponent<GrassComponent>(CurrentTarget))
-            return true; // InteractActionService will delete it when durability hits 0
+            var cow = _game.State.GetComponent<CowComponent>(ps.FollowingCow);
+            ref var house = ref _game.State.GetComponent<HouseComponent>(assignTarget);
+            house.SelectedFood = cow.PreferredFood;
+            _coord.TryClaim(_botIndex, assignTarget);
+            LastAction = "assign_house";
+            SetTarget(bb, assignTarget);
+            return BtStatus.Success;
+        }),
+        new ApproachNode(this),
+        new InteractLoopNode(this)
+    );
 
-        // Selling: keep going if we still have milk products
-        if (_game.State.HasComponent<SellPointComponent>(CurrentTarget))
+    /// <summary>QUICK: Load builder if it's nearby and has room.</summary>
+    private BtNode QuickLoadBuilder() => new Sequence(
+        new Do(bb =>
         {
-            var res = GetGlobalResources();
-            return res.HasAnyMilkProduct();
-        }
+            var globalRes = GetGlobalResources();
+            if (globalRes.Coins < BotConfig.MinCoinsForBuilder) return BtStatus.Failure;
 
-        // Building land: keep going if we have coins and land still exists
-        if (_game.State.HasComponent<LandComponent>(CurrentTarget))
+            var builder = FindMyBuilder();
+            if (builder == Entity.Null) return BtStatus.Failure;
+
+            var h = _game.State.GetComponent<HelperComponent>(builder);
+            if (h.BagCoins >= h.BagCapacity) return BtStatus.Failure;
+
+            if (!_game.State.HasComponent<Transform2D>(builder) || !_game.State.HasComponent<Transform2D>(_player))
+                return BtStatus.Failure;
+
+            float dist = (float)Vector2.Distance(
+                _game.State.GetComponent<Transform2D>(_player).Position,
+                _game.State.GetComponent<Transform2D>(builder).Position);
+            if (dist >= BotConfig.BuilderProximity) return BtStatus.Failure;
+
+            SetTarget(bb, builder);
+            return BtStatus.Success;
+        }),
+        new ApproachNode(this),
+        new InteractLoopNode(this)
+    );
+
+    /// <summary>WORKFLOW: Score all actions and execute the best one.</summary>
+    private BtNode ScoreBestAndExecute() => new Sequence(
+        new Do(bb => ScoreAndPickBest(bb)),
+        new ApproachNode(this),
+        new InteractLoopNode(this)
+    );
+
+    /// <summary>Fallback: gather food even if we have enough (nothing else to do).</summary>
+    private BtNode FallbackGather() => new Sequence(
+        new Do(bb =>
         {
-            var res = GetGlobalResources();
-            return res.Coins > 0;
-        }
+            var food = FindNearestFood();
+            if (food == Entity.Null || _coord.IsClaimed(food)) return BtStatus.Failure;
+            _coord.TryClaim(_botIndex, food);
+            LastAction = "gather";
+            Entity target = food;
+            SetTarget(bb, food, () => _game.State.HasComponent<GrassComponent>(target));
+            return BtStatus.Success;
+        }),
+        new ApproachNode(this),
+        new InteractLoopNode(this)
+    );
 
-        return false;
-    }
+    /// <summary>Nothing to do — idle for a short cooldown.</summary>
+    private BtNode IdleCooldown() => new Sequence(
+        new Do(bb =>
+        {
+            LastAction = "IDLE";
+            bb.Set("phase", "idle");
+            return BtStatus.Success;
+        }),
+        new Wait(BotConfig.IdleCooldownTicks)
+    );
 
-    // ─── Scoring ───
+    // ═══════════════════════════════════════════════════════════════════
+    //  SCORING
+    // ═══════════════════════════════════════════════════════════════════
 
     private record struct ScoredOption(float Score, Entity Target, bool Repeat, string Action);
 
@@ -180,137 +278,35 @@ public class BotBrain
 
     private static ScoredOption Best(ScoredOption a, ScoredOption b) => b.Score > a.Score ? b : a;
 
-    // ─── Decision making ───
-
-    private void MakeDecision(int tick)
+    private BtStatus ScoreAndPickBest(BtBlackboard bb)
     {
-        var sc = _game.State.GetComponent<StateComponent>(_player);
-        if (sc.IsEnabled)
-        {
-            _phase = Phase.InState;
-            HandleInState();
-            return;
-        }
+        // Clear breeding pipeline — reaching scoring means no continue-breeding matched
+        bb.Set("breeding", false);
+        _coord.ReleaseBreeder(_botIndex);
 
         var ps = _game.State.GetComponent<PlayerStateComponent>(_player);
         var globalRes = GetGlobalResources();
         int cowCount = Count<CowComponent>();
         int houseCount = Count<HouseComponent>();
 
-        // ── URGENT: Tame wild cows when empty houses exist ──
-        if (ps.FollowingCow == Entity.Null && FindEmptyUnclaimedHouse() != Entity.Null)
-        {
-            var wildCow = FindWildCow();
-            if (wildCow != Entity.Null && _coord.TryClaim(_botIndex, wildCow))
-            {
-                LastAction = "tame_wild";
-                ApproachAndInteract(wildCow);
-                return;
-            }
-        }
-
-        // ── URGENT: Assign following cows to houses ──
-        if (ps.FollowingCow != Entity.Null)
-        {
-            // When fetching cows for breeding, collect both before going to love house
-            if (LastAction == "breed_fetch")
-            {
-                var lh = FindLoveHouseWithEmptySlot();
-                if (lh != Entity.Null)
-                {
-                    int emptySlots = CountLoveHouseEmptySlots(lh);
-                    int followCount = CountFollowingCows(ps.FollowingCow);
-
-                    if (followCount < emptySlots)
-                    {
-                        // Need more cows — fetch the next one before going to love house
-                        var nextCow = FindCowForBreeding();
-                        if (nextCow != Entity.Null)
-                        {
-                            ApproachAndInteract(nextCow);
-                            return;
-                        }
-                    }
-
-                    // Have enough cows (or can't find more) — go assign to love house
-                    LastAction = "assign_lh";
-                    ApproachAndInteract(lh);
-                    return;
-                }
-            }
-
-            // When clearing parents from love house, tame both before assigning to houses
-            if (LastAction == "breed_clear")
-            {
-                var nextParent = FindParentInCompletedLoveHouse();
-                if (nextParent != Entity.Null)
-                {
-                    // Still a parent in love house — tame it too
-                    ApproachAndInteract(nextParent);
-                    return;
-                }
-                // All parents tamed — fall through to assign to houses
-            }
-
-            // Assign to regular house
-            var assignTarget = FindBestHouseForCow(ps.FollowingCow);
-            if (assignTarget != Entity.Null)
-            {
-                var cow = _game.State.GetComponent<CowComponent>(ps.FollowingCow);
-                ref var house = ref _game.State.GetComponent<HouseComponent>(assignTarget);
-                house.SelectedFood = cow.PreferredFood;
-                _coord.TryClaim(_botIndex, assignTarget);
-                LastAction = "assign_house";
-                ApproachAndInteract(assignTarget);
-                return;
-            }
-        }
-
-        // ── URGENT: Return parents from love house to milking houses when done breeding ──
-        if (ps.FollowingCow == Entity.Null && cowCount >= houseCount)
-        {
-            var parentInLH = FindParentInCompletedLoveHouse();
-            if (parentInLH != Entity.Null)
-            {
-                LastAction = "breed_clear";
-                ApproachAndInteract(parentInLH);
-                return;
-            }
-        }
-
-        // ── WORKFLOW: pick best action based on current resources + travel cost ──
         var playerPos = _game.State.HasComponent<Transform2D>(_player)
             ? _game.State.GetComponent<Transform2D>(_player).Position : Vector2.Zero;
         int totalFood = globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom;
         int totalMilk = globalRes.Milk + globalRes.VitaminShake + globalRes.AppleYogurt + globalRes.PurplePotion;
-
-        // ── QUICK: Load builder if it's nearby and has room ──
-        {
-            var builder = FindMyBuilder();
-            if (builder != Entity.Null && globalRes.Coins >= BotConfig.MinCoinsForBuilder)
-            {
-                var h = _game.State.GetComponent<HelperComponent>(builder);
-                if (h.BagCoins < h.BagCapacity)
-                {
-                    float dist = _game.State.HasComponent<Transform2D>(builder)
-                        ? (float)Vector2.Distance(playerPos, _game.State.GetComponent<Transform2D>(builder).Position)
-                        : 999f;
-                    if (dist < BotConfig.BuilderProximity)
-                    {
-                        ApproachAndInteract(builder);
-                        return;
-                    }
-                }
-            }
-        }
 
         // ── Score each option: value / (travel_ticks + work_ticks) ──
         int foodNeeded = GetFoodNeededForMilking();
         bool needFood = totalFood < foodNeeded;
         var best = new ScoredOption(-1f, Entity.Null, false, "");
 
-        // Option: Gather food
-        if (needFood)
+        // When we have enough coins to finish 2+ land plots right now, skip milk/sell and just build
+        GetRemainingLandCosts(out int remainingLandCount, out int cheapest2Cost);
+        bool buildMode = remainingLandCount >= 2
+            ? globalRes.Coins >= cheapest2Cost && cheapest2Cost > 0
+            : remainingLandCount == 1 && globalRes.Coins >= cheapest2Cost;
+
+        // Option: Gather food — skip in build mode
+        if (needFood && !buildMode)
         {
             var food = FindNearestFood();
             if (food != Entity.Null && !_coord.IsClaimed(food))
@@ -320,8 +316,8 @@ public class BotBrain
             }
         }
 
-        // Option: Milk
-        if (ps.FollowingCow == Entity.Null && totalFood > 0 && !needFood)
+        // Option: Milk — skip in build mode
+        if (ps.FollowingCow == Entity.Null && totalFood > 0 && !needFood && !buildMode)
         {
             var milkable = FindMilkableUnclaimedHouse(ref globalRes);
             if (milkable != Entity.Null)
@@ -337,8 +333,8 @@ public class BotBrain
             }
         }
 
-        // Option: Sell
-        if (totalMilk > 0)
+        // Option: Sell — skip in build mode
+        if (totalMilk > 0 && !buildMode)
         {
             var sellPoint = FindFirst<SellPointComponent>();
             if (sellPoint != Entity.Null)
@@ -358,28 +354,13 @@ public class BotBrain
         }
 
         // Option: Breed — re-breed same pair, swap for better cows, or fetch new pair
-        // (breed_clear when cowCount >= houseCount is handled as urgent above)
         if (ps.FollowingCow == Entity.Null && cowCount < houseCount && _coord.TryClaimBreeder(_botIndex))
         {
             var breedable = FindBreedableLoveHouse();
             if (breedable != Entity.Null)
             {
-                // Love house full — selective mode checks if a better cow exists outside
-                if (_selectiveBreeding && ShouldSwapBreedingPair(breedable))
-                {
-                    var parentInLH = FindParentInCompletedLoveHouse();
-                    if (parentInLH != Entity.Null)
-                    {
-                        DebugLog?.Invoke($"  BREED_CLEAR: swapping for better cow — taming {parentInLH.Id} out");
-                        best = Best(best, ScoreOption(parentInLH, BotConfig.BreedValue, playerPos, BotConfig.TameWorkTicks, false, "breed_clear"));
-                    }
-                }
-
-                if (best.Action != "breed_clear")
-                {
-                    DebugLog?.Invoke($"  BREED: love house {breedable.Id} is full (2 cows), scoring breed action");
-                    best = Best(best, ScoreOption(breedable, BotConfig.BreedValue, playerPos, BotConfig.BreedWorkTicks, false, "breed"));
-                }
+                DebugLog?.Invoke($"  BREED: love house {breedable.Id} is full (2 cows), scoring breed action");
+                best = Best(best, ScoreOption(breedable, BotConfig.BreedValue, playerPos, BotConfig.BreedWorkTicks, false, "breed"));
             }
             else if (houseCount >= cowCount + 2)
             {
@@ -403,7 +384,7 @@ public class BotBrain
             else
                 DebugLog?.Invoke($"  BREED: houseCount={houseCount} < cowCount+2={cowCount + 2}, not enough houses");
 
-            if (best.Action != "breed" && best.Action != "breed_fetch" && best.Action != "breed_clear")
+            if (best.Action != "breed" && best.Action != "breed_fetch")
                 _coord.ReleaseBreeder(_botIndex);
         }
 
@@ -415,27 +396,26 @@ public class BotBrain
                 best = Best(best, ScoreOption(wildCow, BotConfig.TameValue, playerPos, BotConfig.TameWorkTicks, false, "tame"));
         }
 
-        // Fallback: gather food even if we have enough (nothing else to do)
-        if (best.Target == Entity.Null)
-        {
-            var food = FindNearestFood();
-            if (food != Entity.Null && !_coord.IsClaimed(food))
-                best = new ScoredOption(0, food, true, "gather");
-        }
+        if (best.Target == Entity.Null) return BtStatus.Failure;
 
-        // Execute best action
-        if (best.Target != Entity.Null)
-        {
-            _coord.TryClaim(_botIndex, best.Target);
-            LastAction = best.Action;
-            ApproachAndInteract(best.Target, best.Repeat);
-            return;
-        }
+        _coord.TryClaim(_botIndex, best.Target);
+        LastAction = best.Action;
 
-        // Nothing to do
-        LastAction = "IDLE";
-        _phase = Phase.Cooldown;
-        _phaseTimer = BotConfig.IdleCooldownTicks;
+        // Set up repeat condition based on action type (must check target still exists)
+        Entity target = best.Target;
+        Func<bool> repeat = best.Repeat ? best.Action switch
+        {
+            "gather" => () => _game.State.HasComponent<GrassComponent>(target),
+            "sell" => () => _game.State.HasComponent<SellPointComponent>(target) && GetGlobalResources().HasAnyMilkProduct(),
+            "build" => () => _game.State.HasComponent<LandComponent>(target) && GetGlobalResources().Coins > 0,
+            _ => null
+        } : null;
+        SetTarget(bb, best.Target, repeat);
+
+        if (best.Action == "breed_fetch")
+            bb.Set("breeding", true);
+
+        return BtStatus.Success;
     }
 
     private int EstimateTravel(Vector2 from, Entity target)
@@ -446,24 +426,136 @@ public class BotBrain
         return Math.Max(BotConfig.MinApproachTicks, (int)(dist / BotConfig.PlayerSpeed * BotConfig.TickRate));
     }
 
-    private void ApproachAndInteract(Entity target, bool repeat = false)
-    {
-        CurrentTarget = target;
-        _repeatInteract = repeat;
-        int travelTicks = BotConfig.MinApproachTicks;
-        if (_game.State.HasComponent<Transform2D>(target) && _game.State.HasComponent<Transform2D>(_player))
-        {
-            var targetPos = _game.State.GetComponent<Transform2D>(target).Position;
-            var playerPos = _game.State.GetComponent<Transform2D>(_player).Position;
-            float dist = (float)Vector2.Distance(playerPos, targetPos);
-            travelTicks = Math.Max(BotConfig.MinApproachTicks, (int)(dist / BotConfig.PlayerSpeed * BotConfig.TickRate));
+    // ═══════════════════════════════════════════════════════════════════
+    //  BT NODE CLASSES
+    // ═══════════════════════════════════════════════════════════════════
 
-            ref var pt = ref _game.State.GetComponent<Transform2D>(_player);
-            pt.Position = targetPos + new Vector2(1, 0);
+    /// <summary>Travels to the entity stored in bb["target"]. Sets bb["phase"]="travel" during movement.</summary>
+    private class ApproachNode : BtNode
+    {
+        private readonly BotBrain _b;
+        private int _remaining = -1;
+
+        public ApproachNode(BotBrain brain) => _b = brain;
+
+        public override BtStatus Tick(BtBlackboard bb)
+        {
+            if (_remaining < 0)
+            {
+                var target = bb.Get<Entity>("target");
+                if (target == Entity.Null) return BtStatus.Failure;
+
+                _remaining = BotConfig.MinApproachTicks;
+                if (_b._game.State.HasComponent<Transform2D>(target) &&
+                    _b._game.State.HasComponent<Transform2D>(_b._player))
+                {
+                    var targetPos = _b._game.State.GetComponent<Transform2D>(target).Position;
+                    var playerPos = _b._game.State.GetComponent<Transform2D>(_b._player).Position;
+                    float dist = (float)Vector2.Distance(playerPos, targetPos);
+                    _remaining = Math.Max(BotConfig.MinApproachTicks,
+                        (int)(dist / BotConfig.PlayerSpeed * BotConfig.TickRate));
+
+                    ref var pt = ref _b._game.State.GetComponent<Transform2D>(_b._player);
+                    pt.Position = targetPos + new Vector2(1, 0);
+                }
+
+                bb.Set("phase", "travel");
+            }
+
+            if (--_remaining <= 0)
+            {
+                _remaining = -1;
+                bb.Set("phase", null);
+                return BtStatus.Success;
+            }
+            return BtStatus.Running;
         }
-        _phase = Phase.Approaching;
-        _phaseTimer = travelTicks;
+
+        public override void Reset() => _remaining = -1;
     }
+
+    /// <summary>Triggers interaction with bb["target"], handles game state clicks (milking/breeding),
+    /// and optionally repeats using the bb["repeat"] function.</summary>
+    private class InteractLoopNode : BtNode
+    {
+        private readonly BotBrain _b;
+        private bool _interacted;
+
+        public InteractLoopNode(BotBrain brain) => _b = brain;
+
+        public override BtStatus Tick(BtBlackboard bb)
+        {
+            var target = bb.Get<Entity>("target");
+
+            // First tick: trigger the interaction
+            if (!_interacted)
+            {
+                _interacted = true;
+                _b.WantsToInteract = true;
+                _b.CurrentTarget = target;
+                return BtStatus.Running;
+            }
+
+            // Handle active game state (milking clicks, breeding clicks, etc.)
+            var sc = _b._game.State.GetComponent<StateComponent>(_b._player);
+            if (sc.IsEnabled)
+            {
+                if (sc.Key == StateKeys.Milking && sc.Phase == StatePhase.Active)
+                {
+                    _b.WantsToInteract = true;
+                    _b.TotalMilkClicks++;
+                }
+                else if (sc.Key == StateKeys.Breed && sc.Phase == StatePhase.Active)
+                {
+                    _b.WantsToInteract = true;
+                }
+                return BtStatus.Running;
+            }
+
+            // State ended or was instant — check repeat condition
+            var shouldRepeat = bb.Get<Func<bool>>("repeat");
+            if (shouldRepeat != null && shouldRepeat())
+            {
+                _b.WantsToInteract = true;
+                _b.CurrentTarget = target;
+                return BtStatus.Running;
+            }
+
+            return BtStatus.Success;
+        }
+
+        public override void Reset() => _interacted = false;
+    }
+
+    /// <summary>Waits for the player's active game state to end. Handles milking/breeding clicks.
+    /// Used by ActiveStateGuard when the player is already in a state.</summary>
+    private class WaitForStateNode : BtNode
+    {
+        private readonly BotBrain _b;
+        public WaitForStateNode(BotBrain brain) => _b = brain;
+
+        public override BtStatus Tick(BtBlackboard bb)
+        {
+            var sc = _b._game.State.GetComponent<StateComponent>(_b._player);
+            if (!sc.IsEnabled) return BtStatus.Success;
+
+            if (sc.Key == StateKeys.Milking && sc.Phase == StatePhase.Active)
+            {
+                _b.WantsToInteract = true;
+                _b.TotalMilkClicks++;
+            }
+            else if (sc.Key == StateKeys.Breed && sc.Phase == StatePhase.Active)
+            {
+                _b.WantsToInteract = true;
+            }
+
+            return BtStatus.Running;
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  QUERY HELPERS (unchanged)
+    // ═══════════════════════════════════════════════════════════════════
 
     #region Cow queries
 
@@ -497,36 +589,6 @@ public class BotBrain
         return empty;
     }
 
-    /// <summary>
-    /// Check if there's a better cow in a house than the worst parent in the love house.
-    /// Only meaningful after a breed completed (BreedProgress >= BreedCost).
-    /// </summary>
-    private bool ShouldSwapBreedingPair(Entity loveHouseEntity)
-    {
-        var lh = _game.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
-        if (lh.BreedCost <= 0 || lh.BreedProgress < lh.BreedCost) return false; // breed not done yet
-
-        // Find the lowest tier parent in the love house
-        int minParentTier = int.MaxValue;
-        if (lh.CowId1 != Entity.Null && _game.State.HasComponent<CowComponent>(lh.CowId1))
-            minParentTier = Math.Min(minParentTier, _game.State.GetComponent<CowComponent>(lh.CowId1).PreferredFood);
-        if (lh.CowId2 != Entity.Null && _game.State.HasComponent<CowComponent>(lh.CowId2))
-            minParentTier = Math.Min(minParentTier, _game.State.GetComponent<CowComponent>(lh.CowId2).PreferredFood);
-        if (minParentTier == int.MaxValue) return false;
-
-        // Check if any housed cow has a higher tier
-        foreach (var e in _game.State.Filter<HouseComponent>())
-        {
-            var house = _game.State.GetComponent<HouseComponent>(e);
-            if (house.CowId == Entity.Null) continue;
-            if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
-            var cow = _game.State.GetComponent<CowComponent>(house.CowId);
-            if (cow.IsMilking) continue;
-            if (cow.PreferredFood > minParentTier) return true;
-        }
-        return false;
-    }
-
     private Entity FindWildCow()
     {
         foreach (var e in _game.State.Filter<CowComponent>())
@@ -534,31 +596,6 @@ public class BotBrain
             var cow = _game.State.GetComponent<CowComponent>(e);
             if (cow.FollowingPlayer == Entity.Null && cow.HouseId == Entity.Null)
                 return e;
-        }
-        return Entity.Null;
-    }
-
-    /// <summary>Find a parent cow in a love house after breeding completed. Can be tamed out.</summary>
-    private Entity FindParentInCompletedLoveHouse()
-    {
-        foreach (var e in _game.State.Filter<LoveHouseComponent>())
-        {
-            var lh = _game.State.GetComponent<LoveHouseComponent>(e);
-            // Only clear parents after breeding actually completed
-            bool breedDone = lh.CowId1 != Entity.Null && lh.CowId2 != Entity.Null
-                          && lh.BreedCost > 0 && lh.BreedProgress >= lh.BreedCost;
-            if (!breedDone) continue;
-
-            if (_game.State.HasComponent<CowComponent>(lh.CowId1))
-            {
-                var cow = _game.State.GetComponent<CowComponent>(lh.CowId1);
-                if (!cow.IsMilking && cow.FollowingPlayer == Entity.Null) return lh.CowId1;
-            }
-            if (_game.State.HasComponent<CowComponent>(lh.CowId2))
-            {
-                var cow = _game.State.GetComponent<CowComponent>(lh.CowId2);
-                if (!cow.IsMilking && cow.FollowingPlayer == Entity.Null) return lh.CowId2;
-            }
         }
         return Entity.Null;
     }
@@ -613,14 +650,14 @@ public class BotBrain
 
     /// <summary>
     /// Find the best house to assign a cow to.
-    /// Selective mode: high-tier cows go to the closest empty house to the love house,
-    /// low-tier cows go to the farthest empty house.
+    /// Selective mode: if the new cow would improve the breeding pair near the love house,
+    /// swap it with the worst of the 2 nearest cows. Otherwise use any empty house.
     /// Random/non-selective: any empty house.
     /// </summary>
     private Entity FindBestHouseForCow(Entity cowEntity)
     {
         if (!_selectiveBreeding || !_game.State.HasComponent<CowComponent>(cowEntity))
-            return FindEmptyUnclaimedHouse(); // random: any empty
+            return FindEmptyUnclaimedHouse();
 
         int cowTier = _game.State.GetComponent<CowComponent>(cowEntity).PreferredFood;
 
@@ -633,12 +670,73 @@ public class BotBrain
             break;
         }
 
-        // High-tier (>= Carrot): closest empty house to love house
-        // Low-tier (Grass): farthest empty house from love house
-        bool wantClose = cowTier >= FoodType.Carrot;
-        Entity best = Entity.Null;
-        float bestDist = wantClose ? float.MaxValue : -1f;
+        // Find 2 closest occupied houses to love house
+        Entity near1 = Entity.Null, near2 = Entity.Null;
+        float dist1 = float.MaxValue, dist2 = float.MaxValue;
+        int tier1 = -1, tier2 = -1;
 
+        foreach (var e in _game.State.Filter<HouseComponent>())
+        {
+            if (!_game.State.HasComponent<Transform2D>(e)) continue;
+            var house = _game.State.GetComponent<HouseComponent>(e);
+            if (house.CowId == Entity.Null) continue;
+            if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
+
+            float dist = (float)Vector2.Distance(loveHousePos, _game.State.GetComponent<Transform2D>(e).Position);
+            var cow = _game.State.GetComponent<CowComponent>(house.CowId);
+
+            if (dist < dist1)
+            {
+                near2 = near1; dist2 = dist1; tier2 = tier1;
+                near1 = e; dist1 = dist; tier1 = cow.PreferredFood;
+            }
+            else if (dist < dist2)
+            {
+                near2 = e; dist2 = dist; tier2 = cow.PreferredFood;
+            }
+        }
+
+        // If new cow is better than the worst of the 2 nearest, swap
+        Entity worstNear = Entity.Null;
+        int worstTier = int.MaxValue;
+        if (near1 != Entity.Null && near2 != Entity.Null)
+        {
+            if (tier1 <= tier2) { worstNear = near1; worstTier = tier1; }
+            else { worstNear = near2; worstTier = tier2; }
+        }
+        else if (near1 != Entity.Null)
+        {
+            worstNear = near1; worstTier = tier1;
+        }
+
+        if (worstNear != Entity.Null && cowTier > worstTier)
+        {
+            var emptyHouse = FindEmptyUnclaimedHouse();
+            if (emptyHouse != Entity.Null)
+            {
+                // Move worse cow to the empty house
+                var worstHouse = _game.State.GetComponent<HouseComponent>(worstNear);
+                Entity worstCow = worstHouse.CowId;
+
+                ref var emptyH = ref _game.State.GetComponent<HouseComponent>(emptyHouse);
+                emptyH.CowId = worstCow;
+                emptyH.SelectedFood = _game.State.GetComponent<CowComponent>(worstCow).PreferredFood;
+
+                ref var worstC = ref _game.State.GetComponent<CowComponent>(worstCow);
+                worstC.HouseId = emptyHouse;
+
+                // Clear the near house for the new cow
+                ref var nearH = ref _game.State.GetComponent<HouseComponent>(worstNear);
+                nearH.CowId = Entity.Null;
+
+                DebugLog?.Invoke($"  SWAP: moved tier {worstTier} cow to far house, placing tier {cowTier} baby near love house");
+                return worstNear;
+            }
+        }
+
+        // Default: closest empty house to love house
+        Entity bestHouse = Entity.Null;
+        float bestDist = float.MaxValue;
         foreach (var e in _game.State.Filter<HouseComponent>())
         {
             if (_coord.IsClaimed(e)) continue;
@@ -647,14 +745,14 @@ public class BotBrain
             if (house.CowId != Entity.Null) continue;
 
             float dist = (float)Vector2.Distance(loveHousePos, _game.State.GetComponent<Transform2D>(e).Position);
-            if (wantClose ? dist < bestDist : dist > bestDist)
+            if (dist < bestDist)
             {
                 bestDist = dist;
-                best = e;
+                bestHouse = e;
             }
         }
 
-        return best != Entity.Null ? best : FindEmptyUnclaimedHouse();
+        return bestHouse != Entity.Null ? bestHouse : FindEmptyUnclaimedHouse();
     }
 
     private Entity FindEmptyHouse()
@@ -781,6 +879,33 @@ public class BotBrain
             if (dist < bestDist) { bestDist = dist; best = e; }
         }
         return best;
+    }
+
+    /// <summary>
+    /// Get remaining land: count and cost of the 2 cheapest plots (or all if fewer than 2).
+    /// Used to decide if bot should switch to build-first mode.
+    /// </summary>
+    private void GetRemainingLandCosts(out int count, out int cheapest2Cost)
+    {
+        count = 0;
+        int cost1 = int.MaxValue, cost2 = int.MaxValue; // two cheapest
+
+        foreach (var e in _game.State.Filter<LandComponent>())
+        {
+            var land = _game.State.GetComponent<LandComponent>(e);
+            if (land.Locked != 0) continue;
+            int remaining = land.Threshold - land.CurrentCoins;
+            if (remaining <= 0) continue;
+
+            count++;
+            if (remaining < cost1) { cost2 = cost1; cost1 = remaining; }
+            else if (remaining < cost2) { cost2 = remaining; }
+        }
+
+        // Cost to finish min(count, 2) cheapest plots
+        if (count == 0) cheapest2Cost = 0;
+        else if (count == 1) cheapest2Cost = cost1;
+        else cheapest2Cost = cost1 + cost2;
     }
 
     private Entity FindCheapestUnclaimedLand()
