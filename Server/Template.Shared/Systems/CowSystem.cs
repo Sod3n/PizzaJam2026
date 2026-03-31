@@ -340,32 +340,50 @@ public class CowSystem : ISystem
                 breedCount = gr.TotalBreedCount;
             }
 
-            // Helper unlock: guaranteed at breed count threshold, 5% random before that
-            // Order: Gatherer (6th) → Builder (10th) → Seller (15th)
+            // Helper unlock: deterministic at breed count threshold
             int neededHelper = GetNextNeededHelper(state, playerEntity);
             bool spawnHelper = false;
 
             if (neededHelper >= 0 && !guaranteedUpgrade)
             {
-                bool pastThreshold = neededHelper switch
+                spawnHelper = neededHelper switch
                 {
-                    HelperType.Gatherer => breedCount >= GlobalResourcesComponent.GathererUnlockBreed,
-                    HelperType.Builder  => breedCount >= GlobalResourcesComponent.BuilderUnlockBreed,
-                    HelperType.Seller   => breedCount >= GlobalResourcesComponent.SellerUnlockBreed,
+                    HelperType.Assistant => breedCount >= GlobalResourcesComponent.AssistantUnlockBreed,
+                    HelperType.Gatherer  => breedCount >= GlobalResourcesComponent.GathererUnlockBreed,
+                    HelperType.Builder   => breedCount >= GlobalResourcesComponent.BuilderUnlockBreed,
+                    HelperType.Seller    => breedCount >= GlobalResourcesComponent.SellerUnlockBreed,
                     _ => false
                 };
-                spawnHelper = pastThreshold || breedRandom.NextInt(100) < 5;
             }
 
             if (spawnHelper && HelpersEnabled)
             {
-                var spawnPos = state.HasComponent<Transform2D>(loveHouseEntity)
-                    ? state.GetComponent<Transform2D>(loveHouseEntity).Position + new Vector2(2, 0)
-                    : new Vector2(0, 0);
-                var ctx = new Context(state, playerEntity, null!);
+                // Guard: don't spawn if player already owns this type
+                bool alreadyOwned = false;
+                foreach (var he in state.Filter<HelperComponent>())
+                {
+                    var hc = state.GetComponent<HelperComponent>(he);
+                    if (hc.OwnerPlayer == playerEntity && hc.Type == neededHelper)
+                    { alreadyOwned = true; break; }
+                }
 
-                babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, neededHelper, playerEntity);
-                ILogger.Log($"[CowSystem] Helper unlocked: {neededHelper switch { 1 => "Gatherer", 3 => "Builder", 2 => "Seller", _ => "Helper" }} at breed #{breedCount}!");
+                if (!alreadyOwned)
+                {
+                    var spawnPos = state.HasComponent<Transform2D>(loveHouseEntity)
+                        ? state.GetComponent<Transform2D>(loveHouseEntity).Position + new Vector2(2, 0)
+                        : new Vector2(0, 0);
+                    var ctx = new Context(state, playerEntity, null!);
+
+                    babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, neededHelper, playerEntity);
+                    ILogger.Log($"[CowSystem] Helper unlocked: {neededHelper switch { 0 => "Assistant", 1 => "Gatherer", 3 => "Builder", 2 => "Seller", _ => "Helper" }} at breed #{breedCount}!");
+
+                    // Wire Assistant to player so milking/breeding clicks are doubled
+                    if (neededHelper == HelperType.Assistant)
+                    {
+                        ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+                        ps.AssistantHelper = babyHelper;
+                    }
+                }
             }
             else
             {
@@ -580,27 +598,40 @@ public class CowSystem : ISystem
         }
     }
 
+    private static readonly (int type, int threshold)[] HelperUnlockOrder =
+    {
+        (HelperType.Assistant, GlobalResourcesComponent.AssistantUnlockBreed),
+        (HelperType.Gatherer,  GlobalResourcesComponent.GathererUnlockBreed),
+        (HelperType.Builder,   GlobalResourcesComponent.BuilderUnlockBreed),
+        (HelperType.Seller,    GlobalResourcesComponent.SellerUnlockBreed),
+    };
+
     /// <summary>
-    /// Returns the next helper type the player needs, in unlock order:
-    /// Gatherer → Builder → Seller. Returns -1 if player has all three.
+    /// Returns the next helper type the player needs, ordered by unlock threshold.
+    /// Returns -1 if player has all helpers.
     /// </summary>
     private int GetNextNeededHelper(EntityWorld state, Entity playerEntity)
     {
-        bool hasGatherer = false, hasBuilder = false, hasSeller = false;
+        // Collect which helper types the player already owns
+        int ownedMask = 0;
         foreach (var he in state.Filter<HelperComponent>())
         {
             var h = state.GetComponent<HelperComponent>(he);
-            if (h.OwnerPlayer != playerEntity) continue;
-            switch (h.Type)
+            if (h.OwnerPlayer == playerEntity)
+                ownedMask |= 1 << h.Type;
+        }
+
+        // Return the missing helper with the lowest threshold
+        int bestType = -1;
+        int bestThreshold = int.MaxValue;
+        foreach (var (type, threshold) in HelperUnlockOrder)
+        {
+            if ((ownedMask & (1 << type)) == 0 && threshold < bestThreshold)
             {
-                case HelperType.Gatherer: hasGatherer = true; break;
-                case HelperType.Builder: hasBuilder = true; break;
-                case HelperType.Seller: hasSeller = true; break;
+                bestType = type;
+                bestThreshold = threshold;
             }
         }
-        if (!hasGatherer) return HelperType.Gatherer;
-        if (!hasBuilder) return HelperType.Builder;
-        if (!hasSeller) return HelperType.Seller;
-        return -1; // has all helpers
+        return bestType;
     }
 }

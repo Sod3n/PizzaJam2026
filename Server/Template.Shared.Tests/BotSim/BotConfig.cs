@@ -17,7 +17,8 @@ public static class BotConfig
     public const float MilkValueMultiplier = 5f;
     public const float SellValueMultiplier = 2f;
     public const float BuildValueMultiplier = 3f;
-    public const float BreedValue = 200f;
+    public const float BreedValueMultiplier = 5f;  // scales avg coin yield → breed score
+    public const float HelperBreedBonus = 0.1f;   // per-helper bonus to breed value
     public const float TameValue = 10f;
 
     // Work tick estimates

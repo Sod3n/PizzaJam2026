@@ -68,7 +68,11 @@ public class SimulationMetrics
         foreach (var _ in game.State.Filter<LoveHouseComponent>()) s.LoveHouses++;
         foreach (var _ in game.State.Filter<SellPointComponent>()) s.SellPoints++;
         foreach (var _ in game.State.Filter<FoodFarmComponent>()) s.FoodFarms++;
-        foreach (var _ in game.State.Filter<HelperComponent>()) s.Helpers++;
+        foreach (var he in game.State.Filter<HelperComponent>())
+        {
+            var h = game.State.GetComponent<HelperComponent>(he);
+            if (h.OwnerPlayer != Entity.Null) s.Helpers++;
+        }
         foreach (var _ in game.State.Filter<FinalStructureComponent>()) s.FinalStructureExists = true;
 
         foreach (var e in game.State.Filter<CowComponent>())

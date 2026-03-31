@@ -19,6 +19,7 @@ public struct GlobalResourcesComponent : IComponent
     public int TotalBreedCount; // Global breed counter — used for helper unlock thresholds
 
     // Helper unlock thresholds (breed count)
+    public const int AssistantUnlockBreed = 13;
     public const int GathererUnlockBreed = 6;
     public const int BuilderUnlockBreed = 10;
     public const int SellerUnlockBreed = 15;

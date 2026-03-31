@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.ECS;
@@ -82,6 +84,110 @@ public class BotSimulationTests
         area.OverlappingEntities.Add(target.Id);
         area.HasOverlappingBodies = true;
     }
+
+    // ─── Core simulation runner (shared by single and multi-run tests) ───
+
+    private record struct SimResult(
+        bool Completed, float Minutes, int Houses, int Cows, int Helpers,
+        int Coins, int Food, int LandRemaining, int LandCost,
+        int MilkClicks, int CumMilk, int CumCoins);
+
+    private SimResult RunSingleSim(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    {
+        Game game;
+        lock (_createLock)
+        {
+            ServiceLocator.Reset();
+            var field = typeof(TemplateGameFactory).GetField("_appInitialized", BindingFlags.Static | BindingFlags.NonPublic);
+            field?.SetValue(null, false);
+            game = TemplateGameFactory.CreateGame(tickRate: 60);
+        }
+
+        var bots = new List<BotBrain>();
+        var coordinator = new BotCoordinator();
+        for (int i = 0; i < botCount; i++)
+        {
+            Guid userId;
+            Entity player;
+            lock (_createLock)
+            {
+                userId = Guid.NewGuid();
+                Entity worldEntity = Entity.Null;
+                foreach (var e in game.State.Filter<World>()) { worldEntity = e; break; }
+                game.State.AddComponent(worldEntity, new AddPlayerAction(userId));
+                game.Dispatcher.Update(game.State);
+                game.Loop.Simulation.SystemRunner.Update(game.State);
+                player = Entity.Null;
+                foreach (var e in game.State.Filter<PlayerEntity>())
+                {
+                    if (game.State.GetComponent<PlayerEntity>(e).UserId == userId)
+                    { player = e; break; }
+                }
+            }
+            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding));
+        }
+
+        CowSystem.HelpersEnabled = helpersEnabled;
+        var runner = new LightSimRunner(game);
+        for (int i = 0; i < 10; i++) game.Loop.RunSingleTick();
+
+        var metrics = new SimulationMetrics { BotCount = botCount };
+        int maxTicks = 60 * 60 * maxMinutes;
+        bool completed = false;
+        int endTick = maxTicks;
+
+        for (int tick = 0; tick < maxTicks; tick++)
+        {
+            coordinator.ResetClaims();
+            foreach (var bot in bots) bot.PreTick(tick);
+
+            bool anyAction = false;
+            foreach (var bot in bots)
+            {
+                if (bot.WantsToInteract)
+                {
+                    InjectOverlap(game, bot.Player, bot.CurrentTarget);
+                    game.State.AddComponent(bot.Player, new InteractAction { UserId = bot.UserId });
+                    anyAction = true;
+                }
+            }
+            if (anyAction)
+            {
+                game.Dispatcher.Update(game.State);
+                runner.RunSystems();
+            }
+            runner.Tick();
+
+            if (tick % 60 == 0) metrics.RecordSnapshot(game, tick);
+
+            if (HasFinalStructure(game))
+            {
+                completed = true;
+                endTick = tick;
+                metrics.RecordSnapshot(game, tick);
+                break;
+            }
+            metrics.TotalTicks = tick;
+        }
+
+        var snap = metrics.Snapshots.LastOrDefault();
+        return new SimResult(
+            Completed: completed,
+            Minutes: endTick / 3600f,
+            Houses: snap?.Houses ?? 0,
+            Cows: snap?.Cows ?? 0,
+            Helpers: snap?.Helpers ?? 0,
+            Coins: snap?.Coins ?? 0,
+            Food: snap?.TotalFood ?? 0,
+            LandRemaining: snap?.LandPlots ?? 0,
+            LandCost: snap?.TotalLandRemaining ?? 0,
+            MilkClicks: bots.Sum(b => b.TotalMilkClicks),
+            CumMilk: snap?.CumMilk ?? 0,
+            CumCoins: snap?.CumCoins ?? 0
+        );
+    }
+
+    // ─── Single-run test (existing) ───
 
     [Theory]
     [InlineData(1, 30, true, true)]   // selective + helpers
@@ -197,6 +303,104 @@ public class BotSimulationTests
         File.WriteAllText(Path.Combine(csvDir, $"actions_{tag}.txt"), report);
         _output.WriteLine($"CSV exported to: {csvDir}");
 
+    }
+
+    // ─── Multi-run averaged test ───
+
+    [Theory]
+    [InlineData(5, 1, 30, true, true)]   // selective + helpers
+    [InlineData(5, 1, 30, true, false)]  // selective + NO helpers
+    [InlineData(5, 1, 30, false, true)]  // random + helpers
+    [InlineData(5, 1, 30, false, false)] // random + NO helpers
+    public void RunSimulationAveraged(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    {
+        string tag = $"{(selectiveBreeding ? "selective" : "random")}+{(helpersEnabled ? "helpers" : "nohelpers")}";
+        _output.WriteLine($"Running {runs}x: {tag}, {maxMinutes} min...\n");
+
+        // Run N simulations in parallel
+        var results = new SimResult[runs];
+        Parallel.For(0, runs, i =>
+        {
+            results[i] = RunSingleSim(botCount, maxMinutes, selectiveBreeding, helpersEnabled);
+        });
+
+        // Individual results
+        for (int i = 0; i < runs; i++)
+        {
+            var r = results[i];
+            _output.WriteLine($"  Run {i + 1}: {(r.Completed ? $"DONE {r.Minutes:F1}m" : $"timeout")}  " +
+                $"Houses={r.Houses}  Cows={r.Cows}  Helpers={r.Helpers}  Coins={r.Coins}  " +
+                $"Land={r.LandRemaining}  MilkClicks={r.MilkClicks}  CumMilk={r.CumMilk}");
+        }
+
+        // Averages
+        int completions = results.Count(r => r.Completed);
+        float avgMinutes = completions > 0 ? (float)results.Where(r => r.Completed).Average(r => r.Minutes) : maxMinutes;
+        float avgHouses = (float)results.Average(r => r.Houses);
+        float avgCows = (float)results.Average(r => r.Cows);
+        float avgHelpers = (float)results.Average(r => r.Helpers);
+        float avgCoins = (float)results.Average(r => r.Coins);
+        float avgLand = (float)results.Average(r => r.LandRemaining);
+        float avgMilkClicks = (float)results.Average(r => r.MilkClicks);
+        float avgCumMilk = (float)results.Average(r => r.CumMilk);
+        float avgCumCoins = (float)results.Average(r => r.CumCoins);
+
+        _output.WriteLine($"\n── Averages ({tag}, {runs} runs) ──");
+        _output.WriteLine($"  Completed:   {completions}/{runs}" +
+            (completions > 0 ? $" (avg {avgMinutes:F1} min)" : ""));
+        _output.WriteLine($"  Houses:      {avgHouses:F1}");
+        _output.WriteLine($"  Cows:        {avgCows:F1}");
+        _output.WriteLine($"  Helpers:     {avgHelpers:F1}");
+        _output.WriteLine($"  Coins:       {avgCoins:F0}");
+        _output.WriteLine($"  Land left:   {avgLand:F1}");
+        _output.WriteLine($"  MilkClicks:  {avgMilkClicks:F0}");
+        _output.WriteLine($"  CumMilk:     {avgCumMilk:F0}");
+        _output.WriteLine($"  CumCoins:    {avgCumCoins:F0}");
+
+        // Variance warnings — flag metrics where max/min differ by >50% of the mean
+        _output.WriteLine($"\n── Variance Check ──");
+        CheckVariance("Houses", results.Select(r => (float)r.Houses).ToArray());
+        CheckVariance("Cows", results.Select(r => (float)r.Cows).ToArray());
+        CheckVariance("Coins", results.Select(r => (float)r.Coins).ToArray());
+        CheckVariance("CumMilk", results.Select(r => (float)r.CumMilk).ToArray());
+        CheckVariance("CumCoins", results.Select(r => (float)r.CumCoins).ToArray());
+        CheckVariance("MilkClicks", results.Select(r => (float)r.MilkClicks).ToArray());
+        CheckVariance("LandRemaining", results.Select(r => (float)r.LandRemaining).ToArray());
+        if (completions > 0 && completions < runs)
+            _output.WriteLine($"  WARNING: Only {completions}/{runs} runs completed — high completion variance!");
+
+        // Export CSV — individual runs + averages
+        string csvDir = Path.Combine(Path.GetDirectoryName(typeof(BotSimulationTests).Assembly.Location)!, "sim_results");
+        Directory.CreateDirectory(csvDir);
+        string csvTag = $"{botCount}bot_{maxMinutes}min_{(selectiveBreeding ? "selective" : "random")}_{(helpersEnabled ? "helpers" : "nohelpers")}";
+        string csvPath = Path.Combine(csvDir, $"averaged_{csvTag}.csv");
+
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        var csv = new System.Text.StringBuilder();
+        csv.AppendLine("Run,Completed,Minutes,Houses,Cows,Helpers,Coins,Food,LandRemaining,LandCost,MilkClicks,CumMilk,CumCoins");
+        for (int i = 0; i < runs; i++)
+        {
+            var r = results[i];
+            csv.AppendLine(string.Format(inv, "{0},{1},{2:F2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}",
+                i + 1, r.Completed ? 1 : 0, r.Minutes, r.Houses, r.Cows, r.Helpers, r.Coins, r.Food, r.LandRemaining, r.LandCost, r.MilkClicks, r.CumMilk, r.CumCoins));
+        }
+        csv.AppendLine(string.Format(inv, "AVG,{0}/{1},{2:F2},{3:F1},{4:F1},{5:F1},{6:F0},{7:F0},{8:F1},,{9:F0},{10:F0},{11:F0}",
+            completions, runs, avgMinutes, avgHouses, avgCows, avgHelpers, avgCoins, (float)results.Average(r => r.Food), avgLand, avgMilkClicks, avgCumMilk, avgCumCoins));
+        File.WriteAllText(csvPath, csv.ToString());
+        _output.WriteLine($"\nCSV exported to: {csvPath}");
+    }
+
+    private void CheckVariance(string name, float[] values)
+    {
+        float mean = values.Average();
+        if (mean < 1f) return; // skip near-zero metrics
+        float min = values.Min();
+        float max = values.Max();
+        float spread = max - min;
+        float pct = spread / mean * 100f;
+        string status = pct > 50 ? "HIGH VARIANCE" : pct > 25 ? "moderate" : "ok";
+        if (pct > 25)
+            _output.WriteLine($"  {name}: avg={mean:F0} min={min:F0} max={max:F0} spread={pct:F0}% — {status}");
     }
 
     /// <summary>

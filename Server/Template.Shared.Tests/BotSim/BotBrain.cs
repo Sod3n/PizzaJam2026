@@ -278,6 +278,70 @@ public class BotBrain
 
     private static ScoredOption Best(ScoredOption a, ScoredOption b) => b.Score > a.Score ? b : a;
 
+    /// <summary>Coin value per unit of milk product by cow tier.</summary>
+    private static float TierCoinValue(int preferredFood) => preferredFood switch
+    {
+        0 => 1f,   // Grass  → Milk
+        1 => 2f,   // Carrot → VitaminShake
+        2 => 6f,   // Apple  → AppleYogurt
+        3 => 18f,  // Mushroom → PurplePotion
+        _ => 1f,
+    };
+
+    /// <summary>
+    /// Estimate the value of breeding based on actual cow productivity.
+    /// Random bot:     avg coin yield per milking session + helper bonus.
+    /// Selective bot:   same + expected value of tier upgrade.
+    /// </summary>
+    private float EstimateBreedValue()
+    {
+        int cowCount = 0;
+        float totalCoinYield = 0;
+        int bestTier = 0;
+
+        foreach (var e in _game.State.Filter<HouseComponent>())
+        {
+            var house = _game.State.GetComponent<HouseComponent>(e);
+            if (house.CowId == Entity.Null) continue;
+            if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
+            var cow = _game.State.GetComponent<CowComponent>(house.CowId);
+            cowCount++;
+
+            int milkPerClick = (house.SelectedFood == cow.PreferredFood) ? 3 : 1;
+            float coinPerUnit = TierCoinValue(cow.PreferredFood);
+            totalCoinYield += cow.MaxExhaust * milkPerClick * coinPerUnit;
+
+            if (cow.PreferredFood > bestTier)
+                bestTier = cow.PreferredFood;
+        }
+
+        if (cowCount == 0) return 50f; // early game fallback
+
+        float avgCoinYield = totalCoinYield / cowCount;
+        float value = avgCoinYield * BotConfig.BreedValueMultiplier;
+
+        // Selective breeding: tier upgrades are exponentially more valuable
+        if (_selectiveBreeding && bestTier < 3)
+        {
+            float currentValue = TierCoinValue(bestTier);
+            float nextValue = TierCoinValue(bestTier + 1);
+            // ~9% mutation chance + guaranteed every 3 same-tier breeds ≈ 30% effective
+            float upgradeBonus = (nextValue / currentValue - 1f) * 0.3f;
+            value *= 1f + upgradeBonus;
+        }
+
+        // Helpers amplify breeding value (they automate economy → new cows more productive)
+        int myHelpers = 0;
+        foreach (var e in _game.State.Filter<HelperComponent>())
+        {
+            var h = _game.State.GetComponent<HelperComponent>(e);
+            if (h.OwnerPlayer == _player) myHelpers++;
+        }
+        value *= 1f + myHelpers * BotConfig.HelperBreedBonus;
+
+        return value;
+    }
+
     private BtStatus ScoreAndPickBest(BtBlackboard bb)
     {
         // Clear breeding pipeline — reaching scoring means no continue-breeding matched
@@ -356,11 +420,12 @@ public class BotBrain
         // Option: Breed — re-breed same pair, swap for better cows, or fetch new pair
         if (ps.FollowingCow == Entity.Null && cowCount < houseCount && _coord.TryClaimBreeder(_botIndex))
         {
+            float breedValue = EstimateBreedValue();
             var breedable = FindBreedableLoveHouse();
             if (breedable != Entity.Null)
             {
-                DebugLog?.Invoke($"  BREED: love house {breedable.Id} is full (2 cows), scoring breed action");
-                best = Best(best, ScoreOption(breedable, BotConfig.BreedValue, playerPos, BotConfig.BreedWorkTicks, false, "breed"));
+                DebugLog?.Invoke($"  BREED: love house {breedable.Id} is full (2 cows), scoring breed action (value={breedValue:F0})");
+                best = Best(best, ScoreOption(breedable, breedValue, playerPos, BotConfig.BreedWorkTicks, false, "breed"));
             }
             else if (houseCount >= cowCount + 2)
             {
@@ -370,8 +435,8 @@ public class BotBrain
                     var housedCow = FindCowForBreeding();
                     if (housedCow != Entity.Null)
                     {
-                        DebugLog?.Invoke($"  BREED_FETCH: fetching cow {housedCow.Id} to love house {lh.Id}");
-                        best = Best(best, ScoreOption(housedCow, BotConfig.BreedValue, playerPos, BotConfig.BreedFetchWorkTicks, false, "breed_fetch"));
+                        DebugLog?.Invoke($"  BREED_FETCH: fetching cow {housedCow.Id} to love house {lh.Id} (value={breedValue:F0})");
+                        best = Best(best, ScoreOption(housedCow, breedValue, playerPos, BotConfig.BreedFetchWorkTicks, false, "breed_fetch"));
                     }
                     else
                         DebugLog?.Invoke($"  BREED_FETCH: love house {lh.Id} has slot but FindCowForBreeding() returned null");
