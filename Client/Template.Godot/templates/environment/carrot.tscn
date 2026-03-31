@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://brxjp0wafstr3" path="res://sprites/export/icons/Carrot_Wish_Pit/1.png" id="5_ho84w"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="6_wt5ua"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_r3nq2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ho84w"]
 render_priority = 0
 shader = ExtResource("4_ob58x")
 shader_parameter/albedo_texture = ExtResource("5_ho84w")
@@ -64,8 +64,9 @@ StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("2_ho84w")
-Durability = 10
-MaxDurability = 10
+Durability = 4
+MaxDurability = 4
+FoodType = 1
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("3_r3nq2")
@@ -74,8 +75,8 @@ CollisionLayer = 4
 CollisionMask = 8
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=702612390]
-transform = Transform3D(0.387, 0, 0, 0, 0.2252358, 0.10379225, 0, -0.10379225, 0.2252358, 0, 0.15002006, -0.39274752)
-material_override = SubResource("ShaderMaterial_r3nq2")
+transform = Transform3D(0.14, 0, 0, 0, 0.12714925, 0.0585924, 0, -0.0585924, 0.12714925, 0, 0.2629993, -0.39274752)
+material_override = SubResource("ShaderMaterial_ho84w")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gdsc3")
 frame_progress = 0.49251503

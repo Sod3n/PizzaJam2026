@@ -18,6 +18,7 @@ public class BotBrain
     private readonly int _botIndex;
     private readonly BotCoordinator _coord;
     private readonly bool _selectiveBreeding;
+    private readonly float _breedIntensity;
 
     private readonly BtNode _root;
     private readonly BtBlackboard _bb = new();
@@ -34,6 +35,10 @@ public class BotBrain
     public string LastAction = "";       // decision-level action (set only when a new action is chosen)
     private string _lastTrackLabel = ""; // tick-level tracking (for stats)
     public int TotalMilkClicks;
+    public int TotalBreedClicks;
+    public int TotalGatherClicks;
+    public int TotalClicks; // all interaction clicks
+    public int TicksClicking; // ticks where bot was in click cooldown (actively working)
     public Action<string> DebugLog;
 
     private void TrackAction(string action)
@@ -51,7 +56,7 @@ public class BotBrain
             $"{kv.Key}={kv.Value}({100 * kv.Value / Math.Max(1, total)}%)"));
     }
 
-    public BotBrain(Game game, Entity player, Guid userId, int botIndex, BotCoordinator coordinator, bool selectiveBreeding = false)
+    public BotBrain(Game game, Entity player, Guid userId, int botIndex, BotCoordinator coordinator, bool selectiveBreeding = false, float breedIntensity = 1f)
     {
         _game = game;
         _player = player;
@@ -59,6 +64,7 @@ public class BotBrain
         _botIndex = botIndex;
         _coord = coordinator;
         _selectiveBreeding = selectiveBreeding;
+        _breedIntensity = breedIntensity;
         _root = BuildTree();
     }
 
@@ -289,57 +295,12 @@ public class BotBrain
     };
 
     /// <summary>
-    /// Estimate the value of breeding based on actual cow productivity.
-    /// Random bot:     avg coin yield per milking session + helper bonus.
-    /// Selective bot:   same + expected value of tier upgrade.
+    /// Flat breed value scaled by intensity. Cow stats don't affect scoring —
+    /// selective vs random only differs in cow selection, not breed priority.
     /// </summary>
     private float EstimateBreedValue()
     {
-        int cowCount = 0;
-        float totalCoinYield = 0;
-        int bestTier = 0;
-
-        foreach (var e in _game.State.Filter<HouseComponent>())
-        {
-            var house = _game.State.GetComponent<HouseComponent>(e);
-            if (house.CowId == Entity.Null) continue;
-            if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
-            var cow = _game.State.GetComponent<CowComponent>(house.CowId);
-            cowCount++;
-
-            int milkPerClick = (house.SelectedFood == cow.PreferredFood) ? 3 : 1;
-            float coinPerUnit = TierCoinValue(cow.PreferredFood);
-            totalCoinYield += cow.MaxExhaust * milkPerClick * coinPerUnit;
-
-            if (cow.PreferredFood > bestTier)
-                bestTier = cow.PreferredFood;
-        }
-
-        if (cowCount == 0) return 50f; // early game fallback
-
-        float avgCoinYield = totalCoinYield / cowCount;
-        float value = avgCoinYield * BotConfig.BreedValueMultiplier;
-
-        // Selective breeding: tier upgrades are exponentially more valuable
-        if (_selectiveBreeding && bestTier < 3)
-        {
-            float currentValue = TierCoinValue(bestTier);
-            float nextValue = TierCoinValue(bestTier + 1);
-            // ~9% mutation chance + guaranteed every 3 same-tier breeds ≈ 30% effective
-            float upgradeBonus = (nextValue / currentValue - 1f) * 0.3f;
-            value *= 1f + upgradeBonus;
-        }
-
-        // Helpers amplify breeding value (they automate economy → new cows more productive)
-        int myHelpers = 0;
-        foreach (var e in _game.State.Filter<HelperComponent>())
-        {
-            var h = _game.State.GetComponent<HelperComponent>(e);
-            if (h.OwnerPlayer == _player) myHelpers++;
-        }
-        value *= 1f + myHelpers * BotConfig.HelperBreedBonus;
-
-        return value;
+        return BotConfig.BreedBaseValue * _breedIntensity;
     }
 
     private BtStatus ScoreAndPickBest(BtBlackboard bb)
@@ -545,6 +506,7 @@ public class BotBrain
     {
         private readonly BotBrain _b;
         private bool _interacted;
+        private int _clickCooldown;
 
         public InteractLoopNode(BotBrain brain) => _b = brain;
 
@@ -556,10 +518,14 @@ public class BotBrain
             if (!_interacted)
             {
                 _interacted = true;
+                _clickCooldown = 0;
                 _b.WantsToInteract = true;
                 _b.CurrentTarget = target;
                 return BtStatus.Running;
             }
+
+            // Click cooldown — simulate real player click speed
+            if (_clickCooldown > 0) { _clickCooldown--; _b.TicksClicking++; return BtStatus.Running; }
 
             // Handle active game state (milking clicks, breeding clicks, etc.)
             var sc = _b._game.State.GetComponent<StateComponent>(_b._player);
@@ -569,10 +535,15 @@ public class BotBrain
                 {
                     _b.WantsToInteract = true;
                     _b.TotalMilkClicks++;
+                    _b.TotalClicks++;
+                    _clickCooldown = BotConfig.ClickCooldownTicks;
                 }
                 else if (sc.Key == StateKeys.Breed && sc.Phase == StatePhase.Active)
                 {
                     _b.WantsToInteract = true;
+                    _b.TotalBreedClicks++;
+                    _b.TotalClicks++;
+                    _clickCooldown = BotConfig.ClickCooldownTicks;
                 }
                 return BtStatus.Running;
             }
@@ -583,13 +554,16 @@ public class BotBrain
             {
                 _b.WantsToInteract = true;
                 _b.CurrentTarget = target;
+                _b.TotalGatherClicks++;
+                _b.TotalClicks++;
+                _clickCooldown = BotConfig.ClickCooldownTicks;
                 return BtStatus.Running;
             }
 
             return BtStatus.Success;
         }
 
-        public override void Reset() => _interacted = false;
+        public override void Reset() { _interacted = false; _clickCooldown = 0; }
     }
 
     /// <summary>Waits for the player's active game state to end. Handles milking/breeding clicks.
@@ -597,6 +571,7 @@ public class BotBrain
     private class WaitForStateNode : BtNode
     {
         private readonly BotBrain _b;
+        private int _clickCooldown;
         public WaitForStateNode(BotBrain brain) => _b = brain;
 
         public override BtStatus Tick(BtBlackboard bb)
@@ -604,14 +579,18 @@ public class BotBrain
             var sc = _b._game.State.GetComponent<StateComponent>(_b._player);
             if (!sc.IsEnabled) return BtStatus.Success;
 
+            if (_clickCooldown > 0) { _clickCooldown--; return BtStatus.Running; }
+
             if (sc.Key == StateKeys.Milking && sc.Phase == StatePhase.Active)
             {
                 _b.WantsToInteract = true;
                 _b.TotalMilkClicks++;
+                _clickCooldown = BotConfig.ClickCooldownTicks;
             }
             else if (sc.Key == StateKeys.Breed && sc.Phase == StatePhase.Active)
             {
                 _b.WantsToInteract = true;
+                _clickCooldown = BotConfig.ClickCooldownTicks;
             }
 
             return BtStatus.Running;
@@ -982,6 +961,7 @@ public class BotBrain
     {
         Entity best = Entity.Null;
         int bestScore = int.MaxValue;
+        int houseCount = Count<HouseComponent>();
 
         foreach (var e in _game.State.Filter<LandComponent>())
         {
@@ -991,13 +971,34 @@ public class BotBrain
             int remaining = land.Threshold - land.CurrentCoins;
             if (remaining <= 0) continue;
 
-            // A real player prioritizes farms once they have a running economy
             int score = remaining;
+
+            // Priority: farms once economy is running
             bool isFarm = land.Type == LandType.CarrotFarm
                        || land.Type == LandType.AppleOrchard
                        || land.Type == LandType.MushroomCave;
-            if (isFarm && Count<HouseComponent>() >= 3)
+            if (isFarm && houseCount >= 3)
                 score /= 3;
+
+            // Priority: Assistant building — doubles click output, very valuable
+            if (land.Type == LandType.HelperAssistant && houseCount >= 3)
+                score /= 5;
+
+            // Priority: upgrade buildings — x2 helper boost, but only if helper exists and not yet upgraded
+            if (land.Type == LandType.UpgradeGatherer || land.Type == LandType.UpgradeBuilder || land.Type == LandType.UpgradeSeller)
+            {
+                int upgradeType = land.Type switch
+                {
+                    LandType.UpgradeGatherer => HelperType.Gatherer,
+                    LandType.UpgradeBuilder => HelperType.Builder,
+                    LandType.UpgradeSeller => HelperType.Seller,
+                    _ => -1
+                };
+                if (upgradeType >= 0 && HasHelper(upgradeType) && !HasUpgradePetForType(upgradeType))
+                    score /= 4;
+                else
+                    continue; // skip — helper not unlocked yet or already upgraded
+            }
 
             if (score < bestScore)
             {
@@ -1006,6 +1007,26 @@ public class BotBrain
             }
         }
         return best;
+    }
+
+    private bool HasHelper(int helperType)
+    {
+        foreach (var e in _game.State.Filter<HelperComponent>())
+        {
+            var h = _game.State.GetComponent<HelperComponent>(e);
+            if (h.OwnerPlayer == _player && h.Type == helperType) return true;
+        }
+        return false;
+    }
+
+    private bool HasUpgradePetForType(int helperType)
+    {
+        foreach (var e in _game.State.Filter<HelperPetComponent>())
+        {
+            var pet = _game.State.GetComponent<HelperPetComponent>(e);
+            if (pet.HelperType == helperType) return true;
+        }
+        return false;
     }
 
     /// <summary>How much food to stockpile before starting a milking session.</summary>

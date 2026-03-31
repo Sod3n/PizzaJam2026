@@ -63,13 +63,21 @@ public class HelperSystem : ISystem
                 continue;
             }
 
+            // Check if this helper has an upgrade pet — apply x2 boost
+            bool upgraded = HasUpgradePet(state, entity);
+            var config = HelperConfig.GetByType(helper.Type);
+            helper.BagCapacity = upgraded ? config.UpgradedCapacity : config.BaseCapacity;
+
+            ref var nav = ref state.GetComponent<NavigationAgent2D>(entity);
+            nav.MaxSpeed = (Float)(upgraded ? config.UpgradedSpeed : config.BaseSpeed);
+
             switch (helper.Type)
             {
                 case HelperType.Assistant:
                     UpdateAssistant(state, entity, ref helper);
                     break;
                 case HelperType.Gatherer:
-                    UpdateGatherer(state, entity, ref helper);
+                    UpdateGatherer(state, entity, ref helper, upgraded);
                     break;
                 case HelperType.Seller:
                     UpdateSeller(state, entity, ref helper);
@@ -79,6 +87,25 @@ public class HelperSystem : ISystem
                     break;
             }
         }
+
+        // Update pets: follow their target helper
+        foreach (var petEntity in state.Filter<HelperPetComponent>())
+        {
+            if (!state.HasComponent<Transform2D>(petEntity)) continue;
+            var pet = state.GetComponent<HelperPetComponent>(petEntity);
+            if (pet.FollowTarget == Entity.Null || !state.HasComponent<Transform2D>(pet.FollowTarget)) continue;
+            SwarmFollow.Follow(state, petEntity, pet.FollowTarget);
+        }
+    }
+
+    private static bool HasUpgradePet(EntityWorld state, Entity helperEntity)
+    {
+        foreach (var pe in state.Filter<HelperPetComponent>())
+        {
+            var pet = state.GetComponent<HelperPetComponent>(pe);
+            if (pet.FollowTarget == helperEntity) return true;
+        }
+        return false;
     }
 
     // ─── Assistant: follow player closely ───
@@ -93,8 +120,9 @@ public class HelperSystem : ISystem
 
     // ─── Gatherer: find food → harvest → return to player → deposit ───
 
-    private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper)
+    private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
     {
+        int workDuration = upgraded ? GatherWorkDuration / 2 : GatherWorkDuration;
         switch (helper.State)
         {
             case HelperState.Idle:
@@ -122,7 +150,7 @@ public class HelperSystem : ISystem
                 {
                     helper.State = HelperState.Working;
                     helper.WorkTimer = 0;
-                    helper.WorkDuration = GatherWorkDuration;
+                    helper.WorkDuration = workDuration;
                 }
                 break;
 

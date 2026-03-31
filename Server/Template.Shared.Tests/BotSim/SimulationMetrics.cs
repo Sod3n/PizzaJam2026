@@ -32,7 +32,7 @@ public class SimulationMetrics
         public int Grass, Carrot, Apple, Mushroom;
         public int Milk, VitaminShake, AppleYogurt, PurplePotion;
         public int Coins;
-        public int Houses, LoveHouses, SellPoints, FoodFarms, Helpers;
+        public int Houses, LoveHouses, SellPoints, FoodFarms, Helpers, Pets;
         public int Cows, HousedCows, FollowingCows, WildCows;
         public int LandPlots, TotalLandRemaining;
         public bool FinalStructureExists;
@@ -73,6 +73,7 @@ public class SimulationMetrics
             var h = game.State.GetComponent<HelperComponent>(he);
             if (h.OwnerPlayer != Entity.Null) s.Helpers++;
         }
+        foreach (var _ in game.State.Filter<HelperPetComponent>()) s.Pets++;
         foreach (var _ in game.State.Filter<FinalStructureComponent>()) s.FinalStructureExists = true;
 
         foreach (var e in game.State.Filter<CowComponent>())
@@ -121,6 +122,7 @@ public class SimulationMetrics
         CheckBuild("SellPoint", s.SellPoints, tick);
         CheckBuild("FoodFarm", s.FoodFarms, tick);
         CheckBuild("Helper", s.Helpers, tick);
+        CheckBuild("Pet/Upgrade", s.Pets, tick);
 
         if (s.FinalStructureExists && !_prevFinalStructure)
             Buildings.Add(new BuildEvent { Tick = tick, Type = "FINAL STRUCTURE", Count = 1 });

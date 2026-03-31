@@ -176,7 +176,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
             // Assistant helper doubles milk output
             if (playerState.AssistantHelper != Entity.Null
-                && ctx.State.HasComponent<HelperComponent>(playerState.AssistantHelper))
+                && ctx.State.HasComponent<HelperPetComponent>(playerState.AssistantHelper))
                 milkAmount *= 2;
 
             globalRes.ConsumeFood(foodToUse);
@@ -209,7 +209,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         // Assistant helper adds extra breed progress
         if (playerState.AssistantHelper != Entity.Null
-            && ctx.State.HasComponent<HelperComponent>(playerState.AssistantHelper))
+            && ctx.State.HasComponent<HelperPetComponent>(playerState.AssistantHelper))
             loveHouse.BreedProgress++;
 
         ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
@@ -693,8 +693,25 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             case LandType.MushroomCave:
                 FoodFarmDefinition.Create(ctx, position, FoodType.Mushroom);
                 break;
-            case LandType.HelperGatherer:
-                HelperDefinition.Create(ctx, position, HelperType.Gatherer, playerEntity);
+            case LandType.HelperAssistant:
+            {
+                // Assistant is a pet (follows player, no bag) — not a HelperComponent
+                var assistant = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
+                if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
+                {
+                    ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+                    ps.AssistantHelper = assistant;
+                }
+                break;
+            }
+            case LandType.UpgradeGatherer:
+                SpawnUpgradePet(ctx, position, playerEntity, HelperType.Gatherer);
+                break;
+            case LandType.UpgradeBuilder:
+                SpawnUpgradePet(ctx, position, playerEntity, HelperType.Builder);
+                break;
+            case LandType.UpgradeSeller:
+                SpawnUpgradePet(ctx, position, playerEntity, HelperType.Seller);
                 break;
             default:
                 HouseDefinition.Create(ctx, position);
@@ -702,5 +719,25 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
 
         StarGrid.SpawnNeighbors(ctx, gridX, gridY);
+    }
+
+    /// <summary>
+    /// Find the player's helper of the given type and spawn a pet that follows it.
+    /// The pet signals the x2 upgrade — HelperSystem detects it and applies the boost.
+    /// </summary>
+    private static void SpawnUpgradePet(Context ctx, Vector2 position, Entity playerEntity, int helperType)
+    {
+        // Find the helper to upgrade
+        Entity targetHelper = Entity.Null;
+        foreach (var he in ctx.State.Filter<HelperComponent>())
+        {
+            var h = ctx.State.GetComponent<HelperComponent>(he);
+            if (h.OwnerPlayer == playerEntity && h.Type == helperType)
+            { targetHelper = he; break; }
+        }
+
+        if (targetHelper == Entity.Null) return; // helper not unlocked yet — shouldn't happen if land was locked
+
+        HelperPetDefinition.Create(ctx, position, helperType, targetHelper);
     }
 }

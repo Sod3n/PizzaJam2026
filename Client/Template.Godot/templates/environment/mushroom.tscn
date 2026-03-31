@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://ls55pychj80m" path="res://sprites/IMG_0375.PNG" id="6_qe070"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="7_vpbwi"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gaj4"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y1cks"]
 render_priority = 0
 shader = ExtResource("4_l1gx5")
 shader_parameter/albedo_texture = ExtResource("5_y1cks")
@@ -68,8 +68,9 @@ StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("2_y1cks")
-Durability = 10
-MaxDurability = 10
+Durability = 4
+MaxDurability = 4
+FoodType = 3
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("3_8gaj4")
@@ -79,7 +80,7 @@ CollisionMask = 8
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=702612390]
 transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.083703436, 0, -0.083703436, 0.18164179, 0, 0.32084364, -0.09915361)
-material_override = SubResource("ShaderMaterial_8gaj4")
+material_override = SubResource("ShaderMaterial_y1cks")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gdsc3")
 frame_progress = 0.49251503

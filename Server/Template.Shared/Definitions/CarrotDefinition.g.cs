@@ -22,8 +22,8 @@ public static partial class CarrotDefinition
         var entity = ctx.CreateEntity<GrassComponent>();
 
         ref var component = ref ctx.GetComponent<GrassComponent>(entity);
-        component.Durability = 10;
-        component.MaxDurability = 10;
+        component.Durability = 3;
+        component.MaxDurability = 3;
         component.FoodType = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));

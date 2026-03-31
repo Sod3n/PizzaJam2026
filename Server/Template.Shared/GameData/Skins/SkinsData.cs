@@ -42,6 +42,14 @@ public class SkinsData : GameData<Skin>
 
     public Dictionary<int, Skin> GetAll() => _skins;
 
+    // Max Megaaaabooba skin IDs (weight 1, highest exhaust)
+    private static readonly int[] MaxMegaIds = { 25, 26 };
+
+    public int GetRandomMaxMegaId(ref DeterministicRandom random)
+    {
+        return MaxMegaIds[random.NextInt(MaxMegaIds.Length)];
+    }
+
     private int GetEffectiveWeight(Skin skin)
     {
         _spawnCounts.TryGetValue(skin.Id, out int count);

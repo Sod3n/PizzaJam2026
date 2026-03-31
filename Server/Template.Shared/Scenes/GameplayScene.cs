@@ -64,7 +64,7 @@ public class GameplayScene : IScene
 
         // Initialize Global Resources
         var globalRes = state.CreateEntity();
-        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 50 }); // Start with some coins to buy land
+        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 50, HelpersEnabled = 1 }); // Start with some coins to buy land
 
         // Single starting land plot at center — builds into a sell point
         // Buying it spawns 4 neighbors, which spawn their neighbors, etc.

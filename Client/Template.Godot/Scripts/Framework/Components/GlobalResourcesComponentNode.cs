@@ -16,4 +16,6 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int PurplePotion;
     [Export] public int Coins;
     [Export] public int TotalBreedCount;
+    [Export] public int SpawnedSpecials;
+    [Export] public int HelpersEnabled;
 }

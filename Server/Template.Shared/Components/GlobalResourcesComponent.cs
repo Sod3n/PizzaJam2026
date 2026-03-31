@@ -17,12 +17,14 @@ public struct GlobalResourcesComponent : IComponent
     public int PurplePotion;
     public int Coins;
     public int TotalBreedCount; // Global breed counter — used for helper unlock thresholds
+    public int SpawnedSpecials; // Bitmask tracking which special land plots have been placed
+    public int HelpersEnabled; // 1 = breeding can produce helpers, 0 = always produce cows
 
     // Helper unlock thresholds (breed count)
-    public const int AssistantUnlockBreed = 13;
     public const int GathererUnlockBreed = 6;
     public const int BuilderUnlockBreed = 10;
     public const int SellerUnlockBreed = 15;
+    public const int GuaranteedMegaBreed = 25;
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)

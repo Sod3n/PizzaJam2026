@@ -16,7 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://b1a6sddanpfix" path="res://sprites/SellPoint.PNG" id="14_reql4"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="15_3k8gp"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ky1f1"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_svhw3"]
 render_priority = 0
 shader = ExtResource("4_qu1i0")
 shader_parameter/albedo_texture = ExtResource("5_svhw3")
@@ -66,7 +66,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_a2yru"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_858d0"]
 render_priority = 0
 shader = ExtResource("4_qu1i0")
 shader_parameter/albedo_texture = ExtResource("9_858d0")
@@ -112,8 +112,9 @@ StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("2_lqlpb")
-Durability = 10
-MaxDurability = 10
+Durability = 15
+MaxDurability = 15
+FoodType = 2
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("3_oa0h3")
@@ -123,7 +124,7 @@ CollisionMask = 8
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=702612390]
 transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.6486559, 2.3402631, -0.6169324)
-material_override = SubResource("ShaderMaterial_ky1f1")
+material_override = SubResource("ShaderMaterial_svhw3")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gdsc3")
 frame_progress = 0.49251503
@@ -131,7 +132,7 @@ script = ExtResource("7_p160j")
 
 [node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="." unique_id=1700245007]
 transform = Transform3D(0.15, 0, 0, 0, 0.13623135, 0.06277757, 0, -0.06277757, 0.13623135, 0, 1.8809322, -0.43979532)
-material_override = SubResource("ShaderMaterial_a2yru")
+material_override = SubResource("ShaderMaterial_858d0")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_415xm")
 script = ExtResource("7_p160j")

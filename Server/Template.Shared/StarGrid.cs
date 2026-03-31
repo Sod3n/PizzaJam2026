@@ -30,16 +30,18 @@ public static class StarGrid
     {
         if (gx == 0 && gy == 0) return LandType.SellPoint;
         if (gx == 1 && gy == 0) return LandType.LoveHouse;
-        // Carrot farms — early game (dist 3-4)
-        if (gx == 2 && gy == 1) return LandType.CarrotFarm;     // dist 3, cost 60
-        if (gx == -3 && gy == 1) return LandType.CarrotFarm;    // dist 4, cost 80
-        // Apple farms — mid game (dist 5-6)
-        if (gx == 3 && gy == 2) return LandType.AppleOrchard;   // dist 5, cost 100
-        if (gx == -4 && gy == 2) return LandType.AppleOrchard;  // dist 6, cost 120
-        // Mushroom farms — late game (dist 7-8)
-        if (gx == 4 && gy == 3) return LandType.MushroomCave;   // dist 7, cost 140
-        if (gx == -5 && gy == 3) return LandType.MushroomCave;  // dist 8, cost 160
+        // Carrot farms — early game (dist 2, 3)
+        if (gx == -1 && gy == 1) return LandType.CarrotFarm;    // dist 2
+        if (gx == 2 && gy == 1) return LandType.CarrotFarm;     // dist 3
+        // Apple farms — mid game (dist 3, 4)
+        if (gx == -2 && gy == 1) return LandType.AppleOrchard;  // dist 3
+        if (gx == 3 && gy == -1) return LandType.AppleOrchard;  // dist 4
+        // Mushroom farms — late game (dist 4, 5)
+        if (gx == -3 && gy == 1) return LandType.MushroomCave;  // dist 4
+        if (gx == 4 && gy == 1) return LandType.MushroomCave;   // dist 5
+        // Final structure — fixed at center-south
         if (gx == 0 && gy == -3) return LandType.FinalStructure;
+        // Note: HelperAssistant and Upgrade buildings spawn dynamically via TryGetSpecialType
         return null;
     }
 
@@ -69,14 +71,9 @@ public static class StarGrid
 
     public static int GetThreshold(int gx, int gy)
     {
-        int gridDist = System.Math.Abs(gx) + System.Math.Abs(gy);
-        int basePrice = System.Math.Max(1, gridDist);
-
-        // Price multiplier per building type
+        int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
         int type = GetBuildingType(gx, gy);
-        int multiplier = GetPriceMultiplier(type);
-
-        return basePrice * multiplier * 10;
+        return gridDist * GetEraMultiplier(gridDist) * GetPriceMultiplier(type) * 10;
     }
 
     // Food farm frequency: every Nth house-slot becomes a food farm instead
@@ -89,14 +86,72 @@ public static class StarGrid
             case LandType.FinalStructure: return 50;
             case LandType.LoveHouse: return 3;
             case LandType.SellPoint: return 1;
-            case LandType.CarrotFarm: return 2;
-            case LandType.AppleOrchard: return 2;
-            case LandType.MushroomCave: return 2;
-            case LandType.HelperGatherer: return 5;
-            case LandType.HelperSeller: return 5;
-            case LandType.HelperBuilder: return 5;
+            case LandType.CarrotFarm: return 1;
+            case LandType.AppleOrchard: return 1;
+            case LandType.MushroomCave: return 1;
+            case LandType.HelperAssistant: return 2;
+            case LandType.UpgradeGatherer: return 2;
+            case LandType.UpgradeBuilder: return 2;
+            case LandType.UpgradeSeller: return 2;
             default: return 1; // House
         }
+    }
+
+    /// <summary>
+    /// Era multiplier: all land costs scale with player's expected income at each distance tier.
+    /// Farms at dist 2/3/4 unlock Carrot/Apple/Mushroom → income grows → land costs match.
+    /// </summary>
+    /// <summary>
+    /// Era pricing: kicks in TWO distances after the farm that unlocks it.
+    /// Player builds carrot farm at dist 2, has time to ramp income, dist 4+ costs more.
+    /// </summary>
+    public static int GetEraMultiplier(int gridDist)
+    {
+        if (gridDist >= 6) return 8; // mushroom income established (farm at dist 4)
+        if (gridDist >= 5) return 4; // apple income established (farm at dist 3)
+        if (gridDist >= 4) return 2; // carrot income established (farm at dist 2)
+        return 1; // grass era
+    }
+
+    // ─── Dynamic special buildings: spawn at player's expansion frontier ───
+
+    /// <summary>
+    /// Special buildings that spawn dynamically when the player reaches a grid distance.
+    /// Each spawns exactly once (tracked via GlobalResourcesComponent.SpawnedSpecials bitmask).
+    /// </summary>
+    private static readonly (int type, int triggerDist, int bit)[] DynamicSpecials =
+    {
+        (LandType.HelperAssistant, 3, 0),
+        (LandType.UpgradeGatherer, 4, 1),
+        (LandType.UpgradeBuilder,  5, 2),
+        (LandType.UpgradeSeller,   6, 3),
+    };
+
+    /// <summary>
+    /// Check if this grid position should become a special building.
+    /// Returns the LandType if yes, -1 if no.
+    /// </summary>
+    private static int TryGetSpecialType(EntityWorld state, int gx, int gy)
+    {
+        int dist = System.Math.Abs(gx) + System.Math.Abs(gy);
+
+        // Find the GlobalResources to check/update the spawned bitmask
+        Entity grEntity = Entity.Null;
+        foreach (var e in state.Filter<GlobalResourcesComponent>())
+        { grEntity = e; break; }
+        if (grEntity == Entity.Null) return -1;
+
+        ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+
+        foreach (var (type, triggerDist, bit) in DynamicSpecials)
+        {
+            if (dist >= triggerDist && (gr.SpawnedSpecials & (1 << bit)) == 0)
+            {
+                gr.SpawnedSpecials |= (1 << bit);
+                return type;
+            }
+        }
+        return -1;
     }
 
     // Pre-computed special building positions on a sparse grid.
@@ -171,13 +226,6 @@ public static class StarGrid
         // Food farms are only placed at fixed positions (6 total: 2 per type)
         // No random farm spawning — progression is controlled
 
-        // Rare gatherer shops (~1 in 20 remaining slots)
-        int hash3 = System.Math.Abs(gx * 48271 + gy * 99991);
-        if (hash3 % 20 == 0)
-        {
-            return LandType.HelperGatherer;
-        }
-
         return LandType.House;
     }
 
@@ -215,8 +263,15 @@ public static class StarGrid
             }
         }
 
-        int threshold = GetThreshold(gx, gy);
         int type = GetBuildingType(gx, gy);
+
+        // Dynamic specials: override type if this distance triggers a special building
+        int specialType = TryGetSpecialType(ctx.State, gx, gy);
+        if (specialType >= 0)
+            type = specialType;
+
+        int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
+        int threshold = gridDist * GetEraMultiplier(gridDist) * GetPriceMultiplier(type) * 10;
         LandDefinition.Create(ctx, new Vector2(px, py), threshold, type, gx, gy, 0);
         return true;
     }

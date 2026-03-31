@@ -9,11 +9,22 @@ namespace Template.Shared.Systems;
 
 public class CowSystem : ISystem
 {
-    [ThreadStatic] private static bool? _helpersEnabled;
-    public static bool HelpersEnabled
+    /// <summary>Set HelpersEnabled on the GlobalResourcesComponent in the game world.</summary>
+    public static void SetHelpersEnabled(EntityWorld state, bool enabled)
     {
-        get => _helpersEnabled ?? true;
-        set => _helpersEnabled = value;
+        foreach (var e in state.Filter<GlobalResourcesComponent>())
+        {
+            ref var gr = ref state.GetComponent<GlobalResourcesComponent>(e);
+            gr.HelpersEnabled = enabled ? 1 : 0;
+            return;
+        }
+    }
+
+    private static bool GetHelpersEnabled(EntityWorld state)
+    {
+        foreach (var e in state.Filter<GlobalResourcesComponent>())
+            return state.GetComponent<GlobalResourcesComponent>(e).HelpersEnabled != 0;
+        return true; // default on
     }
     public void Update(EntityWorld state)
     {
@@ -348,7 +359,6 @@ public class CowSystem : ISystem
             {
                 spawnHelper = neededHelper switch
                 {
-                    HelperType.Assistant => breedCount >= GlobalResourcesComponent.AssistantUnlockBreed,
                     HelperType.Gatherer  => breedCount >= GlobalResourcesComponent.GathererUnlockBreed,
                     HelperType.Builder   => breedCount >= GlobalResourcesComponent.BuilderUnlockBreed,
                     HelperType.Seller    => breedCount >= GlobalResourcesComponent.SellerUnlockBreed,
@@ -356,7 +366,7 @@ public class CowSystem : ISystem
                 };
             }
 
-            if (spawnHelper && HelpersEnabled)
+            if (spawnHelper && GetHelpersEnabled(state))
             {
                 // Guard: don't spawn if player already owns this type
                 bool alreadyOwned = false;
@@ -387,7 +397,7 @@ public class CowSystem : ISystem
             }
             else
             {
-                babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, guaranteedUpgrade);
+                babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, guaranteedUpgrade, breedCount);
             }
         }
 
@@ -434,7 +444,7 @@ public class CowSystem : ISystem
         ILogger.Log($"[CowSystem] Love house breed complete. Released cows {cow1.Id} and {cow2.Id} back to player {playerEntity.Id}");
     }
 
-    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false)
+    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false, int breedCount = 0)
     {
         var skinA = state.GetComponent<SkinComponent>(parentA);
         var skinB = state.GetComponent<SkinComponent>(parentB);
@@ -451,6 +461,19 @@ public class CowSystem : ISystem
         var random = new DeterministicRandom(seed);
 
         var crossbredSkin = GameData.GD.SkinsData.CrossbreedSkin(ref random, skinA, skinB);
+
+        // Guaranteed max Megaaaabooba at breed #30
+        if (breedCount == GlobalResourcesComponent.GuaranteedMegaBreed)
+        {
+            var topKey = new FixedString32("Top");
+            int megaId = GameData.GD.SkinsData.GetRandomMaxMegaId(ref random);
+            if (crossbredSkin.Skins.ContainsKey(topKey))
+                crossbredSkin.Skins[topKey] = megaId;
+            else
+                crossbredSkin.Skins.Add(topKey, megaId);
+            ILogger.Log($"[CowSystem] Guaranteed max Megaaaabooba drop at breed #{breedCount}!");
+        }
+
         state.AddComponent(newCow, crossbredSkin);
 
         int totalExhaust = 0;
@@ -600,7 +623,6 @@ public class CowSystem : ISystem
 
     private static readonly (int type, int threshold)[] HelperUnlockOrder =
     {
-        (HelperType.Assistant, GlobalResourcesComponent.AssistantUnlockBreed),
         (HelperType.Gatherer,  GlobalResourcesComponent.GathererUnlockBreed),
         (HelperType.Builder,   GlobalResourcesComponent.BuilderUnlockBreed),
         (HelperType.Seller,    GlobalResourcesComponent.SellerUnlockBreed),

@@ -17,8 +17,7 @@ public static class BotConfig
     public const float MilkValueMultiplier = 5f;
     public const float SellValueMultiplier = 2f;
     public const float BuildValueMultiplier = 3f;
-    public const float BreedValueMultiplier = 5f;  // scales avg coin yield → breed score
-    public const float HelperBreedBonus = 0.1f;   // per-helper bonus to breed value
+    public const float BreedBaseValue = 100f;       // flat breed value, scaled by breedIntensity
     public const float TameValue = 10f;
 
     // Work tick estimates
@@ -26,6 +25,9 @@ public static class BotConfig
     public const int BreedWorkTicks = 130;
     public const int BreedFetchWorkTicks = 120;
     public const int TameWorkTicks = 15;
+
+    // Click rate (real player ~4 clicks/sec = every 15 ticks at 60fps)
+    public const int ClickCooldownTicks = 15;
 
     // Thresholds
     public const int MinCoinsForBuild = 10;

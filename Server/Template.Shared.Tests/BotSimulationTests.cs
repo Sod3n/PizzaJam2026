@@ -90,9 +90,10 @@ public class BotSimulationTests
     private record struct SimResult(
         bool Completed, float Minutes, int Houses, int Cows, int Helpers,
         int Coins, int Food, int LandRemaining, int LandCost,
-        int MilkClicks, int CumMilk, int CumCoins);
+        int MilkClicks, int BreedClicks, int GatherClicks, int TotalClicks,
+        float ClickPct, int CumMilk, int CumCoins);
 
-    private SimResult RunSingleSim(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    private SimResult RunSingleSim(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, float breedIntensity = 1f)
     {
         Game game;
         lock (_createLock)
@@ -124,10 +125,10 @@ public class BotSimulationTests
                     { player = e; break; }
                 }
             }
-            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding));
+            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedIntensity));
         }
 
-        CowSystem.HelpersEnabled = helpersEnabled;
+        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
         var runner = new LightSimRunner(game);
         for (int i = 0; i < 10; i++) game.Loop.RunSingleTick();
 
@@ -171,6 +172,9 @@ public class BotSimulationTests
         }
 
         var snap = metrics.Snapshots.LastOrDefault();
+        int totalClicks = bots.Sum(b => b.TotalClicks);
+        int ticksClicking = bots.Sum(b => b.TicksClicking);
+        float clickPct = endTick > 0 ? ticksClicking * 100f / endTick : 0;
         return new SimResult(
             Completed: completed,
             Minutes: endTick / 3600f,
@@ -182,6 +186,10 @@ public class BotSimulationTests
             LandRemaining: snap?.LandPlots ?? 0,
             LandCost: snap?.TotalLandRemaining ?? 0,
             MilkClicks: bots.Sum(b => b.TotalMilkClicks),
+            BreedClicks: bots.Sum(b => b.TotalBreedClicks),
+            GatherClicks: bots.Sum(b => b.TotalGatherClicks),
+            TotalClicks: totalClicks,
+            ClickPct: clickPct,
             CumMilk: snap?.CumMilk ?? 0,
             CumCoins: snap?.CumCoins ?? 0
         );
@@ -210,10 +218,10 @@ public class BotSimulationTests
             bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding));
         }
 
-        _output.WriteLine($"Starting simulation: {botCount} bot(s), {maxMinutes} min, breeding={( selectiveBreeding ? "selective" : "random")}, helpers={( helpersEnabled ? "ON" : "OFF")}...");
+        _output.WriteLine($"Starting simulation: {botCount} bot(s), {maxMinutes} min, breeding={(selectiveBreeding ? "selective" : "random")}, helpers={(helpersEnabled ? "ON" : "OFF")}...");
 
         // Toggle helper spawning — when off, breeding always produces cows instead
-        CowSystem.HelpersEnabled = helpersEnabled;
+        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
 
         var runner = new LightSimRunner(game);
 
@@ -308,20 +316,31 @@ public class BotSimulationTests
     // ─── Multi-run averaged test ───
 
     [Theory]
-    [InlineData(5, 1, 30, true, true)]   // selective + helpers
-    [InlineData(5, 1, 30, true, false)]  // selective + NO helpers
-    [InlineData(5, 1, 30, false, true)]  // random + helpers
-    [InlineData(5, 1, 30, false, false)] // random + NO helpers
-    public void RunSimulationAveraged(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    // Standard variants
+    [InlineData(3, 1, 30, true, true, 1f)]    // selective + helpers
+    [InlineData(3, 1, 30, true, false, 1f)]   // selective + NO helpers
+    [InlineData(3, 1, 30, false, true, 1f)]   // random + helpers
+    [InlineData(3, 1, 30, false, false, 1f)]  // random + NO helpers
+    // Breed intensity: xlow(5-10 cows) / low(10-20) / mid(20-30) / high(fill all houses)
+    [InlineData(3, 1, 30, false, true, 0.3f)]  // random + helpers + XLOW
+    [InlineData(3, 1, 30, false, true, 3f)]    // random + helpers + LOW
+    [InlineData(3, 1, 30, false, true, 6f)]    // random + helpers + MID
+    [InlineData(3, 1, 30, false, true, 10f)]   // random + helpers + HIGH
+    [InlineData(3, 1, 30, true, true, 0.3f)]   // selective + helpers + XLOW
+    [InlineData(3, 1, 30, true, true, 3f)]     // selective + helpers + LOW
+    [InlineData(3, 1, 30, true, true, 6f)]     // selective + helpers + MID
+    [InlineData(3, 1, 30, true, true, 10f)]    // selective + helpers + HIGH
+    public void RunSimulationAveraged(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, float breedIntensity)
     {
-        string tag = $"{(selectiveBreeding ? "selective" : "random")}+{(helpersEnabled ? "helpers" : "nohelpers")}";
+        string breedTag = breedIntensity == 1f ? "" : $"_breed{breedIntensity:F1}x";
+        string tag = $"{(selectiveBreeding ? "selective" : "random")}+{(helpersEnabled ? "helpers" : "nohelpers")}{breedTag}";
         _output.WriteLine($"Running {runs}x: {tag}, {maxMinutes} min...\n");
 
         // Run N simulations in parallel
         var results = new SimResult[runs];
         Parallel.For(0, runs, i =>
         {
-            results[i] = RunSingleSim(botCount, maxMinutes, selectiveBreeding, helpersEnabled);
+            results[i] = RunSingleSim(botCount, maxMinutes, selectiveBreeding, helpersEnabled, breedIntensity);
         });
 
         // Individual results
@@ -330,7 +349,7 @@ public class BotSimulationTests
             var r = results[i];
             _output.WriteLine($"  Run {i + 1}: {(r.Completed ? $"DONE {r.Minutes:F1}m" : $"timeout")}  " +
                 $"Houses={r.Houses}  Cows={r.Cows}  Helpers={r.Helpers}  Coins={r.Coins}  " +
-                $"Land={r.LandRemaining}  MilkClicks={r.MilkClicks}  CumMilk={r.CumMilk}");
+                $"Land={r.LandRemaining}  Clicks={r.TotalClicks}(milk={r.MilkClicks} breed={r.BreedClicks} gather={r.GatherClicks})  Click%={r.ClickPct:F0}%");
         }
 
         // Averages
@@ -364,7 +383,8 @@ public class BotSimulationTests
         CheckVariance("Coins", results.Select(r => (float)r.Coins).ToArray());
         CheckVariance("CumMilk", results.Select(r => (float)r.CumMilk).ToArray());
         CheckVariance("CumCoins", results.Select(r => (float)r.CumCoins).ToArray());
-        CheckVariance("MilkClicks", results.Select(r => (float)r.MilkClicks).ToArray());
+        CheckVariance("TotalClicks", results.Select(r => (float)r.TotalClicks).ToArray());
+        CheckVariance("ClickPct", results.Select(r => r.ClickPct).ToArray());
         CheckVariance("LandRemaining", results.Select(r => (float)r.LandRemaining).ToArray());
         if (completions > 0 && completions < runs)
             _output.WriteLine($"  WARNING: Only {completions}/{runs} runs completed — high completion variance!");
@@ -372,20 +392,25 @@ public class BotSimulationTests
         // Export CSV — individual runs + averages
         string csvDir = Path.Combine(Path.GetDirectoryName(typeof(BotSimulationTests).Assembly.Location)!, "sim_results");
         Directory.CreateDirectory(csvDir);
-        string csvTag = $"{botCount}bot_{maxMinutes}min_{(selectiveBreeding ? "selective" : "random")}_{(helpersEnabled ? "helpers" : "nohelpers")}";
+        string breedSuffix = breedIntensity == 1f ? "" : $"_breed{breedIntensity.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)}x";
+        string csvTag = $"{botCount}bot_{maxMinutes}min_{(selectiveBreeding ? "selective" : "random")}_{(helpersEnabled ? "helpers" : "nohelpers")}{breedSuffix}";
         string csvPath = Path.Combine(csvDir, $"averaged_{csvTag}.csv");
 
         var inv = System.Globalization.CultureInfo.InvariantCulture;
         var csv = new System.Text.StringBuilder();
-        csv.AppendLine("Run,Completed,Minutes,Houses,Cows,Helpers,Coins,Food,LandRemaining,LandCost,MilkClicks,CumMilk,CumCoins");
+        csv.AppendLine("Run,Completed,Minutes,Houses,Cows,Helpers,Coins,Food,LandRemaining,LandCost,MilkClicks,BreedClicks,GatherClicks,TotalClicks,ClickPct,CumMilk,CumCoins");
         for (int i = 0; i < runs; i++)
         {
             var r = results[i];
-            csv.AppendLine(string.Format(inv, "{0},{1},{2:F2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}",
-                i + 1, r.Completed ? 1 : 0, r.Minutes, r.Houses, r.Cows, r.Helpers, r.Coins, r.Food, r.LandRemaining, r.LandCost, r.MilkClicks, r.CumMilk, r.CumCoins));
+            csv.AppendLine(string.Format(inv, "{0},{1},{2:F2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14:F0},{15},{16}",
+                i + 1, r.Completed ? 1 : 0, r.Minutes, r.Houses, r.Cows, r.Helpers, r.Coins, r.Food, r.LandRemaining, r.LandCost,
+                r.MilkClicks, r.BreedClicks, r.GatherClicks, r.TotalClicks, r.ClickPct, r.CumMilk, r.CumCoins));
         }
-        csv.AppendLine(string.Format(inv, "AVG,{0}/{1},{2:F2},{3:F1},{4:F1},{5:F1},{6:F0},{7:F0},{8:F1},,{9:F0},{10:F0},{11:F0}",
-            completions, runs, avgMinutes, avgHouses, avgCows, avgHelpers, avgCoins, (float)results.Average(r => r.Food), avgLand, avgMilkClicks, avgCumMilk, avgCumCoins));
+        float avgClickPct = (float)results.Average(r => r.ClickPct);
+        csv.AppendLine(string.Format(inv, "AVG,{0}/{1},{2:F2},{3:F1},{4:F1},{5:F1},{6:F0},{7:F0},{8:F1},,{9:F0},{10:F0},{11:F0},{12:F0},{13:F0},{14:F0},{15:F0}",
+            completions, runs, avgMinutes, avgHouses, avgCows, avgHelpers, avgCoins, (float)results.Average(r => r.Food), avgLand,
+            avgMilkClicks, (float)results.Average(r => r.BreedClicks), (float)results.Average(r => r.GatherClicks),
+            (float)results.Average(r => r.TotalClicks), avgClickPct, avgCumMilk, avgCumCoins));
         File.WriteAllText(csvPath, csv.ToString());
         _output.WriteLine($"\nCSV exported to: {csvPath}");
     }

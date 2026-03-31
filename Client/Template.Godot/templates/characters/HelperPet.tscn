@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dgjkt2nsjuyuj"]
+
+[ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_char"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://dht3m5cnlyct6" path="res://Scripts/Framework/Components/HelperPetComponentNode.cs" id="fw_helper_pet"]
+[ext_resource type="Script" uid="uid://dujhbvljlh6l3" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="fw_nav"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[node name="HelperPet" type="Node3D" unique_id=1690436353]
+
+[node name="Entity" type="Node3D" parent="." unique_id=2123868047]
+script = ExtResource("fw_entity")
+EntityName = "HelperPet"
+StableIdSeed = "helper-pet-entity-seed"
+
+[node name="HelperPetComponent" type="Node" parent="Entity" unique_id=565527019]
+script = ExtResource("fw_helper_pet")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1246801093]
+script = ExtResource("fw_phys")
+BodyType = 0
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="NavAgent" type="Node3D" parent="Entity" unique_id=919570709]
+script = ExtResource("fw_nav")
+
+[node name="Character" parent="." unique_id=142312194 instance=ExtResource("1_char")]
+transform = Transform3D(0.1, 0, 0, 0, 0.097590916, 0.021817723, 0, -0.021817723, 0.097590916, 0, -0.100830615, 0)
