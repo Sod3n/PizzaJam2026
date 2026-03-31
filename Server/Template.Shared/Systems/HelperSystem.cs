@@ -322,7 +322,7 @@ public class HelperSystem : ISystem
                 break;
 
             case HelperState.SeekingTarget:
-                var land = FindNearestUnlockedLand(state, entity);
+                var land = FindFarthestUnlockedLand(state, entity);
                 if (land == Entity.Null)
                 {
                     // No land to build — return coins
@@ -523,11 +523,15 @@ public class HelperSystem : ISystem
         return nearest;
     }
 
-    private Entity FindNearestUnlockedLand(EntityWorld state, Entity helper)
+    /// <summary>
+    /// Builder targets the FARTHEST unlocked land — expands the frontier
+    /// while the player builds nearby cheap plots manually.
+    /// </summary>
+    private Entity FindFarthestUnlockedLand(EntityWorld state, Entity helper)
     {
-        var myPos = state.GetComponent<Transform2D>(helper).Position;
-        Entity nearest = Entity.Null;
-        Float minDistSq = 999999f;
+        // Use center (0,0) as reference — farthest from center = frontier expansion
+        Entity farthest = Entity.Null;
+        Float maxDistSq = 0f;
 
         foreach (var entity in state.Filter<LandComponent>())
         {
@@ -537,14 +541,14 @@ public class HelperSystem : ISystem
             if (!state.HasComponent<Transform2D>(entity)) continue;
 
             var pos = state.GetComponent<Transform2D>(entity).Position;
-            var distSq = Vector2.DistanceSquared(myPos, pos);
-            if (distSq < minDistSq)
+            var distSq = Vector2.DistanceSquared(Vector2.Zero, pos);
+            if (distSq > maxDistSq)
             {
-                minDistSq = distSq;
-                nearest = entity;
+                maxDistSq = distSq;
+                farthest = entity;
             }
         }
-        return nearest;
+        return farthest;
     }
 
     // ─── Resource bag operations ───
@@ -604,10 +608,11 @@ public class HelperSystem : ISystem
 
     private bool SellOneItem(ref HelperComponent helper)
     {
-        if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins++; return true; }
-        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins++; return true; }
-        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins++; return true; }
-        if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins++; return true; }
+        // Sell most valuable first: PurplePotion(18) > AppleYogurt(6) > VitaminShake(2) > Milk(1)
+        if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins += 18; return true; }
+        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins += 6; return true; }
+        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins += 2; return true; }
+        if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins += 1; return true; }
         return false;
     }
 

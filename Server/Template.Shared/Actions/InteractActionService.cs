@@ -521,9 +521,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
-        if (globalRes.ConsumeAnyMilkProduct())
+        int price = globalRes.ConsumeAndPriceMilkProduct();
+        if (price > 0)
         {
-            globalRes.Coins += 1;
+            globalRes.Coins += price;
             return true;
         }
         missingResource = StateKeys.Milk;
@@ -616,9 +617,19 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
         else if (helper.Type == HelperType.Builder)
         {
-            // Transfer coins from global to builder's bag
-            int capacity = helper.BagCapacity - helper.BagCoins;
-            int toGive = System.Math.Min(capacity, globalRes.Coins);
+            // Give builder enough coins for its target land (or half of available coins)
+            int needed = helper.BagCapacity; // fallback to default capacity
+            if (helper.TargetEntity != Entity.Null && ctx.State.HasComponent<LandComponent>(helper.TargetEntity))
+            {
+                var land = ctx.State.GetComponent<LandComponent>(helper.TargetEntity);
+                needed = land.Threshold - land.CurrentCoins - helper.BagCoins;
+            }
+            else
+            {
+                // No target yet — give half of available coins so player keeps some too
+                needed = globalRes.Coins / 2;
+            }
+            int toGive = System.Math.Max(0, System.Math.Min(needed, globalRes.Coins));
             if (toGive > 0)
             {
                 globalRes.Coins -= toGive;

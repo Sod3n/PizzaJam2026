@@ -36,35 +36,35 @@ public class GrassSpawnSystem : ISystem
             }
         }
 
-        // Check which food farm types exist
-        bool hasCarrotFarm = false, hasAppleOrchard = false, hasMushroomCave = false;
+        // Count farms per food type — each farm adds one spawn per interval
+        int carrotFarms = 0, appleFarms = 0, mushroomFarms = 0;
         foreach (var entity in state.Filter<FoodFarmComponent>())
         {
             var farm = state.GetComponent<FoodFarmComponent>(entity);
             switch (farm.FoodType)
             {
-                case FoodType.Carrot: hasCarrotFarm = true; break;
-                case FoodType.Apple: hasAppleOrchard = true; break;
-                case FoodType.Mushroom: hasMushroomCave = true; break;
+                case FoodType.Carrot: carrotFarms++; break;
+                case FoodType.Apple: appleFarms++; break;
+                case FoodType.Mushroom: mushroomFarms++; break;
             }
         }
 
         var context = new Context(state, Entity.Null, null!);
         uint baseSeed = (uint)state.NextEntityId + ((uint)gameTime.CurrentTick);
 
-        // Always spawn grass
+        // Always spawn 1 grass per interval
         if (grassCount < MaxFoodPerType)
             SpawnFood(context, baseSeed, FoodType.Grass);
 
-        // Spawn other foods only if their farm exists
-        if (hasCarrotFarm && carrotCount < MaxFoodPerType)
-            SpawnFood(context, baseSeed + 1000, FoodType.Carrot);
+        // Each farm spawns 1 food per interval (2 farms = 2x spawn rate)
+        for (int i = 0; i < carrotFarms && carrotCount + i < MaxFoodPerType; i++)
+            SpawnFood(context, baseSeed + 1000u + (uint)i * 100, FoodType.Carrot);
 
-        if (hasAppleOrchard && appleCount < MaxFoodPerType)
-            SpawnFood(context, baseSeed + 2000, FoodType.Apple);
+        for (int i = 0; i < appleFarms && appleCount + i < MaxFoodPerType; i++)
+            SpawnFood(context, baseSeed + 2000u + (uint)i * 100, FoodType.Apple);
 
-        if (hasMushroomCave && mushroomCount < MaxFoodPerType)
-            SpawnFood(context, baseSeed + 3000, FoodType.Mushroom);
+        for (int i = 0; i < mushroomFarms && mushroomCount + i < MaxFoodPerType; i++)
+            SpawnFood(context, baseSeed + 3000u + (uint)i * 100, FoodType.Mushroom);
     }
 
     private const int MaxSpawnAttempts = 10;

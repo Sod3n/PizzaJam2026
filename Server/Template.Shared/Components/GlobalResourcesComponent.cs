@@ -16,6 +16,12 @@ public struct GlobalResourcesComponent : IComponent
     public int AppleYogurt;
     public int PurplePotion;
     public int Coins;
+    public int TotalBreedCount; // Global breed counter — used for helper unlock thresholds
+
+    // Helper unlock thresholds (breed count)
+    public const int GathererUnlockBreed = 6;
+    public const int BuilderUnlockBreed = 10;
+    public const int SellerUnlockBreed = 15;
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)
@@ -81,6 +87,17 @@ public struct GlobalResourcesComponent : IComponent
         if (AppleYogurt > 0) { AppleYogurt--; return true; }
         if (PurplePotion > 0) { PurplePotion--; return true; }
         return false;
+    }
+
+    /// <summary>Consume 1 of the most valuable milk product. Returns coin value (0 if none).</summary>
+    public int ConsumeAndPriceMilkProduct()
+    {
+        // Sell most valuable first: PurplePotion(18) > AppleYogurt(6) > VitaminShake(2) > Milk(1)
+        if (PurplePotion > 0) { PurplePotion--; return 18; }
+        if (AppleYogurt > 0) { AppleYogurt--; return 6; }
+        if (VitaminShake > 0) { VitaminShake--; return 2; }
+        if (Milk > 0) { Milk--; return 1; }
+        return 0;
     }
 
     /// <summary>

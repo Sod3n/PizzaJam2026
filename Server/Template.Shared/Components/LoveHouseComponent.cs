@@ -14,4 +14,7 @@ public struct LoveHouseComponent : IComponent
     public Entity CowId2;
     public int BreedProgress; // Clicks so far during breeding
     public int BreedCost;     // Total clicks needed (set from cow exhaust values)
+    public int SameTierBreedCount; // Consecutive same-tier breeds — guarantees upgrade at threshold
+
+    public const int GuaranteedUpgradeEvery = 3;
 }

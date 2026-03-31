@@ -15,4 +15,5 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int AppleYogurt;
     [Export] public int PurplePotion;
     [Export] public int Coins;
+    [Export] public int TotalBreedCount;
 }

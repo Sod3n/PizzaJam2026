@@ -21,10 +21,24 @@ public static class StarGrid
     private const int MinSpecialDistance = 4; // 4 grid steps ≈ 12-16 houses between specials
 
     // Fixed special grid positions that become specific structure types
+    // Ring 1 (dist 1): houses + love house — economy bootstrap
+    // Farms at increasing distances — exactly 6 total (2 per type)
+    //   ~4 min  Carrot1    ~8 min  Carrot2
+    //   ~12 min Apple1     ~18 min Apple2
+    //   ~22 min Mushroom1  ~26 min Mushroom2
     public static int? GetFixedType(int gx, int gy)
     {
         if (gx == 0 && gy == 0) return LandType.SellPoint;
-        if (gx == 1 && gy == 0) return LandType.LoveHouse; // Direct neighbor of starting sell point
+        if (gx == 1 && gy == 0) return LandType.LoveHouse;
+        // Carrot farms — early game (dist 3-4)
+        if (gx == 2 && gy == 1) return LandType.CarrotFarm;     // dist 3, cost 60
+        if (gx == -3 && gy == 1) return LandType.CarrotFarm;    // dist 4, cost 80
+        // Apple farms — mid game (dist 5-6)
+        if (gx == 3 && gy == 2) return LandType.AppleOrchard;   // dist 5, cost 100
+        if (gx == -4 && gy == 2) return LandType.AppleOrchard;  // dist 6, cost 120
+        // Mushroom farms — late game (dist 7-8)
+        if (gx == 4 && gy == 3) return LandType.MushroomCave;   // dist 7, cost 140
+        if (gx == -5 && gy == 3) return LandType.MushroomCave;  // dist 8, cost 160
         if (gx == 0 && gy == -3) return LandType.FinalStructure;
         return null;
     }
@@ -154,18 +168,8 @@ public static class StarGrid
             return (hash % 3 == 0) ? LandType.SellPoint : LandType.LoveHouse;
         }
 
-        // Every Nth remaining slot becomes a food farm (cycling through Carrot, Apple, Mushroom)
-        int hash2 = System.Math.Abs(gx * 31337 + gy * 65537);
-        if (hash2 % FoodFarmFreq == 0)
-        {
-            int farmKind = hash2 % 3; // 0=Carrot, 1=Apple, 2=Mushroom
-            return farmKind switch
-            {
-                0 => LandType.CarrotFarm,
-                1 => LandType.AppleOrchard,
-                _ => LandType.MushroomCave
-            };
-        }
+        // Food farms are only placed at fixed positions (6 total: 2 per type)
+        // No random farm spawning — progression is controlled
 
         // Rare gatherer shops (~1 in 20 remaining slots)
         int hash3 = System.Math.Abs(gx * 48271 + gy * 99991);

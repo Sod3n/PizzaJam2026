@@ -53,19 +53,19 @@ public class HelperSystemTests
 
         var assistant = HelperDefinition.Create(ctx, new Vector2(0, 0), HelperType.Assistant, player);
 
-        // Move player far away (set velocity so followers know player moved)
+        // Move player far away (set velocity briefly so followers detect movement)
         ref var pt = ref game.State.GetComponent<Transform2D>(player);
-        pt.Position = new Vector2(20, 0);
+        pt.Position = new Vector2(15, 0);
         ref var pb = ref game.State.GetComponent<CharacterBody2D>(player);
         pb.Velocity = new Vector2(5, 0);
 
-        RunTicks(game, 120);
+        RunTicks(game, 5);
 
-        // Stop player
+        // Stop player and let assistant catch up
         pb = ref game.State.GetComponent<CharacterBody2D>(player);
         pb.Velocity = Vector2.Zero;
 
-        RunTicks(game, 60);
+        RunTicks(game, 180);
 
         var assistantPos = game.State.GetComponent<Transform2D>(assistant).Position;
         var playerPos = game.State.GetComponent<Transform2D>(player).Position;

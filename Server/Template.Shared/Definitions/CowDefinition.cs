@@ -28,8 +28,8 @@ public static partial class CowDefinition
         }
         if (totalExhaust <= 0) totalExhaust = 10;
 
-        // Assign random food preference (Grass, Carrot, Apple, or Mushroom)
-        component.PreferredFood = random.NextInt(0, 4); // 0-3 inclusive
+        // Weighted random: common cows prefer cheap food, rare cows prefer expensive food
+        component.PreferredFood = FoodType.RandomPreferred(ref random);
 
         System.Console.WriteLine($"[CowDefinition] Created Cow {entity.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {component.PreferredFood} (Skins: {skinComponent.Skins.Count})");
         component.MaxExhaust = totalExhaust;

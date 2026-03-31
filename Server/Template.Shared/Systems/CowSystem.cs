@@ -9,6 +9,7 @@ namespace Template.Shared.Systems;
 
 public class CowSystem : ISystem
 {
+    public static bool HelpersEnabled = true;
     public void Update(EntityWorld state)
     {
         // Handle state completions on players
@@ -297,44 +298,79 @@ public class CowSystem : ISystem
         if (state.HasComponent<CowComponent>(cow1) && state.HasComponent<CowComponent>(cow2)
             && state.HasComponent<SkinComponent>(cow1) && state.HasComponent<SkinComponent>(cow2))
         {
-            // Rare chance (~5%) to get a helper instead of a cow
+            // Track same-tier breeding for guaranteed upgrade
+            var parentACow = state.GetComponent<CowComponent>(cow1);
+            var parentBCow = state.GetComponent<CowComponent>(cow2);
+            bool sameTier = parentACow.PreferredFood == parentBCow.PreferredFood;
+            bool guaranteedUpgrade = false;
+
+            if (sameTier)
+            {
+                loveHouse.SameTierBreedCount++;
+                if (loveHouse.SameTierBreedCount >= LoveHouseComponent.GuaranteedUpgradeEvery)
+                {
+                    guaranteedUpgrade = true;
+                    loveHouse.SameTierBreedCount = 0;
+                    ILogger.Log($"[CowSystem] Guaranteed tier upgrade! (after {LoveHouseComponent.GuaranteedUpgradeEvery} same-tier breeds)");
+                }
+            }
+            else
+            {
+                loveHouse.SameTierBreedCount = 0;
+            }
+
             var gameTime = state.GetCustomData<IGameTime>();
             uint breedSeed = (uint)((cow1.Id * 7919 + cow2.Id * 104729) ^ (gameTime?.CurrentTick ?? 0));
             var breedRandom = new DeterministicRandom(breedSeed);
-            int roll = breedRandom.NextInt(100);
 
-            if (roll < 5) // 5% chance for a helper
+            // Increment global breed counter
+            Entity globalResEntity = Entity.Null;
+            foreach (var ge in state.Filter<GlobalResourcesComponent>())
+            { globalResEntity = ge; break; }
+            int breedCount = 0;
+            if (globalResEntity != Entity.Null)
+            {
+                ref var gr = ref state.GetComponent<GlobalResourcesComponent>(globalResEntity);
+                gr.TotalBreedCount++;
+                breedCount = gr.TotalBreedCount;
+            }
+
+            // Helper unlock: guaranteed at breed count threshold, 5% random before that
+            // Order: Gatherer (6th) → Builder (10th) → Seller (15th)
+            int neededHelper = GetNextNeededHelper(state, playerEntity);
+            bool spawnHelper = false;
+
+            if (neededHelper >= 0 && !guaranteedUpgrade)
+            {
+                bool pastThreshold = neededHelper switch
+                {
+                    HelperType.Gatherer => breedCount >= GlobalResourcesComponent.GathererUnlockBreed,
+                    HelperType.Builder  => breedCount >= GlobalResourcesComponent.BuilderUnlockBreed,
+                    HelperType.Seller   => breedCount >= GlobalResourcesComponent.SellerUnlockBreed,
+                    _ => false
+                };
+                spawnHelper = pastThreshold || breedRandom.NextInt(100) < 5;
+            }
+
+            if (spawnHelper && HelpersEnabled)
             {
                 var spawnPos = state.HasComponent<Transform2D>(loveHouseEntity)
                     ? state.GetComponent<Transform2D>(loveHouseEntity).Position + new Vector2(2, 0)
                     : new Vector2(0, 0);
                 var ctx = new Context(state, playerEntity, null!);
 
-                int helperRoll = breedRandom.NextInt(3);
-                int helperType = helperRoll switch
-                {
-                    0 => HelperType.Seller,
-                    1 => HelperType.Builder,
-                    _ => HelperType.Assistant
-                };
-
-                babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, helperType, playerEntity);
-                ILogger.Log($"[CowSystem] Rare crossbreed result: {helperType switch { 0 => "Assistant", 2 => "Seller", 3 => "Builder", _ => "Helper" }}!");
+                babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, neededHelper, playerEntity);
+                ILogger.Log($"[CowSystem] Helper unlocked: {neededHelper switch { 1 => "Gatherer", 3 => "Builder", 2 => "Seller", _ => "Helper" }} at breed #{breedCount}!");
             }
             else
             {
-                babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2);
+                babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, guaranteedUpgrade);
             }
         }
 
-        // Clear love house slots
+        // Parents stay in love house — player tames them out when ready
+        // (love house slots stay filled so player can see them)
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-        loveHouse.CowId1 = Entity.Null;
-        loveHouse.CowId2 = Entity.Null;
-
-        // Return parent cows to their previous houses
-        ReturnCowToHouse(state, cow1);
-        ReturnCowToHouse(state, cow2);
 
         // Baby cow follows the player
         if (babyCow != Entity.Null && state.HasComponent<CowComponent>(babyCow))
@@ -362,7 +398,7 @@ public class CowSystem : ISystem
         ILogger.Log($"[CowSystem] Love house breed complete. Released cows {cow1.Id} and {cow2.Id} back to player {playerEntity.Id}");
     }
 
-    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB)
+    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false)
     {
         var skinA = state.GetComponent<SkinComponent>(parentA);
         var skinB = state.GetComponent<SkinComponent>(parentB);
@@ -393,16 +429,36 @@ public class CowSystem : ISystem
         ref var newCowComp = ref state.GetComponent<CowComponent>(newCow);
         newCowComp.MaxExhaust = totalExhaust;
 
-        // Inherit food preference from parents (50/50 chance, with 10% mutation)
+        // Inherit food preference from parents
         var parentACow = state.GetComponent<CowComponent>(parentA);
         var parentBCow = state.GetComponent<CowComponent>(parentB);
-        int prefRoll = random.NextInt(100);
-        if (prefRoll < 10)
-            newCowComp.PreferredFood = random.NextInt(0, 4); // mutation
-        else if (prefRoll < 55)
-            newCowComp.PreferredFood = parentACow.PreferredFood;
+
+        if (guaranteedUpgrade)
+        {
+            // Guaranteed upgrade: always one tier above the best parent
+            int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
+            newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
+            ILogger.Log($"[CowSystem] Guaranteed upgrade breed: {maxParent} → {newCowComp.PreferredFood}");
+        }
         else
-            newCowComp.PreferredFood = parentBCow.PreferredFood;
+        {
+            // Normal: 50/50 inherit with 9% upgrade / 1% downgrade mutation
+            int prefRoll = random.NextInt(100);
+            if (prefRoll < 9)
+            {
+                int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
+                newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
+            }
+            else if (prefRoll < 10)
+            {
+                int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
+                newCowComp.PreferredFood = System.Math.Max(minParent - 1, FoodType.Grass);
+            }
+            else if (prefRoll < 55)
+                newCowComp.PreferredFood = parentACow.PreferredFood;
+            else
+                newCowComp.PreferredFood = parentBCow.PreferredFood;
+        }
 
         ILogger.Log($"[CowSystem] Bred new cow {newCow.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {newCowComp.PreferredFood}");
         return newCow;
@@ -491,5 +547,29 @@ public class CowSystem : ISystem
             // No previous house — cow becomes free at its current position
             cow.HouseId = Entity.Null;
         }
+    }
+
+    /// <summary>
+    /// Returns the next helper type the player needs, in unlock order:
+    /// Gatherer → Builder → Seller. Returns -1 if player has all three.
+    /// </summary>
+    private int GetNextNeededHelper(EntityWorld state, Entity playerEntity)
+    {
+        bool hasGatherer = false, hasBuilder = false, hasSeller = false;
+        foreach (var he in state.Filter<HelperComponent>())
+        {
+            var h = state.GetComponent<HelperComponent>(he);
+            if (h.OwnerPlayer != playerEntity) continue;
+            switch (h.Type)
+            {
+                case HelperType.Gatherer: hasGatherer = true; break;
+                case HelperType.Builder: hasBuilder = true; break;
+                case HelperType.Seller: hasSeller = true; break;
+            }
+        }
+        if (!hasGatherer) return HelperType.Gatherer;
+        if (!hasBuilder) return HelperType.Builder;
+        if (!hasSeller) return HelperType.Seller;
+        return -1; // has all helpers
     }
 }

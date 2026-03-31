@@ -8,4 +8,5 @@ public partial class LoveHouseComponentNode : Node
 {
     [Export] public int BreedProgress;
     [Export] public int BreedCost;
+    [Export] public int SameTierBreedCount;
 }

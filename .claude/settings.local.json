@@ -120,7 +120,8 @@
       "Bash(for f:*)",
       "Bash(do echo:*)",
       "Bash(sips -g pixelWidth -g pixelHeight $f)",
-      "Read(//Users/a1/Documents/GitHub/PizzaJam2026-copy/**)"
+      "Read(//Users/a1/Documents/GitHub/PizzaJam2026-copy/**)",
+      "Bash(xargs -I {} ls -la {})"
     ]
   }
 }

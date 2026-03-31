@@ -38,32 +38,32 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
                 return; // Player already exists
             }
         }
-        
+
         // Create the Player Entity
         // Perfect overlaps can cause non-deterministic physics resolution
         // ERROR FIX: Guid.GetHashCode() is not stable across processes! Use bytes.
         int seed = BitConverter.ToInt32(action.UserId.ToByteArray(), 0);
         var random = new Deterministic.GameFramework.Types.DeterministicRandom((uint)seed);
-        
+
         // Find a valid spawn position that doesn't overlap with existing players
         var position = FindValidSpawnPosition(ctx, ref random);
 
         // Use PlayerDefinition to ensure consistent setup
         var playerEntity = PlayerDefinition.Create(ctx, action.UserId, position, 0);
-        
+
         System.Console.WriteLine($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position}. NextEntityId After: {ctx.State.NextEntityId}");
 
         // Add Score Component (not in definition yet, specific to gameplay)
         ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });
 
         // Spawn all helper types for debugging
-        var assistant = HelperDefinition.Create(ctx, position + new Vector2(1, -1), HelperType.Assistant, playerEntity);
-        ref var ps2 = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-        ps2.AssistantHelper = assistant;
+        // var assistant = HelperDefinition.Create(ctx, position + new Vector2(1, -1), HelperType.Assistant, playerEntity);
+        // ref var ps2 = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+        // ps2.AssistantHelper = assistant;
 
-        HelperDefinition.Create(ctx, position + new Vector2(-1, -1), HelperType.Gatherer, playerEntity);
-        HelperDefinition.Create(ctx, position + new Vector2(1, 1), HelperType.Seller, playerEntity);
-        HelperDefinition.Create(ctx, position + new Vector2(-1, 1), HelperType.Builder, playerEntity);
+        // HelperDefinition.Create(ctx, position + new Vector2(-1, -1), HelperType.Gatherer, playerEntity);
+        // HelperDefinition.Create(ctx, position + new Vector2(1, 1), HelperType.Seller, playerEntity);
+        // HelperDefinition.Create(ctx, position + new Vector2(-1, 1), HelperType.Builder, playerEntity);
 
         // Collect unowned cows first, then assign (avoid stale refs during iteration)
         var unownedCows = new System.Collections.Generic.List<Entity>();
