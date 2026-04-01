@@ -49,7 +49,7 @@ public static partial class PlayerDefinition
         ctx.AddComponent(entity, new PlayerStateComponent
         {
             InteractionTarget = Entity.Null,
-            InteractionTarge10 = Entity.Null,
+            HighlightTarget = Entity.Null,
             ReturnPosition = Vector2.Zero,
             InteractionZone = Entity.Null,
             FollowingCow = Entity.Null,

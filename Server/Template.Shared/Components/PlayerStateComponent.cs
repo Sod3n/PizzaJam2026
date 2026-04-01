@@ -11,7 +11,7 @@ namespace Template.Shared.Components;
 public struct PlayerStateComponent : IComponent
 {
     public Entity InteractionTarget;
-    public Entity InteractionTarge10;
+    public Entity HighlightTarget;
     public Vector2 ReturnPosition;
     public Entity InteractionZone;
     public Entity FollowingCow;

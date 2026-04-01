@@ -23,6 +23,9 @@ public static class ViewHelpers
 
     public static void SetupInteractAnimation(EntityViewModel vm, Node3D visualNode, Node3D animateNode = null)
     {
+        EntityViewModel.EntityVisualNodes[vm.Entity.Id] = visualNode;
+        Disposable.Create(() => EntityViewModel.EntityVisualNodes.Remove(vm.Entity.Id)).AddTo(vm.Disposables);
+
         SetupNotEnoughResource(vm, visualNode);
         SetupGainedResource(vm, visualNode);
         animateNode ??= visualNode;

@@ -24,7 +24,7 @@ public static partial class AppleDefinition
         ref var component = ref ctx.GetComponent<GrassComponent>(entity);
         component.Durability = 15;
         component.MaxDurability = 15;
-        component.FoodType = 0;
+        component.FoodType = 2;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

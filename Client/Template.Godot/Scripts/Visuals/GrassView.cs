@@ -26,7 +26,8 @@ public partial class GrassView
         if (altPrefab != null)
         {
             var replacement = altPrefab.Instantiate<Node3D>();
-            replacement.Position = visualNode.Position;
+            var pos = vm.Transform.Position.CurrentValue;
+            replacement.Position = new Vector3((float)pos.X, 0f, (float)pos.Y);
             visualNode.GetParent().AddChild(replacement);
             _spawnedEntities[vm] = replacement;
             visualNode.QueueFree();

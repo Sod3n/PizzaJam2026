@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://5l2waaftxb6k" path="res://sprites/export/icons/Money_/1.png" id="8_o1ekv"]
 [ext_resource type="Script" uid="uid://cbukwklhf1rrg" path="res://Scripts/Framework/Components/LandComponentNode.cs" id="fw_land"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1ekv"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mcv8w"]
 render_priority = -1
 shader = ExtResource("1_j63rn")
 shader_parameter/albedo_texture = ExtResource("2_vc6b0")
@@ -30,7 +30,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_be3pv"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1ekv"]
 render_priority = -1
 shader = ExtResource("1_j63rn")
 shader_parameter/albedo_texture = ExtResource("6_mcv8w")
@@ -85,9 +85,9 @@ script = ExtResource("fw_land")
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=288177511]
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1752989073]
-transform = Transform3D(0.39999998, 0, 0, 0, 0.36328354, 0.16740683, 0, -0.16740683, 0.36328354, -0.25880167, 4.6112766, -2.0273776)
-material_override = SubResource("ShaderMaterial_o1ekv")
+[node name="AnimatedSprite3D2" type="AnimatedSprite3D" parent="." unique_id=940559363]
+transform = Transform3D(0.42, 0, 0, 0, 0.38144773, 0.1757772, 0, -0.1757772, 0.38144773, -0.25880167, 4.680888, -2.2830029)
+material_override = SubResource("ShaderMaterial_mcv8w")
 modulate = Color(0.37602848, 0.37602848, 0.37602845, 1)
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_be3pv")
@@ -96,7 +96,7 @@ script = ExtResource("2_gk14f")
 
 [node name="HouseType" type="AnimatedSprite3D" parent="." unique_id=1653548156]
 transform = Transform3D(0.13, 0, 0, 0, 0.11806715, 0.054407224, 0, -0.054407224, 0.11806715, 0.04005889, 1.2842668, -0.3803537)
-material_override = SubResource("ShaderMaterial_be3pv")
+material_override = SubResource("ShaderMaterial_o1ekv")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_3ww3x")
 script = ExtResource("2_gk14f")

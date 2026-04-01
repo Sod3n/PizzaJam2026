@@ -22,9 +22,9 @@ public static partial class MushroomDefinition
         var entity = ctx.CreateEntity<GrassComponent>();
 
         ref var component = ref ctx.GetComponent<GrassComponent>(entity);
-        component.Durability = 3;
-        component.MaxDurability = 3;
-        component.FoodType = 0;
+        component.Durability = 4;
+        component.MaxDurability = 4;
+        component.FoodType = 3;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
