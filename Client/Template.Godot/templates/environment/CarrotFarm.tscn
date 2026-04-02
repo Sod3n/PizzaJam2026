@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://onhebvxmg1oh"]
+
+[ext_resource type="Texture2D" uid="uid://baibyw0uinncn" path="res://sprites/export/homes/Rabbit_Home_.png" id="5_bguar"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="anim_script"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://bq1qh6mtcnnu5" path="res://Scripts/Framework/Components/CarrotFarmComponentNode.cs" id="fw_foodfarm"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="shader"]
+[ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="tex_bar"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="tex_house"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ic2ic"]
+render_priority = -1
+shader = ExtResource("shader")
+shader_parameter/albedo_texture = ExtResource("5_bguar")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_bguar")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_bar")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_house")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="CarrotFarm" type="Node3D" unique_id=257336856]
+
+[node name="Entity" type="Node3D" parent="." unique_id=1435844632]
+script = ExtResource("fw_entity")
+EntityName = "CarrotFarm"
+StableIdSeed = "carrotfarm-entity-seed"
+
+[node name="CarrotFarmComponent" type="Node" parent="Entity" unique_id=1407439945]
+script = ExtResource("fw_foodfarm")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1142323034]
+script = ExtResource("fw_phys")
+ShapeType = 1
+ShapeWidth = 4.608341
+ShapeHeight = 0.70518863
+
+[node name="AnimatedSprite3D" type="Node3D" parent="." unique_id=413039007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.29378605)
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=915062799]
+transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 0.5461638, -0.7434305)
+material_override = SubResource("ShaderMaterial_ic2ic")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_1")
+script = ExtResource("anim_script")

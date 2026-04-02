@@ -22,11 +22,14 @@ public struct GlobalResourcesComponent : IComponent
     public int LastFarmGX;     // Grid X of last dynamically spawned farm (for angular separation)
     public int LastFarmGY;     // Grid Y of last dynamically spawned farm (for angular separation)
 
-    // Helper unlock thresholds (breed count)
-    public const int GathererUnlockBreed = 3;
-    public const int BuilderUnlockBreed = 5;
-    public const int SellerUnlockBreed = 8;
+    // Helper unlock thresholds (breed count) — sequential, supports duplicates
+    public const int GathererUnlockBreed = 2;
+    public const int BuilderUnlockBreed = 4;
+    public const int SellerUnlockBreed = 6;
+    public const int Gatherer2UnlockBreed = 9;
+    public const int Builder2UnlockBreed = 11;
     public const int GuaranteedMegaBreed = 12;
+    public int HelpersSpawned; // How many helpers have been spawned (index into unlock sequence)
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)

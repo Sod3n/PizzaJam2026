@@ -1,0 +1,65 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://shaders/sway.gdshader" id="shader"]
+[ext_resource type="Texture2D" path="res://sprites/export/homes/A_bar.png" id="tex_bar"]
+[ext_resource type="Texture2D" path="res://sprites/house.png" id="tex_house"]
+[ext_resource type="Script" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="anim_script"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/UpgradeGathererComponentNode.cs" id="fw_comp"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+render_priority = -1
+shader = ExtResource("shader")
+shader_parameter/albedo_texture = ExtResource("tex_bar")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_bar")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_house")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="UpgradeGatherer" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "UpgradeGatherer"
+StableIdSeed = "upgradegatherer-entity-seed"
+
+[node name="UpgradeGathererComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_comp")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+ShapeType = 1
+ShapeWidth = 2.0
+ShapeHeight = 2.0
+
+[node name="AnimatedSprite3D" type="Node3D" parent="."]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D"]
+transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.3162969, -0.7434305)
+material_override = SubResource("ShaderMaterial_1")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_1")
+script = ExtResource("anim_script")
+
+[node name="Capacity" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
+no_depth_test = true
+render_priority = 2
+outline_render_priority = 1
+text = "10/10"
+font_size = 128
+horizontal_alignment = 0

@@ -54,6 +54,7 @@ public static partial class PlayerDefinition
             InteractionZone = Entity.Null,
             FollowingCow = Entity.Null,
             AssistantHelper = Entity.Null,
+            ClickMultiplier = 0,
         });
 
         // Child entity: InteractionZone

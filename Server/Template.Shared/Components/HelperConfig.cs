@@ -9,9 +9,9 @@ public static class HelperConfig
     public record HelperInfo(string Key, string Name, int BaseCapacity, int UpgradedCapacity, float BaseSpeed, float UpgradedSpeed);
 
     public static readonly HelperInfo Assistant = new("assistant", "Ame", 0, 0, 8f, 16f);
-    public static readonly HelperInfo Gatherer = new("gatherer", "Lefantis", 15, 45, 8f, 16f);
-    public static readonly HelperInfo Seller = new("seller", "Mochi", 50, 200, 8f, 16f);
-    public static readonly HelperInfo Builder = new("builder", "Brix", 50, 200, 8f, 16f);
+    public static readonly HelperInfo Gatherer = new("gatherer", "Lefantis", 30, 45, 8f, 16f);
+    public static readonly HelperInfo Seller = new("seller", "Mochi", 200, 400, 8f, 16f);
+    public static readonly HelperInfo Builder = new("builder", "Brix", 200, 400, 8f, 16f);
 
     public static HelperInfo GetByType(int helperType) => helperType switch
     {

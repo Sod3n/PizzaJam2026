@@ -19,6 +19,8 @@ public static class LandType
     public const int UpgradeGatherer = 8;
     public const int UpgradeBuilder = 9;
     public const int UpgradeSeller = 10;
+    public const int UpgradeAssistant = 11; // Late-game: x5 click speed (x10 with HelperAssistant)
+    public const int Decoration = 12;       // Stub building — costs coins but doesn't house cows
 
     /// <summary>Get the FoodType this farm land type produces, or -1 if not a farm.</summary>
     public static int GetFoodType(int landType)

@@ -21,6 +21,15 @@
 [ext_resource type="PackedScene" uid="uid://dnw7wbnuinko2" path="res://templates/environment/props/Bush2.tscn" id="tpl_bush2"]
 [ext_resource type="PackedScene" uid="uid://w5woq2tbf002" path="res://templates/environment/props/Flowers.tscn" id="tpl_flowers"]
 [ext_resource type="PackedScene" path="res://templates/environment/FoodFarm.tscn" id="tpl_foodfarm"]
+[ext_resource type="PackedScene" path="res://templates/environment/CarrotFarm.tscn" id="tpl_carrotfarm"]
+[ext_resource type="PackedScene" path="res://templates/environment/AppleOrchard.tscn" id="tpl_appleorchard"]
+[ext_resource type="PackedScene" path="res://templates/environment/MushroomCave.tscn" id="tpl_mushroomcave"]
+[ext_resource type="PackedScene" path="res://templates/environment/HelperAssistant.tscn" id="tpl_helperassistant"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeGatherer.tscn" id="tpl_upgradegatherer"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeBuilder.tscn" id="tpl_upgradebuilder"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeSeller.tscn" id="tpl_upgradeseller"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeAssistant.tscn" id="tpl_upgradeassistant"]
+[ext_resource type="PackedScene" path="res://templates/environment/Decoration.tscn" id="tpl_decoration"]
 [ext_resource type="PackedScene" uid="uid://bu2yqslfpgg4k" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
 [ext_resource type="PackedScene" path="res://templates/characters/Helper.tscn" id="tpl_helper"]
 [ext_resource type="PackedScene" uid="uid://csft4r563rued" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
@@ -38,6 +47,15 @@
 [ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
 [ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
+[ext_resource type="Script" path="res://Scripts/Visuals/CarrotFarmView.cs" id="view_carrotfarm"]
+[ext_resource type="Script" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
+[ext_resource type="Script" path="res://Scripts/Visuals/MushroomCaveView.cs" id="view_mushroomcave"]
+[ext_resource type="Script" path="res://Scripts/Visuals/HelperAssistantView.cs" id="view_helperassistant"]
+[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
+[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeBuilderView.cs" id="view_upgradebuilder"]
+[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
+[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeAssistantView.cs" id="view_upgradeassistant"]
+[ext_resource type="Script" path="res://Scripts/Visuals/DecorationView.cs" id="view_decoration"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
@@ -4258,6 +4276,42 @@ Prefab = ExtResource("tpl_lovehouse")
 [node name="FoodFarmView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=379749604]
 script = ExtResource("view_foodfarm")
 Prefab = ExtResource("tpl_foodfarm")
+
+[node name="CarrotFarmView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_carrotfarm")
+Prefab = ExtResource("tpl_carrotfarm")
+
+[node name="AppleOrchardView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_appleorchard")
+Prefab = ExtResource("tpl_appleorchard")
+
+[node name="MushroomCaveView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_mushroomcave")
+Prefab = ExtResource("tpl_mushroomcave")
+
+[node name="HelperAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_helperassistant")
+Prefab = ExtResource("tpl_helperassistant")
+
+[node name="UpgradeGathererView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_upgradegatherer")
+Prefab = ExtResource("tpl_upgradegatherer")
+
+[node name="UpgradeBuilderView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_upgradebuilder")
+Prefab = ExtResource("tpl_upgradebuilder")
+
+[node name="UpgradeSellerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_upgradeseller")
+Prefab = ExtResource("tpl_upgradeseller")
+
+[node name="UpgradeAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_upgradeassistant")
+Prefab = ExtResource("tpl_upgradeassistant")
+
+[node name="DecorationView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_decoration")
+Prefab = ExtResource("tpl_decoration")
 
 [node name="FoodSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1116882817]
 script = ExtResource("view_foodsign")

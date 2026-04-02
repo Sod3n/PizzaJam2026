@@ -80,10 +80,10 @@ public class HelperSystem : ISystem
                     UpdateGatherer(state, entity, ref helper, upgraded);
                     break;
                 case HelperType.Seller:
-                    UpdateSeller(state, entity, ref helper);
+                    UpdateSeller(state, entity, ref helper, upgraded);
                     break;
                 case HelperType.Builder:
-                    UpdateBuilder(state, entity, ref helper);
+                    UpdateBuilder(state, entity, ref helper, upgraded);
                     break;
             }
         }
@@ -231,7 +231,7 @@ public class HelperSystem : ISystem
 
     // ─── Seller: player gives milk → sell at sell point → deposit coins ───
 
-    private void UpdateSeller(EntityWorld state, Entity entity, ref HelperComponent helper)
+    private void UpdateSeller(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
     {
         switch (helper.State)
         {
@@ -293,17 +293,19 @@ public class HelperSystem : ISystem
                 if (helper.WorkTimer >= helper.WorkDuration)
                 {
                     helper.WorkTimer = 0;
-                    // Sell one item
-                    if (SellOneItem(ref helper))
+                    // Sell 5 items at once (always)
+                    int sellCount = 5;
+                    for (int s = 0; s < sellCount; s++)
                     {
-                        // Visual feedback on sell point
-                        if (helper.TargetEntity != Entity.Null)
-                            state.AddComponent(helper.TargetEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = StateKeys.Coins, Age = 0 });
-                        helper = ref state.GetComponent<HelperComponent>(entity);
-
-                        if (!HasMilkInBag(ref helper))
-                            helper.State = HelperState.Returning;
+                        if (!SellOneItem(ref helper)) break;
                     }
+                    // Visual feedback on sell point
+                    if (helper.TargetEntity != Entity.Null)
+                        state.AddComponent(helper.TargetEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = StateKeys.Coins, Age = 0 });
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+
+                    if (!HasMilkInBag(ref helper))
+                        helper.State = HelperState.Returning;
                     else
                     {
                         helper.State = HelperState.Returning;
@@ -337,7 +339,7 @@ public class HelperSystem : ISystem
 
     // ─── Builder: player gives coins → walk to land → contribute coins ───
 
-    private void UpdateBuilder(EntityWorld state, Entity entity, ref HelperComponent helper)
+    private void UpdateBuilder(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
     {
         switch (helper.State)
         {
@@ -394,10 +396,14 @@ public class HelperSystem : ISystem
                         // Visual feedback
                         state.AddComponent(landEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = StateKeys.Coins, Age = 0 });
 
+                        // Builder deposits 3 coins per tick (always)
+                        int buildAmount = 3;
                         ref var targetLand = ref state.GetComponent<LandComponent>(landEntity);
-                        targetLand.CurrentCoins++;
+                        int deposit = System.Math.Min(buildAmount, helper.BagCoins);
+                        deposit = System.Math.Min(deposit, targetLand.Threshold - targetLand.CurrentCoins);
+                        targetLand.CurrentCoins += deposit;
                         helper = ref state.GetComponent<HelperComponent>(entity);
-                        helper.BagCoins--;
+                        helper.BagCoins -= deposit;
 
                         // Check if land is complete — trigger building creation
                         targetLand = ref state.GetComponent<LandComponent>(landEntity);

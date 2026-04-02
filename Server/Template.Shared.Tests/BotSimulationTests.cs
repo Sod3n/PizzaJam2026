@@ -248,13 +248,20 @@ public class BotSimulationTests
                 metrics.RecordSnapshot(game, tick);
                 // Track when new farms are built and per-type first appearance
                 int farms = 0;
-                foreach (var e in game.State.Filter<FoodFarmComponent>())
+                foreach (var _ in game.State.Filter<CarrotFarmComponent>())
                 {
                     farms++;
-                    var ff = game.State.GetComponent<FoodFarmComponent>(e);
-                    if (ff.FoodType == FoodType.Carrot && firstCarrotTick < 0) firstCarrotTick = tick;
-                    if (ff.FoodType == FoodType.Apple && firstAppleTick < 0) firstAppleTick = tick;
-                    if (ff.FoodType == FoodType.Mushroom && firstMushroomTick < 0) firstMushroomTick = tick;
+                    if (firstCarrotTick < 0) firstCarrotTick = tick;
+                }
+                foreach (var _ in game.State.Filter<AppleOrchardComponent>())
+                {
+                    farms++;
+                    if (firstAppleTick < 0) firstAppleTick = tick;
+                }
+                foreach (var _ in game.State.Filter<MushroomCaveComponent>())
+                {
+                    farms++;
+                    if (firstMushroomTick < 0) firstMushroomTick = tick;
                 }
                 if (farms > lastFarmCount) { lastFarmCount = farms; lastFarmTick = tick; }
 
@@ -413,7 +420,12 @@ public class BotSimulationTests
                 if (snap != null)
                 {
                     var ps0 = game.State.GetComponent<PlayerStateComponent>(bots[0].Player);
-                    _output.WriteLine($"  [{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Housed={snap.HousedCows} Follow={snap.FollowingCows} Wild={snap.WildCows} Food={snap.TotalFood} Milk={snap.TotalMilk} | {bots[0].LastAction}");
+                    int hCount = 0;
+                    foreach (var he in game.State.Filter<HelperComponent>()) hCount++;
+                    int hPetCount = 0;
+                    foreach (var pe in game.State.Filter<HelperPetComponent>()) hPetCount++;
+                    _output.WriteLine($"  [{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Helpers={hCount} Pets={hPetCount} ClickMult={ps0.ClickMultiplier} Food={snap.TotalFood} Milk={snap.TotalMilk} | {bots[0].LastAction}");
+                    System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!, "sim_debug.txt"), $"[{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Helpers={hCount} Pets={hPetCount} ClickMult={ps0.ClickMultiplier} Food={snap.TotalFood} Milk={snap.TotalMilk}\n");
                 }
             }
 

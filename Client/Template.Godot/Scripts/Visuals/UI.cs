@@ -28,15 +28,15 @@ public partial class UI : CanvasLayer
     public override void _Ready()
     {
         // Cache nodes
-        _grassLabel = GetNode<RichTextLabel>("Control/Grass");
-        _milkLabel = GetNode<RichTextLabel>("Control/Milk");
-        _coinLabel = GetNode<RichTextLabel>("Control/Coins");
-        _carrotLabel = GetNode<RichTextLabel>("Control/Carrot");
-        _appleLabel = GetNode<RichTextLabel>("Control/Apple");
-        _mushroomLabel = GetNode<RichTextLabel>("Control/Mushroom");
-        _vitaminShakeLabel = GetNode<RichTextLabel>("Control/VitaminShake");
-        _appleYogurtLabel = GetNode<RichTextLabel>("Control/AppleYogurt");
-        _purplePotionLabel = GetNode<RichTextLabel>("Control/PurplePotion");
+        _grassLabel = GetNode<RichTextLabel>("Control/BottomBar/Grass");
+        _milkLabel = GetNode<RichTextLabel>("Control/BottomBar/Milk");
+        _coinLabel = GetNode<RichTextLabel>("Control/BottomBar/Coins");
+        _carrotLabel = GetNode<RichTextLabel>("Control/BottomBar/Carrot");
+        _appleLabel = GetNode<RichTextLabel>("Control/BottomBar/Apple");
+        _mushroomLabel = GetNode<RichTextLabel>("Control/BottomBar/Mushroom");
+        _vitaminShakeLabel = GetNode<RichTextLabel>("Control/BottomBar/VitaminShake");
+        _appleYogurtLabel = GetNode<RichTextLabel>("Control/BottomBar/AppleYogurt");
+        _purplePotionLabel = GetNode<RichTextLabel>("Control/BottomBar/PurplePotion");
     }
 
     public override void _Process(double delta)

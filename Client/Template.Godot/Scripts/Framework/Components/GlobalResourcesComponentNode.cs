@@ -20,4 +20,5 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int HelpersEnabled;
     [Export] public int LastFarmGX;
     [Export] public int LastFarmGY;
+    [Export] public int HelpersSpawned;
 }

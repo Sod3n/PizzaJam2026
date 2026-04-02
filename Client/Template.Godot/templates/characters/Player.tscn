@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://3vbcgbnc71yu" path="res://sprites/export/Devochka/Hand/_____46.png" id="17_wl1od"]
 [ext_resource type="Texture2D" uid="uid://e024qkwcbcl0" path="res://sprites/IMG_0407.PNG" id="18_l3wpo"]
 [ext_resource type="Script" uid="uid://cndtd78smhj8n" path="res://templates/characters/final_dialogue.gd" id="18_vhitc"]
+[ext_resource type="Texture2D" uid="uid://u00s5sx7upln" path="res://sprites/Shadow.png" id="24_mfgwx"]
 [ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="24_ql6fu"]
 [ext_resource type="Texture2D" uid="uid://uwff6csdbj8y" path="res://sprites/export/icons/Grass_/1.png" id="25_q4gn4"]
 [ext_resource type="Texture2D" uid="uid://5l2waaftxb6k" path="res://sprites/export/icons/Money_/1.png" id="26_snram"]
@@ -170,6 +171,63 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_money"]
+bg_color = Color(0.522, 0.737, 0.698, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 52
+corner_radius_top_right = 52
+corner_radius_bottom_right = 52
+corner_radius_bottom_left = 52
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_food"]
+bg_color = Color(0.522, 0.737, 0.698, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 52
+corner_radius_top_right = 52
+corner_radius_bottom_right = 52
+corner_radius_bottom_left = 52
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_milk"]
+bg_color = Color(0.522, 0.737, 0.561, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 52
+corner_radius_top_right = 52
+corner_radius_bottom_right = 52
+corner_radius_bottom_left = 52
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_circle"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 0.55, 0.45, 0.4)
+corner_radius_top_left = 37
+corner_radius_top_right = 37
+corner_radius_bottom_right = 37
+corner_radius_bottom_left = 37
+
 [node name="Player" type="Node3D" unique_id=1227286794]
 
 [node name="Entity" type="Node3D" parent="." unique_id=683149249]
@@ -268,187 +326,361 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 1.0
-offset_right = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect" type="ColorRect" parent="Camera/CanvasLayer/Control" unique_id=144075612]
-layout_mode = 0
-offset_left = 35.0
-offset_top = 31.0
-offset_right = 214.0
-offset_bottom = 833.0
-color = Color(0.21960784, 0.21960784, 0.21960784, 0.8352941)
+[node name="Shadow" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=972310570]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -215.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("24_mfgwx")
+expand_mode = 1
 
-[node name="Grass" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1787843798]
-layout_mode = 0
-offset_left = 120.0
-offset_top = 45.0
-offset_right = 520.0
-offset_bottom = 95.0
-theme_override_font_sizes/normal_font_size = 36
-text = "10"
+[node name="BottomBar" type="Control" parent="Camera/CanvasLayer/Control" unique_id=1036117860]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 737.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Milk" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=438230214]
+[node name="MoneyPill" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1937106529]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 134.0
-offset_right = 520.0
-offset_bottom = 184.0
-theme_override_font_sizes/normal_font_size = 36
-text = "10
-"
+offset_left = 426.0
+offset_top = 204.0
+offset_right = 525.0
+offset_bottom = 304.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_money")
 
-[node name="Coins" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1451730019]
+[node name="FoodPill" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=51384157]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 229.0
-offset_right = 520.0
-offset_bottom = 279.0
-theme_override_font_sizes/normal_font_size = 36
-text = "10"
+offset_left = 544.0
+offset_top = 204.0
+offset_right = 1002.0
+offset_bottom = 304.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_food")
 
-[node name="TextureRect" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=1658218569]
+[node name="MilkPill" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=952442907]
 layout_mode = 0
-offset_left = 46.0
-offset_top = 107.0
-offset_right = 105.0
-offset_bottom = 181.0
+offset_left = 1021.0
+offset_top = 201.0
+offset_right = 1494.0
+offset_bottom = 301.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_milk")
+
+[node name="MoneyCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=640033667]
+layout_mode = 0
+offset_left = 438.0
+offset_top = 216.0
+offset_right = 512.0
+offset_bottom = 290.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="GrassCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1482748660]
+layout_mode = 0
+offset_left = 563.0
+offset_top = 217.0
+offset_right = 637.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="CarrotCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1062729983]
+layout_mode = 0
+offset_left = 674.0
+offset_top = 217.0
+offset_right = 748.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="AppleCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1237057527]
+layout_mode = 0
+offset_left = 785.0
+offset_top = 217.0
+offset_right = 859.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="MushroomCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1475675488]
+layout_mode = 0
+offset_left = 896.0
+offset_top = 214.0
+offset_right = 970.0
+offset_bottom = 288.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="MilkCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=760301475]
+layout_mode = 0
+offset_left = 1053.0
+offset_top = 216.0
+offset_right = 1127.0
+offset_bottom = 290.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="VitaminShakeCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2057385170]
+layout_mode = 0
+offset_left = 1166.0
+offset_top = 214.0
+offset_right = 1240.0
+offset_bottom = 288.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="AppleYogurtCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1047730158]
+layout_mode = 0
+offset_left = 1277.0
+offset_top = 214.0
+offset_right = 1351.0
+offset_bottom = 288.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="PurplePotionCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1448486749]
+layout_mode = 0
+offset_left = 1388.0
+offset_top = 213.0
+offset_right = 1462.0
+offset_bottom = 287.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="TextureRect" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1658218569]
+layout_mode = 0
+offset_left = 1067.0
+offset_top = 215.0
+offset_right = 1117.0
+offset_bottom = 282.0
 texture = ExtResource("24_ql6fu")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="TextureRect2" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=708845765]
+[node name="TextureRect2" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=708845765]
 layout_mode = 0
-offset_left = 42.0
-offset_top = 43.0
-offset_right = 117.0
-offset_bottom = 114.0
+offset_left = 568.0
+offset_top = 228.0
+offset_right = 632.0
+offset_bottom = 279.0
 texture = ExtResource("25_q4gn4")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="TextureRect3" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=199807205]
+[node name="TextureRect3" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=199807205]
 layout_mode = 0
-offset_left = 46.0
-offset_top = 221.0
-offset_right = 110.0
-offset_bottom = 283.0
+offset_left = 443.0
+offset_top = 227.0
+offset_right = 507.0
+offset_bottom = 279.0
 texture = ExtResource("26_snram")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="Carrot" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1021002626]
+[node name="CarrotIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=70368816]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 319.0
-offset_right = 520.0
-offset_bottom = 369.0
-theme_override_font_sizes/normal_font_size = 36
-text = "0"
-
-[node name="CarrotIcon" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=70368816]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 309.0
-offset_right = 130.0
-offset_bottom = 379.0
+offset_left = 680.0
+offset_top = 227.0
+offset_right = 734.6017
+offset_bottom = 285.5056
+rotation = 0.5236
+pivot_offset = Vector2(35, 35)
 texture = ExtResource("27_qe0ps")
 expand_mode = 1
-stretch_mode = 4
+stretch_mode = 5
 
-[node name="Apple" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=2087341196]
+[node name="AppleIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1405031119]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 409.0
-offset_right = 520.0
-offset_bottom = 459.0
-theme_override_font_sizes/normal_font_size = 36
-text = "0"
-
-[node name="AppleIcon" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=1405031119]
-layout_mode = 0
-offset_left = 51.0
-offset_top = 400.0
-offset_right = 121.0
-offset_bottom = 470.0
+offset_left = 794.0
+offset_top = 230.00006
+offset_right = 845.57056
+offset_bottom = 280.3708
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
 texture = ExtResource("28_mfgwx")
 expand_mode = 1
-stretch_mode = 4
+stretch_mode = 5
 
-[node name="Mushroom" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1074602623]
+[node name="MushroomIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=602575160]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 499.0
-offset_right = 520.0
-offset_bottom = 549.0
-theme_override_font_sizes/normal_font_size = 36
-text = "0"
-
-[node name="MushroomIcon" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=602575160]
-layout_mode = 0
-offset_left = 46.0
-offset_top = 491.0
-offset_right = 116.0
-offset_bottom = 561.0
+offset_left = 904.00006
+offset_top = 228.0
+offset_right = 959.4787
+offset_bottom = 283.47864
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
 texture = ExtResource("29_lu4ek")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="VitaminShake" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=430290442]
+[node name="VitaminShakeIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=841107671]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 589.0
-offset_right = 520.0
-offset_bottom = 639.0
-theme_override_font_sizes/normal_font_size = 36
-text = "0"
-
-[node name="VitaminShakeIcon" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=841107671]
-layout_mode = 0
-offset_left = 46.0
-offset_top = 581.0
-offset_right = 116.0
-offset_bottom = 651.0
+offset_left = 1168.0
+offset_top = 216.0
+offset_right = 1238.0
+offset_bottom = 286.0
+rotation = 0.5236
+pivot_offset = Vector2(35, 35)
 expand_mode = 1
 stretch_mode = 4
 
-[node name="AppleYogurt" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1343337995]
+[node name="AppleYogurtIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=237178285]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 679.0
-offset_right = 520.0
-offset_bottom = 729.0
-theme_override_font_sizes/normal_font_size = 36
-text = "0"
-
-[node name="AppleYogurtIcon" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=237178285]
-layout_mode = 0
-offset_left = 46.0
-offset_top = 671.0
-offset_right = 116.0
-offset_bottom = 741.0
+offset_left = 1279.0
+offset_top = 216.0
+offset_right = 1349.0
+offset_bottom = 286.0
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
 expand_mode = 1
 stretch_mode = 4
 
-[node name="PurplePotion" type="RichTextLabel" parent="Camera/CanvasLayer/Control" unique_id=1899059630]
+[node name="PurplePotionIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=213610519]
 layout_mode = 0
-offset_left = 120.0
-offset_top = 769.0
-offset_right = 520.0
-offset_bottom = 819.0
-theme_override_font_sizes/normal_font_size = 36
-text = "0"
-
-[node name="PurplePotionIcon" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=213610519]
-layout_mode = 0
-offset_left = 46.0
-offset_top = 761.0
-offset_right = 116.0
-offset_bottom = 831.0
+offset_left = 1390.0
+offset_top = 213.0
+offset_right = 1460.0
+offset_bottom = 283.0
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
 expand_mode = 1
 stretch_mode = 4
+
+[node name="Grass" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1787843798]
+layout_mode = 0
+offset_left = 570.0
+offset_top = 200.0
+offset_right = 630.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Milk" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=438230214]
+layout_mode = 0
+offset_left = 1060.0
+offset_top = 200.0
+offset_right = 1120.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Coins" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1451730019]
+layout_mode = 0
+offset_left = 443.0
+offset_top = 200.0
+offset_right = 503.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Carrot" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1021002626]
+layout_mode = 0
+offset_left = 681.0
+offset_top = 200.0
+offset_right = 741.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Apple" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2087341196]
+layout_mode = 0
+offset_left = 792.0
+offset_top = 200.0
+offset_right = 852.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Mushroom" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1074602623]
+layout_mode = 0
+offset_left = 903.0
+offset_top = 200.0
+offset_right = 963.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VitaminShake" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=430290442]
+layout_mode = 0
+offset_left = 1173.0
+offset_top = 200.0
+offset_right = 1233.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AppleYogurt" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1343337995]
+layout_mode = 0
+offset_left = 1284.0
+offset_top = 200.0
+offset_right = 1344.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PurplePotion" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1899059630]
+layout_mode = 0
+offset_left = 1387.0
+offset_top = 200.0
+offset_right = 1462.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StartDialogue" type="Control" parent="Camera/CanvasLayer/Control" unique_id=87533069]
 visible = false

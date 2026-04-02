@@ -394,9 +394,7 @@ public class BotBrain
         int totalMilk = globalRes.Milk + globalRes.VitaminShake + globalRes.AppleYogurt + globalRes.PurplePotion;
 
         // ── Score each option: value / (travel_ticks + work_ticks) ──
-        bool hasAssistant = ps.AssistantHelper != Entity.Null
-            && _game.State.HasComponent<HelperPetComponent>(ps.AssistantHelper);
-        int assistMult = hasAssistant ? 5 : 1;
+        int assistMult = System.Math.Max(1, ps.ClickMultiplier);
 
         int foodNeeded = GetFoodNeededForMilking();
         bool needFood = totalFood < foodNeeded;
@@ -430,7 +428,7 @@ public class BotBrain
                 {
                     var cow = _game.State.GetComponent<CowComponent>(house.CowId);
                     int remaining = cow.MaxExhaust - cow.Exhaust;
-                    int exhaustPerClick = hasAssistant ? 5 : 1;
+                    int exhaustPerClick = assistMult;
                     int clicks = Math.Min(totalFood, (remaining + exhaustPerClick - 1) / exhaustPerClick); // ceil
                     int totalExhaust = Math.Min(remaining, clicks * exhaustPerClick);
                     int milkPerExhaust = (house.SelectedFood == cow.PreferredFood) ? 5 : 1;

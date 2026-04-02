@@ -59,7 +59,10 @@ public static class StarGrid
     {
         int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
         int type = GetBuildingType(gx, gy);
-        return gridDist * GetEraMultiplier(gridDist) * GetPriceMultiplier(type) * 10;
+        int priceMult = GetPriceMultiplier(type);
+        if (priceMult < 0) // Decoration: quarter cost
+            return gridDist * GetEraMultiplier(gridDist) * 10 / 4;
+        return gridDist * GetEraMultiplier(gridDist) * priceMult * 10;
     }
 
     // Food farm frequency: every Nth house-slot becomes a food farm instead
@@ -79,6 +82,8 @@ public static class StarGrid
             case LandType.UpgradeGatherer: return 2;
             case LandType.UpgradeBuilder: return 2;
             case LandType.UpgradeSeller: return 2;
+            case LandType.UpgradeAssistant: return 2;
+            case LandType.Decoration: return -1; // half cost (handled in GetThreshold)
             default: return 1; // House
         }
     }
@@ -90,7 +95,7 @@ public static class StarGrid
     /// </summary>
     public static int GetEraMultiplier(int gridDist)
     {
-        if (gridDist >= 6) return 15;  // mushroom era
+        if (gridDist >= 6) return 20;  // mushroom era
         if (gridDist >= 5) return 10;  // late apple era
         if (gridDist >= 4) return 5;   // apple era
         if (gridDist >= 3) return 3;   // carrot era
@@ -128,9 +133,10 @@ public static class StarGrid
         (LandType.MushroomCave,  6, 9, true),
         // Non-farm specials — no angular constraint
         (LandType.HelperAssistant, 2, 0, false),
-        (LandType.UpgradeGatherer, 3, 1, false),
-        (LandType.UpgradeBuilder,  4, 2, false),
-        (LandType.UpgradeSeller,   5, 3, false),
+        (LandType.UpgradeGatherer, 4, 1, false),
+        (LandType.UpgradeBuilder,  5, 2, false),
+        (LandType.UpgradeSeller,   6, 3, false),
+        (LandType.UpgradeAssistant, 6, 4, false),  // late-game: x5 click speed (x10 total)
     };
 
     /// <summary>
@@ -283,7 +289,15 @@ public static class StarGrid
                  ctx.State.HasComponent<LoveHouseComponent>(entity) ||
                  ctx.State.HasComponent<SellPointComponent>(entity) ||
                  ctx.State.HasComponent<FinalStructureComponent>(entity) ||
-                 ctx.State.HasComponent<FoodFarmComponent>(entity)))
+                 ctx.State.HasComponent<CarrotFarmComponent>(entity) ||
+                 ctx.State.HasComponent<AppleOrchardComponent>(entity) ||
+                 ctx.State.HasComponent<MushroomCaveComponent>(entity) ||
+                 ctx.State.HasComponent<HelperAssistantComponent>(entity) ||
+                 ctx.State.HasComponent<UpgradeGathererComponent>(entity) ||
+                 ctx.State.HasComponent<UpgradeBuilderComponent>(entity) ||
+                 ctx.State.HasComponent<UpgradeSellerComponent>(entity) ||
+                 ctx.State.HasComponent<UpgradeAssistantComponent>(entity) ||
+                 ctx.State.HasComponent<DecorationComponent>(entity)))
             {
                 var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
                 float dx = (float)(pos.X - px);
@@ -304,7 +318,10 @@ public static class StarGrid
         }
 
         int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
-        int threshold = gridDist * GetEraMultiplier(gridDist) * GetPriceMultiplier(type) * 10;
+        int pm = GetPriceMultiplier(type);
+        int threshold = pm < 0
+            ? gridDist * GetEraMultiplier(gridDist) * 10 / 4
+            : gridDist * GetEraMultiplier(gridDist) * pm * 10;
         LandDefinition.Create(ctx, new Vector2(px, py), threshold, type, gx, gy, 0);
         return true;
     }

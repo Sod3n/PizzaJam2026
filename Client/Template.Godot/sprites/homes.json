@@ -16,7 +16,7 @@
       "Width": 1172,
       "Height": 1641,
       "Opacity": 1,
-      "IsVisible": true,
+      "IsVisible": false,
       "TexturePath": "res://sprites/export/homes/___.png",
       "Children": []
     },
@@ -40,8 +40,56 @@
       "Width": 754,
       "Height": 1092,
       "Opacity": 1,
-      "IsVisible": false,
+      "IsVisible": true,
       "TexturePath": "res://sprites/export/homes/Love_Hotel_.png",
+      "Children": []
+    },
+    {
+      "Name": "Rabbit Home ",
+      "Type": "Layer",
+      "X": 6,
+      "Y": 859,
+      "Width": 1128,
+      "Height": 531,
+      "Opacity": 1,
+      "IsVisible": true,
+      "TexturePath": "res://sprites/export/homes/Rabbit_Home_.png",
+      "Children": []
+    },
+    {
+      "Name": "Hours Home ",
+      "Type": "Layer",
+      "X": 131,
+      "Y": 687,
+      "Width": 846,
+      "Height": 706,
+      "Opacity": 1,
+      "IsVisible": false,
+      "TexturePath": "res://sprites/export/homes/Hours_Home_.png",
+      "Children": []
+    },
+    {
+      "Name": "Mash Home ",
+      "Type": "Layer",
+      "X": 252,
+      "Y": 674,
+      "Width": 638,
+      "Height": 780,
+      "Opacity": 1,
+      "IsVisible": true,
+      "TexturePath": "res://sprites/export/homes/Mash_Home_.png",
+      "Children": []
+    },
+    {
+      "Name": "Sell Point ",
+      "Type": "Layer",
+      "X": 72,
+      "Y": 383,
+      "Width": 981,
+      "Height": 1109,
+      "Opacity": 1,
+      "IsVisible": true,
+      "TexturePath": "res://sprites/export/homes/Sell_Point_.png",
       "Children": []
     }
   ]

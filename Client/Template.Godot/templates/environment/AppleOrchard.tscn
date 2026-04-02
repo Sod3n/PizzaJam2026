@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://jqqcg2w5j6v4"]
+
+[ext_resource type="Texture2D" uid="uid://cfrvwrmmmhuqh" path="res://sprites/export/homes/Hours_Home_.png" id="5_lenw5"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="anim_script"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://bq1qh6mtcnnu5" path="res://Scripts/Framework/Components/AppleOrchardComponentNode.cs" id="fw_foodfarm"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="shader"]
+[ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="tex_bar"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="tex_house"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fo3gy"]
+render_priority = -1
+shader = ExtResource("shader")
+shader_parameter/albedo_texture = ExtResource("5_lenw5")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_lenw5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_bar")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_house")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="AppleOrchard" type="Node3D" unique_id=2022976770]
+
+[node name="Entity" type="Node3D" parent="." unique_id=368826245]
+script = ExtResource("fw_entity")
+EntityName = "AppleOrchard"
+StableIdSeed = "appleorchard-entity-seed"
+
+[node name="AppleOrchardComponent" type="Node" parent="Entity" unique_id=119731592]
+script = ExtResource("fw_foodfarm")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1408911098]
+script = ExtResource("fw_phys")
+ShapeType = 1
+ShapeWidth = 4.225964
+ShapeHeight = 0.98046875
+
+[node name="AnimatedSprite3D" type="Node3D" parent="." unique_id=122037465]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=793255691]
+transform = Transform3D(0.5, 0, 0, 0, 0.45410445, 0.20925856, 0, -0.20925856, 0.45410445, 0, 1.358995, -0.7434305)
+material_override = SubResource("ShaderMaterial_fo3gy")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_1")
+script = ExtResource("anim_script")
+
+[node name="Capacity" type="Label3D" parent="." unique_id=120727571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
+visible = false
+no_depth_test = true
+render_priority = 2
+outline_render_priority = 1
+text = "10/10"
+font_size = 128
+horizontal_alignment = 0

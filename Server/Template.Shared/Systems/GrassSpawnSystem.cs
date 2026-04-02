@@ -38,16 +38,9 @@ public class GrassSpawnSystem : ISystem
 
         // Count farms per food type — each farm adds one spawn per interval
         int carrotFarms = 0, appleFarms = 0, mushroomFarms = 0;
-        foreach (var entity in state.Filter<FoodFarmComponent>())
-        {
-            var farm = state.GetComponent<FoodFarmComponent>(entity);
-            switch (farm.FoodType)
-            {
-                case FoodType.Carrot: carrotFarms++; break;
-                case FoodType.Apple: appleFarms++; break;
-                case FoodType.Mushroom: mushroomFarms++; break;
-            }
-        }
+        foreach (var _ in state.Filter<CarrotFarmComponent>()) carrotFarms++;
+        foreach (var _ in state.Filter<AppleOrchardComponent>()) appleFarms++;
+        foreach (var _ in state.Filter<MushroomCaveComponent>()) mushroomFarms++;
 
         var context = new Context(state, Entity.Null, null!);
         uint baseSeed = (uint)state.NextEntityId + ((uint)gameTime.CurrentTick);

@@ -16,4 +16,5 @@ public struct PlayerStateComponent : IComponent
     public Entity InteractionZone;
     public Entity FollowingCow;
     public Entity AssistantHelper;
+    public int ClickMultiplier; // 1=base, 2=mid upgrade, 10=both upgrades
 }

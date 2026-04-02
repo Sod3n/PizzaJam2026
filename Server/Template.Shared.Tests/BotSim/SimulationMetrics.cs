@@ -67,7 +67,9 @@ public class SimulationMetrics
         foreach (var _ in game.State.Filter<HouseComponent>()) s.Houses++;
         foreach (var _ in game.State.Filter<LoveHouseComponent>()) s.LoveHouses++;
         foreach (var _ in game.State.Filter<SellPointComponent>()) s.SellPoints++;
-        foreach (var _ in game.State.Filter<FoodFarmComponent>()) s.FoodFarms++;
+        foreach (var _ in game.State.Filter<CarrotFarmComponent>()) s.FoodFarms++;
+        foreach (var _ in game.State.Filter<AppleOrchardComponent>()) s.FoodFarms++;
+        foreach (var _ in game.State.Filter<MushroomCaveComponent>()) s.FoodFarms++;
         foreach (var he in game.State.Filter<HelperComponent>())
         {
             var h = game.State.GetComponent<HelperComponent>(he);
