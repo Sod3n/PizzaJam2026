@@ -636,10 +636,10 @@ public class HelperSystem : ISystem
 
     private bool SellOneItem(ref HelperComponent helper)
     {
-        // Sell most valuable first: PurplePotion(100) > AppleYogurt(25) > VitaminShake(5) > Milk(1)
+        // Sell most valuable first: PurplePotion(100) > AppleYogurt(10) > VitaminShake(3) > Milk(1)
         if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins += 100; return true; }
-        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins += 25; return true; }
-        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins += 5; return true; }
+        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins += 10; return true; }
+        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins += 3; return true; }
         if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins += 1; return true; }
         return false;
     }

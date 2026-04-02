@@ -90,7 +90,8 @@ public static class StarGrid
     /// </summary>
     public static int GetEraMultiplier(int gridDist)
     {
-        if (gridDist >= 5) return 15;  // mushroom era
+        if (gridDist >= 6) return 15;  // mushroom era
+        if (gridDist >= 5) return 10;  // late apple era
         if (gridDist >= 4) return 5;   // apple era
         if (gridDist >= 3) return 3;   // carrot era
         return 1;                       // grass era
@@ -123,8 +124,8 @@ public static class StarGrid
         (LandType.CarrotFarm,    3, 5, true),
         (LandType.AppleOrchard,  3, 6, true),   // carrot era — affordable (90 coins)
         (LandType.AppleOrchard,  4, 7, true),
-        (LandType.MushroomCave,  4, 8, true),   // apple era — affordable (200 coins)
-        (LandType.MushroomCave,  5, 9, true),
+        (LandType.MushroomCave,  5, 8, true),   // apple era — affordable (250 coins)
+        (LandType.MushroomCave,  6, 9, true),
         // Non-farm specials — no angular constraint
         (LandType.HelperAssistant, 2, 0, false),
         (LandType.UpgradeGatherer, 3, 1, false),

@@ -174,7 +174,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             bool isPreferred = foodToUse == cow.PreferredFood;
             int milkAmount = isPreferred ? 5 : 1; // 5x multiplier for preferred food
 
-            // Non-preferred food: 50% chance to produce nothing (food still consumed)
+            // Non-preferred food: 75% chance to produce nothing (food still consumed)
             bool milkBlocked = false;
             if (!isPreferred)
             {

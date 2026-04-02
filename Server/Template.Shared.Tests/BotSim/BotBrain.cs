@@ -371,7 +371,7 @@ public class BotBrain
     private int GetFrontierEra()
     {
         int houses = Count<HouseComponent>();
-        if (houses >= 12) return 3; // mushroom era (dist 5+)
+        if (houses >= 15) return 3; // mushroom era (dist 6+)
         if (houses >= 9) return 2;  // apple era (dist 4)
         if (houses >= 6) return 1;  // carrot era (dist 3)
         return 0;                    // grass era
@@ -434,7 +434,7 @@ public class BotBrain
                     int clicks = Math.Min(totalFood, (remaining + exhaustPerClick - 1) / exhaustPerClick); // ceil
                     int totalExhaust = Math.Min(remaining, clicks * exhaustPerClick);
                     int milkPerExhaust = (house.SelectedFood == cow.PreferredFood) ? 5 : 1;
-                    int[] _milkCoinVal = { 1, 5, 25, 100 };
+                    int[] _milkCoinVal = { 1, 3, 10, 100 };
                     int coinPerMilk = (house.SelectedFood >= 0 && house.SelectedFood < 4) ? _milkCoinVal[house.SelectedFood] : 1;
                     float milkValue = totalExhaust * milkPerExhaust * coinPerMilk;
                     best = Best(best, ScoreOption(milkable, milkValue * BotConfig.MilkValueMultiplier, playerPos, BotConfig.MilkSetupTicks + clicks, false, "milk"));
@@ -969,7 +969,7 @@ public class BotBrain
         float bestScore = -1f;
 
         // Milk product coin values by type
-        int[] milkCoinValue = { 1, 5, 25, 100 }; // Milk, VitaminShake, AppleYogurt, PurplePotion
+        int[] milkCoinValue = { 1, 3, 10, 100 }; // Milk, VitaminShake, AppleYogurt, PurplePotion
 
         foreach (var e in _game.State.Filter<HouseComponent>())
         {
