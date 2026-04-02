@@ -773,7 +773,7 @@ public class BotBrain
             if (house.CowId == Entity.Null) continue;
             if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
             var cow = _game.State.GetComponent<CowComponent>(house.CowId);
-            if (cow.IsMilking) continue;
+            if (cow.IsMilking || cow.IsDepressed) continue;
 
             float dist = _game.State.HasComponent<Transform2D>(e)
                 ? (float)Vector2.Distance(lhPos, _game.State.GetComponent<Transform2D>(e).Position)
@@ -787,14 +787,28 @@ public class BotBrain
             }
 
             int tier = cow.PreferredFood;
-            int pairValue = loveHouseTier < 0 ? tier : Math.Max(tier, loveHouseTier);
 
-            // Selective: prefer higher tier, break ties by distance
-            if (pairValue > bestTier || (pairValue == bestTier && dist < bestDist))
+            // Selective: strongly prefer same-pref as love house occupant (avoids breed fail)
+            // When no cow in love house yet, prefer highest tier
+            if (loveHouseTier >= 0)
             {
-                bestTier = pairValue;
-                bestDist = dist;
-                best = house.CowId;
+                bool isMatch = tier == loveHouseTier;
+                bool bestIsMatch = bestTier == loveHouseTier;
+                // Same-pref always wins over different-pref
+                if (isMatch && !bestIsMatch)
+                    { bestTier = tier; bestDist = dist; best = house.CowId; }
+                else if (isMatch == bestIsMatch)
+                {
+                    // Among same category, prefer higher tier then closer
+                    if (tier > bestTier || (tier == bestTier && dist < bestDist))
+                        { bestTier = tier; bestDist = dist; best = house.CowId; }
+                }
+            }
+            else
+            {
+                // No cow in love house yet — pick highest tier
+                if (tier > bestTier || (tier == bestTier && dist < bestDist))
+                    { bestTier = tier; bestDist = dist; best = house.CowId; }
             }
         }
         return best;
@@ -966,7 +980,7 @@ public class BotBrain
             if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
 
             var cow = _game.State.GetComponent<CowComponent>(house.CowId);
-            if (cow.IsMilking) continue;
+            if (cow.IsMilking || cow.IsDepressed) continue;
             if (cow.Exhaust >= cow.MaxExhaust) continue;
 
             // Ensure food is available for this cow
@@ -1204,7 +1218,7 @@ public class BotBrain
             if (house.CowId == Entity.Null) continue;
             if (!_game.State.HasComponent<CowComponent>(house.CowId)) continue;
             var cow = _game.State.GetComponent<CowComponent>(house.CowId);
-            if (cow.IsMilking || cow.Exhaust >= cow.MaxExhaust) continue;
+            if (cow.IsMilking || cow.IsDepressed || cow.Exhaust >= cow.MaxExhaust) continue;
             int remaining = cow.MaxExhaust - cow.Exhaust;
             if (remaining > best) best = remaining;
         }

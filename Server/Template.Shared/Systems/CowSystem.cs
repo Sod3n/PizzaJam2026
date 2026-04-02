@@ -90,13 +90,26 @@ public class CowSystem : ISystem
                     if (random.NextInt(0, 750) == 0)
                     {
                         cow.Exhaust--;
+                        // Depression clears when exhaust fully recovers
+                        if (cow.Exhaust <= 0 && cow.IsDepressed)
+                        {
+                            cow.IsDepressed = false;
+                            if (state.HasComponent<HiddenComponent>(cowEntity))
+                                state.UnhideEntity(cowEntity);
+                            ILogger.Log($"[CowSystem] Cow {cowEntity.Id} recovered from depression");
+                        }
                     }
+                }
+                // Keep depressed cows hidden in their house
+                if (cow.IsDepressed && !state.HasComponent<HiddenComponent>(cowEntity) && cow.HouseId != Entity.Null)
+                {
+                    state.HideEntity(cowEntity);
                 }
             }
             else if (!cow.IsMilking)
             {
-                // Don't unhide cows that are in a love house during breeding
-                if (state.HasComponent<HiddenComponent>(cowEntity) && !IsCowInActiveBreeding(state, cowEntity))
+                // Don't unhide cows that are in a love house during breeding or are depressed
+                if (state.HasComponent<HiddenComponent>(cowEntity) && !IsCowInActiveBreeding(state, cowEntity) && !cow.IsDepressed)
                 {
                     state.UnhideEntity(cowEntity);
                 }
@@ -339,6 +352,40 @@ public class CowSystem : ISystem
             uint breedSeed = (uint)((cow1.Id * 7919 + cow2.Id * 104729) ^ (gameTime?.CurrentTick ?? 0));
             var breedRandom = new DeterministicRandom(breedSeed);
 
+            // Different-pref breeding: chance of failure based on tier gap
+            bool breedFailed = false;
+            if (!sameTier)
+            {
+                int tierGap = System.Math.Abs(parentACow.PreferredFood - parentBCow.PreferredFood);
+                // 1 tier apart = 50%, 2 tiers = 75%, 3 tiers = 90%
+                int failChance = tierGap switch
+                {
+                    1 => 50,
+                    2 => 75,
+                    _ => 90,
+                };
+                breedFailed = breedRandom.NextInt(100) < failChance;
+            }
+
+            if (breedFailed)
+            {
+                // Both cows enter depression: exhaust maxed out, hidden in house until recovery
+                ILogger.Log($"[CowSystem] Breed FAILED! Cows {cow1.Id} and {cow2.Id} are depressed (tier gap: {System.Math.Abs(parentACow.PreferredFood - parentBCow.PreferredFood)})");
+                if (state.HasComponent<CowComponent>(cow1))
+                {
+                    ref var c1 = ref state.GetComponent<CowComponent>(cow1);
+                    c1.Exhaust = c1.MaxExhaust;
+                    c1.IsDepressed = true;
+                }
+                if (state.HasComponent<CowComponent>(cow2))
+                {
+                    ref var c2 = ref state.GetComponent<CowComponent>(cow2);
+                    c2.Exhaust = c2.MaxExhaust;
+                    c2.IsDepressed = true;
+                }
+            }
+            else
+            {
             // Increment global breed counter
             Entity globalResEntity = Entity.Null;
             foreach (var ge in state.Filter<GlobalResourcesComponent>())
@@ -400,6 +447,7 @@ public class CowSystem : ISystem
             {
                 babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, guaranteedUpgrade, breedCount);
             }
+            } // end !breedFailed
         }
 
         // Return parents to their original houses
@@ -502,19 +550,23 @@ public class CowSystem : ISystem
         }
         else
         {
-            // Normal: 50/50 inherit with 50% upgrade / 1% downgrade mutation
+            // If breeding succeeded, parents are same-tier or got lucky with diff-tier
+            // Same-tier: 75% upgrade / 1% downgrade / 24% inherit
+            // Diff-tier (survived fail check): 50% upgrade / 1% downgrade / 49% inherit
+            bool sameFood = parentACow.PreferredFood == parentBCow.PreferredFood;
+            int upgradeChance = sameFood ? 75 : 50;
             int prefRoll = random.NextInt(100);
-            if (prefRoll < 50)
+            if (prefRoll < upgradeChance)
             {
                 int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
                 newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
             }
-            else if (prefRoll < 51)
+            else if (prefRoll < upgradeChance + 1)
             {
                 int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
                 newCowComp.PreferredFood = System.Math.Max(minParent - 1, FoodType.Grass);
             }
-            else if (prefRoll < 76)
+            else if (prefRoll < upgradeChance + 1 + (100 - upgradeChance - 1) / 2)
                 newCowComp.PreferredFood = parentACow.PreferredFood;
             else
                 newCowComp.PreferredFood = parentBCow.PreferredFood;

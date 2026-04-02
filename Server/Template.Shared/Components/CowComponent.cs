@@ -19,4 +19,5 @@ public struct CowComponent : IComponent
     public Entity FollowingPlayer;
     public Entity FollowTarget; // Entity this cow actually follows (player or previous cow in chain)
     public int PreferredFood; // FoodType constant — this cow's preferred food gives 3x milk output
+    public bool IsDepressed;  // Depressed after failed breed — hides in house, can't interact until exhaust recovers to 0
 }

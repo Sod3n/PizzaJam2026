@@ -174,6 +174,16 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             bool isPreferred = foodToUse == cow.PreferredFood;
             int milkAmount = isPreferred ? 5 : 1; // 5x multiplier for preferred food
 
+            // Non-preferred food: 50% chance to produce nothing (food still consumed)
+            bool milkBlocked = false;
+            if (!isPreferred)
+            {
+                var gameTime = ctx.State.GetCustomData<IGameTime>();
+                uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
+                var milkRng = new DeterministicRandom(milkSeed);
+                milkBlocked = milkRng.NextInt(100) < 50;
+            }
+
             // Assistant helper: 5x faster milking (more exhaust per click, same milk per exhaust)
             int exhaustPerClick = 1;
             if (playerState.AssistantHelper != Entity.Null
@@ -184,7 +194,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             int clicks = System.Math.Min(exhaustPerClick, remaining);
             globalRes.ConsumeFood(foodToUse);
             int milkProduct = FoodType.ToMilkProduct(foodToUse);
-            globalRes.AddMilkProduct(milkProduct, milkAmount * clicks);
+            if (!milkBlocked)
+                globalRes.AddMilkProduct(milkProduct, milkAmount * clicks);
             cow.Exhaust += clicks;
 
             Entity target = cowEntity;
@@ -229,8 +240,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     {
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
 
-        // Can't tame a cow that's being milked or already following someone
+        // Can't tame a cow that's being milked, depressed, or already following someone
         if (cow.IsMilking) return false;
+        if (cow.IsDepressed) return false;
         if (cow.FollowingPlayer != Entity.Null) return false;
 
         StateDefinitions.Begin(ref sc, StateKeys.Taming);
@@ -250,6 +262,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
 
         if (cow.IsMilking) return false;
+        if (cow.IsDepressed) return false;
         if (globalRes.GetFood(house.SelectedFood) <= 0 || cow.Exhaust >= cow.MaxExhaust)
         {
             missingResource = FoodTypeToKey(house.SelectedFood);

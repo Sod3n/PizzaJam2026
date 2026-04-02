@@ -90,7 +90,7 @@ public static class StarGrid
     /// </summary>
     public static int GetEraMultiplier(int gridDist)
     {
-        if (gridDist >= 5) return 10;  // mushroom era
+        if (gridDist >= 5) return 15;  // mushroom era
         if (gridDist >= 4) return 5;   // apple era
         if (gridDist >= 3) return 3;   // carrot era
         return 1;                       // grass era
