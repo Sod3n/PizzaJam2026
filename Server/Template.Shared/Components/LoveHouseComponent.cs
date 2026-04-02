@@ -16,5 +16,5 @@ public struct LoveHouseComponent : IComponent
     public int BreedCost;     // Total clicks needed (set from cow exhaust values)
     public int SameTierBreedCount; // Consecutive same-tier breeds — guarantees upgrade at threshold
 
-    public const int GuaranteedUpgradeEvery = 2;
+    public const int GuaranteedUpgradeEvery = 4;
 }

@@ -70,12 +70,12 @@ public class GameplayScene : IScene
         // Buying it spawns 4 neighbors, which spawn their neighbors, etc.
         StarGrid.TrySpawnLand(context, 0, 0);
 
-        // Spawn 2 initial cows: one Grass, one Carrot (guaranteed starting pair)
+        // Spawn 2 initial cows: both Grass (must breed up to unlock higher tiers)
         var cow1 = CowDefinition.Create(context, new Vector2(2, 2));
         state.GetComponent<CowComponent>(cow1).PreferredFood = FoodType.Grass;
 
         var cow2 = CowDefinition.Create(context, new Vector2(-2, 2));
-        state.GetComponent<CowComponent>(cow2).PreferredFood = FoodType.Carrot;
+        state.GetComponent<CowComponent>(cow2).PreferredFood = FoodType.Grass;
     }
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)

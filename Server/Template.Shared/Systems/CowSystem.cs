@@ -502,19 +502,19 @@ public class CowSystem : ISystem
         }
         else
         {
-            // Normal: 50/50 inherit with 15% upgrade / 1% downgrade mutation
+            // Normal: 50/50 inherit with 50% upgrade / 1% downgrade mutation
             int prefRoll = random.NextInt(100);
-            if (prefRoll < 15)
+            if (prefRoll < 50)
             {
                 int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
                 newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
             }
-            else if (prefRoll < 16)
+            else if (prefRoll < 51)
             {
                 int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
                 newCowComp.PreferredFood = System.Math.Max(minParent - 1, FoodType.Grass);
             }
-            else if (prefRoll < 58)
+            else if (prefRoll < 76)
                 newCowComp.PreferredFood = parentACow.PreferredFood;
             else
                 newCowComp.PreferredFood = parentBCow.PreferredFood;
