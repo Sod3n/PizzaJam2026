@@ -14,6 +14,7 @@ using Template.Shared.Actions;
 using Template.Shared.Components;
 using Template.Shared.Factories;
 using Template.Shared.Systems;
+using Deterministic.GameFramework.Navigation2D.Components;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -75,6 +76,67 @@ public class BotSimulationTests
         foreach (var _ in game.State.Filter<FinalStructureComponent>())
             return true;
         return false;
+    }
+
+    /// <summary>
+    /// Mock navigation: move all NavigationAgent2D entities directly toward their target.
+    /// Replaces navmesh pathfinding so helpers can actually move in the sim.
+    /// </summary>
+    private static void MockNavigation(Game game)
+    {
+        float dt = 1f / 60f; // 60 tps
+        foreach (var entity in game.State.Filter<NavigationAgent2D>())
+        {
+            if (!game.State.HasComponent<Transform2D>(entity)) continue;
+
+            ref var nav = ref game.State.GetComponent<NavigationAgent2D>(entity);
+            ref var transform = ref game.State.GetComponent<Transform2D>(entity);
+
+            var current = transform.Position;
+            var target = nav.TargetPosition;
+            float dx = (float)(target.X - current.X);
+            float dy = (float)(target.Y - current.Y);
+            float dist = (float)System.Math.Sqrt(dx * dx + dy * dy);
+
+            float threshold = (float)nav.TargetDesiredDistance;
+            if (threshold <= 0) threshold = 2f;
+
+            if (dist <= threshold)
+            {
+                nav.IsNavigationFinished = true;
+                nav.Velocity = new Vector2(0, 0);
+                if (game.State.HasComponent<CharacterBody2D>(entity))
+                {
+                    ref var body = ref game.State.GetComponent<CharacterBody2D>(entity);
+                    body.Velocity = new Vector2(0, 0);
+                }
+                continue;
+            }
+
+            nav.IsNavigationFinished = false;
+            nav.IsTargetReachable = true;
+            float speed = (float)nav.MaxSpeed;
+            float move = System.Math.Min(speed * dt, dist);
+            float nx = dx / dist;
+            float ny = dy / dist;
+
+            // Set velocity on CharacterBody2D so physics moves the entity
+            if (game.State.HasComponent<CharacterBody2D>(entity))
+            {
+                ref var body = ref game.State.GetComponent<CharacterBody2D>(entity);
+                body.Velocity = new Vector2(nx * speed, ny * speed);
+            }
+            else
+            {
+                // No physics body — move transform directly
+                transform.Position = new Vector2(
+                    (float)current.X + nx * move,
+                    (float)current.Y + ny * move);
+            }
+
+            nav.Velocity = new Vector2(nx * speed, ny * speed);
+            nav.DistanceToTarget = (Float)dist;
+        }
     }
 
     /// <summary>
@@ -178,6 +240,7 @@ public class BotSimulationTests
                 game.Dispatcher.Update(game.State);
                 runner.RunSystems();
             }
+            MockNavigation(game);
             runner.Tick();
 
             if (tick % 60 == 0)
@@ -336,6 +399,7 @@ public class BotSimulationTests
             }
 
             // Lightweight tick — game systems only, no physics/nav/history
+            MockNavigation(game);
             runner.Tick();
 
             // Record metrics
@@ -546,6 +610,7 @@ public class BotSimulationTests
                 game.Dispatcher.Update(game.State);
                 runner.RunSystems();
             }
+            MockNavigation(game);
             runner.Tick();
 
 
@@ -633,6 +698,7 @@ public class BotSimulationTests
                 game.Dispatcher.Update(game.State);
                 runner.RunSystems();
             }
+            MockNavigation(game);
             runner.Tick();
         }
 
