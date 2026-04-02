@@ -1,0 +1,162 @@
+[gd_scene format=3 uid="uid://d0cv0g4sn08pw"]
+
+[ext_resource type="Script" uid="uid://brd1v3r4y5vc1" path="res://Scripts/Visuals/BreedResultOverlay.cs" id="1_script"]
+
+[sub_resource type="Environment" id="Env_preview"]
+ambient_light_source = 1
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 2.0
+
+[node name="BreedResultOverlay" type="CanvasLayer" unique_id=256317764]
+layer = 200
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="." unique_id=1460041238]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root" unique_id=516829122]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="Card" type="Panel" parent="Root" unique_id=1292092924]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 200.0
+
+[node name="Title" type="Label" parent="Root/Card" unique_id=154630240]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 50.0
+offset_bottom = 95.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "NEW ARRIVAL!"
+horizontal_alignment = 1
+
+[node name="CharViewport" type="SubViewportContainer" parent="Root/Card" unique_id=1155269493]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 182.0
+offset_right = 1160.0
+offset_bottom = 882.0
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="Root/Card/CharViewport" unique_id=1839745442]
+unique_name_in_owner = true
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(600, 700)
+render_target_update_mode = 4
+
+[node name="CharEnv" type="WorldEnvironment" parent="Root/Card/CharViewport/Viewport" unique_id=429528581]
+environment = SubResource("Env_preview")
+
+[node name="CharLight" type="DirectionalLight3D" parent="Root/Card/CharViewport/Viewport" unique_id=824424669]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 3, 3)
+light_energy = 1.5
+
+[node name="ProfLabel" type="Label" parent="Root/Card" unique_id=1971967728]
+layout_mode = 0
+offset_left = 1213.0
+offset_top = 447.0
+offset_right = 1483.0
+offset_bottom = 482.0
+theme_override_font_sizes/font_size = 20
+text = "Profession:"
+
+[node name="ProfValue" type="Label" parent="Root/Card" unique_id=49720521]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1493.0
+offset_top = 447.0
+offset_right = 1993.0
+offset_bottom = 482.0
+theme_override_font_sizes/font_size = 20
+text = "-"
+
+[node name="FoodLabel" type="Label" parent="Root/Card" unique_id=1018027913]
+layout_mode = 0
+offset_left = 1213.0
+offset_top = 507.0
+offset_right = 1483.0
+offset_bottom = 542.0
+theme_override_font_sizes/font_size = 20
+text = "Food Preference:"
+
+[node name="FoodValue" type="Label" parent="Root/Card" unique_id=1520077862]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1493.0
+offset_top = 507.0
+offset_right = 1993.0
+offset_bottom = 542.0
+theme_override_font_sizes/font_size = 20
+text = "-"
+
+[node name="StamLabel" type="Label" parent="Root/Card" unique_id=1146752841]
+layout_mode = 0
+offset_left = 1213.0
+offset_top = 567.0
+offset_right = 1483.0
+offset_bottom = 602.0
+theme_override_font_sizes/font_size = 20
+text = "Stamina:"
+
+[node name="StamValue" type="Label" parent="Root/Card" unique_id=816110837]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1493.0
+offset_top = 567.0
+offset_right = 1993.0
+offset_bottom = 602.0
+theme_override_font_sizes/font_size = 20
+text = "-"
+
+[node name="FollowsLabel" type="Label" parent="Root/Card" unique_id=1533790188]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1213.0
+offset_top = 627.0
+offset_right = 1483.0
+offset_bottom = 662.0
+theme_override_font_sizes/font_size = 20
+text = "Follows:"
+
+[node name="FollowsValue" type="Label" parent="Root/Card" unique_id=443891967]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1493.0
+offset_top = 627.0
+offset_right = 1993.0
+offset_bottom = 662.0
+theme_override_font_sizes/font_size = 20
+text = "-"
+
+[node name="Hint" type="Label" parent="Root/Card" unique_id=1714079273]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -50.0
+offset_bottom = -20.0
+theme_override_font_sizes/font_size = 14
+text = "[ click to continue ]"
+horizontal_alignment = 1

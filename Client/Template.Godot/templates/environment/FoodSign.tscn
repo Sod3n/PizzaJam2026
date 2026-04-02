@@ -56,6 +56,14 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nr4m1"]
+render_priority = -1
+shader = ExtResource("4_dpkjo")
+shader_parameter/albedo_texture = ExtResource("8_3ejbo")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
 [node name="FoodSign" type="Node3D" unique_id=191318127]
 
 [node name="Entity" type="Node3D" parent="." unique_id=1551194688]
@@ -86,4 +94,12 @@ modulate = Color(0.538588, 0.56305635, 0.56306595, 1)
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_hygnc")
 frame_progress = 0.0024409618
+script = ExtResource("7_5jc8c")
+
+[node name="HeartIcon" type="AnimatedSprite3D" parent="." unique_id=756182364]
+transform = Transform3D(0.11109497, 0.061316725, 0.028256485, -0.06751228, 0.10089988, 0.046497528, 0, -0.05441001, 0.118070014, 0.43021253, 1.0065575, -0.372066)
+visible = false
+material_override = SubResource("ShaderMaterial_nr4m1")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_hygnc")
 script = ExtResource("7_5jc8c")

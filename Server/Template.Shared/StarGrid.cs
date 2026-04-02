@@ -11,37 +11,23 @@ public static class StarGrid
 {
     public const float GridStep = 10f;
     public const float OuterRadius = 90f;
-    public const float InnerRadius = 32f;
+    public const float InnerRadius = 15f;
     private const int StarPoints = 5;
 
     /// <summary>
     /// Minimum grid distance (Manhattan) between special buildings (LoveHouse, SellPoint).
     /// Ensures ~10-15 houses between each special building.
     /// </summary>
-    private const int MinSpecialDistance = 4; // 4 grid steps ≈ 12-16 houses between specials
+    private const int MinSpecialDistance = 3; // 3 grid steps between specials (thin star arms)
 
-    // Fixed special grid positions that become specific structure types
-    // Ring 1 (dist 1): houses + love house — economy bootstrap
-    // Farms at increasing distances — exactly 6 total (2 per type)
-    //   ~4 min  Carrot1    ~8 min  Carrot2
-    //   ~12 min Apple1     ~18 min Apple2
-    //   ~22 min Mushroom1  ~26 min Mushroom2
+    // Fixed positions: only economy bootstrap buildings that MUST be at known locations.
+    // Farms are spawned dynamically (see DynamicSpecials) so they scatter across the star.
     public static int? GetFixedType(int gx, int gy)
     {
         if (gx == 0 && gy == 0) return LandType.SellPoint;
         if (gx == 1 && gy == 0) return LandType.LoveHouse;
-        // Carrot farms — early game (dist 2, 3)
-        if (gx == -1 && gy == 1) return LandType.CarrotFarm;    // dist 2
-        if (gx == 2 && gy == 1) return LandType.CarrotFarm;     // dist 3
-        // Apple farms — mid game (dist 3, 4)
-        if (gx == -2 && gy == 1) return LandType.AppleOrchard;  // dist 3
-        if (gx == 3 && gy == -1) return LandType.AppleOrchard;  // dist 4
-        // Mushroom farms — late game (dist 4, 5)
-        if (gx == -3 && gy == 1) return LandType.MushroomCave;  // dist 4
-        if (gx == 4 && gy == 1) return LandType.MushroomCave;   // dist 5
-        // Final structure — fixed at center-south
-        if (gx == 0 && gy == -3) return LandType.FinalStructure;
-        // Note: HelperAssistant and Upgrade buildings spawn dynamically via TryGetSpecialType
+        // Final structure — fixed at center-south, dist 7 forces expansion through all farm tiers
+        if (gx == 0 && gy == -7) return LandType.FinalStructure;
         return null;
     }
 
@@ -83,7 +69,7 @@ public static class StarGrid
     {
         switch (landType)
         {
-            case LandType.FinalStructure: return 50;
+            case LandType.FinalStructure: return 5;
             case LandType.LoveHouse: return 3;
             case LandType.SellPoint: return 1;
             case LandType.CarrotFarm: return 1;
@@ -98,33 +84,52 @@ public static class StarGrid
     }
 
     /// <summary>
-    /// Era multiplier: all land costs scale with player's expected income at each distance tier.
-    /// Farms at dist 2/3/4 unlock Carrot/Apple/Mushroom → income grows → land costs match.
-    /// </summary>
-    /// <summary>
-    /// Era pricing: kicks in TWO distances after the farm that unlocks it.
-    /// Player builds carrot farm at dist 2, has time to ramp income, dist 4+ costs more.
+    /// Era pricing: each distance tier requires the corresponding cow tier's income.
+    /// Grass cows become obsolete in carrot era, carrot cows in apple era, etc.
+    /// Farms spawn 1 dist before their era gate so food is available before it's needed.
     /// </summary>
     public static int GetEraMultiplier(int gridDist)
     {
-        if (gridDist >= 6) return 8; // mushroom income established (farm at dist 4)
-        if (gridDist >= 5) return 4; // apple income established (farm at dist 3)
-        if (gridDist >= 4) return 2; // carrot income established (farm at dist 2)
-        return 1; // grass era
+        if (gridDist >= 5) return 10;  // mushroom era
+        if (gridDist >= 4) return 5;   // apple era
+        if (gridDist >= 3) return 3;   // carrot era
+        return 1;                       // grass era
     }
 
     // ─── Dynamic special buildings: spawn at player's expansion frontier ───
 
     /// <summary>
+    /// Split grid into 4 quadrants for angular separation.
+    /// Ensures consecutive farms spawn in different directions.
+    /// </summary>
+    public static int GetQuadrant(int gx, int gy)
+    {
+        if (gx > 0 && gy >= 0) return 0;
+        if (gx <= 0 && gy > 0) return 1;
+        if (gx < 0 && gy <= 0) return 2;
+        return 3;
+    }
+
+    /// <summary>
     /// Special buildings that spawn dynamically when the player reaches a grid distance.
     /// Each spawns exactly once (tracked via GlobalResourcesComponent.SpawnedSpecials bitmask).
+    /// Farms use angular separation: each new farm must be in a different quadrant than the last,
+    /// rewarding players who expand in multiple directions.
     /// </summary>
-    private static readonly (int type, int triggerDist, int bit)[] DynamicSpecials =
+    private static readonly (int type, int triggerDist, int bit, bool isFarm)[] DynamicSpecials =
     {
-        (LandType.HelperAssistant, 3, 0),
-        (LandType.UpgradeGatherer, 4, 1),
-        (LandType.UpgradeBuilder,  5, 2),
-        (LandType.UpgradeSeller,   6, 3),
+        // Farms — each appears 1 era BEFORE it's needed (affordable with current-era income)
+        (LandType.CarrotFarm,    2, 4, true),   // grass era — cheap to build (20 coins)
+        (LandType.CarrotFarm,    3, 5, true),
+        (LandType.AppleOrchard,  3, 6, true),   // carrot era — affordable (90 coins)
+        (LandType.AppleOrchard,  4, 7, true),
+        (LandType.MushroomCave,  4, 8, true),   // apple era — affordable (200 coins)
+        (LandType.MushroomCave,  5, 9, true),
+        // Non-farm specials — no angular constraint
+        (LandType.HelperAssistant, 2, 0, false),
+        (LandType.UpgradeGatherer, 3, 1, false),
+        (LandType.UpgradeBuilder,  4, 2, false),
+        (LandType.UpgradeSeller,   5, 3, false),
     };
 
     /// <summary>
@@ -143,26 +148,51 @@ public static class StarGrid
 
         ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
 
-        foreach (var (type, triggerDist, bit) in DynamicSpecials)
+        foreach (var (type, triggerDist, bit, isFarm) in DynamicSpecials)
         {
-            if (dist >= triggerDist && (gr.SpawnedSpecials & (1 << bit)) == 0)
+            if (dist < triggerDist) continue;
+            if ((gr.SpawnedSpecials & (1 << bit)) != 0) continue;
+
+            // Helper buildings only spawn when helpers are enabled
+            if (!isFarm && gr.HelpersEnabled == 0) continue;
+
+            // Farms require angular separation: different quadrant than last farm.
+            // First farm (LastFarmGX/GY both 0) has no constraint.
+            if (isFarm && (gr.LastFarmGX != 0 || gr.LastFarmGY != 0))
             {
-                gr.SpawnedSpecials |= (1 << bit);
-                return type;
+                if (GetQuadrant(gx, gy) == GetQuadrant(gr.LastFarmGX, gr.LastFarmGY))
+                    continue;
             }
+
+            gr.SpawnedSpecials |= (1 << bit);
+            if (isFarm)
+            {
+                gr.LastFarmGX = gx;
+                gr.LastFarmGY = gy;
+            }
+            return type;
         }
         return -1;
     }
 
     // Pre-computed special building positions on a sparse grid.
     // Uses deterministic hash to place LoveHouses and SellPoints with guaranteed min distance.
-    private static readonly System.Collections.Generic.HashSet<(int, int)> _specialPositions = new();
-    private static bool _specialsComputed;
+    private static System.Collections.Generic.HashSet<(int, int)> _specialPositions;
+    private static readonly object _specialLock = new();
 
     private static void EnsureSpecialsComputed()
     {
-        if (_specialsComputed) return;
-        _specialsComputed = true;
+        if (_specialPositions != null) return;
+        lock (_specialLock)
+        {
+            if (_specialPositions != null) return;
+            _specialPositions = ComputeSpecialPositions();
+        }
+    }
+
+    private static System.Collections.Generic.HashSet<(int, int)> ComputeSpecialPositions()
+    {
+        var result = new System.Collections.Generic.HashSet<(int, int)>();
 
         // Scan the full grid and assign specials with minimum distance
         int maxCoord = (int)(OuterRadius / GridStep) + 1;
@@ -183,7 +213,7 @@ public static class StarGrid
         var placed = new System.Collections.Generic.List<(int gx, int gy)>();
         placed.Add((0, 0));   // SellPoint at center
         placed.Add((1, 0));   // LoveHouse (neighbor of sell point)
-        placed.Add((0, -3));  // FinalStructure
+        placed.Add((0, -7));  // FinalStructure
 
         foreach (var (gx, gy, dist) in candidates)
         {
@@ -203,9 +233,10 @@ public static class StarGrid
             }
             if (tooClose) continue;
 
-            _specialPositions.Add((gx, gy));
+            result.Add((gx, gy));
             placed.Add((gx, gy));
         }
+        return result;
     }
 
     public static int GetBuildingType(int gx, int gy)
@@ -222,9 +253,6 @@ public static class StarGrid
             int hash = System.Math.Abs(gx * 7919 + gy * 104729);
             return (hash % 3 == 0) ? LandType.SellPoint : LandType.LoveHouse;
         }
-
-        // Food farms are only placed at fixed positions (6 total: 2 per type)
-        // No random farm spawning — progression is controlled
 
         return LandType.House;
     }
@@ -266,9 +294,13 @@ public static class StarGrid
         int type = GetBuildingType(gx, gy);
 
         // Dynamic specials: override type if this distance triggers a special building
-        int specialType = TryGetSpecialType(ctx.State, gx, gy);
-        if (specialType >= 0)
-            type = specialType;
+        // Never override fixed positions (SellPoint, LoveHouse, FinalStructure)
+        if (!GetFixedType(gx, gy).HasValue)
+        {
+            int specialType = TryGetSpecialType(ctx.State, gx, gy);
+            if (specialType >= 0)
+                type = specialType;
+        }
 
         int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
         int threshold = gridDist * GetEraMultiplier(gridDist) * GetPriceMultiplier(type) * 10;

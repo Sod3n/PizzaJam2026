@@ -18,7 +18,8 @@ public class BotBrain
     private readonly int _botIndex;
     private readonly BotCoordinator _coord;
     private readonly bool _selectiveBreeding;
-    private readonly float _breedIntensity;
+    private readonly int _breedLevel; // 0=never, 1=half houses, 2=fill houses
+    private readonly bool _directionalExpansion;
 
     private readonly BtNode _root;
     private readonly BtBlackboard _bb = new();
@@ -56,7 +57,7 @@ public class BotBrain
             $"{kv.Key}={kv.Value}({100 * kv.Value / Math.Max(1, total)}%)"));
     }
 
-    public BotBrain(Game game, Entity player, Guid userId, int botIndex, BotCoordinator coordinator, bool selectiveBreeding = false, float breedIntensity = 1f)
+    public BotBrain(Game game, Entity player, Guid userId, int botIndex, BotCoordinator coordinator, bool selectiveBreeding = false, int breedLevel = 0, bool directionalExpansion = false)
     {
         _game = game;
         _player = player;
@@ -64,7 +65,8 @@ public class BotBrain
         _botIndex = botIndex;
         _coord = coordinator;
         _selectiveBreeding = selectiveBreeding;
-        _breedIntensity = breedIntensity;
+        _breedLevel = breedLevel;
+        _directionalExpansion = directionalExpansion;
         _root = BuildTree();
     }
 
@@ -287,20 +289,92 @@ public class BotBrain
     /// <summary>Coin value per unit of milk product by cow tier.</summary>
     private static float TierCoinValue(int preferredFood) => preferredFood switch
     {
-        0 => 1f,   // Grass  → Milk
-        1 => 2f,   // Carrot → VitaminShake
-        2 => 6f,   // Apple  → AppleYogurt
-        3 => 18f,  // Mushroom → PurplePotion
+        0 => 1f,    // Grass  → Milk
+        1 => 5f,    // Carrot → VitaminShake
+        2 => 25f,   // Apple  → AppleYogurt
+        3 => 100f,  // Mushroom → PurplePotion
         _ => 1f,
     };
 
     /// <summary>
-    /// Flat breed value scaled by intensity. Cow stats don't affect scoring —
-    /// selective vs random only differs in cow selection, not breed priority.
+    /// Breed value = expected milk income of the baby cow, computed from actual parent tiers.
+    /// With apple+carrot parents: 15% mushroom(100) + 42% apple(25) + 42% carrot(5) → ~28 coins/milk.
+    /// This naturally makes breeding more attractive when the bot has higher-tier cows.
+    /// dimFactor (occupancy) brakes breeding as houses fill.
+    /// Era boost forces tier-up breeding when cow tier lags behind expansion frontier.
     /// </summary>
     private float EstimateBreedValue()
     {
-        return BotConfig.BreedBaseValue * _breedIntensity;
+        int cowCount = Count<CowComponent>();
+        int houseCount = Count<HouseComponent>();
+        float occupancy = houseCount > 0 ? (float)cowCount / houseCount : 1f;
+        float dimFactor = occupancy >= 1f ? 0f : Math.Max(0.1f, 1f - occupancy * 0.8f);
+
+        // Expected milk income from baby (based on actual best parents)
+        float expectedMilkIncome = GetExpectedBreedOutputValue();
+
+        // Era-aware boost: breed urgently when cow tier lags behind frontier
+        int bestBreedable = GetBestBreedableTier();
+        int eraDiff = Math.Max(0, GetFrontierEra() - bestBreedable);
+        float eraBoost = eraDiff * 500f;
+
+        return expectedMilkIncome * dimFactor + eraBoost;
+    }
+
+    /// <summary>
+    /// Expected coin value of a bred baby × ~20 milks per session.
+    /// Uses the two highest-tier cows as parents and applies mutation probabilities.
+    /// </summary>
+    private float GetExpectedBreedOutputValue()
+    {
+        int best1 = -1, best2 = -1;
+        foreach (var e in _game.State.Filter<CowComponent>())
+        {
+            int tier = _game.State.GetComponent<CowComponent>(e).PreferredFood;
+            if (tier > best1) { best2 = best1; best1 = tier; }
+            else if (tier > best2) best2 = tier;
+        }
+        if (best2 < 0) return 0;
+
+        int maxParent = Math.Max(best1, best2);
+        int minParent = Math.Min(best1, best2);
+        // Mutation: 15% upgrade, 42% parentA, 42% parentB, 1% downgrade
+        float expectedCoinPerMilk =
+            0.15f * TierCoinValue(Math.Min(maxParent + 1, 3)) +
+            0.42f * TierCoinValue(best1) +
+            0.42f * TierCoinValue(best2) +
+            0.01f * TierCoinValue(Math.Max(minParent - 1, 0));
+
+        return expectedCoinPerMilk * 20f;
+    }
+
+    /// <summary>
+    /// Highest cow tier where the player has at least 2 cows (can form a breeding pair).
+    /// Returns 0 (grass) as fallback even with fewer than 2 grass cows.
+    /// </summary>
+    private int GetBestBreedableTier()
+    {
+        int[] tierCount = new int[4]; // 0=grass, 1=carrot, 2=apple, 3=mushroom
+        foreach (var e in _game.State.Filter<CowComponent>())
+        {
+            int tier = _game.State.GetComponent<CowComponent>(e).PreferredFood;
+            if (tier >= 0 && tier < 4) tierCount[tier]++;
+        }
+        for (int t = 3; t >= 0; t--)
+        {
+            if (tierCount[t] >= 2) return t;
+        }
+        return 0;
+    }
+
+    /// <summary>Current expansion era based on house count as proxy for grid distance.</summary>
+    private int GetFrontierEra()
+    {
+        int houses = Count<HouseComponent>();
+        if (houses >= 12) return 3; // mushroom era (dist 5+)
+        if (houses >= 9) return 2;  // apple era (dist 4)
+        if (houses >= 6) return 1;  // carrot era (dist 3)
+        return 0;                    // grass era
     }
 
     private BtStatus ScoreAndPickBest(BtBlackboard bb)
@@ -320,6 +394,10 @@ public class BotBrain
         int totalMilk = globalRes.Milk + globalRes.VitaminShake + globalRes.AppleYogurt + globalRes.PurplePotion;
 
         // ── Score each option: value / (travel_ticks + work_ticks) ──
+        bool hasAssistant = ps.AssistantHelper != Entity.Null
+            && _game.State.HasComponent<HelperPetComponent>(ps.AssistantHelper);
+        int assistMult = hasAssistant ? 5 : 1;
+
         int foodNeeded = GetFoodNeededForMilking();
         bool needFood = totalFood < foodNeeded;
         var best = new ScoredOption(-1f, Entity.Null, false, "");
@@ -351,9 +429,15 @@ public class BotBrain
                 if (_game.State.HasComponent<CowComponent>(house.CowId))
                 {
                     var cow = _game.State.GetComponent<CowComponent>(house.CowId);
-                    int clicks = Math.Min(totalFood, cow.MaxExhaust - cow.Exhaust);
-                    int milkPerClick = (house.SelectedFood == cow.PreferredFood) ? 3 : 1;
-                    best = Best(best, ScoreOption(milkable, clicks * milkPerClick * BotConfig.MilkValueMultiplier, playerPos, BotConfig.MilkSetupTicks + clicks, false, "milk"));
+                    int remaining = cow.MaxExhaust - cow.Exhaust;
+                    int exhaustPerClick = hasAssistant ? 5 : 1;
+                    int clicks = Math.Min(totalFood, (remaining + exhaustPerClick - 1) / exhaustPerClick); // ceil
+                    int totalExhaust = Math.Min(remaining, clicks * exhaustPerClick);
+                    int milkPerExhaust = (house.SelectedFood == cow.PreferredFood) ? 5 : 1;
+                    int[] _milkCoinVal = { 1, 5, 25, 100 };
+                    int coinPerMilk = (house.SelectedFood >= 0 && house.SelectedFood < 4) ? _milkCoinVal[house.SelectedFood] : 1;
+                    float milkValue = totalExhaust * milkPerExhaust * coinPerMilk;
+                    best = Best(best, ScoreOption(milkable, milkValue * BotConfig.MilkValueMultiplier, playerPos, BotConfig.MilkSetupTicks + clicks, false, "milk"));
                 }
             }
         }
@@ -373,15 +457,29 @@ public class BotBrain
             if (land != Entity.Null)
             {
                 var lc = _game.State.GetComponent<LandComponent>(land);
-                int canSpend = Math.Min(globalRes.Coins, lc.Threshold - lc.CurrentCoins);
-                best = Best(best, ScoreOption(land, canSpend * BotConfig.BuildValueMultiplier, playerPos, canSpend, true, "build"));
+                int remaining = lc.Threshold - lc.CurrentCoins;
+                int canSpend = Math.Min(globalRes.Coins, remaining);
+                int buildClicks = (canSpend + assistMult - 1) / assistMult; // ceil(canSpend / assistMult)
+                float buildValue = canSpend * BotConfig.BuildValueMultiplier;
+
+                // Game-winning action: if we can complete the FinalStructure, override everything
+                if (lc.Type == LandType.FinalStructure && globalRes.Coins >= remaining)
+                    buildValue = 100000f;
+
+                best = Best(best, ScoreOption(land, buildValue, playerPos, buildClicks, true, "build"));
             }
         }
 
-        // Option: Breed — re-breed same pair, swap for better cows, or fetch new pair
-        if (ps.FollowingCow == Entity.Null && cowCount < houseCount && _coord.TryClaimBreeder(_botIndex))
+        // Option: Breed — simple cap based on breedLevel
+        // Level 0: never breed, Level 1: breed up to houseCount/2, Level 2: breed up to houseCount
+        int breedCap = _breedLevel == 0 ? 0 : (_breedLevel == 1 ? houseCount / 2 : houseCount);
+        bool wantsToBreed = _breedLevel > 0 && cowCount < breedCap;
+
+        bool needCoins = globalRes.Coins <= 0 && (totalMilk > 0 || (totalFood > 0 && cowCount > 0));
+        if (ps.FollowingCow == Entity.Null && wantsToBreed && !needCoins && _coord.TryClaimBreeder(_botIndex))
         {
-            float breedValue = EstimateBreedValue();
+            // breedLevel already gates whether to breed — when it says breed, use high value so it wins
+            float breedValue = 5000f;
             var breedable = FindBreedableLoveHouse();
             if (breedable != Entity.Null)
             {
@@ -651,19 +749,23 @@ public class BotBrain
     /// </summary>
     private Entity FindCowForBreeding()
     {
-        // Find what's already in the love house
+        // Find what's already in the love house + love house position for distance check
         int loveHouseTier = -1;
+        Vector2 lhPos = Vector2.Zero;
         foreach (var e in _game.State.Filter<LoveHouseComponent>())
         {
             var lh = _game.State.GetComponent<LoveHouseComponent>(e);
             Entity existing = lh.CowId1 != Entity.Null ? lh.CowId1 : lh.CowId2;
             if (existing != Entity.Null && _game.State.HasComponent<CowComponent>(existing))
                 loveHouseTier = _game.State.GetComponent<CowComponent>(existing).PreferredFood;
+            if (_game.State.HasComponent<Transform2D>(e))
+                lhPos = _game.State.GetComponent<Transform2D>(e).Position;
             break;
         }
 
         Entity best = Entity.Null;
         int bestTier = -1;
+        float bestDist = float.MaxValue;
 
         foreach (var e in _game.State.Filter<HouseComponent>())
         {
@@ -673,15 +775,25 @@ public class BotBrain
             var cow = _game.State.GetComponent<CowComponent>(house.CowId);
             if (cow.IsMilking) continue;
 
+            float dist = _game.State.HasComponent<Transform2D>(e)
+                ? (float)Vector2.Distance(lhPos, _game.State.GetComponent<Transform2D>(e).Position)
+                : float.MaxValue;
+
             if (!_selectiveBreeding)
-                return house.CowId; // random: first available
+            {
+                // Random: pick nearest cow to love house
+                if (dist < bestDist) { bestDist = dist; best = house.CowId; }
+                continue;
+            }
 
             int tier = cow.PreferredFood;
             int pairValue = loveHouseTier < 0 ? tier : Math.Max(tier, loveHouseTier);
 
-            if (pairValue > bestTier)
+            // Selective: prefer higher tier, break ties by distance
+            if (pairValue > bestTier || (pairValue == bestTier && dist < bestDist))
             {
                 bestTier = pairValue;
+                bestDist = dist;
                 best = house.CowId;
             }
         }
@@ -840,7 +952,10 @@ public class BotBrain
         if (!globalRes.HasAnyFood()) return Entity.Null;
 
         Entity best = Entity.Null;
-        int bestCapacity = 0;
+        float bestScore = -1f;
+
+        // Milk product coin values by type
+        int[] milkCoinValue = { 1, 5, 25, 100 }; // Milk, VitaminShake, AppleYogurt, PurplePotion
 
         foreach (var e in _game.State.Filter<HouseComponent>())
         {
@@ -858,11 +973,15 @@ public class BotBrain
             int bestFood = globalRes.FindBestFoodForCow(cow.PreferredFood);
             if (bestFood < 0) continue;
 
-            // Prefer cows with more remaining milk capacity
+            // Score by total coin value: remaining exhaust × milkPerExhaust × coinValue
             int remaining = cow.MaxExhaust - cow.Exhaust;
-            if (remaining > bestCapacity)
+            int milkPerExhaust = (bestFood == cow.PreferredFood) ? 5 : 1;
+            int coinValue = (bestFood >= 0 && bestFood < milkCoinValue.Length) ? milkCoinValue[bestFood] : 1;
+            float score = remaining * milkPerExhaust * coinValue;
+
+            if (score > bestScore)
             {
-                bestCapacity = remaining;
+                bestScore = score;
                 best = e;
 
                 // Set house food to best available for this cow
@@ -963,6 +1082,17 @@ public class BotBrain
         int bestScore = int.MaxValue;
         int houseCount = Count<HouseComponent>();
 
+        // Check if FinalStructure is revealed — if not, prioritize path toward (0, -5)
+        bool fsRevealed = false;
+        foreach (var e in _game.State.Filter<LandComponent>())
+        {
+            if (_game.State.GetComponent<LandComponent>(e).Type == LandType.FinalStructure)
+            { fsRevealed = true; break; }
+        }
+        if (!fsRevealed)
+            foreach (var _ in _game.State.Filter<FinalStructureComponent>())
+            { fsRevealed = true; break; }
+
         foreach (var e in _game.State.Filter<LandComponent>())
         {
             if (checkClaimed && _coord.IsClaimed(e)) continue;
@@ -973,16 +1103,50 @@ public class BotBrain
 
             int score = remaining;
 
-            // Priority: farms once economy is running
-            bool isFarm = land.Type == LandType.CarrotFarm
-                       || land.Type == LandType.AppleOrchard
-                       || land.Type == LandType.MushroomCave;
-            if (isFarm && houseCount >= 3)
-                score /= 3;
+            // Quadrant-aware expansion: boost lands in a different quadrant than the last farm.
+            // This triggers angular separation faster by deliberately spreading in multiple directions.
+            // Also penalize lands that are NOT on the expansion frontier (low grid distance).
+            if (_directionalExpansion)
+            {
+                int gridDist = System.Math.Max(1, System.Math.Abs(land.Arm) + System.Math.Abs(land.Ring));
+                var gr = GetGlobalResources();
+                int lastFarmQ = StarGrid.GetQuadrant(gr.LastFarmGX, gr.LastFarmGY);
+                int landQ = StarGrid.GetQuadrant(land.Arm, land.Ring);
+                bool hasFarms = gr.LastFarmGX != 0 || gr.LastFarmGY != 0;
+
+                // Strong boost for lands in a different quadrant than the last farm
+                if (hasFarms && landQ != lastFarmQ)
+                    score /= 3;
+
+                // Prefer frontier lands (higher distance) — but only mildly
+                if (gridDist >= 3)
+                    score = score * 2 / (gridDist + 1);
+            }
+
+            // Priority: farms once economy is running — higher-tier farms get stronger priority
+            // to push the bot toward mushroom caves (highest food value) faster
+            if (houseCount >= 3)
+            {
+                if (land.Type == LandType.MushroomCave)
+                    score /= 10;       // PurplePotion = 18 coins — rush this
+                else if (land.Type == LandType.AppleOrchard)
+                    score /= 6;        // AppleYogurt = 6 coins — on path to mushroom
+                else if (land.Type == LandType.CarrotFarm)
+                    score /= 4;        // VitaminShake = 2 coins
+            }
 
             // Priority: Assistant building — doubles click output, very valuable
             if (land.Type == LandType.HelperAssistant && houseCount >= 3)
                 score /= 5;
+
+            // Priority: path to FinalStructure — strongly prefer plots along (0, -y) axis
+            // when FinalStructure hasn't been revealed yet (needs building through (0,-4))
+            if (!fsRevealed && land.Arm == 0 && land.Ring < 0 && land.Ring >= -4 && houseCount >= 8)
+                score /= 5;
+
+            // Priority: FinalStructure — rush it once revealed
+            if (land.Type == LandType.FinalStructure)
+                score /= 20;
 
             // Priority: upgrade buildings — x2 helper boost, but only if helper exists and not yet upgraded
             if (land.Type == LandType.UpgradeGatherer || land.Type == LandType.UpgradeBuilder || land.Type == LandType.UpgradeSeller)

@@ -9,6 +9,7 @@ using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.Physics2D.Components;
+using Deterministic.GameFramework.TwoD;
 using Template.Shared.Actions;
 using Template.Shared.Components;
 using Template.Shared.Factories;
@@ -22,19 +23,31 @@ namespace Template.Shared.Tests;
 public class BotSimulationTests
 {
     private static readonly object _createLock = new();
+    private static bool _servicesReady;
     private readonly ITestOutputHelper _output;
 
     public BotSimulationTests(ITestOutputHelper output) => _output = output;
 
+    /// <summary>
+    /// Ensure ServiceLocator is initialized exactly once — Reset is destructive
+    /// and must not run while other threads are mid-simulation.
+    /// </summary>
+    private static void EnsureServicesInitialized()
+    {
+        if (_servicesReady) return;
+        ServiceLocator.Reset();
+        var field = typeof(TemplateGameFactory).GetField("_appInitialized", BindingFlags.Static | BindingFlags.NonPublic);
+        field?.SetValue(null, false);
+        // Create and discard a game to force all static registration
+        TemplateGameFactory.CreateGame(tickRate: 60);
+        _servicesReady = true;
+    }
+
     private Game CreateGame()
     {
-        // Lock around static state (ServiceLocator + _appInitialized) — game creation is fast,
-        // the expensive simulation loop runs fully in parallel after this.
         lock (_createLock)
         {
-            ServiceLocator.Reset();
-            var field = typeof(TemplateGameFactory).GetField("_appInitialized", BindingFlags.Static | BindingFlags.NonPublic);
-            field?.SetValue(null, false);
+            EnsureServicesInitialized();
             return TemplateGameFactory.CreateGame(tickRate: 60);
         }
     }
@@ -91,16 +104,18 @@ public class BotSimulationTests
         bool Completed, float Minutes, int Houses, int Cows, int Helpers,
         int Coins, int Food, int LandRemaining, int LandCost,
         int MilkClicks, int BreedClicks, int GatherClicks, int TotalClicks,
-        float ClickPct, int CumMilk, int CumCoins);
+        float ClickPct, int CumMilk, int CumCoins,
+        int FoodFarms, float LastFarmMinute, int Mushroom,
+        float FirstCarrotMinute, float FirstAppleMinute, float FirstMushroomMinute,
+        int CowsGrass, int CowsCarrot, int CowsApple, int CowsMushroom, int TotalBreeds,
+        float EraGrassMinute, float EraCarrotMinute, float EraAppleMinute, float EraMushroomMinute);
 
-    private SimResult RunSingleSim(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, float breedIntensity = 1f)
+    private SimResult RunSingleSim(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, int breedLevel = 1, bool directionalExpansion = false)
     {
         Game game;
         lock (_createLock)
         {
-            ServiceLocator.Reset();
-            var field = typeof(TemplateGameFactory).GetField("_appInitialized", BindingFlags.Static | BindingFlags.NonPublic);
-            field?.SetValue(null, false);
+            EnsureServicesInitialized();
             game = TemplateGameFactory.CreateGame(tickRate: 60);
         }
 
@@ -125,7 +140,7 @@ public class BotSimulationTests
                     { player = e; break; }
                 }
             }
-            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedIntensity));
+            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedLevel, directionalExpansion));
         }
 
         CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
@@ -136,6 +151,12 @@ public class BotSimulationTests
         int maxTicks = 60 * 60 * maxMinutes;
         bool completed = false;
         int endTick = maxTicks;
+        int lastFarmCount = 0;
+        int lastFarmTick = 0;
+        int firstCarrotTick = -1, firstAppleTick = -1, firstMushroomTick = -1;
+        // Era reach timing: when bot first has a built house/building at each distance tier
+        int eraGrassTick = 0; // always start in grass era
+        int eraCarrotTick = -1, eraAppleTick = -1, eraMushroomTick = -1;
 
         for (int tick = 0; tick < maxTicks; tick++)
         {
@@ -159,7 +180,37 @@ public class BotSimulationTests
             }
             runner.Tick();
 
-            if (tick % 60 == 0) metrics.RecordSnapshot(game, tick);
+            if (tick % 60 == 0)
+            {
+                metrics.RecordSnapshot(game, tick);
+                // Track when new farms are built and per-type first appearance
+                int farms = 0;
+                foreach (var e in game.State.Filter<FoodFarmComponent>())
+                {
+                    farms++;
+                    var ff = game.State.GetComponent<FoodFarmComponent>(e);
+                    if (ff.FoodType == FoodType.Carrot && firstCarrotTick < 0) firstCarrotTick = tick;
+                    if (ff.FoodType == FoodType.Apple && firstAppleTick < 0) firstAppleTick = tick;
+                    if (ff.FoodType == FoodType.Mushroom && firstMushroomTick < 0) firstMushroomTick = tick;
+                }
+                if (farms > lastFarmCount) { lastFarmCount = farms; lastFarmTick = tick; }
+
+                // Track era reach: scan built houses for max grid distance
+                if (eraCarrotTick < 0 || eraAppleTick < 0 || eraMushroomTick < 0)
+                {
+                    foreach (var e in game.State.Filter<HouseComponent>())
+                    {
+                        if (!game.State.HasComponent<Transform2D>(e)) continue;
+                        var pos = game.State.GetComponent<Transform2D>(e).Position;
+                        int gx = (int)System.Math.Round((float)pos.X / StarGrid.GridStep);
+                        int gy = (int)System.Math.Round((float)pos.Y / StarGrid.GridStep);
+                        int d = System.Math.Abs(gx) + System.Math.Abs(gy);
+                        if (d >= 3 && eraCarrotTick < 0) eraCarrotTick = tick;
+                        if (d >= 4 && eraAppleTick < 0) eraAppleTick = tick;
+                        if (d >= 5 && eraMushroomTick < 0) eraMushroomTick = tick;
+                    }
+                }
+            }
 
             if (HasFinalStructure(game))
             {
@@ -175,6 +226,19 @@ public class BotSimulationTests
         int totalClicks = bots.Sum(b => b.TotalClicks);
         int ticksClicking = bots.Sum(b => b.TicksClicking);
         float clickPct = endTick > 0 ? ticksClicking * 100f / endTick : 0;
+
+        // Count cow tiers
+        int[] cowTiers = new int[4];
+        foreach (var e in game.State.Filter<CowComponent>())
+        {
+            int tier = game.State.GetComponent<CowComponent>(e).PreferredFood;
+            if (tier >= 0 && tier < 4) cowTiers[tier]++;
+        }
+        // Get total breed count
+        int totalBreeds = 0;
+        foreach (var e in game.State.Filter<GlobalResourcesComponent>())
+        { totalBreeds = game.State.GetComponent<GlobalResourcesComponent>(e).TotalBreedCount; break; }
+
         return new SimResult(
             Completed: completed,
             Minutes: endTick / 3600f,
@@ -191,7 +255,19 @@ public class BotSimulationTests
             TotalClicks: totalClicks,
             ClickPct: clickPct,
             CumMilk: snap?.CumMilk ?? 0,
-            CumCoins: snap?.CumCoins ?? 0
+            CumCoins: snap?.CumCoins ?? 0,
+            FoodFarms: lastFarmCount,
+            LastFarmMinute: lastFarmTick / 3600f,
+            Mushroom: snap?.Mushroom ?? 0,
+            FirstCarrotMinute: firstCarrotTick >= 0 ? firstCarrotTick / 3600f : -1f,
+            FirstAppleMinute: firstAppleTick >= 0 ? firstAppleTick / 3600f : -1f,
+            FirstMushroomMinute: firstMushroomTick >= 0 ? firstMushroomTick / 3600f : -1f,
+            CowsGrass: cowTiers[0], CowsCarrot: cowTiers[1], CowsApple: cowTiers[2], CowsMushroom: cowTiers[3],
+            TotalBreeds: totalBreeds,
+            EraGrassMinute: 0f,
+            EraCarrotMinute: eraCarrotTick >= 0 ? eraCarrotTick / 3600f : -1f,
+            EraAppleMinute: eraAppleTick >= 0 ? eraAppleTick / 3600f : -1f,
+            EraMushroomMinute: eraMushroomTick >= 0 ? eraMushroomTick / 3600f : -1f
         );
     }
 
@@ -316,23 +392,21 @@ public class BotSimulationTests
     // ─── Multi-run averaged test ───
 
     [Theory]
-    // Standard variants
-    [InlineData(3, 1, 30, true, true, 1f)]    // selective + helpers
-    [InlineData(3, 1, 30, true, false, 1f)]   // selective + NO helpers
-    [InlineData(3, 1, 30, false, true, 1f)]   // random + helpers
-    [InlineData(3, 1, 30, false, false, 1f)]  // random + NO helpers
-    // Breed intensity: xlow(5-10 cows) / low(10-20) / mid(20-30) / high(fill all houses)
-    [InlineData(3, 1, 30, false, true, 0.3f)]  // random + helpers + XLOW
-    [InlineData(3, 1, 30, false, true, 3f)]    // random + helpers + LOW
-    [InlineData(3, 1, 30, false, true, 6f)]    // random + helpers + MID
-    [InlineData(3, 1, 30, false, true, 10f)]   // random + helpers + HIGH
-    [InlineData(3, 1, 30, true, true, 0.3f)]   // selective + helpers + XLOW
-    [InlineData(3, 1, 30, true, true, 3f)]     // selective + helpers + LOW
-    [InlineData(3, 1, 30, true, true, 6f)]     // selective + helpers + MID
-    [InlineData(3, 1, 30, true, true, 10f)]    // selective + helpers + HIGH
-    public void RunSimulationAveraged(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, float breedIntensity)
+    // Breed level 0 = never breed, 1 = breed to half houses, 2 = breed to fill houses
+    // selective + helpers — all breed levels
+    [InlineData(6, 1, 45, true, true, 0)]    // selective + helpers + NO breeding
+    [InlineData(6, 1, 45, true, true, 1)]    // selective + helpers + half
+    [InlineData(6, 1, 45, true, true, 2)]    // selective + helpers + full
+    // random + helpers — all breed levels
+    [InlineData(6, 1, 45, false, true, 0)]   // random + helpers + NO breeding
+    [InlineData(6, 1, 45, false, true, 1)]   // random + helpers + half
+    [InlineData(6, 1, 45, false, true, 2)]   // random + helpers + full
+    // NO helpers — breed level 1 (representative)
+    [InlineData(6, 1, 45, true, false, 1)]   // selective + NO helpers + half
+    [InlineData(6, 1, 45, false, false, 1)]  // random + NO helpers + half
+    public void RunSimulationAveraged(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, int breedLevel)
     {
-        string breedTag = breedIntensity == 1f ? "" : $"_breed{breedIntensity:F1}x";
+        string breedTag = $"_breed{breedLevel}";
         string tag = $"{(selectiveBreeding ? "selective" : "random")}+{(helpersEnabled ? "helpers" : "nohelpers")}{breedTag}";
         _output.WriteLine($"Running {runs}x: {tag}, {maxMinutes} min...\n");
 
@@ -340,7 +414,7 @@ public class BotSimulationTests
         var results = new SimResult[runs];
         Parallel.For(0, runs, i =>
         {
-            results[i] = RunSingleSim(botCount, maxMinutes, selectiveBreeding, helpersEnabled, breedIntensity);
+            results[i] = RunSingleSim(botCount, maxMinutes, selectiveBreeding, helpersEnabled, breedLevel);
         });
 
         // Individual results
@@ -348,8 +422,11 @@ public class BotSimulationTests
         {
             var r = results[i];
             _output.WriteLine($"  Run {i + 1}: {(r.Completed ? $"DONE {r.Minutes:F1}m" : $"timeout")}  " +
-                $"Houses={r.Houses}  Cows={r.Cows}  Helpers={r.Helpers}  Coins={r.Coins}  " +
-                $"Land={r.LandRemaining}  Clicks={r.TotalClicks}(milk={r.MilkClicks} breed={r.BreedClicks} gather={r.GatherClicks})  Click%={r.ClickPct:F0}%");
+                $"Houses={r.Houses}  Cows={r.Cows}[G{r.CowsGrass}/C{r.CowsCarrot}/A{r.CowsApple}/M{r.CowsMushroom}]  " +
+                $"Breeds={r.TotalBreeds}  Helpers={r.Helpers}  Coins={r.Coins}  " +
+                $"Eras[C={r.EraCarrotMinute:F1} A={r.EraAppleMinute:F1} M={r.EraMushroomMinute:F1}]  " +
+                $"Farms[C={r.FirstCarrotMinute:F1} A={r.FirstAppleMinute:F1} M={r.FirstMushroomMinute:F1}]  " +
+                $"Click%={r.ClickPct:F0}%");
         }
 
         // Averages
@@ -392,19 +469,21 @@ public class BotSimulationTests
         // Export CSV — individual runs + averages
         string csvDir = Path.Combine(Path.GetDirectoryName(typeof(BotSimulationTests).Assembly.Location)!, "sim_results");
         Directory.CreateDirectory(csvDir);
-        string breedSuffix = breedIntensity == 1f ? "" : $"_breed{breedIntensity.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)}x";
-        string csvTag = $"{botCount}bot_{maxMinutes}min_{(selectiveBreeding ? "selective" : "random")}_{(helpersEnabled ? "helpers" : "nohelpers")}{breedSuffix}";
+        string csvTag = $"{botCount}bot_{maxMinutes}min_{(selectiveBreeding ? "selective" : "random")}_{(helpersEnabled ? "helpers" : "nohelpers")}_breed{breedLevel}";
         string csvPath = Path.Combine(csvDir, $"averaged_{csvTag}.csv");
 
         var inv = System.Globalization.CultureInfo.InvariantCulture;
         var csv = new System.Text.StringBuilder();
-        csv.AppendLine("Run,Completed,Minutes,Houses,Cows,Helpers,Coins,Food,LandRemaining,LandCost,MilkClicks,BreedClicks,GatherClicks,TotalClicks,ClickPct,CumMilk,CumCoins");
+        csv.AppendLine("Run,Completed,Minutes,Houses,Cows,Helpers,Coins,Food,LandRemaining,LandCost,MilkClicks,BreedClicks,GatherClicks,TotalClicks,ClickPct,CumMilk,CumCoins,CowsGrass,CowsCarrot,CowsApple,CowsMushroom,TotalBreeds,FirstCarrotMin,FirstAppleMin,FirstMushroomMin,EraCarrotMin,EraAppleMin,EraMushroomMin");
         for (int i = 0; i < runs; i++)
         {
             var r = results[i];
-            csv.AppendLine(string.Format(inv, "{0},{1},{2:F2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14:F0},{15},{16}",
+            csv.AppendLine(string.Format(inv, "{0},{1},{2:F2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14:F0},{15},{16},{17},{18},{19},{20},{21},{22:F2},{23:F2},{24:F2},{25:F2},{26:F2},{27:F2}",
                 i + 1, r.Completed ? 1 : 0, r.Minutes, r.Houses, r.Cows, r.Helpers, r.Coins, r.Food, r.LandRemaining, r.LandCost,
-                r.MilkClicks, r.BreedClicks, r.GatherClicks, r.TotalClicks, r.ClickPct, r.CumMilk, r.CumCoins));
+                r.MilkClicks, r.BreedClicks, r.GatherClicks, r.TotalClicks, r.ClickPct, r.CumMilk, r.CumCoins,
+                r.CowsGrass, r.CowsCarrot, r.CowsApple, r.CowsMushroom, r.TotalBreeds,
+                r.FirstCarrotMinute, r.FirstAppleMinute, r.FirstMushroomMinute,
+                r.EraCarrotMinute, r.EraAppleMinute, r.EraMushroomMinute));
         }
         float avgClickPct = (float)results.Average(r => r.ClickPct);
         csv.AppendLine(string.Format(inv, "AVG,{0}/{1},{2:F2},{3:F1},{4:F1},{5:F1},{6:F0},{7:F0},{8:F1},,{9:F0},{10:F0},{11:F0},{12:F0},{13:F0},{14:F0},{15:F0}",
@@ -498,38 +577,23 @@ public class BotSimulationTests
         var coordinator = new BotCoordinator();
         var userId = Guid.NewGuid();
         var player = AddBotPlayer(game, userId);
-        var bot = new BotBrain(game, player, userId, 0, coordinator, selectiveBreeding: false);
+        var bot = new BotBrain(game, player, userId, 0, coordinator, selectiveBreeding: true, breedLevel: 2);
 
+        CowSystem.SetHelpersEnabled(game.State, true);
         var runner = new LightSimRunner(game);
         for (int i = 0; i < 10; i++) game.Loop.RunSingleTick();
 
-        // Enable debug logging on breed-relevant ticks
-        int maxTicks = 60 * 60 * 10; // 10 minutes
-        int breedLogCount = 0;
-
-        bot.DebugLog = msg =>
-        {
-            if (breedLogCount < 200) // cap output
-            {
-                _output.WriteLine(msg);
-                breedLogCount++;
-            }
-        };
+        int maxTicks = 60 * 60 * 30; // 30 minutes
 
         for (int tick = 0; tick < maxTicks; tick++)
         {
             coordinator.ResetClaims();
 
-            // Log state every 30 seconds + on every Deciding tick after love house exists
-            bool hasLoveHouse = false;
-            foreach (var _ in game.State.Filter<LoveHouseComponent>()) { hasLoveHouse = true; break; }
-
-            bool isDeciding = bot.LastAction == "IDLE" || tick % (60 * 30) == 0;
-
-            if (hasLoveHouse && isDeciding && breedLogCount < 200)
+            // Log state every 1 minute
+            if (tick % 3600 == 0)
             {
                 var globalRes = bot.GetGlobalResources();
-                int cows = 0, housed = 0, wild = 0, following = 0, exhausted = 0;
+                int cows = 0, housed = 0, exhausted = 0, wild = 0, following = 0;
                 foreach (var e in game.State.Filter<CowComponent>())
                 {
                     cows++;
@@ -540,14 +604,24 @@ public class BotSimulationTests
                 }
                 int houses = 0;
                 foreach (var _ in game.State.Filter<HouseComponent>()) houses++;
+                int helpers = 0;
+                foreach (var _ in game.State.Filter<HelperComponent>()) helpers++;
+                int lands = 0;
+                foreach (var _ in game.State.Filter<LandComponent>()) lands++;
 
-                // Love house state
-                foreach (var e in game.State.Filter<LoveHouseComponent>())
+                // Check FinalStructure state
+                string fsState = "not_spawned";
+                foreach (var e in game.State.Filter<LandComponent>())
                 {
-                    var lh = game.State.GetComponent<LoveHouseComponent>(e);
-                    _output.WriteLine($"[{tick / 3600f:F2}m] cows={cows}(housed={housed},exhaust={exhausted},wild={wild},follow={following}) houses={houses} coins={globalRes.Coins} food={globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom} | LoveHouse: cow1={lh.CowId1.Id} cow2={lh.CowId2.Id} progress={lh.BreedProgress}/{lh.BreedCost} | last={bot.LastAction}");
-                    break;
+                    var land = game.State.GetComponent<LandComponent>(e);
+                    if (land.Type == LandType.FinalStructure)
+                    { fsState = $"land({land.CurrentCoins}/{land.Threshold})"; break; }
                 }
+                if (fsState == "not_spawned")
+                    foreach (var _ in game.State.Filter<FinalStructureComponent>())
+                    { fsState = "DONE"; break; }
+
+                _output.WriteLine($"[{tick / 3600f:F0}m] houses={houses} cows={cows}(housed={housed},exhaust={exhausted},wild={wild},follow={following}) helpers={helpers} lands={lands} coins={globalRes.Coins} food={globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom} milk={globalRes.Milk + globalRes.VitaminShake + globalRes.AppleYogurt + globalRes.PurplePotion} FS={fsState} | last={bot.LastAction} | {bot.ActionStats()}");
             }
 
             bot.PreTick(tick);
@@ -562,6 +636,74 @@ public class BotSimulationTests
             runner.Tick();
         }
 
-        _output.WriteLine($"\nFinal action stats: {bot.ActionStats()}");
+        _output.WriteLine($"\nFinal: {bot.ActionStats()}");
+    }
+
+    // ─── Strategy comparison: broad vs directional expansion ───
+
+    [Theory]
+    [InlineData(5, 1, 30, false, true)]   // random breeding, helpers ON
+    [InlineData(5, 1, 30, true, true)]    // selective breeding, helpers ON
+    [InlineData(5, 1, 30, false, false)]  // random breeding, helpers OFF
+    [InlineData(5, 1, 30, true, false)]   // selective breeding, helpers OFF
+    public void CompareExpansionStrategy(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    {
+        string tag = $"{(selectiveBreeding ? "selective" : "random")}+{(helpersEnabled ? "helpers" : "nohelpers")}";
+        _output.WriteLine($"=== Strategy Comparison: {tag}, {runs} runs ===\n");
+
+        var broadResults = new SimResult[runs];
+        var directionalResults = new SimResult[runs];
+
+        Parallel.For(0, runs * 2, i =>
+        {
+            bool directional = i >= runs;
+            int idx = directional ? i - runs : i;
+            var result = RunSingleSim(botCount, maxMinutes, selectiveBreeding, helpersEnabled,
+                directionalExpansion: directional);
+            if (directional)
+                directionalResults[idx] = result;
+            else
+                broadResults[idx] = result;
+        });
+
+        // Print individual results
+        void PrintResults(string label, SimResult[] results)
+        {
+            _output.WriteLine($"── {label} ──");
+            for (int i = 0; i < results.Length; i++)
+            {
+                var r = results[i];
+                _output.WriteLine($"  Run {i + 1}: Carrot={r.FirstCarrotMinute:F1}m  Apple={r.FirstAppleMinute:F1}m  Mushroom={r.FirstMushroomMinute:F1}m  " +
+                    $"Farms={r.FoodFarms}  Houses={r.Houses}  Cows={r.Cows}  Coins={r.Coins}  CumCoins={r.CumCoins}");
+            }
+            float avgCarrot = (float)results.Where(r => r.FirstCarrotMinute >= 0).DefaultIfEmpty().Average(r => r.FirstCarrotMinute);
+            float avgApple = (float)results.Where(r => r.FirstAppleMinute >= 0).DefaultIfEmpty().Average(r => r.FirstAppleMinute);
+            float avgMushroom = (float)results.Where(r => r.FirstMushroomMinute >= 0).DefaultIfEmpty().Average(r => r.FirstMushroomMinute);
+            float avgHouses = (float)results.Average(r => r.Houses);
+            float avgCumCoins = (float)results.Average(r => r.CumCoins);
+            int allFarms = results.Count(r => r.FoodFarms >= 6);
+            int gotCarrot = results.Count(r => r.FirstCarrotMinute >= 0);
+            int gotApple = results.Count(r => r.FirstAppleMinute >= 0);
+            int gotMushroom = results.Count(r => r.FirstMushroomMinute >= 0);
+            _output.WriteLine($"  AVG: Carrot={avgCarrot:F1}m({gotCarrot}/{runs})  Apple={avgApple:F1}m({gotApple}/{runs})  Mushroom={avgMushroom:F1}m({gotMushroom}/{runs})  " +
+                $"Houses={avgHouses:F0}  CumCoins={avgCumCoins:F0}  AllFarms={allFarms}/{runs}");
+        }
+
+        PrintResults("BROAD (default)", broadResults);
+        _output.WriteLine("");
+        PrintResults("DIRECTIONAL (strategic)", directionalResults);
+
+        // Summary comparison
+        _output.WriteLine($"\n── Comparison ({tag}) ──");
+        float bC = (float)broadResults.Where(r => r.FirstCarrotMinute >= 0).DefaultIfEmpty().Average(r => r.FirstCarrotMinute);
+        float dC = (float)directionalResults.Where(r => r.FirstCarrotMinute >= 0).DefaultIfEmpty().Average(r => r.FirstCarrotMinute);
+        float bA = (float)broadResults.Where(r => r.FirstAppleMinute >= 0).DefaultIfEmpty().Average(r => r.FirstAppleMinute);
+        float dA = (float)directionalResults.Where(r => r.FirstAppleMinute >= 0).DefaultIfEmpty().Average(r => r.FirstAppleMinute);
+        float bM = (float)broadResults.Where(r => r.FirstMushroomMinute >= 0).DefaultIfEmpty().Average(r => r.FirstMushroomMinute);
+        float dM = (float)directionalResults.Where(r => r.FirstMushroomMinute >= 0).DefaultIfEmpty().Average(r => r.FirstMushroomMinute);
+        _output.WriteLine($"  Carrot:    BROAD={bC:F1}m  DIR={dC:F1}m");
+        _output.WriteLine($"  Apple:     BROAD={bA:F1}m  DIR={dA:F1}m");
+        _output.WriteLine($"  Mushroom:  BROAD={bM:F1}m  DIR={dM:F1}m");
+        _output.WriteLine($"  CumCoins:  BROAD={broadResults.Average(r => r.CumCoins):F0}  DIR={directionalResults.Average(r => r.CumCoins):F0}");
     }
 }

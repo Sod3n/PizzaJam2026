@@ -172,17 +172,20 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (globalRes.GetFood(foodToUse) > 0 && cow.Exhaust < cow.MaxExhaust)
         {
             bool isPreferred = foodToUse == cow.PreferredFood;
-            int milkAmount = isPreferred ? 3 : 1; // 3x multiplier for preferred food
+            int milkAmount = isPreferred ? 5 : 1; // 5x multiplier for preferred food
 
-            // Assistant helper doubles milk output
+            // Assistant helper: 5x faster milking (more exhaust per click, same milk per exhaust)
+            int exhaustPerClick = 1;
             if (playerState.AssistantHelper != Entity.Null
                 && ctx.State.HasComponent<HelperPetComponent>(playerState.AssistantHelper))
-                milkAmount *= 2;
+                exhaustPerClick = 5;
 
+            int remaining = cow.MaxExhaust - cow.Exhaust;
+            int clicks = System.Math.Min(exhaustPerClick, remaining);
             globalRes.ConsumeFood(foodToUse);
             int milkProduct = FoodType.ToMilkProduct(foodToUse);
-            globalRes.AddMilkProduct(milkProduct, milkAmount);
-            cow.Exhaust++;
+            globalRes.AddMilkProduct(milkProduct, milkAmount * clicks);
+            cow.Exhaust += clicks;
 
             Entity target = cowEntity;
             if (cow.HouseId != Entity.Null)
@@ -538,8 +541,18 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (globalRes.Coins > 0)
         {
             ref var land = ref ctx.State.GetComponent<LandComponent>(landEntity);
-            land.CurrentCoins += 1;
-            globalRes.Coins -= 1;
+
+            // Assistant helper: 5 coins per click instead of 1
+            int coinsPerClick = 1;
+            var ps = ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+            if (ps.AssistantHelper != Entity.Null
+                && ctx.State.HasComponent<HelperPetComponent>(ps.AssistantHelper))
+                coinsPerClick = 5;
+
+            int deposit = System.Math.Min(coinsPerClick, globalRes.Coins);
+            deposit = System.Math.Min(deposit, land.Threshold - land.CurrentCoins);
+            land.CurrentCoins += deposit;
+            globalRes.Coins -= deposit;
 
             if (land.CurrentCoins >= land.Threshold)
             {
@@ -697,6 +710,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             {
                 // Assistant is a pet (follows player, no bag) — not a HelperComponent
                 var assistant = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
+                ctx.State.AddComponent(assistant, new BreedBornComponent());
                 if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
                 {
                     ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
@@ -738,6 +752,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (targetHelper == Entity.Null) return; // helper not unlocked yet — shouldn't happen if land was locked
 
-        HelperPetDefinition.Create(ctx, position, helperType, targetHelper);
+        var pet = HelperPetDefinition.Create(ctx, position, helperType, targetHelper);
+        ctx.State.AddComponent(pet, new BreedBornComponent());
     }
 }

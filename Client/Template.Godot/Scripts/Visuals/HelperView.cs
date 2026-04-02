@@ -1,5 +1,6 @@
 using Godot;
 using R3;
+using Deterministic.GameFramework.Reactive;
 using Template.Shared.Components;
 
 namespace Template.Godot.Visuals;
@@ -16,6 +17,11 @@ public partial class HelperView
     {
         DespawnDelay = 0.3f;
         ViewHelpers.PlayAppear(visualNode);
+
+        // Show breed result overlay for helpers unlocked at breed milestones
+        var state = ReactiveSystem.Instance.BoundState;
+        if (state != null && state.HasComponent<BreedBornComponent>(vm.Entity))
+            Callable.From(() => BreedResultOverlay.ShowForHelper(GetTree(), vm, visualNode)).CallDeferred();
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, vm.Helper.CharacterBody2D.Velocity, flipPivot, characterNode);
         ViewHelpers.SetupPositionTween(vm, visualNode);

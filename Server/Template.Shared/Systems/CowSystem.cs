@@ -87,7 +87,7 @@ public class CowSystem : ISystem
                 if (gameTime != null)
                 {
                     var random = new DeterministicRandom((uint)(cowEntity.Id ^ gameTime.CurrentTick));
-                    if (random.NextInt(0, 240) == 0)
+                    if (random.NextInt(0, 750) == 0)
                     {
                         cow.Exhaust--;
                     }
@@ -385,6 +385,7 @@ public class CowSystem : ISystem
                     var ctx = new Context(state, playerEntity, null!);
 
                     babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, neededHelper, playerEntity);
+                    state.AddComponent(babyHelper, new BreedBornComponent());
                     ILogger.Log($"[CowSystem] Helper unlocked: {neededHelper switch { 0 => "Assistant", 1 => "Gatherer", 3 => "Builder", 2 => "Seller", _ => "Helper" }} at breed #{breedCount}!");
 
                     // Wire Assistant to player so milking/breeding clicks are doubled
@@ -494,31 +495,32 @@ public class CowSystem : ISystem
 
         if (guaranteedUpgrade)
         {
-            // Guaranteed upgrade: always one tier above the best parent
-            int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
-            newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
-            ILogger.Log($"[CowSystem] Guaranteed upgrade breed: {maxParent} → {newCowComp.PreferredFood}");
+            // Guaranteed upgrade: one tier above the LOWEST parent — rewards same-tier pairing
+            int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
+            newCowComp.PreferredFood = System.Math.Min(minParent + 1, FoodType.Mushroom);
+            ILogger.Log($"[CowSystem] Guaranteed upgrade breed: min({parentACow.PreferredFood},{parentBCow.PreferredFood}) → {newCowComp.PreferredFood}");
         }
         else
         {
-            // Normal: 50/50 inherit with 9% upgrade / 1% downgrade mutation
+            // Normal: 50/50 inherit with 15% upgrade / 1% downgrade mutation
             int prefRoll = random.NextInt(100);
-            if (prefRoll < 9)
+            if (prefRoll < 15)
             {
                 int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
                 newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
             }
-            else if (prefRoll < 10)
+            else if (prefRoll < 16)
             {
                 int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
                 newCowComp.PreferredFood = System.Math.Max(minParent - 1, FoodType.Grass);
             }
-            else if (prefRoll < 55)
+            else if (prefRoll < 58)
                 newCowComp.PreferredFood = parentACow.PreferredFood;
             else
                 newCowComp.PreferredFood = parentBCow.PreferredFood;
         }
 
+        state.AddComponent(newCow, new BreedBornComponent());
         ILogger.Log($"[CowSystem] Bred new cow {newCow.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {newCowComp.PreferredFood}");
         return newCow;
     }

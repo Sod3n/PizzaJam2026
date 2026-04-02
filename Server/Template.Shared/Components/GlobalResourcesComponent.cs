@@ -19,12 +19,14 @@ public struct GlobalResourcesComponent : IComponent
     public int TotalBreedCount; // Global breed counter — used for helper unlock thresholds
     public int SpawnedSpecials; // Bitmask tracking which special land plots have been placed
     public int HelpersEnabled; // 1 = breeding can produce helpers, 0 = always produce cows
+    public int LastFarmGX;     // Grid X of last dynamically spawned farm (for angular separation)
+    public int LastFarmGY;     // Grid Y of last dynamically spawned farm (for angular separation)
 
     // Helper unlock thresholds (breed count)
-    public const int GathererUnlockBreed = 6;
-    public const int BuilderUnlockBreed = 10;
-    public const int SellerUnlockBreed = 15;
-    public const int GuaranteedMegaBreed = 25;
+    public const int GathererUnlockBreed = 3;
+    public const int BuilderUnlockBreed = 5;
+    public const int SellerUnlockBreed = 8;
+    public const int GuaranteedMegaBreed = 12;
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)
@@ -95,10 +97,10 @@ public struct GlobalResourcesComponent : IComponent
     /// <summary>Consume 1 of the most valuable milk product. Returns coin value (0 if none).</summary>
     public int ConsumeAndPriceMilkProduct()
     {
-        // Sell most valuable first: PurplePotion(18) > AppleYogurt(6) > VitaminShake(2) > Milk(1)
-        if (PurplePotion > 0) { PurplePotion--; return 18; }
-        if (AppleYogurt > 0) { AppleYogurt--; return 6; }
-        if (VitaminShake > 0) { VitaminShake--; return 2; }
+        // Sell most valuable first: PurplePotion(100) > AppleYogurt(25) > VitaminShake(5) > Milk(1)
+        if (PurplePotion > 0) { PurplePotion--; return 100; }
+        if (AppleYogurt > 0) { AppleYogurt--; return 25; }
+        if (VitaminShake > 0) { VitaminShake--; return 5; }
         if (Milk > 0) { Milk--; return 1; }
         return 0;
     }

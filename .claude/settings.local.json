@@ -122,7 +122,8 @@
       "Bash(sips -g pixelWidth -g pixelHeight $f)",
       "Read(//Users/a1/Documents/GitHub/PizzaJam2026-copy/**)",
       "Bash(xargs -I {} ls -la {})",
-      "Bash(grep -A 2 \"ObservableList<GrassComponent\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts/Visuals/*.g.cs)"
+      "Bash(grep -A 2 \"ObservableList<GrassComponent\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts/Visuals/*.g.cs)",
+      "Bash(grep -n \"land.*Locked\\\\|Locked.*land\\\\|\\\\.Locked = 1\\\\|\\\\.Locked = 0\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Template.Shared/**/*.cs)"
     ]
   }
 }

@@ -18,4 +18,6 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int TotalBreedCount;
     [Export] public int SpawnedSpecials;
     [Export] public int HelpersEnabled;
+    [Export] public int LastFarmGX;
+    [Export] public int LastFarmGY;
 }

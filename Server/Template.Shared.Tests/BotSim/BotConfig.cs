@@ -17,11 +17,11 @@ public static class BotConfig
     public const float MilkValueMultiplier = 5f;
     public const float SellValueMultiplier = 2f;
     public const float BuildValueMultiplier = 3f;
-    public const float BreedBaseValue = 100f;       // flat breed value, scaled by breedIntensity
+    public const float BreedBaseValue = 100f;       // flat breed value
     public const float TameValue = 10f;
 
     // Work tick estimates
-    public const int MilkSetupTicks = 120;
+    public const int MilkSetupTicks = 30;
     public const int BreedWorkTicks = 130;
     public const int BreedFetchWorkTicks = 120;
     public const int TameWorkTicks = 15;
