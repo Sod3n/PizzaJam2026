@@ -11,4 +11,5 @@ public partial class CowComponentNode : Node
     [Export] public bool IsMilking;
     [Export] public Vector2 SpawnPosition;
     [Export] public int PreferredFood;
+    [Export] public bool IsDepressed;
 }

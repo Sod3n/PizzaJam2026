@@ -11,7 +11,7 @@ namespace Template.Shared.Systems;
 public class GrassSpawnSystem : ISystem
 {
     private const int MaxFoodPerType = 30;
-    private const int SpawnInterval = 60; // 1 second @ 60 ticks
+    private const int SpawnInterval = 240; // 4 seconds @ 60 ticks (x4 slower)
 
     // Spawn Area (centered at origin, matching StarGrid bounds)
     private readonly Vector2 _minPos = new Vector2(-30, -30);

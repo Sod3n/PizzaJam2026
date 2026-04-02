@@ -202,7 +202,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             if (cow.HouseId != Entity.Null)
                 target = cow.HouseId;
 
-            ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
+            ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Param = milkBlocked ? "milk_fail" : "milk_ok", Age = 0 });
             ILogger.Log($"[InteractActionService] Milking click on cow {cowEntity.Id} with food {foodToUse}, preferred={isPreferred}, product={milkProduct}x{milkAmount}");
 
             if (globalRes.GetFood(foodToUse) <= 0 || cow.Exhaust >= cow.MaxExhaust)
@@ -226,7 +226,23 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             && ctx.State.HasComponent<HelperPetComponent>(playerState.AssistantHelper))
             loveHouse.BreedProgress++;
 
-        ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Age = 0 });
+        // Compute breed luck for visual heart feedback
+        int heartPercent = 50;
+        if (ctx.State.HasComponent<CowComponent>(loveHouse.CowId1) && ctx.State.HasComponent<CowComponent>(loveHouse.CowId2))
+        {
+            var c1 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId1);
+            var c2 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId2);
+            bool sameTier = c1.PreferredFood == c2.PreferredFood;
+            if (sameTier)
+                heartPercent = loveHouse.SameTierBreedCount >= LoveHouseComponent.GuaranteedUpgradeEvery - 1 ? 90 : 70;
+            else
+            {
+                int tierGap = System.Math.Abs(c1.PreferredFood - c2.PreferredFood);
+                heartPercent = tierGap switch { 1 => 45, 2 => 25, _ => 15 };
+            }
+        }
+
+        ctx.State.AddComponent(loveHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = $"breed_{heartPercent}", Age = 0 });
         ILogger.Log($"[InteractActionService] Breed click {loveHouse.BreedProgress}/{loveHouse.BreedCost} at love house {loveHouseEntity.Id}");
 
         if (loveHouse.BreedProgress >= loveHouse.BreedCost)
@@ -475,18 +491,38 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             return false;
         }
 
-        // Set breed cost based on cow exhaust values
+        // Set breed cost and heart visual feedback based on cow exhaust/tier values
         int breedCost = 5;
+        int heartPercent = 50;
         loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
         if (ctx.State.HasComponent<CowComponent>(loveHouse.CowId1) && ctx.State.HasComponent<CowComponent>(loveHouse.CowId2))
         {
             var c1 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId1);
             var c2 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId2);
             breedCost = System.Math.Max(3, (c1.MaxExhaust + c2.MaxExhaust) / 2);
+
+            bool sameTier = c1.PreferredFood == c2.PreferredFood;
+            if (sameTier)
+                heartPercent = loveHouse.SameTierBreedCount >= LoveHouseComponent.GuaranteedUpgradeEvery - 1 ? 95 : 85;
+            else
+            {
+                int tierGap = System.Math.Abs(c1.PreferredFood - c2.PreferredFood);
+                heartPercent = tierGap switch { 1 => 45, 2 => 25, _ => 15 };
+
+                // Pre-roll fail check (same logic as CowSystem.HandleLoveHouseBreedComplete)
+                var gameTime = ctx.State.GetCustomData<IGameTime>();
+                uint breedSeed = (uint)((loveHouse.CowId1.Id * 7919 + loveHouse.CowId2.Id * 104729) ^ (gameTime?.CurrentTick ?? 0));
+                var breedRandom = new DeterministicRandom(breedSeed);
+                int failChance = tierGap switch { 1 => 50, 2 => 75, _ => 90 };
+                bool willFail = breedRandom.NextInt(100) < failChance;
+                if (willFail)
+                    breedCost *= 2;
+            }
         }
         loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
         loveHouse.BreedProgress = 0;
         loveHouse.BreedCost = breedCost;
+        loveHouse.HeartPercent = heartPercent;
 
         StateDefinitions.Begin(ref sc, StateKeys.Breed);
         playerState.InteractionTarget = loveHouseEntity;

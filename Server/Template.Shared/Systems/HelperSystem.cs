@@ -162,7 +162,10 @@ public class HelperSystem : ISystem
                     if (state.HasComponent<GrassComponent>(helper.TargetEntity))
                     {
                         ref var grass = ref state.GetComponent<GrassComponent>(helper.TargetEntity);
-                        grass.Durability--;
+                        int harvestAmount = upgraded ? 5 : 1;
+                        int bagSpace = helper.BagCapacity - helper.GetBagTotal();
+                        int actualHarvest = System.Math.Min(harvestAmount, System.Math.Min(grass.Durability, bagSpace));
+                        grass.Durability -= actualHarvest;
 
                         // Visual feedback on the food entity
                         state.AddComponent(helper.TargetEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
@@ -170,7 +173,8 @@ public class HelperSystem : ISystem
                         // Re-get helper ref after touching other component
                         helper = ref state.GetComponent<HelperComponent>(entity);
                         int harvestedFoodType = state.GetComponent<GrassComponent>(helper.TargetEntity).FoodType;
-                        AddFoodToBag(ref helper, harvestedFoodType);
+                        for (int h = 0; h < actualHarvest; h++)
+                            AddFoodToBag(ref helper, harvestedFoodType);
 
                         // Icon on helper — it received the food
                         string harvestKey = harvestedFoodType switch
@@ -514,21 +518,33 @@ public class HelperSystem : ISystem
     private Entity FindNearestFood(EntityWorld state, Entity helper)
     {
         var myPos = state.GetComponent<Transform2D>(helper).Position;
-        Entity nearest = Entity.Null;
-        Float minDistSq = 999999f;
+        Entity best = Entity.Null;
+        Float bestScore = -1f;
 
         foreach (var entity in state.Filter<GrassComponent>())
         {
             if (!state.HasComponent<Transform2D>(entity)) continue;
+            var food = state.GetComponent<GrassComponent>(entity);
             var pos = state.GetComponent<Transform2D>(entity).Position;
             var distSq = Vector2.DistanceSquared(myPos, pos);
-            if (distSq < minDistSq)
+            if (distSq < 1f) distSq = 1f;
+
+            // Prefer valuable food: value weight / distance
+            int value = food.FoodType switch
             {
-                minDistSq = distSq;
-                nearest = entity;
+                FoodType.Mushroom => 100,
+                FoodType.Apple => 10,
+                FoodType.Carrot => 3,
+                _ => 1
+            };
+            Float score = (Float)value / distSq;
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = entity;
             }
         }
-        return nearest;
+        return best;
     }
 
     private Entity FindNearestEntity<T>(EntityWorld state, Entity helper) where T : unmanaged, IComponent

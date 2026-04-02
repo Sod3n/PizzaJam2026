@@ -458,16 +458,16 @@ public class BotSimulationTests
     [Theory]
     // Breed level 0 = never breed, 1 = breed to half houses, 2 = breed to fill houses
     // selective + helpers — all breed levels
-    [InlineData(6, 1, 45, true, true, 0)]    // selective + helpers + NO breeding
-    [InlineData(6, 1, 45, true, true, 1)]    // selective + helpers + half
-    [InlineData(6, 1, 45, true, true, 2)]    // selective + helpers + full
+    [InlineData(10, 1, 45, true, true, 0)]    // selective + helpers + NO breeding
+    [InlineData(10, 1, 45, true, true, 1)]    // selective + helpers + half
+    [InlineData(10, 1, 45, true, true, 2)]    // selective + helpers + full
     // random + helpers — all breed levels
-    [InlineData(6, 1, 45, false, true, 0)]   // random + helpers + NO breeding
-    [InlineData(6, 1, 45, false, true, 1)]   // random + helpers + half
-    [InlineData(6, 1, 45, false, true, 2)]   // random + helpers + full
+    [InlineData(10, 1, 45, false, true, 0)]   // random + helpers + NO breeding
+    [InlineData(10, 1, 45, false, true, 1)]   // random + helpers + half
+    [InlineData(10, 1, 45, false, true, 2)]   // random + helpers + full
     // NO helpers — breed level 1 (representative)
-    [InlineData(6, 1, 45, true, false, 1)]   // selective + NO helpers + half
-    [InlineData(6, 1, 45, false, false, 1)]  // random + NO helpers + half
+    [InlineData(10, 1, 45, true, false, 1)]   // selective + NO helpers + half
+    [InlineData(10, 1, 45, false, false, 1)]  // random + NO helpers + half
     public void RunSimulationAveraged(int runs, int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled, int breedLevel)
     {
         string breedTag = $"_breed{breedLevel}";

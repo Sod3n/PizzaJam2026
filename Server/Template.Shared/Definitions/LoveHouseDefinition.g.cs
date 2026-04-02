@@ -27,6 +27,7 @@ public static partial class LoveHouseDefinition
         component.BreedProgress = 0;
         component.BreedCost = 0;
         component.SameTierBreedCount = 0;
+        component.HeartPercent = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

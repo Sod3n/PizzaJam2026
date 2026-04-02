@@ -1,11 +1,18 @@
+using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.Reactive;
 using Godot;
 using R3;
+using Template.Shared.Components;
 using GVector3 = Godot.Vector3;
 
 namespace Template.Godot.Visuals;
 
 public static class ViewHelpers
 {
+    private static readonly Texture2D HeartTexture = GD.Load<Texture2D>("res://sprites/heart.png");
+    private static readonly Texture2D BrokenHeartTexture = GD.Load<Texture2D>("res://sprites/broken-heart.png");
+    private static readonly System.Random HeartRng = new();
+
     public static void SetupPositionTween(EntityViewModel vm, Node3D visualNode)
     {
         Tween currentTween = null;
@@ -43,6 +50,8 @@ public static class ViewHelpers
                 tween.TweenProperty(animateNode, "scale", new Vector3(origScale.X * 1.4f, origScale.Y * 0.7f, origScale.Z), 0.1f);
                 tween.Chain().TweenProperty(animateNode, "scale", origScale, 0.1f);
                 animateNode.SetMeta("scale_tween", tween);
+
+                SpawnHeartBlast(visualNode, vm.Entity);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }
@@ -168,5 +177,89 @@ public static class ViewHelpers
                     flipPivot.Scale = new GVector3(Mathf.Abs(flipPivot.Scale.X), flipPivot.Scale.Y, flipPivot.Scale.Z);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
+    }
+
+    private static void SpawnHeartBlast(Node3D parent, Entity entity)
+    {
+        if (HeartTexture == null || BrokenHeartTexture == null) return;
+        var state = ReactiveSystem.Instance.BoundState;
+        if (state == null) return;
+
+        // Milking: house with a cow that is milking
+        if (state.HasComponent<HouseComponent>(entity))
+        {
+            var house = state.GetComponent<HouseComponent>(entity);
+            if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
+            {
+                var cow = state.GetComponent<CowComponent>(house.CowId);
+                if (cow.IsMilking)
+                {
+                    bool isPreferred = house.SelectedFood == cow.PreferredFood;
+                    var texture = isPreferred ? HeartTexture : (HeartRng.Next(2) == 0 ? HeartTexture : BrokenHeartTexture);
+                    SpawnFanHearts(parent, texture);
+                    return;
+                }
+            }
+        }
+
+        // Breeding: love house with breed in progress
+        if (state.HasComponent<LoveHouseComponent>(entity))
+        {
+            var lh = state.GetComponent<LoveHouseComponent>(entity);
+            if (lh.BreedProgress > 0)
+            {
+                int heartPercent = lh.HeartPercent > 0 ? lh.HeartPercent : 50;
+                var texture = HeartRng.Next(100) < heartPercent ? HeartTexture : BrokenHeartTexture;
+                SpawnFanHearts(parent, texture);
+                return;
+            }
+        }
+    }
+
+    private static void SpawnFanHearts(Node3D parent, Texture2D texture)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            float t = i / 4f;
+            float angle = Mathf.Lerp(-1.2f, 1.2f, t);
+            SpawnFanHeart(parent, texture, angle);
+        }
+    }
+
+    private static void SpawnFanHeart(Node3D parent, Texture2D texture, float angle)
+    {
+        var sprite = new Sprite3D();
+        sprite.Texture = texture;
+        sprite.PixelSize = 0.001f;
+        sprite.Billboard = BaseMaterial3D.BillboardModeEnum.Enabled;
+        sprite.AlphaCut = SpriteBase3D.AlphaCutMode.OpaquePrepass;
+        sprite.Shaded = false;
+
+        parent.AddChild(sprite);
+
+        float startY = 3.8f;
+        sprite.Position = new GVector3(0f, startY, 0f);
+
+        // Fan direction: angle controls X spread, all rise upward
+        float dist = 1.2f + (float)HeartRng.NextDouble() * 0.3f;
+        float endX = Mathf.Sin(angle) * dist;
+        float endY = startY + Mathf.Cos(angle) * dist;
+
+        sprite.Scale = GVector3.Zero;
+
+        var tween = sprite.CreateTween();
+        tween.SetParallel(true);
+        tween.TweenProperty(sprite, "scale", GVector3.One, 0.075f)
+            .SetTrans(Tween.TransitionType.Back)
+            .SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(sprite, "position", new GVector3(endX, endY, 0f), 0.35f)
+            .SetTrans(Tween.TransitionType.Sine)
+            .SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(sprite, "modulate:a", 0f, 0.15f)
+            .SetDelay(0.2f)
+            .SetTrans(Tween.TransitionType.Sine)
+            .SetEase(Tween.EaseType.In);
+        tween.SetParallel(false);
+        tween.TweenCallback(Callable.From(sprite.QueueFree));
     }
 }
