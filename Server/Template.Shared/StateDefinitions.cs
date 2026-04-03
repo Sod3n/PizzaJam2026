@@ -19,7 +19,7 @@ public struct StateDefinition
 
 public static class StateDefinitions
 {
-    public const int PhaseDurationTicks = 60;
+    public const int PhaseDurationTicks = 30;
 
     public static bool TryGet(FixedString32 key, out StateDefinition def)
     {

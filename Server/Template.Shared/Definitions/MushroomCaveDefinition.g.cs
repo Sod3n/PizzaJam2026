@@ -12,17 +12,16 @@ namespace Template.Shared.Definitions;
 
 [EntityDefinition(
     typeof(Transform2D),
-    typeof(FoodFarmComponent),
+    typeof(MushroomCaveComponent),
     typeof(StaticBody2D),
     typeof(CollisionShape2D))]
 public static partial class MushroomCaveDefinition
 {
     public static Entity Create(Context ctx, Vector2 position)
     {
-        var entity = ctx.CreateEntity<FoodFarmComponent>();
+        var entity = ctx.CreateEntity<MushroomCaveComponent>();
 
-        ref var component = ref ctx.GetComponent<FoodFarmComponent>(entity);
-        component.FoodType = 0;
+        ref var component = ref ctx.GetComponent<MushroomCaveComponent>(entity);
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
@@ -36,12 +35,12 @@ public static partial class MushroomCaveDefinition
         var childEntities = new Dictionary<string, Entity>
         {
         };
-        component = ref ctx.GetComponent<FoodFarmComponent>(entity);
+        component = ref ctx.GetComponent<MushroomCaveComponent>(entity);
 
         OnEntityCreated(ctx, entity, ref component, childEntities);
 
         return entity;
     }
 
-    static partial void OnEntityCreated(Context ctx, Entity entity, ref FoodFarmComponent component, Dictionary<string, Entity> childEntities);
+    static partial void OnEntityCreated(Context ctx, Entity entity, ref MushroomCaveComponent component, Dictionary<string, Entity> childEntities);
 }

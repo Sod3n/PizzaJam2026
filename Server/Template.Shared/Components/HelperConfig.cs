@@ -8,10 +8,11 @@ public static class HelperConfig
 {
     public record HelperInfo(string Key, string Name, int BaseCapacity, int UpgradedCapacity, float BaseSpeed, float UpgradedSpeed);
 
-    public static readonly HelperInfo Assistant = new("assistant", "Ame", 0, 0, 8f, 16f);
-    public static readonly HelperInfo Gatherer = new("gatherer", "Lefantis", 30, 45, 8f, 16f);
-    public static readonly HelperInfo Seller = new("seller", "Mochi", 200, 400, 8f, 16f);
-    public static readonly HelperInfo Builder = new("builder", "Brix", 200, 400, 8f, 16f);
+    public static readonly HelperInfo Assistant = new("assistant", "Ame", 0, 0, 5f, 10f);
+    public static readonly HelperInfo Gatherer = new("gatherer", "Lefantis", 30, 45, 2f, 6f);
+    public static readonly HelperInfo Seller = new("seller", "Mochi", 200, 400, 2f, 6f);
+    public static readonly HelperInfo Builder = new("builder", "Brix", 200, 400, 2f, 6f);
+    public static readonly HelperInfo Milker = new("milker", "Daisy", 0, 0, 2f, 6f);
 
     public static HelperInfo GetByType(int helperType) => helperType switch
     {
@@ -19,6 +20,7 @@ public static class HelperConfig
         HelperType.Gatherer => Gatherer,
         HelperType.Seller => Seller,
         HelperType.Builder => Builder,
+        HelperType.Milker => Milker,
         _ => Assistant,
     };
 
@@ -28,6 +30,7 @@ public static class HelperConfig
         "gatherer" => Gatherer,
         "seller" => Seller,
         "builder" => Builder,
+        "milker" => Milker,
         _ => null,
     };
 }

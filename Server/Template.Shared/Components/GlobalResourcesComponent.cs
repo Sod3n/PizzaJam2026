@@ -26,8 +26,7 @@ public struct GlobalResourcesComponent : IComponent
     public const int GathererUnlockBreed = 2;
     public const int BuilderUnlockBreed = 4;
     public const int SellerUnlockBreed = 6;
-    public const int Gatherer2UnlockBreed = 9;
-    public const int Builder2UnlockBreed = 11;
+    public const int MilkerUnlockBreed = 10;
     public const int GuaranteedMegaBreed = 12;
     public int HelpersSpawned; // How many helpers have been spawned (index into unlock sequence)
 
@@ -100,11 +99,11 @@ public struct GlobalResourcesComponent : IComponent
     /// <summary>Consume 1 of the most valuable milk product. Returns coin value (0 if none).</summary>
     public int ConsumeAndPriceMilkProduct()
     {
-        // Sell most valuable first: PurplePotion(100) > AppleYogurt(10) > VitaminShake(3) > Milk(1)
-        if (PurplePotion > 0) { PurplePotion--; return 100; }
-        if (AppleYogurt > 0) { AppleYogurt--; return 10; }
-        if (VitaminShake > 0) { VitaminShake--; return 3; }
-        if (Milk > 0) { Milk--; return 1; }
+        // Sell most valuable first
+        if (PurplePotion > 0) { PurplePotion--; return MilkProduct.CoinValue(MilkProduct.PurplePotion); }
+        if (AppleYogurt > 0) { AppleYogurt--; return MilkProduct.CoinValue(MilkProduct.AppleYogurt); }
+        if (VitaminShake > 0) { VitaminShake--; return MilkProduct.CoinValue(MilkProduct.VitaminShake); }
+        if (Milk > 0) { Milk--; return MilkProduct.CoinValue(MilkProduct.Milk); }
         return 0;
     }
 

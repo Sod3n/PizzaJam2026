@@ -10,6 +10,7 @@ public static class HelperType
     public const int Gatherer = 1;
     public const int Seller = 2;
     public const int Builder = 3;
+    public const int Milker = 4;
 }
 
 public static class HelperState

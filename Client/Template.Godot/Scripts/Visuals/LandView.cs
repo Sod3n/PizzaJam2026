@@ -10,7 +10,10 @@ public partial class LandView
     {
         { LandType.House, "res://sprites/export/homes/A_bar.png" },
         { LandType.LoveHouse, "res://sprites/export/homes/Love_Hotel_.png" },
-        { LandType.SellPoint, "res://sprites/SellPoint.PNG" },
+        { LandType.SellPoint, "res://sprites/export/homes/Sell_Point_.png" },
+        { LandType.CarrotFarm, "res://sprites/export/homes/Rabbit_Home_.png" },
+        { LandType.AppleOrchard, "res://sprites/export/homes/Hours_Home_.png" },
+        { LandType.MushroomCave, "res://sprites/export/homes/Mash_Home_.png" },
     };
 
     partial void OnSpawned(LandViewModel vm, Node3D visualNode)

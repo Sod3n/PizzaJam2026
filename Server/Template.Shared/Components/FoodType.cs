@@ -33,4 +33,13 @@ public static class MilkProduct
     public const int VitaminShake = 1;
     public const int AppleYogurt = 2;
     public const int PurplePotion = 3;
+
+    /// <summary>Coin value when selling a milk product.</summary>
+    public static int CoinValue(int milkProduct) => milkProduct switch
+    {
+        PurplePotion => 100,
+        AppleYogurt => 10,
+        VitaminShake => 3,
+        _ => 1
+    };
 }

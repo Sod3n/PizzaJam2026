@@ -32,6 +32,7 @@
 [ext_resource type="PackedScene" path="res://templates/environment/Decoration.tscn" id="tpl_decoration"]
 [ext_resource type="PackedScene" uid="uid://bu2yqslfpgg4k" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
 [ext_resource type="PackedScene" path="res://templates/characters/Helper.tscn" id="tpl_helper"]
+[ext_resource type="PackedScene" path="res://templates/characters/HelperPet.tscn" id="tpl_helperpet"]
 [ext_resource type="PackedScene" uid="uid://csft4r563rued" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
 [ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="tpl_prop"]
 [ext_resource type="PackedScene" uid="uid://c1nvklhoxhbvc" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
@@ -51,6 +52,7 @@
 [ext_resource type="Script" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
 [ext_resource type="Script" path="res://Scripts/Visuals/MushroomCaveView.cs" id="view_mushroomcave"]
 [ext_resource type="Script" path="res://Scripts/Visuals/HelperAssistantView.cs" id="view_helperassistant"]
+[ext_resource type="Script" path="res://Scripts/Visuals/HelperPetView.cs" id="view_helperpet"]
 [ext_resource type="Script" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
 [ext_resource type="Script" path="res://Scripts/Visuals/UpgradeBuilderView.cs" id="view_upgradebuilder"]
 [ext_resource type="Script" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
@@ -4292,6 +4294,10 @@ Prefab = ExtResource("tpl_mushroomcave")
 [node name="HelperAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
 script = ExtResource("view_helperassistant")
 Prefab = ExtResource("tpl_helperassistant")
+
+[node name="HelperPetView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_helperpet")
+Prefab = ExtResource("tpl_helperpet")
 
 [node name="UpgradeGathererView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
 script = ExtResource("view_upgradegatherer")

@@ -127,10 +127,10 @@ public static class StarGrid
         // Farms — each appears 1 era BEFORE it's needed (affordable with current-era income)
         (LandType.CarrotFarm,    2, 4, true),   // grass era — cheap to build (20 coins)
         (LandType.CarrotFarm,    3, 5, true),
-        (LandType.AppleOrchard,  3, 6, true),   // carrot era — affordable (90 coins)
-        (LandType.AppleOrchard,  4, 7, true),
-        (LandType.MushroomCave,  5, 8, true),   // apple era — affordable (250 coins)
-        (LandType.MushroomCave,  6, 9, true),
+        (LandType.AppleOrchard,  4, 6, true),   // carrot era — affordable (90 coins)
+        (LandType.AppleOrchard,  5, 7, true),
+        (LandType.MushroomCave,  6, 8, true),   // apple era — affordable (250 coins)
+        (LandType.MushroomCave,  7, 9, true),
         // Non-farm specials — no angular constraint
         (LandType.HelperAssistant, 2, 0, false),
         (LandType.UpgradeGatherer, 4, 1, false),

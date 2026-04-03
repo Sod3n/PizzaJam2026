@@ -43,7 +43,7 @@ public partial class MushroomCaveView : Node3D
     {
         _registered = true;
         var client = GameManager.Instance.GameClient;
-        var list = client.Reactive.ObservableList<FoodFarmComponent, DTransform2D, MushroomCaveViewModel>(
+        var list = client.Reactive.ObservableList<MushroomCaveComponent, DTransform2D, MushroomCaveViewModel>(
             ctx => new MushroomCaveViewModel(ctx),
             _disposables
         );

@@ -18,6 +18,7 @@ public class HelperSystem : ISystem
     private const int GatherWorkDuration = 30;        // 0.5 sec
     private const int SellWorkDuration = 10;          // per item
     private const int BuildWorkDuration = 15;         // per coin
+    private const int MilkWorkDuration = 20;          // per milk action
 
     public void Update(EntityWorld state)
     {
@@ -84,6 +85,9 @@ public class HelperSystem : ISystem
                     break;
                 case HelperType.Builder:
                     UpdateBuilder(state, entity, ref helper, upgraded);
+                    break;
+                case HelperType.Milker:
+                    UpdateMilker(state, entity, ref helper);
                     break;
             }
         }
@@ -158,35 +162,28 @@ public class HelperSystem : ISystem
                 helper.WorkTimer++;
                 if (helper.WorkTimer >= helper.WorkDuration)
                 {
-                    // Harvest
-                    if (state.HasComponent<GrassComponent>(helper.TargetEntity))
+                    int harvestAmount = upgraded ? 5 : 1;
+                    int bagSpace = helper.BagCapacity - helper.GetBagTotal();
+                    int amount = System.Math.Min(harvestAmount, bagSpace);
+
+                    if (InteractionLogic.HarvestFood(state, helper.TargetEntity, amount, out int foodType, out bool destroyed))
                     {
-                        ref var grass = ref state.GetComponent<GrassComponent>(helper.TargetEntity);
-                        int harvestAmount = upgraded ? 5 : 1;
-                        int bagSpace = helper.BagCapacity - helper.GetBagTotal();
-                        int actualHarvest = System.Math.Min(harvestAmount, System.Math.Min(grass.Durability, bagSpace));
-                        grass.Durability -= actualHarvest;
-
-                        // Visual feedback on the food entity
-                        state.AddComponent(helper.TargetEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
-
-                        // Re-get helper ref after touching other component
+                        InteractionLogic.FireInteracted(state, helper.TargetEntity);
                         helper = ref state.GetComponent<HelperComponent>(entity);
-                        int harvestedFoodType = state.GetComponent<GrassComponent>(helper.TargetEntity).FoodType;
-                        for (int h = 0; h < actualHarvest; h++)
-                            AddFoodToBag(ref helper, harvestedFoodType);
+                        for (int h = 0; h < amount; h++)
+                            AddFoodToBag(ref helper, foodType);
 
-                        // Icon on helper — it received the food
-                        string harvestKey = harvestedFoodType switch
+                        string harvestKey = foodType switch
                         {
                             FoodType.Carrot => StateKeys.Carrot,
                             FoodType.Apple => StateKeys.Apple,
                             FoodType.Mushroom => StateKeys.Mushroom,
                             _ => StateKeys.Grass
                         };
-                        state.AddComponent(entity, new EnterStateComponent { Key = StateKeys.GainedResource, Param = harvestKey, Age = 0 });
+                        InteractionLogic.FireGainedResource(state, entity, harvestKey);
 
-                        if (grass.Durability <= 0)
+                        helper = ref state.GetComponent<HelperComponent>(entity);
+                        if (destroyed)
                             state.DeleteEntity(helper.TargetEntity);
                     }
 
@@ -306,10 +303,6 @@ public class HelperSystem : ISystem
 
                     if (!HasMilkInBag(ref helper))
                         helper.State = HelperState.Returning;
-                    else
-                    {
-                        helper.State = HelperState.Returning;
-                    }
                 }
                 break;
 
@@ -392,31 +385,29 @@ public class HelperSystem : ISystem
                     if (helper.BagCoins > 0 && state.HasComponent<LandComponent>(helper.TargetEntity))
                     {
                         var landEntity = helper.TargetEntity;
+                        int buildAmount = System.Math.Min(3, helper.BagCoins);
 
-                        // Visual feedback
-                        state.AddComponent(landEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = StateKeys.Coins, Age = 0 });
-
-                        // Builder deposits 3 coins per tick (always)
-                        int buildAmount = 3;
-                        ref var targetLand = ref state.GetComponent<LandComponent>(landEntity);
-                        int deposit = System.Math.Min(buildAmount, helper.BagCoins);
-                        deposit = System.Math.Min(deposit, targetLand.Threshold - targetLand.CurrentCoins);
-                        targetLand.CurrentCoins += deposit;
+                        int deposited = InteractionLogic.DepositToLand(state, landEntity, buildAmount, leaveOneForPlayer: true, out bool landComplete);
+                        if (deposited <= 0)
+                        {
+                            helper.State = HelperState.SeekingTarget;
+                            helper.TargetEntity = Entity.Null;
+                            break;
+                        }
+                        InteractionLogic.FireInteracted(state, landEntity, StateKeys.Coins);
                         helper = ref state.GetComponent<HelperComponent>(entity);
-                        helper.BagCoins -= deposit;
+                        helper.BagCoins -= deposited;
 
-                        // Check if land is complete — trigger building creation
-                        targetLand = ref state.GetComponent<LandComponent>(landEntity);
-                        if (targetLand.CurrentCoins >= targetLand.Threshold)
+                        if (landComplete)
                         {
                             var transform = state.GetComponent<Transform2D>(landEntity);
                             var position = transform.Position;
-                            var landType = targetLand.Type;
-                            int gridX = targetLand.Arm;
-                            int gridY = targetLand.Ring;
+                            var landComp = state.GetComponent<LandComponent>(landEntity);
+                            int landType = landComp.Type;
+                            int gridX = landComp.Arm;
+                            int gridY = landComp.Ring;
                             state.DeleteEntity(landEntity);
 
-                            // Build the structure
                             var ctx = new Context(state, helper.OwnerPlayer, null!);
                             InteractActionService.CompleteLandBuilding(ctx, position, landType, gridX, gridY);
 
@@ -519,6 +510,146 @@ public class HelperSystem : ISystem
         return nearest;
     }
 
+    // ─── Milker: find house with milkable cow → go there → milk it ───
+
+    private void UpdateMilker(EntityWorld state, Entity entity, ref HelperComponent helper)
+    {
+        switch (helper.State)
+        {
+            case HelperState.Idle:
+            case HelperState.SeekingTarget:
+                var milkTarget = FindMilkableHouse(state, entity, helper.OwnerPlayer);
+                if (milkTarget == Entity.Null)
+                {
+                    StopMovement(state, entity);
+                    return;
+                }
+                helper.TargetEntity = milkTarget;
+                helper.State = HelperState.MovingToTarget;
+                break;
+
+            case HelperState.MovingToTarget:
+                if (helper.TargetEntity == Entity.Null || !state.HasComponent<HouseComponent>(helper.TargetEntity))
+                {
+                    helper.State = HelperState.SeekingTarget;
+                    helper.WorkTimer = 0;
+                    return;
+                }
+                var housePos = state.GetComponent<Transform2D>(helper.TargetEntity).Position;
+                if (NavigateToward(state, entity, housePos, TargetReachedDistSq))
+                {
+                    helper.State = HelperState.Working;
+                    helper.WorkTimer = 0;
+                    helper.WorkDuration = MilkWorkDuration;
+                }
+                break;
+
+            case HelperState.Working:
+                helper.WorkTimer++;
+                if (helper.WorkTimer >= helper.WorkDuration)
+                {
+                    helper.WorkTimer = 0;
+                    bool milked = false;
+
+                    if (state.HasComponent<HouseComponent>(helper.TargetEntity))
+                    {
+                        var house = state.GetComponent<HouseComponent>(helper.TargetEntity);
+                        if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
+                        {
+                            var cow = state.GetComponent<CowComponent>(house.CowId);
+                            if (!cow.IsDepressed && !cow.IsMilking && cow.Exhaust < cow.MaxExhaust)
+                            {
+                                int foodToUse = InteractionLogic.ResolveFoodForCow(state, cow, house.SelectedFood);
+                                if (foodToUse >= 0)
+                                {
+                                    int milkPower = 1;
+                                    if (helper.OwnerPlayer != Entity.Null && state.HasComponent<PlayerStateComponent>(helper.OwnerPlayer))
+                                        milkPower = System.Math.Max(1, state.GetComponent<PlayerStateComponent>(helper.OwnerPlayer).ClickMultiplier);
+                                    bool produced = InteractionLogic.MilkCow(state, house.CowId, foodToUse, milkPower, out bool cowDone);
+                                    state.AddComponent(helper.TargetEntity, new EnterStateComponent
+                                    {
+                                        Key = StateKeys.Interacted, Param = produced ? "milk_ok" : "milk_fail", Age = 0
+                                    });
+                                    helper = ref state.GetComponent<HelperComponent>(entity);
+                                    milked = !cowDone;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!milked)
+                    {
+                        helper = ref state.GetComponent<HelperComponent>(entity);
+                        helper.TargetEntity = Entity.Null;
+                        helper.State = HelperState.SeekingTarget;
+                    }
+                }
+                break;
+        }
+    }
+
+
+    private Entity FindMilkableHouse(EntityWorld state, Entity helper, Entity ownerPlayer)
+    {
+        var myPos = state.GetComponent<Transform2D>(helper).Position;
+        Entity best = Entity.Null;
+        Float bestScore = -1f;
+
+        // Find global resources to check food availability
+        Entity globalResEntity = Entity.Null;
+        foreach (var ge in state.Filter<GlobalResourcesComponent>())
+        { globalResEntity = ge; break; }
+        if (globalResEntity == Entity.Null) return Entity.Null;
+        var globalRes = state.GetComponent<GlobalResourcesComponent>(globalResEntity);
+        int totalFood = globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom;
+        if (totalFood <= 0) return Entity.Null;
+
+        foreach (var houseEntity in state.Filter<HouseComponent>())
+        {
+            var house = state.GetComponent<HouseComponent>(houseEntity);
+            if (house.CowId == Entity.Null) continue;
+            if (!state.HasComponent<CowComponent>(house.CowId)) continue;
+
+            var cow = state.GetComponent<CowComponent>(house.CowId);
+            if (cow.IsDepressed || cow.IsMilking || cow.Exhaust >= cow.MaxExhaust) continue;
+
+            // Check if we have food this cow can eat (prefer preferred food)
+            bool hasFood = globalRes.GetFood(cow.PreferredFood) > 0;
+            if (!hasFood)
+            {
+                // Check any food
+                for (int f = FoodType.Grass; f <= FoodType.Mushroom; f++)
+                {
+                    if (globalRes.GetFood(f) > 0) { hasFood = true; break; }
+                }
+            }
+            if (!hasFood) continue;
+
+            var housePos = state.GetComponent<Transform2D>(houseEntity).Position;
+            var distSq = Vector2.DistanceSquared(myPos, housePos);
+            if (distSq < 1f) distSq = 1f;
+
+            // Score: prefer higher-tier cows with preferred food available
+            int tierValue = cow.PreferredFood switch
+            {
+                FoodType.Mushroom => 100,
+                FoodType.Apple => 10,
+                FoodType.Carrot => 3,
+                _ => 1
+            };
+            bool preferred = globalRes.GetFood(cow.PreferredFood) > 0;
+            float value = tierValue * (preferred ? 5f : 1f);
+            Float score = (Float)(value / (float)distSq);
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = houseEntity;
+            }
+        }
+        return best;
+    }
+
     // ─── Entity finding ───
 
     private Entity FindNearestFood(EntityWorld state, Entity helper)
@@ -587,7 +718,7 @@ public class HelperSystem : ISystem
         {
             var land = state.GetComponent<LandComponent>(entity);
             if (land.Locked != 0) continue;
-            if (land.CurrentCoins >= land.Threshold) continue;
+            if (land.CurrentCoins >= land.Threshold - 1) continue; // Skip buildings at threshold-1 (builder leaves last coin for player)
             if (!state.HasComponent<Transform2D>(entity)) continue;
 
             var pos = state.GetComponent<Transform2D>(entity).Position;
@@ -658,11 +789,11 @@ public class HelperSystem : ISystem
 
     private bool SellOneItem(ref HelperComponent helper)
     {
-        // Sell most valuable first: PurplePotion(100) > AppleYogurt(10) > VitaminShake(3) > Milk(1)
-        if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins += 100; return true; }
-        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins += 10; return true; }
-        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins += 3; return true; }
-        if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins += 1; return true; }
+        // Sell most valuable first
+        if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.PurplePotion); return true; }
+        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.AppleYogurt); return true; }
+        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.VitaminShake); return true; }
+        if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.Milk); return true; }
         return false;
     }
 

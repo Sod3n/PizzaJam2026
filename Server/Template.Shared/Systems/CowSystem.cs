@@ -83,6 +83,12 @@ public class CowSystem : ISystem
 
             if (cow is { Exhaust: > 0, IsMilking: false })
             {
+                // Depressed cows stay visible (but non-interactable) — unhide if still hidden from breeding
+                if (cow.IsDepressed && state.HasComponent<HiddenComponent>(cowEntity))
+                {
+                    state.UnhideEntity(cowEntity);
+                }
+
                 var gameTime = state.GetCustomData<IGameTime>();
                 if (gameTime != null)
                 {
@@ -90,26 +96,18 @@ public class CowSystem : ISystem
                     if (random.NextInt(0, 750) == 0)
                     {
                         cow.Exhaust--;
-                        // Depression clears when exhaust fully recovers
                         if (cow.Exhaust <= 0 && cow.IsDepressed)
                         {
                             cow.IsDepressed = false;
-                            if (state.HasComponent<HiddenComponent>(cowEntity))
-                                state.UnhideEntity(cowEntity);
                             ILogger.Log($"[CowSystem] Cow {cowEntity.Id} recovered from depression");
                         }
                     }
                 }
-                // Keep depressed cows hidden in their house
-                if (cow.IsDepressed && !state.HasComponent<HiddenComponent>(cowEntity) && cow.HouseId != Entity.Null)
-                {
-                    state.HideEntity(cowEntity);
-                }
             }
             else if (!cow.IsMilking)
             {
-                // Don't unhide cows that are in a love house during breeding or are depressed
-                if (state.HasComponent<HiddenComponent>(cowEntity) && !IsCowInActiveBreeding(state, cowEntity) && !cow.IsDepressed)
+                // Don't unhide cows that are in a love house during active breeding
+                if (state.HasComponent<HiddenComponent>(cowEntity) && !IsCowInActiveBreeding(state, cowEntity))
                 {
                     state.UnhideEntity(cowEntity);
                 }
@@ -686,8 +684,7 @@ public class CowSystem : ISystem
         (HelperType.Gatherer,  GlobalResourcesComponent.GathererUnlockBreed),
         (HelperType.Builder,   GlobalResourcesComponent.BuilderUnlockBreed),
         (HelperType.Seller,    GlobalResourcesComponent.SellerUnlockBreed),
-        (HelperType.Gatherer,  GlobalResourcesComponent.Gatherer2UnlockBreed),
-        (HelperType.Builder,   GlobalResourcesComponent.Builder2UnlockBreed),
+        (HelperType.Milker,    GlobalResourcesComponent.MilkerUnlockBreed),
     };
 
     /// <summary>

@@ -169,44 +169,20 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             foodToUse = house.SelectedFood;
         }
 
-        if (globalRes.GetFood(foodToUse) > 0 && cow.Exhaust < cow.MaxExhaust)
+        int exhaustPerClick = System.Math.Max(1, playerState.ClickMultiplier);
+        bool produced = InteractionLogic.MilkCow(ctx.State, cowEntity, foodToUse, exhaustPerClick, out bool cowDone);
+
+        Entity target = cowEntity;
+        cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
+        if (cow.HouseId != Entity.Null)
+            target = cow.HouseId;
+
+        ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Param = produced ? "milk_ok" : "milk_fail", Age = 0 });
+
+        if (cowDone)
         {
-            bool isPreferred = foodToUse == cow.PreferredFood;
-            int milkAmount = isPreferred ? 5 : 1; // 5x multiplier for preferred food
-
-            // Non-preferred food: 75% chance to produce nothing (food still consumed)
-            bool milkBlocked = false;
-            if (!isPreferred)
-            {
-                var gameTime = ctx.State.GetCustomData<IGameTime>();
-                uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
-                var milkRng = new DeterministicRandom(milkSeed);
-                milkBlocked = milkRng.NextInt(100) < 50;
-            }
-
-            // Click multiplier from assistant upgrades
-            int exhaustPerClick = System.Math.Max(1, playerState.ClickMultiplier);
-
-            int remaining = cow.MaxExhaust - cow.Exhaust;
-            int clicks = System.Math.Min(exhaustPerClick, remaining);
-            globalRes.ConsumeFood(foodToUse);
-            int milkProduct = FoodType.ToMilkProduct(foodToUse);
-            if (!milkBlocked)
-                globalRes.AddMilkProduct(milkProduct, milkAmount * clicks);
-            cow.Exhaust += clicks;
-
-            Entity target = cowEntity;
-            if (cow.HouseId != Entity.Null)
-                target = cow.HouseId;
-
-            ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Param = milkBlocked ? "milk_fail" : "milk_ok", Age = 0 });
-            ILogger.Log($"[InteractActionService] Milking click on cow {cowEntity.Id} with food {foodToUse}, preferred={isPreferred}, product={milkProduct}x{milkAmount}");
-
-            if (globalRes.GetFood(foodToUse) <= 0 || cow.Exhaust >= cow.MaxExhaust)
-            {
-                StateDefinitions.BeginExit(ref sc);
-                ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = sc.Key, Phase = sc.Phase, Age = 0 });
-            }
+            StateDefinitions.BeginExit(ref sc);
+            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = sc.Key, Phase = sc.Phase, Age = 0 });
         }
     }
 
@@ -216,8 +192,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (loveHouseEntity == Entity.Null || !ctx.State.HasComponent<LoveHouseComponent>(loveHouseEntity)) return;
 
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
-        int breedClickPower = System.Math.Max(1, playerState.ClickMultiplier);
-        loveHouse.BreedProgress += breedClickPower;
+        loveHouse.BreedProgress++;
 
         // Compute breed luck for visual heart feedback
         int heartPercent = 50;
@@ -375,12 +350,6 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             var entity = new Entity(area.OverlappingEntities[i]);
             if (entity == playerEntity) continue;
             if (entity == zoneEntity) continue;
-            // Skip cows in our follow chain
-            if (ctx.State.HasComponent<CowComponent>(entity))
-            {
-                ref var cowComp = ref ctx.State.GetComponent<CowComponent>(entity);
-                if (cowComp.FollowingPlayer == playerEntity) continue;
-            }
             if (!ctx.State.HasComponent<Transform2D>(entity)) continue;
 
             var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
@@ -607,12 +576,12 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
-        int price = globalRes.ConsumeAndPriceMilkProduct();
-        if (price > 0)
-        {
-            globalRes.Coins += price;
-            return true;
-        }
+        int clickMult = 1;
+        if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
+            clickMult = System.Math.Max(1, ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity).ClickMultiplier);
+
+        int coins = InteractionLogic.SellFromGlobal(ctx.State, clickMult);
+        if (coins > 0) return true;
         missingResource = StateKeys.Milk;
         return false;
     }
@@ -623,31 +592,27 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (globalRes.Coins > 0)
         {
-            ref var land = ref ctx.State.GetComponent<LandComponent>(landEntity);
-
-            // Click multiplier from assistant upgrades
             var ps = ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
             int coinsPerClick = System.Math.Max(1, ps.ClickMultiplier);
+            int coins = System.Math.Min(coinsPerClick, globalRes.Coins);
 
-            int deposit = System.Math.Min(coinsPerClick, globalRes.Coins);
-            deposit = System.Math.Min(deposit, land.Threshold - land.CurrentCoins);
-            land.CurrentCoins += deposit;
-            globalRes.Coins -= deposit;
+            int deposited = InteractionLogic.DepositToLand(ctx.State, landEntity, coins, leaveOneForPlayer: false, out bool landComplete);
+            globalRes.Coins -= deposited;
 
-            if (land.CurrentCoins >= land.Threshold)
+            if (landComplete)
             {
                 var transform = ctx.State.GetComponent<Transform2D>(landEntity);
                 var position = transform.Position;
+                var land = ctx.State.GetComponent<LandComponent>(landEntity);
                 var landType = land.Type;
-                int gridX = land.Arm;  // grid X coord stored in Arm
-                int gridY = land.Ring; // grid Y coord stored in Ring
+                int gridX = land.Arm;
+                int gridY = land.Ring;
                 ctx.State.DeleteEntity(landEntity);
 
                 CompleteLandBuilding(ctx, position, landType, gridX, gridY);
-
                 return false;
             }
-            return true;
+            return deposited > 0;
         }
         missingResource = StateKeys.Coins;
         return false;
@@ -716,18 +681,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
         else if (helper.Type == HelperType.Builder)
         {
-            // Give builder enough coins for its target land (or half of available coins)
-            int needed = helper.BagCapacity; // fallback to default capacity
-            if (helper.TargetEntity != Entity.Null && ctx.State.HasComponent<LandComponent>(helper.TargetEntity))
-            {
-                var land = ctx.State.GetComponent<LandComponent>(helper.TargetEntity);
-                needed = land.Threshold - land.CurrentCoins - helper.BagCoins;
-            }
-            else
-            {
-                // No target yet — give half of available coins so player keeps some too
-                needed = globalRes.Coins / 2;
-            }
+            // Give builder all available coins (up to bag capacity)
+            int needed = helper.BagCapacity - helper.BagCoins;
             int toGive = System.Math.Max(0, System.Math.Min(needed, globalRes.Coins));
             if (toGive > 0)
             {
@@ -793,35 +748,35 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 MushroomCaveDefinition.Create(ctx, position);
                 break;
             case LandType.HelperAssistant:
-            {
-                HelperAssistantDefinition.Create(ctx, position);
-                // Assistant is a pet (follows player, no bag) — x2 click speed
-                var assistant = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
-                ctx.State.AddComponent(assistant, new BreedBornComponent());
-                if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
                 {
-                    ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-                    ps.AssistantHelper = assistant;
-                    ps.ClickMultiplier = 5;
-                    var gt1 = ctx.State.GetCustomData<IGameTime>();
-                    ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier=4");
+                    HelperAssistantDefinition.Create(ctx, position);
+                    // Assistant is a pet (follows player, no bag) — x2 click speed
+                    var assistant = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
+                    ctx.State.AddComponent(assistant, new BreedBornComponent());
+                    if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
+                    {
+                        ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+                        ps.AssistantHelper = assistant;
+                        ps.ClickMultiplier = 2;
+                        var gt1 = ctx.State.GetCustomData<IGameTime>();
+                        ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier=4");
+                    }
+                    break;
                 }
-                break;
-            }
             case LandType.UpgradeAssistant:
-            {
-                UpgradeAssistantDefinition.Create(ctx, position);
-                var upgradePet = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
-                ctx.State.AddComponent(upgradePet, new BreedBornComponent());
-                if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
                 {
-                    ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-                    ps.ClickMultiplier = 10;
-                    var gt2 = ctx.State.GetCustomData<IGameTime>();
-                    ILogger.Log($"[Building] UpgradeAssistant built at {(gt2 != null ? gt2.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier=12");
+                    UpgradeAssistantDefinition.Create(ctx, position);
+                    var upgradePet = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
+                    ctx.State.AddComponent(upgradePet, new BreedBornComponent());
+                    if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
+                    {
+                        ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
+                        ps.ClickMultiplier = 5;
+                        var gt2 = ctx.State.GetCustomData<IGameTime>();
+                        ILogger.Log($"[Building] UpgradeAssistant built at {(gt2 != null ? gt2.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier=12");
+                    }
+                    break;
                 }
-                break;
-            }
             case LandType.UpgradeGatherer:
                 UpgradeGathererDefinition.Create(ctx, position);
                 SpawnUpgradePet(ctx, position, playerEntity, HelperType.Gatherer);
@@ -868,4 +823,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         float min = gt != null ? gt.CurrentTick / 60f / 60f : -1;
         ILogger.Log($"[UpgradePet] Upgraded helper type={helperType} at {min:F1}m");
     }
+
+    /// <summary>Forwarding stub for backward compatibility.</summary>
+    public static bool MilkCow(EntityWorld state, Entity cowEntity, int foodToUse, int exhaustPerClick, out bool cowDone)
+        => InteractionLogic.MilkCow(state, cowEntity, foodToUse, exhaustPerClick, out cowDone);
 }

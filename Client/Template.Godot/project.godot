@@ -37,6 +37,7 @@ window/stretch/aspect="expand"
 
 project/assembly_name="Template.Godot"
 project/assembly_reload_mode=2
+use_incremental_gc=true
 
 [editor_plugins]
 

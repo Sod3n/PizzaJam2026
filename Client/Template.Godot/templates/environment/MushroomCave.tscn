@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://diq64rsgarh25" path="res://sprites/export/homes/Mash_Home_.png" id="5_nimqa"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="anim_script"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" uid="uid://bq1qh6mtcnnu5" path="res://Scripts/Framework/Components/FoodFarmComponentNode.cs" id="fw_foodfarm"]
+[ext_resource type="Script" uid="uid://bq1qh6mtcnnu5" path="res://Scripts/Framework/Components/MushroomCaveComponentNode.cs" id="fw_foodfarm"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="shader"]
 [ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="tex_bar"]

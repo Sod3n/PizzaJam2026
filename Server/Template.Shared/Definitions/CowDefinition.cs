@@ -34,8 +34,9 @@ public static partial class CowDefinition
         System.Console.WriteLine($"[CowDefinition] Created Cow {entity.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {component.PreferredFood} (Skins: {skinComponent.Skins.Count})");
         component.MaxExhaust = totalExhaust;
 
-        // Disable avoidance so cow follows player closely
+        // Enable avoidance so cows steer around the player
         ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
-        navAgent.AvoidanceMask = 0;
+        navAgent.AvoidanceEnabled = true;
+        navAgent.AvoidanceMask = 1u; // Detect player on collision layer 1
     }
 }

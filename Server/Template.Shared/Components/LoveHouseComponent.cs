@@ -17,5 +17,5 @@ public struct LoveHouseComponent : IComponent
     public int SameTierBreedCount; // Consecutive same-tier breeds — guarantees upgrade at threshold
     public int HeartPercent; // Visual feedback: % chance of showing heart vs broken-heart per click
 
-    public const int GuaranteedUpgradeEvery = 5;
+    public const int GuaranteedUpgradeEvery = 4;
 }

@@ -2,7 +2,6 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Types;
-using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Components;
 
 namespace Template.Shared.Systems;
@@ -27,26 +26,21 @@ public class InteractHighlightSystem : ISystem
 
             if (prev == nearest) continue;
 
-            ILogger.Log($"[HighlightSystem] Player {playerEntity.Id}: prev={prev.Id} nearest={nearest.Id}");
-
             // Remove old highlight
             if (prev != Entity.Null && state.HasComponent<InteractHighlightComponent>(prev))
             {
                 state.RemoveComponent<InteractHighlightComponent>(prev);
-                ILogger.Log($"[HighlightSystem] Removed highlight from {prev.Id}");
             }
 
             // Add new highlight
             if (nearest != Entity.Null && !state.HasComponent<InteractHighlightComponent>(nearest))
             {
                 state.AddComponent(nearest, new InteractHighlightComponent());
-                ILogger.Log($"[HighlightSystem] Added highlight to {nearest.Id}");
             }
 
             // Re-get ref after component changes invalidated it
             ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
             ps.HighlightTarget = nearest;
-            ILogger.Log($"[HighlightSystem] HighlightTarget set to {nearest.Id}");
         }
     }
 
@@ -69,13 +63,6 @@ public class InteractHighlightSystem : ISystem
             var entity = new Entity(area.OverlappingEntities[i]);
             if (entity == playerEntity) continue;
             if (entity == zoneEntity) continue;
-
-            // Skip cows in player's follow chain
-            if (state.HasComponent<CowComponent>(entity))
-            {
-                var cowComp = state.GetComponent<CowComponent>(entity);
-                if (cowComp.FollowingPlayer == playerEntity) continue;
-            }
 
             if (!state.HasComponent<Transform2D>(entity)) continue;
 

@@ -60,8 +60,8 @@ StableIdSeed = "grass-entity-seed"
 
 [node name="GrassComponent" type="Node" parent="Entity" unique_id=1286717761]
 script = ExtResource("fw_grass")
-Durability = 10
-MaxDurability = 10
+Durability = 3
+MaxDurability = 3
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=1574187468]
 script = ExtResource("fw_phys")

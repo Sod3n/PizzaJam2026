@@ -1,12 +1,30 @@
 [gd_scene format=3 uid="uid://dpvl77oofc2w3"]
 
 [ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_7tc83"]
+[ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="8_6eqyr"]
+[ext_resource type="Texture2D" uid="uid://malp5wp2cexr" path="res://sprites/export/Devochka/Body.png" id="9_y4s3p"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="10_ft5rl"]
 [ext_resource type="Script" uid="uid://dl84755piumrf" path="res://Scripts/Framework/Components/CowComponentNode.cs" id="fw_cow"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://dujhbvljlh6l3" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="fw_nav"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 [ext_resource type="Script" uid="uid://dinx5371fnt6o" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
 [ext_resource type="Script" uid="uid://w882ltaxhyd6" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
+atlas = ExtResource("9_y4s3p")
+region = Rect2(0, 0, 461, 904)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3rmc5"]
+render_priority = 0
+shader = ExtResource("8_6eqyr")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ea47w"]
 
 [node name="Cow" type="Node3D" unique_id=184424069]
 
@@ -34,3 +52,11 @@ script = ExtResource("fw_state")
 script = ExtResource("fw_skin")
 
 [node name="Character" parent="." unique_id=1927392941 instance=ExtResource("1_7tc83")]
+
+[node name="Rain" type="AnimatedSprite3D" parent="." unique_id=1223436512]
+sorting_offset = -10.0
+material_override = SubResource("ShaderMaterial_3rmc5")
+alpha_cut = 2
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_ea47w")
+script = ExtResource("10_ft5rl")
