@@ -21,10 +21,6 @@ public class SimulationMetrics
     private readonly Dictionary<string, int> _prevCounts = new();
     private bool _prevFinalStructure;
 
-    // Previous resource values + cumulative totals for gain tracking
-    private int _prevFood, _prevMilk, _prevCoins;
-    private int _cumFood, _cumMilk, _cumCoins;
-
     public class Snapshot
     {
         public int Tick;
@@ -51,10 +47,15 @@ public class SimulationMetrics
         public int Count;
     }
 
+    /// <summary>
+    /// Record a snapshot by reading from MetricsComponent (entity counts, cumulative totals)
+    /// and GlobalResourcesComponent (per-type resource values).
+    /// </summary>
     public void RecordSnapshot(Game game, int tick)
     {
         var s = new Snapshot { Tick = tick };
 
+        // Per-type resource values from GlobalResourcesComponent (cheap — single entity read)
         foreach (var e in game.State.Filter<GlobalResourcesComponent>())
         {
             var r = game.State.GetComponent<GlobalResourcesComponent>(e);
@@ -64,52 +65,28 @@ public class SimulationMetrics
             break;
         }
 
-        foreach (var _ in game.State.Filter<HouseComponent>()) s.Houses++;
-        foreach (var _ in game.State.Filter<LoveHouseComponent>()) s.LoveHouses++;
-        foreach (var _ in game.State.Filter<SellPointComponent>()) s.SellPoints++;
-        foreach (var _ in game.State.Filter<CarrotFarmComponent>()) s.FoodFarms++;
-        foreach (var _ in game.State.Filter<AppleOrchardComponent>()) s.FoodFarms++;
-        foreach (var _ in game.State.Filter<MushroomCaveComponent>()) s.FoodFarms++;
-        foreach (var he in game.State.Filter<HelperComponent>())
+        // Entity counts, cumulative totals from MetricsComponent (already computed by MetricsSystem)
+        foreach (var e in game.State.Filter<MetricsComponent>())
         {
-            var h = game.State.GetComponent<HelperComponent>(he);
-            if (h.OwnerPlayer != Entity.Null) s.Helpers++;
+            var m = game.State.GetComponent<MetricsComponent>(e);
+            s.Houses = m.Houses;
+            s.LoveHouses = m.LoveHouses;
+            s.SellPoints = m.SellPoints;
+            s.FoodFarms = m.FoodFarms;
+            s.Helpers = m.Helpers;
+            s.Pets = m.Pets;
+            s.Cows = m.Cows;
+            s.HousedCows = m.HousedCows;
+            s.WildCows = m.WildCows;
+            s.FollowingCows = m.Cows - m.HousedCows - m.WildCows;
+            s.LandPlots = m.LandPlots;
+            s.TotalLandRemaining = m.TotalLandCost;
+            s.FinalStructureExists = m.FinalStructureBuilt != 0;
+            s.CumFood = m.CumFood;
+            s.CumMilk = m.CumMilk;
+            s.CumCoins = m.CumCoins;
+            break;
         }
-        foreach (var _ in game.State.Filter<HelperPetComponent>()) s.Pets++;
-        foreach (var _ in game.State.Filter<FinalStructureComponent>()) s.FinalStructureExists = true;
-
-        foreach (var e in game.State.Filter<CowComponent>())
-        {
-            s.Cows++;
-            var cow = game.State.GetComponent<CowComponent>(e);
-            if (cow.HouseId != Entity.Null) s.HousedCows++;
-            else if (cow.FollowingPlayer != Entity.Null) s.FollowingCows++;
-            else s.WildCows++;
-        }
-
-        foreach (var e in game.State.Filter<LandComponent>())
-        {
-            var land = game.State.GetComponent<LandComponent>(e);
-            if (land.Locked == 0)
-            {
-                s.LandPlots++;
-                s.TotalLandRemaining += Math.Max(0, land.Threshold - land.CurrentCoins);
-            }
-        }
-
-        // Track cumulative gains: any increase from previous tick = new production
-        int curFood = s.TotalFood;
-        int curMilk = s.TotalMilk;
-        int curCoins = s.Coins;
-        if (curFood > _prevFood) _cumFood += curFood - _prevFood;
-        if (curMilk > _prevMilk) _cumMilk += curMilk - _prevMilk;
-        if (curCoins > _prevCoins) _cumCoins += curCoins - _prevCoins;
-        _prevFood = curFood;
-        _prevMilk = curMilk;
-        _prevCoins = curCoins;
-        s.CumFood = _cumFood;
-        s.CumMilk = _cumMilk;
-        s.CumCoins = _cumCoins;
 
         Snapshots.Add(s);
 

@@ -36,6 +36,8 @@ var start_rot_z: float
 var start_skin_y: float
 
 var bounce_tween: Tween
+var rot_tween: Tween
+var scale_tween: Tween
 var _effect_local_pos: Vector3
 
 func _ready() -> void:
@@ -57,9 +59,18 @@ func _ready() -> void:
 
 	start_fancy_idle_3d()
 
+func stop_idle() -> void:
+	if rot_tween: rot_tween.kill()
+	if scale_tween: scale_tween.kill()
+	if bounce_tween: bounce_tween.kill()
+	# Reset to neutral pose
+	rotation_degrees.z = start_rot_z
+	if scale_anchor: scale_anchor.scale.y = start_scale_y
+	if skin_node: skin_node.position.y = start_skin_y
+
 func start_fancy_idle_3d() -> void:
-	var rot_tween = get_tree().create_tween().set_loops()
-	var scale_tween = get_tree().create_tween().set_loops()
+	rot_tween = get_tree().create_tween().set_loops()
+	scale_tween = get_tree().create_tween().set_loops()
 
 	rot_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	scale_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)

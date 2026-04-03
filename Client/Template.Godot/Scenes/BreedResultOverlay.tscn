@@ -1,6 +1,45 @@
 [gd_scene format=3 uid="uid://d0cv0g4sn08pw"]
 
 [ext_resource type="Script" uid="uid://brd1v3r4y5vc1" path="res://Scripts/Visuals/BreedResultOverlay.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://b31p6lgq304o1" path="res://sprites/character_shadow.png" id="2_8lr5e"]
+[ext_resource type="Texture2D" uid="uid://c4l6g4w7sq6yw" path="res://sprites/star.png" id="2_aa4cw"]
+[ext_resource type="FontFile" uid="uid://bexyiwisoef5j" path="res://fonts/Inter.ttf" id="2_fuvob"]
+[ext_resource type="Shader" uid="uid://clieew5r7jmce" path="res://shaders/blur.gdshader" id="3_s3wog"]
+[ext_resource type="Texture2D" uid="uid://bsvieuibwikgx" path="res://sprites/gacha_stats_back.png" id="4_aa4cw"]
+[ext_resource type="Script" uid="uid://dw6iuuk6reky3" path="res://templates/characters/bake_shader.gd" id="4_fuvob"]
+[ext_resource type="Texture2D" uid="uid://uwff6csdbj8y" path="res://sprites/export/icons/Grass_/1.png" id="6_slt83"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aa4cw"]
+shader = ExtResource("3_s3wog")
+shader_parameter/samples = 35
+shader_parameter/lod = 2
+shader_parameter/tint_color = Color(0, 0, 0, 0)
+shader_parameter/multiply_color_top = Color(0.46, 0.46, 0.46, 0)
+shader_parameter/multiply_color_bottom = Color(0, 0, 0, 1)
+shader_parameter/multiply_curve = 0.19300000590762
+shader_parameter/dodge_color_start = Color(0.24169174, 0.97, 0.14549997, 0.4862745)
+shader_parameter/dodge_color_mid = Color(0.4412272, 0.9059226, 0.80888474, 0)
+shader_parameter/dodge_mid_point = 0.8070000383325
+shader_parameter/dodge_color_end = Color(0.33266687, 0.089999974, 1, 0.06666667)
+shader_parameter/dodge_curve = 0.49300002015762
+shader_parameter/dodge_angle = 145.3850069057875
+shader_parameter/dodge_smoothness = 0.2050000097375
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_slt83"]
+shader = ExtResource("3_s3wog")
+shader_parameter/samples = 35
+shader_parameter/lod = 2
+shader_parameter/tint_color = Color(0, 0, 0, 0)
+shader_parameter/multiply_color_top = Color(0.46, 0.46, 0.46, 0)
+shader_parameter/multiply_color_bottom = Color(0, 0, 0, 1)
+shader_parameter/multiply_curve = 0.19300000590762
+shader_parameter/dodge_color_start = Color(0.97, 0.5263867, 0.019399982, 0.4862745)
+shader_parameter/dodge_color_mid = Color(0.91, 0.5005, 0, 0)
+shader_parameter/dodge_mid_point = 0.8070000383325
+shader_parameter/dodge_color_end = Color(0.33266687, 0.089999974, 1, 0.06666667)
+shader_parameter/dodge_curve = 0.49300002015762
+shader_parameter/dodge_angle = 145.3850069057875
+shader_parameter/dodge_smoothness = 0.2050000097375
 
 [sub_resource type="Environment" id="Env_preview"]
 ambient_light_source = 1
@@ -13,6 +52,7 @@ script = ExtResource("1_script")
 
 [node name="Root" type="Control" parent="." unique_id=1460041238]
 unique_name_in_owner = true
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,6 +62,7 @@ grow_vertical = 2
 
 [node name="Backdrop" type="ColorRect" parent="Root" unique_id=516829122]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -32,11 +73,14 @@ color = Color(0, 0, 0, 0)
 
 [node name="Card" type="Panel" parent="Root" unique_id=1292092924]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 200.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Title" type="Label" parent="Root/Card" unique_id=154630240]
 layout_mode = 1
@@ -48,29 +92,6 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 28
 text = "NEW ARRIVAL!"
 horizontal_alignment = 1
-
-[node name="CharViewport" type="SubViewportContainer" parent="Root/Card" unique_id=1155269493]
-layout_mode = 0
-offset_left = 560.0
-offset_top = 182.0
-offset_right = 1160.0
-offset_bottom = 882.0
-stretch = true
-
-[node name="Viewport" type="SubViewport" parent="Root/Card/CharViewport" unique_id=1839745442]
-unique_name_in_owner = true
-own_world_3d = true
-transparent_bg = true
-handle_input_locally = false
-size = Vector2i(600, 700)
-render_target_update_mode = 4
-
-[node name="CharEnv" type="WorldEnvironment" parent="Root/Card/CharViewport/Viewport" unique_id=429528581]
-environment = SubResource("Env_preview")
-
-[node name="CharLight" type="DirectionalLight3D" parent="Root/Card/CharViewport/Viewport" unique_id=824424669]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 3, 3)
-light_energy = 1.5
 
 [node name="ProfLabel" type="Label" parent="Root/Card" unique_id=1971967728]
 layout_mode = 0
@@ -157,6 +178,233 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -50.0
 offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
 theme_override_font_sizes/font_size = 14
 text = "[ click to continue ]"
 horizontal_alignment = 1
+
+[node name="GachaScreen" type="Control" parent="." unique_id=878999940]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GeneralBack" type="ColorRect" parent="GachaScreen" unique_id=1851383510]
+visible = false
+material = SubResource("ShaderMaterial_aa4cw")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+script = ExtResource("4_fuvob")
+
+[node name="LegendaryBack" type="ColorRect" parent="GachaScreen" unique_id=1409633919]
+visible = false
+material = SubResource("ShaderMaterial_slt83")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+script = ExtResource("4_fuvob")
+
+[node name="Top" type="Control" parent="GachaScreen" unique_id=628673929]
+anchors_preset = 0
+offset_left = 595.0
+offset_top = 91.0
+offset_right = 1332.0
+offset_bottom = 351.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GachaScreen/Top" unique_id=675607858]
+layout_mode = 0
+offset_left = 98.0
+offset_top = 28.0
+offset_right = 634.0
+offset_bottom = 112.0
+alignment = 1
+
+[node name="Control" type="Control" parent="GachaScreen/Top/HBoxContainer" unique_id=457657328]
+custom_minimum_size = Vector2(97, 72)
+layout_mode = 2
+
+[node name="Star" type="TextureRect" parent="GachaScreen/Top/HBoxContainer/Control" unique_id=1256040715]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 84.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("2_aa4cw")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Control2" type="Control" parent="GachaScreen/Top/HBoxContainer" unique_id=1091549908]
+custom_minimum_size = Vector2(97, 72)
+layout_mode = 2
+
+[node name="Star" type="TextureRect" parent="GachaScreen/Top/HBoxContainer/Control2" unique_id=1770344463]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 84.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("2_aa4cw")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Control3" type="Control" parent="GachaScreen/Top/HBoxContainer" unique_id=2001510080]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
+
+[node name="Star" type="TextureRect" parent="GachaScreen/Top/HBoxContainer/Control3" unique_id=619424088]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 0
+offset_right = 72.0
+offset_bottom = 84.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("2_aa4cw")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Name" type="Label" parent="GachaScreen/Top" unique_id=286116378]
+layout_mode = 0
+offset_left = 114.0
+offset_top = 142.0
+offset_right = 614.0
+offset_bottom = 222.0
+theme_override_fonts/font = ExtResource("2_fuvob")
+theme_override_font_sizes/font_size = 50
+text = "IVAN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Proffession" type="Label" parent="GachaScreen/Top" unique_id=1217845381]
+layout_mode = 0
+offset_left = 114.0
+offset_top = 192.0
+offset_right = 614.0
+offset_bottom = 272.0
+theme_override_fonts/font = ExtResource("2_fuvob")
+theme_override_font_sizes/font_size = 35
+text = "slayer"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="GachaScreen" unique_id=2038334943]
+anchors_preset = 0
+offset_left = 704.0
+offset_top = 342.0
+offset_right = 1219.0
+offset_bottom = 933.0
+
+[node name="Shadow2" type="TextureRect" parent="GachaScreen/Control" unique_id=317729]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = -133.0
+offset_right = -31.0
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("2_8lr5e")
+stretch_mode = 2
+
+[node name="CharViewport" type="SubViewportContainer" parent="GachaScreen/Control" unique_id=1155269493]
+layout_mode = 0
+offset_left = -9.0
+offset_top = -158.0
+offset_right = 351.0
+offset_bottom = 342.0
+scale = Vector2(1.5, 1.5)
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="GachaScreen/Control/CharViewport" unique_id=1839745442]
+unique_name_in_owner = true
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(360, 500)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="GachaScreen/Control/CharViewport/Viewport" unique_id=505623003]
+transform = Transform3D(1, 0, 0, 0, 0.98006666, 0.19866893, 0, -0.19866893, 0.98006666, 0, 7, 4)
+projection = 1
+size = 15.0
+
+[node name="CharEnv" type="WorldEnvironment" parent="GachaScreen/Control/CharViewport/Viewport" unique_id=429528581]
+environment = SubResource("Env_preview")
+
+[node name="CharLight" type="DirectionalLight3D" parent="GachaScreen/Control/CharViewport/Viewport" unique_id=824424669]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 3, 3)
+light_energy = 1.5
+
+[node name="Bottom" type="Control" parent="GachaScreen" unique_id=991094836]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatsBack" type="TextureRect" parent="GachaScreen/Bottom" unique_id=606660150]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -116.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("4_aa4cw")
+stretch_mode = 3
+
+[node name="FoodPreferenceIcon" type="TextureRect" parent="GachaScreen/Bottom" unique_id=1676684514]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 860.0
+offset_top = -72.0
+offset_right = -980.0
+offset_bottom = -23.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("6_slt83")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MaxExhaust" type="Label" parent="GachaScreen/Bottom" unique_id=504113439]
+layout_mode = 0
+offset_left = 976.0
+offset_top = 1003.0
+offset_right = 1061.0
+offset_bottom = 1065.0
+theme_override_colors/font_color = Color(0.20392157, 0.3882353, 0.23921569, 1)
+theme_override_fonts/font = ExtResource("2_fuvob")
+theme_override_font_sizes/font_size = 35
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1

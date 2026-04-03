@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d0qq7fg0nvuxu" path="res://Scripts/Core/GameManager.cs" id="1_884kg"]
 [ext_resource type="Script" uid="uid://c3uhh25dk0mh8" path="res://Scripts/Input/InputManager.cs" id="2_d4o4o"]
+[ext_resource type="Script" uid="uid://g7fxc4iexti3" path="res://main_subviewport.gd" id="3_y4vt1"]
 [ext_resource type="Material" uid="uid://bra6ug2wjmj0j" path="res://BinbunGrass/src/materials/grass_01/grass_ground_01.tres" id="4_6bw2v"]
 [ext_resource type="Material" uid="uid://c2to67v55oatp" path="res://BinbunGrass/src/materials/grass_01/grass_01.tres" id="5_kem5a"]
 [ext_resource type="PackedScene" uid="uid://kfx6yeh1o5yq" path="res://templates/environment/grass.tscn" id="6_gxmxl"]
@@ -16,48 +17,48 @@
 [ext_resource type="PackedScene" uid="uid://dvf1flcw08lyw" path="res://templates/environment/mushroom.tscn" id="13_rn1d6"]
 [ext_resource type="Script" uid="uid://b8k3m7outln1v" path="res://Scripts/Visuals/InteractOutlineView.cs" id="38_hsrf8"]
 [ext_resource type="PackedScene" uid="uid://yeyaphli5ypt" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
+[ext_resource type="PackedScene" uid="uid://jqqcg2w5j6v4" path="res://templates/environment/AppleOrchard.tscn" id="tpl_appleorchard"]
 [ext_resource type="PackedScene" uid="uid://bgt7qedtjqn55" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
 [ext_resource type="PackedScene" uid="uid://bchydbc8gnk5j" path="res://templates/environment/props/Bush1.tscn" id="tpl_bush1"]
 [ext_resource type="PackedScene" uid="uid://dnw7wbnuinko2" path="res://templates/environment/props/Bush2.tscn" id="tpl_bush2"]
+[ext_resource type="PackedScene" uid="uid://onhebvxmg1oh" path="res://templates/environment/CarrotFarm.tscn" id="tpl_carrotfarm"]
+[ext_resource type="PackedScene" path="res://templates/environment/Decoration.tscn" id="tpl_decoration"]
 [ext_resource type="PackedScene" uid="uid://w5woq2tbf002" path="res://templates/environment/props/Flowers.tscn" id="tpl_flowers"]
 [ext_resource type="PackedScene" path="res://templates/environment/FoodFarm.tscn" id="tpl_foodfarm"]
-[ext_resource type="PackedScene" path="res://templates/environment/CarrotFarm.tscn" id="tpl_carrotfarm"]
-[ext_resource type="PackedScene" path="res://templates/environment/AppleOrchard.tscn" id="tpl_appleorchard"]
-[ext_resource type="PackedScene" path="res://templates/environment/MushroomCave.tscn" id="tpl_mushroomcave"]
-[ext_resource type="PackedScene" path="res://templates/environment/HelperAssistant.tscn" id="tpl_helperassistant"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeGatherer.tscn" id="tpl_upgradegatherer"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeBuilder.tscn" id="tpl_upgradebuilder"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeSeller.tscn" id="tpl_upgradeseller"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeAssistant.tscn" id="tpl_upgradeassistant"]
-[ext_resource type="PackedScene" path="res://templates/environment/Decoration.tscn" id="tpl_decoration"]
 [ext_resource type="PackedScene" uid="uid://bu2yqslfpgg4k" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
 [ext_resource type="PackedScene" path="res://templates/characters/Helper.tscn" id="tpl_helper"]
-[ext_resource type="PackedScene" path="res://templates/characters/HelperPet.tscn" id="tpl_helperpet"]
+[ext_resource type="PackedScene" path="res://templates/environment/HelperAssistant.tscn" id="tpl_helperassistant"]
+[ext_resource type="PackedScene" uid="uid://dgjkt2nsjuyuj" path="res://templates/characters/HelperPet.tscn" id="tpl_helperpet"]
 [ext_resource type="PackedScene" uid="uid://csft4r563rued" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
+[ext_resource type="PackedScene" uid="uid://dhh4knobdftnn" path="res://templates/environment/MushroomCave.tscn" id="tpl_mushroomcave"]
 [ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="tpl_prop"]
 [ext_resource type="PackedScene" uid="uid://c1nvklhoxhbvc" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeAssistant.tscn" id="tpl_upgradeassistant"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeBuilder.tscn" id="tpl_upgradebuilder"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeGatherer.tscn" id="tpl_upgradegatherer"]
+[ext_resource type="PackedScene" path="res://templates/environment/UpgradeSeller.tscn" id="tpl_upgradeseller"]
+[ext_resource type="Script" uid="uid://c0hln4wxe6hyd" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
+[ext_resource type="Script" uid="uid://o67l46k5a8dj" path="res://Scripts/Visuals/CarrotFarmView.cs" id="view_carrotfarm"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
+[ext_resource type="Script" uid="uid://bg7mgleujg5ot" path="res://Scripts/Visuals/DecorationView.cs" id="view_decoration"]
 [ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/FinalStructureView.cs" id="view_finalstructure"]
 [ext_resource type="Script" uid="uid://bqhe6g3n1ei8l" path="res://Scripts/Visuals/FoodFarmView.cs" id="view_foodfarm"]
 [ext_resource type="Script" uid="uid://f4sfvakprfvw" path="res://Scripts/Visuals/FoodSignView.cs" id="view_foodsign"]
 [ext_resource type="Script" uid="uid://q2pn1v0kf6de" path="res://Scripts/Visuals/GrassView.cs" id="view_grass"]
 [ext_resource type="Script" uid="uid://b3kkcsarmv3fv" path="res://Scripts/Visuals/HelperView.cs" id="view_helper"]
+[ext_resource type="Script" uid="uid://83ewsjl0u4i8" path="res://Scripts/Visuals/HelperAssistantView.cs" id="view_helperassistant"]
+[ext_resource type="Script" uid="uid://md41ojyrlwd2" path="res://Scripts/Visuals/HelperPetView.cs" id="view_helperpet"]
 [ext_resource type="Script" uid="uid://0qcopw55cs1e" path="res://Scripts/Visuals/HouseView.cs" id="view_house"]
 [ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/LandView.cs" id="view_land"]
 [ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/LoveHouseView.cs" id="view_lovehouse"]
+[ext_resource type="Script" uid="uid://dbqbtifw2l624" path="res://Scripts/Visuals/MushroomCaveView.cs" id="view_mushroomcave"]
 [ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
 [ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
-[ext_resource type="Script" path="res://Scripts/Visuals/CarrotFarmView.cs" id="view_carrotfarm"]
-[ext_resource type="Script" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
-[ext_resource type="Script" path="res://Scripts/Visuals/MushroomCaveView.cs" id="view_mushroomcave"]
-[ext_resource type="Script" path="res://Scripts/Visuals/HelperAssistantView.cs" id="view_helperassistant"]
-[ext_resource type="Script" path="res://Scripts/Visuals/HelperPetView.cs" id="view_helperpet"]
-[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
-[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeBuilderView.cs" id="view_upgradebuilder"]
-[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
-[ext_resource type="Script" path="res://Scripts/Visuals/UpgradeAssistantView.cs" id="view_upgradeassistant"]
-[ext_resource type="Script" path="res://Scripts/Visuals/DecorationView.cs" id="view_decoration"]
+[ext_resource type="Script" uid="uid://tdslau71ofae" path="res://Scripts/Visuals/UpgradeAssistantView.cs" id="view_upgradeassistant"]
+[ext_resource type="Script" uid="uid://b5s7vh8savarq" path="res://Scripts/Visuals/UpgradeBuilderView.cs" id="view_upgradebuilder"]
+[ext_resource type="Script" uid="uid://bhaw2lc4hhrbj" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
+[ext_resource type="Script" uid="uid://cpchm5xkwlt1h" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
@@ -115,6 +116,7 @@ anisotropic_filtering_level = 0
 canvas_item_default_texture_filter = 0
 size = Vector2i(1920, 1080)
 render_target_update_mode = 4
+script = ExtResource("3_y4vt1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport" unique_id=1830865638]
 transform = Transform3D(0.05523772, -0.9084246, -0.41438335, 0.48217082, -0.3391493, 0.807768, -0.8743341, -0.24442281, 0.41928202, 0, 2.58754, 0)
@@ -4279,43 +4281,43 @@ Prefab = ExtResource("tpl_lovehouse")
 script = ExtResource("view_foodfarm")
 Prefab = ExtResource("tpl_foodfarm")
 
-[node name="CarrotFarmView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="CarrotFarmView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=713033180]
 script = ExtResource("view_carrotfarm")
 Prefab = ExtResource("tpl_carrotfarm")
 
-[node name="AppleOrchardView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="AppleOrchardView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=698592592]
 script = ExtResource("view_appleorchard")
 Prefab = ExtResource("tpl_appleorchard")
 
-[node name="MushroomCaveView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="MushroomCaveView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2055302233]
 script = ExtResource("view_mushroomcave")
 Prefab = ExtResource("tpl_mushroomcave")
 
-[node name="HelperAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="HelperAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1510513594]
 script = ExtResource("view_helperassistant")
 Prefab = ExtResource("tpl_helperassistant")
 
-[node name="HelperPetView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="HelperPetView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1425441025]
 script = ExtResource("view_helperpet")
 Prefab = ExtResource("tpl_helperpet")
 
-[node name="UpgradeGathererView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="UpgradeGathererView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1027788213]
 script = ExtResource("view_upgradegatherer")
 Prefab = ExtResource("tpl_upgradegatherer")
 
-[node name="UpgradeBuilderView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="UpgradeBuilderView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1884027225]
 script = ExtResource("view_upgradebuilder")
 Prefab = ExtResource("tpl_upgradebuilder")
 
-[node name="UpgradeSellerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="UpgradeSellerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=569775162]
 script = ExtResource("view_upgradeseller")
 Prefab = ExtResource("tpl_upgradeseller")
 
-[node name="UpgradeAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="UpgradeAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=239160958]
 script = ExtResource("view_upgradeassistant")
 Prefab = ExtResource("tpl_upgradeassistant")
 
-[node name="DecorationView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="DecorationView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2145567296]
 script = ExtResource("view_decoration")
 Prefab = ExtResource("tpl_decoration")
 

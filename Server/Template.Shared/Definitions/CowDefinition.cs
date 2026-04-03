@@ -34,6 +34,8 @@ public static partial class CowDefinition
         System.Console.WriteLine($"[CowDefinition] Created Cow {entity.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {component.PreferredFood} (Skins: {skinComponent.Skins.Count})");
         component.MaxExhaust = totalExhaust;
 
+        ctx.AddComponent(entity, NameComponent.RandomCow(ref random));
+
         // Enable avoidance so cows steer around the player
         ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
         navAgent.AvoidanceEnabled = true;

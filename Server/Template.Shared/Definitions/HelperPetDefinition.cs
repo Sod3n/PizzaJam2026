@@ -16,6 +16,9 @@ public static partial class HelperPetDefinition
         component.HelperType = helperType;
         component.FollowTarget = followTarget;
 
+        var random = new DeterministicRandom((uint)entity.Id + 4000);
+        ctx.AddComponent(entity, NameComponent.RandomPet(ref random));
+
         ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
         navAgent.AvoidanceMask = 0;
 

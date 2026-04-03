@@ -15,6 +15,7 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Profiler;
 using Deterministic.GameFramework.Utils.Logging;
+using Template.Shared.Systems;
 using Template.Godot.Framework.Editor;
 using FileAccess = Godot.FileAccess;
 
@@ -48,6 +49,8 @@ public partial class GameManager : Node
     private Task _gameLoopTask;
     private bool _isRunning;
     private IDisposable _localPlayerSubscription;
+    private MetricsExporter _metricsExporter;
+    private int _metricsExportCounter;
 
     public override void _Ready()
     {
@@ -115,6 +118,7 @@ public partial class GameManager : Node
             }
         };
 
+        StartMetricsExport();
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
@@ -155,6 +159,7 @@ public partial class GameManager : Node
             GD.Print($"[GameManager] Restored Player: {LocalPlayerId}");
         }
 
+        StartMetricsExport();
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
@@ -209,6 +214,7 @@ public partial class GameManager : Node
             await GameClient.WaitForSyncAsync();
 
             GD.Print("Synced! Starting GameLoop...");
+            StartMetricsExport();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             SetupLocalPlayerDiscovery();
@@ -236,6 +242,7 @@ public partial class GameManager : Node
             await GameClient.WaitForSyncAsync();
 
             GD.Print("Synced! Starting GameLoop...");
+            StartMetricsExport();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             SetupLocalPlayerDiscovery();
@@ -320,6 +327,26 @@ public partial class GameManager : Node
         _pendingLoadState = saveData;
     }
 
+    private void StartMetricsExport()
+    {
+        if (!OS.IsDebugBuild()) return;
+
+        var dir = System.IO.Path.Combine(
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+            "PizzaJam_Metrics");
+        _metricsExporter = new MetricsExporter(dir);
+        Game.Loop.OnTick += MetricsExportTick;
+        GD.Print($"[GameManager] Metrics CSV: {_metricsExporter.FilePath}");
+    }
+
+    private void MetricsExportTick()
+    {
+        _metricsExportCounter++;
+        if (_metricsExportCounter < 60) return; // write once per second
+        _metricsExportCounter = 0;
+        _metricsExporter?.WriteSnapshot(Game.State);
+    }
+
     private void AutoSaveTick()
     {
         _autoSaveCounter++;
@@ -335,7 +362,13 @@ public partial class GameManager : Node
         _isRunning = false;
         _localPlayerSubscription?.Dispose();
         Game.Loop.OnTick -= AutoSaveTick;
-        if (_isRunning) SaveGame();
+        Game.Loop.OnTick -= MetricsExportTick;
+        if (_metricsExporter != null)
+        {
+            var path = _metricsExporter.Finish(Game.State);
+            GD.Print($"[GameManager] Metrics saved: {path}");
+        }
+        SaveGame();
         Game.Loop.Stop();
         GameClient?.Dispose();
     }

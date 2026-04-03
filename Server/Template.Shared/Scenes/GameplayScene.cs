@@ -11,12 +11,22 @@ using Template.Shared.Definitions;
 using Template.Shared.Debugging;
 using Template.Shared.Components;
 using Deterministic.GameFramework.Navigation2D.Components;
+using Deterministic.GameFramework.Navigation2D.Systems;
 
 namespace Template.Shared.Scenes;
 
 public class GameplayScene : IScene
 {
-    public IEnumerable<ISystem> RegisterSystems(GameSimulation loop) => ServiceLocator.GetAll<ISystem>();
+    // Use CDT navigation instead of grid-based — filter out the old NavigationSystem
+    public IEnumerable<ISystem> RegisterSystems(GameSimulation loop)
+    {
+        foreach (var system in ServiceLocator.GetAll<ISystem>())
+        {
+            if (system is NavigationSystem)
+                continue;
+            yield return system;
+        }
+    }
     public IEnumerable<IActionService> RegisterActionServices(GameSimulation loop) => ServiceLocator.GetAll<IActionService>();
     public IEnumerable<IReactionService> RegisterReactionServices(GameSimulation loop) => ServiceLocator.GetAll<IReactionService>();
     public void OnEnter(GameSimulation loop)
@@ -65,6 +75,10 @@ public class GameplayScene : IScene
         // Initialize Global Resources
         var globalRes = state.CreateEntity();
         state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 50, HelpersEnabled = 1 }); // Start with some coins to buy land
+
+        // Initialize Metrics tracking
+        var metricsEntity = state.CreateEntity();
+        state.AddComponent(metricsEntity, new MetricsComponent());
 
         // Single starting land plot at center — builds into a sell point
         // Buying it spawns 4 neighbors, which spawn their neighbors, etc.

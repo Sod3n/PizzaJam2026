@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -783,5 +784,475 @@ public class BotSimulationTests
         _output.WriteLine($"  Apple:     BROAD={bA:F1}m  DIR={dA:F1}m");
         _output.WriteLine($"  Mushroom:  BROAD={bM:F1}m  DIR={dM:F1}m");
         _output.WriteLine($"  CumCoins:  BROAD={broadResults.Average(r => r.CumCoins):F0}  DIR={directionalResults.Average(r => r.CumCoins):F0}");
+    }
+
+    // ─── Performance test with real physics + navigation ───
+
+    [Theory]
+    [InlineData(1, 10, true, true)]   // selective + helpers, 10 min
+    [InlineData(1, 10, false, true)]  // random + helpers, 10 min
+    public void RunSimulationWithPhysics(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    {
+        Game game;
+        lock (_createLock)
+        {
+            EnsureServicesInitialized();
+            game = TemplateGameFactory.CreateGame(tickRate: 60);
+        }
+
+        var bots = new List<BotBrain>();
+        var coordinator = new BotCoordinator();
+        for (int i = 0; i < botCount; i++)
+        {
+            Guid userId;
+            Entity player;
+            lock (_createLock)
+            {
+                userId = Guid.NewGuid();
+                Entity worldEntity = Entity.Null;
+                foreach (var e in game.State.Filter<World>()) { worldEntity = e; break; }
+                game.State.AddComponent(worldEntity, new AddPlayerAction(userId));
+                game.Dispatcher.Update(game.State);
+                game.Loop.Simulation.SystemRunner.Update(game.State);
+                player = Entity.Null;
+                foreach (var e in game.State.Filter<PlayerEntity>())
+                {
+                    if (game.State.GetComponent<PlayerEntity>(e).UserId == userId)
+                    { player = e; break; }
+                }
+            }
+            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedLevel: 1));
+        }
+
+        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
+
+        // Use FullSimRunner with real physics + navigation
+        using var runner = new FullSimRunner(game);
+
+        // Bootstrap: a few full ticks to bake navmesh and initialize physics
+        for (int i = 0; i < 10; i++)
+            game.Loop.RunSingleTick();
+
+        var metrics = new SimulationMetrics { BotCount = botCount };
+        int maxTicks = 60 * 60 * maxMinutes;
+        bool completed = false;
+        int endTick = maxTicks;
+
+        string helpers = helpersEnabled ? "helpers" : "nohelpers";
+        string breed = selectiveBreeding ? "selective" : "random";
+        _output.WriteLine($"Starting PHYSICS simulation: {botCount} bot(s), {maxMinutes} min, {breed}, {helpers}...");
+        _output.WriteLine($"This uses real Rapier physics + A* navigation (slower than light sim).\n");
+
+        var wallClock = Stopwatch.StartNew();
+
+        for (int tick = 0; tick < maxTicks; tick++)
+        {
+            coordinator.ResetClaims();
+            foreach (var bot in bots) bot.PreTick(tick);
+
+            bool anyAction = false;
+            foreach (var bot in bots)
+            {
+                if (bot.WantsToInteract)
+                {
+                    InjectOverlap(game, bot.Player, bot.CurrentTarget);
+                    game.State.AddComponent(bot.Player, new InteractAction { UserId = bot.UserId });
+                    anyAction = true;
+                }
+            }
+            if (anyAction)
+            {
+                game.Dispatcher.Update(game.State);
+                runner.RunSystems();
+            }
+
+            // No MockNavigation — real NavigationSystem + PhysicsSystem handle movement
+            runner.Tick();
+
+            if (tick % 60 == 0)
+                metrics.RecordSnapshot(game, tick);
+
+            // Progress logging every 1 min sim time
+            if (tick % 3600 == 0 && tick > 0)
+            {
+                var snap = metrics.Snapshots.LastOrDefault();
+                if (snap != null)
+                {
+                    _output.WriteLine($"  [{tick / 3600f:F1}m] Houses={snap.Houses} Cows={snap.Cows} Coins={snap.Coins} " +
+                        $"Food={snap.TotalFood} | wall={wallClock.Elapsed.TotalSeconds:F1}s | {bots[0].LastAction}");
+                }
+            }
+
+            if (HasFinalStructure(game))
+            {
+                completed = true;
+                endTick = tick;
+                metrics.RecordSnapshot(game, tick);
+                _output.WriteLine($"\n  FINAL STRUCTURE BUILT at tick {tick} ({tick / 3600f:F1} min)");
+                break;
+            }
+            metrics.TotalTicks = tick;
+        }
+
+        wallClock.Stop();
+
+        // Game outcome
+        _output.WriteLine($"\n── Game Result ──");
+        if (completed)
+            _output.WriteLine($"  Completed at {endTick / 3600f:F1} min sim time");
+        else
+            _output.WriteLine($"  Did not complete in {maxMinutes} min");
+
+        var finalSnap = metrics.Snapshots.LastOrDefault();
+        if (finalSnap != null)
+        {
+            _output.WriteLine($"  Houses={finalSnap.Houses} Cows={finalSnap.Cows} Coins={finalSnap.Coins} " +
+                $"Land={finalSnap.LandPlots} Food={finalSnap.TotalFood} Milk={finalSnap.TotalMilk}");
+        }
+
+        // Performance report from FullSimRunner
+        _output.WriteLine($"\n── Performance ──");
+        _output.WriteLine($"  Wall clock: {wallClock.Elapsed.TotalSeconds:F2}s for {endTick / 60f:F1}s sim time");
+        _output.WriteLine(runner.PerformanceReport());
+
+        // Bot stats
+        _output.WriteLine($"\n── Bot Stats ──");
+        foreach (var bot in bots)
+            _output.WriteLine($"  {bot.ActionStats()}");
+
+        // Export
+        string csvDir = Path.Combine(Path.GetDirectoryName(typeof(BotSimulationTests).Assembly.Location)!, "sim_results");
+        Directory.CreateDirectory(csvDir);
+        string tag = $"physics_{botCount}bot_{maxMinutes}min_{breed}_{helpers}";
+        File.WriteAllText(Path.Combine(csvDir, $"perf_{tag}.txt"), runner.PerformanceReport());
+        _output.WriteLine($"\nPerf report exported to: {csvDir}");
+    }
+
+    // ─── Performance test with real physics + CDT navigation ───
+
+    [Theory]
+    [InlineData(1, 10, true, true)]   // selective + helpers, 10 min
+    [InlineData(1, 10, false, true)]  // random + helpers, 10 min
+    public void RunSimulationWithCDTNavigation(int botCount, int maxMinutes, bool selectiveBreeding, bool helpersEnabled)
+    {
+        Game game;
+        lock (_createLock)
+        {
+            EnsureServicesInitialized();
+            game = TemplateGameFactory.CreateGame(tickRate: 60);
+        }
+
+        var bots = new List<BotBrain>();
+        var coordinator = new BotCoordinator();
+        for (int i = 0; i < botCount; i++)
+        {
+            Guid userId;
+            Entity player;
+            lock (_createLock)
+            {
+                userId = Guid.NewGuid();
+                Entity worldEntity = Entity.Null;
+                foreach (var e in game.State.Filter<World>()) { worldEntity = e; break; }
+                game.State.AddComponent(worldEntity, new AddPlayerAction(userId));
+                game.Dispatcher.Update(game.State);
+                game.Loop.Simulation.SystemRunner.Update(game.State);
+                player = Entity.Null;
+                foreach (var e in game.State.Filter<PlayerEntity>())
+                {
+                    if (game.State.GetComponent<PlayerEntity>(e).UserId == userId)
+                    { player = e; break; }
+                }
+            }
+            bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedLevel: 1));
+        }
+
+        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
+
+        // Use FullSimRunner with CDT navigation instead of grid-rasterization
+        using var runner = new FullSimRunner(game, useCDTNavigation: true);
+
+        for (int i = 0; i < 10; i++)
+            game.Loop.RunSingleTick();
+
+        var metrics = new SimulationMetrics { BotCount = botCount };
+        int maxTicks = 60 * 60 * maxMinutes;
+        bool completed = false;
+        int endTick = maxTicks;
+
+        string helpers = helpersEnabled ? "helpers" : "nohelpers";
+        string breed = selectiveBreeding ? "selective" : "random";
+        _output.WriteLine($"Starting CDT NAVIGATION simulation: {botCount} bot(s), {maxMinutes} min, {breed}, {helpers}...");
+        _output.WriteLine($"This uses real Rapier physics + CDT-based A* navigation.\n");
+
+        var wallClock = Stopwatch.StartNew();
+
+        for (int tick = 0; tick < maxTicks; tick++)
+        {
+            coordinator.ResetClaims();
+            foreach (var bot in bots) bot.PreTick(tick);
+
+            bool anyAction = false;
+            foreach (var bot in bots)
+            {
+                if (bot.WantsToInteract)
+                {
+                    InjectOverlap(game, bot.Player, bot.CurrentTarget);
+                    game.State.AddComponent(bot.Player, new InteractAction { UserId = bot.UserId });
+                    anyAction = true;
+                }
+            }
+            if (anyAction)
+            {
+                game.Dispatcher.Update(game.State);
+                runner.RunSystems();
+            }
+
+            runner.Tick();
+
+            if (tick % 60 == 0)
+                metrics.RecordSnapshot(game, tick);
+
+            if (tick % 3600 == 0 && tick > 0)
+            {
+                var snap = metrics.Snapshots.LastOrDefault();
+                if (snap != null)
+                {
+                    _output.WriteLine($"  [{tick / 3600f:F1}m] Houses={snap.Houses} Cows={snap.Cows} Coins={snap.Coins} " +
+                        $"Food={snap.TotalFood} | wall={wallClock.Elapsed.TotalSeconds:F1}s | {bots[0].LastAction}");
+                }
+            }
+
+            if (HasFinalStructure(game))
+            {
+                completed = true;
+                endTick = tick;
+                metrics.RecordSnapshot(game, tick);
+                _output.WriteLine($"\n  FINAL STRUCTURE BUILT at tick {tick} ({tick / 3600f:F1} min)");
+                break;
+            }
+            metrics.TotalTicks = tick;
+        }
+
+        wallClock.Stop();
+
+        _output.WriteLine($"\n── Game Result ──");
+        if (completed)
+            _output.WriteLine($"  Completed at {endTick / 3600f:F1} min sim time");
+        else
+            _output.WriteLine($"  Did not complete in {maxMinutes} min");
+
+        var finalSnap = metrics.Snapshots.LastOrDefault();
+        if (finalSnap != null)
+        {
+            _output.WriteLine($"  Houses={finalSnap.Houses} Cows={finalSnap.Cows} Coins={finalSnap.Coins} " +
+                $"Land={finalSnap.LandPlots} Food={finalSnap.TotalFood} Milk={finalSnap.TotalMilk}");
+        }
+
+        _output.WriteLine($"\n── Performance ──");
+        _output.WriteLine($"  Wall clock: {wallClock.Elapsed.TotalSeconds:F2}s for {endTick / 60f:F1}s sim time");
+        _output.WriteLine(runner.PerformanceReport());
+
+        _output.WriteLine($"\n── Bot Stats ──");
+        foreach (var bot in bots)
+            _output.WriteLine($"  {bot.ActionStats()}");
+
+        string csvDir = Path.Combine(Path.GetDirectoryName(typeof(BotSimulationTests).Assembly.Location)!, "sim_results");
+        Directory.CreateDirectory(csvDir);
+        string tag = $"cdt_{botCount}bot_{maxMinutes}min_{breed}_{helpers}";
+        File.WriteAllText(Path.Combine(csvDir, $"perf_{tag}.txt"), runner.PerformanceReport());
+        _output.WriteLine($"\nPerf report exported to: {csvDir}");
+    }
+
+    // ─── Nav mesh rebake spike isolation test ───
+
+    [Fact]
+    public void NavMeshRebakeSpike()
+    {
+        Game game;
+        lock (_createLock)
+        {
+            EnsureServicesInitialized();
+            game = TemplateGameFactory.CreateGame(tickRate: 60);
+        }
+
+        // Add a player so the world is populated
+        Guid userId;
+        Entity player;
+        lock (_createLock)
+        {
+            userId = Guid.NewGuid();
+            Entity worldEntity = Entity.Null;
+            foreach (var e in game.State.Filter<World>()) { worldEntity = e; break; }
+            game.State.AddComponent(worldEntity, new AddPlayerAction(userId));
+            game.Dispatcher.Update(game.State);
+            game.Loop.Simulation.SystemRunner.Update(game.State);
+            player = Entity.Null;
+            foreach (var e in game.State.Filter<PlayerEntity>())
+            {
+                if (game.State.GetComponent<PlayerEntity>(e).UserId == userId)
+                { player = e; break; }
+            }
+        }
+
+        using var runner = new FullSimRunner(game);
+
+        // Bootstrap: initial bake
+        for (int i = 0; i < 10; i++)
+            game.Loop.RunSingleTick();
+
+        // Warm up — run 60 ticks so physics/nav are in steady state
+        for (int i = 0; i < 60; i++)
+            runner.Tick();
+
+        // Measure baseline: 120 ticks of steady-state
+        var baselineTicks = new List<double>();
+        var baselineNav = new List<double>();
+        var baselinePhys = new List<double>();
+        double freq = Stopwatch.Frequency;
+        for (int i = 0; i < 120; i++)
+        {
+            runner.Tick();
+            baselineTicks.Add(runner.LastTransformTicks + runner.LastPhysicsTicks + runner.LastNavigationTicks + runner.LastGameSystemsTicks);
+            baselineNav.Add(runner.LastNavigationTicks / freq * 1000.0);
+            baselinePhys.Add(runner.LastPhysicsTicks / freq * 1000.0);
+        }
+        double baselineAvgMs = baselineTicks.Average() / freq * 1000.0;
+        double baselineNavAvgMs = baselineNav.Average();
+        double baselinePhysAvgMs = baselinePhys.Average();
+
+        _output.WriteLine($"── Baseline (120 ticks, steady state) ──");
+        _output.WriteLine($"  Avg tick:  {baselineAvgMs:F3} ms");
+        _output.WriteLine($"  Avg nav:   {baselineNavAvgMs:F3} ms");
+        _output.WriteLine($"  Avg phys:  {baselinePhysAvgMs:F3} ms");
+
+        // Count existing obstacles
+        int obstaclesBefore = 0;
+        foreach (var e in game.State.Filter<StaticBody2D>())
+            obstaclesBefore++;
+        _output.WriteLine($"  StaticBody2D count before: {obstaclesBefore}");
+
+        // === SPAWN OBSTACLES to trigger nav mesh rebake ===
+        // Simulate building several structures at once (like buying multiple land plots)
+        var spawnedEntities = new List<Entity>();
+        float startX = 20f;
+        for (int i = 0; i < 8; i++)
+        {
+            var entity = game.State.CreateEntity();
+            game.State.AddComponent(entity, new Deterministic.GameFramework.TwoD.Transform2D
+            {
+                Position = new Deterministic.GameFramework.Types.Vector2(
+                    startX + i * 5f, 20f)
+            });
+            game.State.AddComponent(entity, new Deterministic.GameFramework.Physics2D.Components.StaticBody2D
+            {
+                CollisionLayer = (uint)Template.Shared.Components.CollisionLayer.Physics,
+                CollisionMask = 0
+            });
+            game.State.AddComponent(entity, new Deterministic.GameFramework.Physics2D.Components.CollisionShape2D
+            {
+                Type = Deterministic.GameFramework.Physics2D.Components.CollisionShapeType.Rectangle,
+                Rectangle = new Deterministic.GameFramework.Physics2D.Components.RectangleShape2D
+                {
+                    Size = new Deterministic.GameFramework.Types.Vector2(4f, 4f)
+                }
+            });
+            spawnedEntities.Add(entity);
+        }
+
+        int obstaclesAfter = 0;
+        foreach (var e in game.State.Filter<StaticBody2D>())
+            obstaclesAfter++;
+        _output.WriteLine($"\n── Spawned {spawnedEntities.Count} obstacles (total: {obstaclesAfter}) ──");
+        _output.WriteLine($"  Debounce: {10} ticks, then rebake triggers\n");
+
+        // Run ticks and measure each one — rebake should hit after debounce (~10 ticks)
+        _output.WriteLine($"── Per-tick timing after obstacle spawn ──");
+        double peakTotalMs = 0;
+        double peakNavMs = 0;
+        double peakPhysMs = 0;
+        int peakTick = -1;
+        for (int i = 0; i < 30; i++)
+        {
+            runner.Tick();
+            double totalMs = (runner.LastTransformTicks + runner.LastPhysicsTicks +
+                runner.LastNavigationTicks + runner.LastGameSystemsTicks) / freq * 1000.0;
+            double navMs = runner.LastNavigationTicks / freq * 1000.0;
+            double physMs = runner.LastPhysicsTicks / freq * 1000.0;
+            double transMs = runner.LastTransformTicks / freq * 1000.0;
+            double gameMs = runner.LastGameSystemsTicks / freq * 1000.0;
+
+            string marker = totalMs > baselineAvgMs * 2 ? " ◄ SPIKE" : "";
+            _output.WriteLine($"  tick +{i,2}: {totalMs,8:F3} ms  " +
+                $"[trans={transMs:F3} phys={physMs:F3} nav={navMs:F3} game={gameMs:F3}]{marker}");
+
+            if (totalMs > peakTotalMs)
+            {
+                peakTotalMs = totalMs;
+                peakNavMs = navMs;
+                peakPhysMs = physMs;
+                peakTick = i;
+            }
+        }
+
+        // Summary
+        _output.WriteLine($"\n── Summary ──");
+        _output.WriteLine($"  Baseline avg:     {baselineAvgMs:F3} ms/tick");
+        _output.WriteLine($"  Peak tick (+{peakTick}):  {peakTotalMs:F3} ms  (nav={peakNavMs:F3} phys={peakPhysMs:F3})");
+        _output.WriteLine($"  Spike ratio:      {peakTotalMs / baselineAvgMs:F1}x baseline");
+        _output.WriteLine($"  Nav spike ratio:  {peakNavMs / Math.Max(0.001, baselineNavAvgMs):F1}x baseline nav");
+        _output.WriteLine($"  Phys spike ratio: {peakPhysMs / Math.Max(0.001, baselinePhysAvgMs):F1}x baseline phys");
+
+        // Second wave: spawn more to see incremental rebake vs first bake
+        _output.WriteLine($"\n── Second wave: 8 more obstacles ──");
+        for (int i = 0; i < 8; i++)
+        {
+            var entity = game.State.CreateEntity();
+            game.State.AddComponent(entity, new Deterministic.GameFramework.TwoD.Transform2D
+            {
+                Position = new Deterministic.GameFramework.Types.Vector2(
+                    startX + i * 5f, -20f)
+            });
+            game.State.AddComponent(entity, new Deterministic.GameFramework.Physics2D.Components.StaticBody2D
+            {
+                CollisionLayer = (uint)Template.Shared.Components.CollisionLayer.Physics,
+                CollisionMask = 0
+            });
+            game.State.AddComponent(entity, new Deterministic.GameFramework.Physics2D.Components.CollisionShape2D
+            {
+                Type = Deterministic.GameFramework.Physics2D.Components.CollisionShapeType.Rectangle,
+                Rectangle = new Deterministic.GameFramework.Physics2D.Components.RectangleShape2D
+                {
+                    Size = new Deterministic.GameFramework.Types.Vector2(4f, 4f)
+                }
+            });
+        }
+
+        double peak2TotalMs = 0;
+        double peak2NavMs = 0;
+        int peak2Tick = -1;
+        for (int i = 0; i < 30; i++)
+        {
+            runner.Tick();
+            double totalMs = (runner.LastTransformTicks + runner.LastPhysicsTicks +
+                runner.LastNavigationTicks + runner.LastGameSystemsTicks) / freq * 1000.0;
+            double navMs = runner.LastNavigationTicks / freq * 1000.0;
+            double physMs = runner.LastPhysicsTicks / freq * 1000.0;
+            double transMs = runner.LastTransformTicks / freq * 1000.0;
+            double gameMs = runner.LastGameSystemsTicks / freq * 1000.0;
+
+            string marker = totalMs > baselineAvgMs * 2 ? " ◄ SPIKE" : "";
+            _output.WriteLine($"  tick +{i,2}: {totalMs,8:F3} ms  " +
+                $"[trans={transMs:F3} phys={physMs:F3} nav={navMs:F3} game={gameMs:F3}]{marker}");
+
+            if (totalMs > peak2TotalMs)
+            {
+                peak2TotalMs = totalMs;
+                peak2NavMs = navMs;
+                peak2Tick = i;
+            }
+        }
+
+        _output.WriteLine($"\n  Second peak (+{peak2Tick}): {peak2TotalMs:F3} ms (nav={peak2NavMs:F3})");
+        _output.WriteLine($"  Incremental vs first: {peak2TotalMs / Math.Max(0.001, peakTotalMs):F2}x");
     }
 }

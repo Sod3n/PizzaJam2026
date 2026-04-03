@@ -14,7 +14,7 @@ public partial class UI : CanvasLayer
     private CompositeDisposable _disposables = new();
     private bool _isInitialized = false;
 
-    // Nodes
+    // Resource nodes
     private RichTextLabel _grassLabel;
     private RichTextLabel _milkLabel;
     private RichTextLabel _coinLabel;
@@ -24,6 +24,15 @@ public partial class UI : CanvasLayer
     private RichTextLabel _vitaminShakeLabel;
     private RichTextLabel _appleYogurtLabel;
     private RichTextLabel _purplePotionLabel;
+
+    // Metrics nodes (optional — only bound if present in scene tree)
+    private RichTextLabel _housesLabel;
+    private RichTextLabel _cowsLabel;
+    private RichTextLabel _helpersLabel;
+    private RichTextLabel _cumFoodLabel;
+    private RichTextLabel _cumMilkLabel;
+    private RichTextLabel _cumCoinsLabel;
+    private RichTextLabel _sessionTimeLabel;
 
     public override void _Ready()
     {
@@ -37,6 +46,15 @@ public partial class UI : CanvasLayer
         _vitaminShakeLabel = GetNode<RichTextLabel>("Control/BottomBar/VitaminShake");
         _appleYogurtLabel = GetNode<RichTextLabel>("Control/BottomBar/AppleYogurt");
         _purplePotionLabel = GetNode<RichTextLabel>("Control/BottomBar/PurplePotion");
+
+        // Metrics labels (optional — null if not in scene)
+        _housesLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/Houses");
+        _cowsLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/Cows");
+        _helpersLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/Helpers");
+        _cumFoodLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/CumFood");
+        _cumMilkLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/CumMilk");
+        _cumCoinsLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/CumCoins");
+        _sessionTimeLabel = GetNodeOrNull<RichTextLabel>("Control/BottomBar/SessionTime");
     }
 
     public override void _Process(double delta)
@@ -66,6 +84,22 @@ public partial class UI : CanvasLayer
         foreach (var vm in collection)
         {
             BindResources(vm);
+        }
+
+        // Bind metrics (entity counts, cumulative production, session time)
+        var metricsCollection = client.Reactive.ObservableList<MetricsComponent, MetricsComponentViewModel>(
+            ctx => new MetricsComponentViewModel(ctx),
+            _disposables
+        );
+
+        metricsCollection.ObserveAdd().Subscribe(evt =>
+        {
+            BindMetrics(evt.Value);
+        }).AddTo(_disposables);
+
+        foreach (var vm in metricsCollection)
+        {
+            BindMetrics(vm);
         }
     }
 
@@ -106,6 +140,50 @@ public partial class UI : CanvasLayer
         vm.Resources.PurplePotion.Subscribe(v =>
             Callable.From(() => _purplePotionLabel.Text = $"{v}").CallDeferred()
         ).AddTo(_disposables);
+    }
+
+    private void BindMetrics(MetricsComponentViewModel vm)
+    {
+        if (_housesLabel != null)
+            vm.Metrics.Houses.Subscribe(v =>
+                Callable.From(() => _housesLabel.Text = $"{v}").CallDeferred()
+            ).AddTo(_disposables);
+
+        if (_cowsLabel != null)
+            vm.Metrics.Cows.Subscribe(v =>
+                Callable.From(() => _cowsLabel.Text = $"{v}").CallDeferred()
+            ).AddTo(_disposables);
+
+        if (_helpersLabel != null)
+            vm.Metrics.Helpers.Subscribe(v =>
+                Callable.From(() => _helpersLabel.Text = $"{v}").CallDeferred()
+            ).AddTo(_disposables);
+
+        if (_cumFoodLabel != null)
+            vm.Metrics.CumFood.Subscribe(v =>
+                Callable.From(() => _cumFoodLabel.Text = $"{v}").CallDeferred()
+            ).AddTo(_disposables);
+
+        if (_cumMilkLabel != null)
+            vm.Metrics.CumMilk.Subscribe(v =>
+                Callable.From(() => _cumMilkLabel.Text = $"{v}").CallDeferred()
+            ).AddTo(_disposables);
+
+        if (_cumCoinsLabel != null)
+            vm.Metrics.CumCoins.Subscribe(v =>
+                Callable.From(() => _cumCoinsLabel.Text = $"{v}").CallDeferred()
+            ).AddTo(_disposables);
+
+        if (_sessionTimeLabel != null)
+            vm.Metrics.ElapsedTicks.Subscribe(ticks =>
+                Callable.From(() =>
+                {
+                    int totalSec = ticks / 60;
+                    int min = totalSec / 60;
+                    int sec = totalSec % 60;
+                    _sessionTimeLabel.Text = $"{min}:{sec:D2}";
+                }).CallDeferred()
+            ).AddTo(_disposables);
     }
 
     public override void _ExitTree()

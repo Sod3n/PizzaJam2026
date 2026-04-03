@@ -6,10 +6,13 @@ namespace Template.Godot.Visuals;
 
 public struct BreedResultData
 {
+    public int Stars;          // 1 = cow, 2 = pet, 3 = helper
+    public string Name;
     public string Profession;
-    public string FoodPreference;
-    public string Stamina;
-    public string OwnerInfo; // null if not a pet
+    public int FoodPreference; // FoodType constant, -1 for non-cows
+    public int MaxExhaust;
+    public bool ShowBottom;    // true only for cows
+    public Deterministic.GameFramework.ECS.Entity Entity;
 }
 
 public partial class BreedResultOverlay : CanvasLayer
@@ -18,56 +21,73 @@ public partial class BreedResultOverlay : CanvasLayer
     private static readonly PackedScene _scene =
         GD.Load<PackedScene>("res://Scenes/BreedResultOverlay.tscn");
 
-    private static readonly string[] _foodNames = { "Grass", "Carrot", "Apple", "Mushroom" };
+    private static readonly string[] _foodIcons =
+    {
+        "res://sprites/export/icons/Grass_/1.png",
+        "res://sprites/export/icons/Carrot_/1.png",
+        "res://sprites/export/icons/Apply_/1.png",
+        "res://sprites/export/icons/Mashroom/1.png",
+    };
 
     // ── Static entry points ───────────────────────────────────────────────
 
     public static void ShowForCow(SceneTree tree, CowViewModel vm, Node3D visualNode)
     {
         int food = vm.Cow.Cow.PreferredFood.CurrentValue;
-        int exhaust = vm.Cow.Cow.Exhaust.CurrentValue;
         int maxExhaust = vm.Cow.Cow.MaxExhaust.CurrentValue;
         Spawn(tree, new BreedResultData
         {
-            Profession = "Regular Cow",
-            FoodPreference = food >= 0 && food < _foodNames.Length ? _foodNames[food] : "Unknown",
-            Stamina = $"{maxExhaust - exhaust}/{maxExhaust}",
+            Stars = 1,
+            Name = ReadName(vm.Entity),
+            Profession = "Cow",
+            FoodPreference = food,
+            MaxExhaust = maxExhaust,
+            ShowBottom = true,
+            Entity = vm.Entity,
         }, visualNode);
     }
 
     public static void ShowForHelper(SceneTree tree, HelperViewModel vm, Node3D visualNode)
     {
         int type = vm.Helper.Helper.Type.CurrentValue;
+        string profession = type switch
+        {
+            HelperType.Gatherer  => "Gatherer",
+            HelperType.Seller    => "Seller",
+            HelperType.Builder   => "Builder",
+            HelperType.Milker    => "Milker",
+            HelperType.Assistant => "Assistant",
+            _ => "Helper",
+        };
         Spawn(tree, new BreedResultData
         {
-            Profession = type switch
-            {
-                HelperType.Gatherer  => "Gatherer",
-                HelperType.Seller    => "Seller",
-                HelperType.Builder   => "Builder",
-                HelperType.Assistant => "Assistant",
-                _ => "Helper",
-            },
-            FoodPreference = "N/A",
-            Stamina = "N/A",
+            Stars = 3,
+            Name = ReadName(vm.Entity),
+            Profession = profession,
+            FoodPreference = -1,
+            ShowBottom = false,
+            Entity = vm.Entity,
         }, visualNode);
     }
 
     public static void ShowForPet(SceneTree tree, HelperPetViewModel vm, Node3D visualNode)
     {
         var state = ReactiveSystem.Instance.BoundState;
-        string ownerInfo = "Unknown";
+        string ownerName = "Unknown";
         if (state != null)
         {
             var comp = state.GetComponent<HelperPetComponent>(vm.Entity);
-            ownerInfo = comp.FollowTarget.Id != 0 ? $"Entity #{comp.FollowTarget.Id}" : "Wandering";
+            if (comp.FollowTarget.Id != 0)
+                ownerName = ReadName(comp.FollowTarget);
         }
         Spawn(tree, new BreedResultData
         {
-            Profession = "Pet",
-            FoodPreference = "N/A",
-            Stamina = "N/A",
-            OwnerInfo = ownerInfo,
+            Stars = 2,
+            Name = ReadName(vm.Entity),
+            Profession = $"Pet of {ownerName}",
+            FoodPreference = -1,
+            ShowBottom = false,
+            Entity = vm.Entity,
         }, visualNode);
     }
 
@@ -75,48 +95,58 @@ public partial class BreedResultOverlay : CanvasLayer
 
     public void Setup(BreedResultData data, Node3D entityVisualNode)
     {
-        // Populate info labels
-        GetNode<Label>("%ProfValue").Text = data.Profession;
-        GetNode<Label>("%FoodValue").Text = data.FoodPreference;
-        GetNode<Label>("%StamValue").Text = data.Stamina;
+        // Stars — show 1/2/3 based on entity type
+        var stars = GetNode<HBoxContainer>("GachaScreen/Top/HBoxContainer");
+        stars.GetNode<Control>("Control").Visible  = data.Stars >= 1;
+        stars.GetNode<Control>("Control2").Visible = data.Stars >= 2;
+        stars.GetNode<Control>("Control3").Visible = data.Stars >= 3;
 
-        if (!string.IsNullOrEmpty(data.OwnerInfo))
+        // Name & Profession
+        GetNode<Label>("GachaScreen/Top/Name").Text = data.Name;
+        GetNode<Label>("GachaScreen/Top/Proffession").Text = data.Profession;
+
+        // Background — legendary shader for helpers (3 stars)
+        GetNode<ColorRect>("GachaScreen/GeneralBack").Visible  = data.Stars < 3;
+        GetNode<ColorRect>("GachaScreen/LegendaryBack").Visible = data.Stars >= 3;
+
+        // Bottom stats — only shown for cows
+        var bottom = GetNode<Control>("GachaScreen/Bottom");
+        bottom.Visible = data.ShowBottom;
+        if (data.ShowBottom)
         {
-            GetNode<Label>("%FollowsLabel").Visible = true;
-            var followsVal = GetNode<Label>("%FollowsValue");
-            followsVal.Visible = true;
-            followsVal.Text = data.OwnerInfo;
+            if (data.FoodPreference >= 0 && data.FoodPreference < _foodIcons.Length)
+            {
+                var foodIcon = GetNode<TextureRect>("GachaScreen/Bottom/FoodPreferenceIcon");
+                foodIcon.Texture = GD.Load<Texture2D>(_foodIcons[data.FoodPreference]);
+            }
+            GetNode<Label>("GachaScreen/Bottom/MaxExhaust").Text = $"{data.MaxExhaust}";
         }
 
-        // Add camera and character copy into SubViewport
+        // Character — duplicate into the viewport (camera/env/light already in scene)
         var viewport = GetNode<SubViewport>("%Viewport");
 
-        var camera = new Camera3D
-        {
-            Position = new Vector3(0f, 1.5f, 5f),
-            Projection = Camera3D.ProjectionType.Orthogonal,
-            Size = 5f,
-        };
-        camera.LookAt(new Vector3(0f, 1.5f, 0f));
-        viewport.AddChild(camera);
-
-        var dropRoot = new Node3D { Name = "DropRoot", Position = new Vector3(0f, 5f, 0f) };
-        viewport.AddChild(dropRoot);
-
-        // Duplicate the already-skinned Character node from the spawned entity visual.
-        // SetupFlipPivot reparents Character under FlipPivot, so try both paths.
         var charSource = entityVisualNode?.GetNodeOrNull<Node3D>("Character")
             ?? entityVisualNode?.GetNodeOrNull<Node3D>("FlipPivot/Character");
         if (charSource != null)
         {
             var charCopy = (Node3D)charSource.Duplicate();
-            charCopy.Position = Vector3.Zero;
-            charCopy.Set("enable_bounce", false);
-            dropRoot.AddChild(charCopy);
+            charCopy.Transform = Transform3D.Identity;
+            viewport.AddChild(charCopy);
+            // Kill idle tweens after _ready fires
+            Callable.From(() => charCopy.Call("stop_idle")).CallDeferred();
+
+            // Re-apply skins so the duplicate matches the entity's actual appearance
+            var state = ReactiveSystem.Instance.BoundState;
+            if (state != null && state.HasComponent<SkinComponent>(data.Entity))
+            {
+                var skin = state.GetComponent<SkinComponent>(data.Entity);
+                SkinVisualizer.UpdateSkins(charCopy, skin.Skins);
+                SkinVisualizer.UpdateColors(charCopy, skin.Colors);
+            }
         }
 
         // Animate entrance (deferred so layout is finalized first)
-        Callable.From(() => _Animate(dropRoot)).CallDeferred();
+        Callable.From(_AnimateEntrance).CallDeferred();
     }
 
     public override void _Input(InputEvent @event)
@@ -132,52 +162,38 @@ public partial class BreedResultOverlay : CanvasLayer
 
     // ── Animation ─────────────────────────────────────────────────────────
 
-    private void _Animate(Node3D dropRoot)
+    private void _AnimateEntrance()
     {
         if (!IsInsideTree()) return;
 
-        var backdrop = GetNode<ColorRect>("%Backdrop");
-        var card = GetNode<Control>("%Card");
+        var screen = GetNode<Control>("GachaScreen");
 
-        // Backdrop: fade in
-        var bgTween = CreateTween();
-        bgTween.TweenProperty(backdrop, "color:a", 0.65f, 0.3f)
-               .SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
-
-        // Card: slide up from below (shift both offsets to keep size constant)
-        float vpHeight = GetViewport()?.GetVisibleRect().Size.Y ?? 1080f;
-        float slide = vpHeight * 0.3f;
-        card.OffsetTop = slide;
-        card.OffsetBottom = slide;
-        var cardTween = CreateTween().SetParallel();
-        cardTween.TweenProperty(card, "offset_top", 0f, 0.45f)
-                 .SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.Out);
-        cardTween.TweenProperty(card, "offset_bottom", 0f, 0.45f)
-                 .SetTrans(Tween.TransitionType.Back).SetEase(Tween.EaseType.Out);
-
-        // Character: drop from above with bounce
-        if (IsInstanceValid(dropRoot))
-        {
-            var dropTween = CreateTween();
-            dropTween.TweenProperty(dropRoot, "position:y", 0f, 0.7f)
-                     .SetTrans(Tween.TransitionType.Bounce).SetEase(Tween.EaseType.Out)
-                     .SetDelay(0.15f);
-        }
+        // Fade in the whole screen
+        screen.Modulate = new Color(1, 1, 1, 0);
+        var fadeTween = CreateTween();
+        fadeTween.TweenProperty(screen, "modulate:a", 1f, 0.3f)
+                 .SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
     }
 
     private void _Dismiss()
     {
         if (!IsInsideTree()) return;
-        var backdrop = GetNode<ColorRect>("%Backdrop");
-        var card = GetNode<Control>("%Card");
+        var screen = GetNode<Control>("GachaScreen");
 
-        var tween = CreateTween().SetParallel();
-        tween.TweenProperty(backdrop, "color:a", 0f, 0.25f);
-        tween.TweenProperty(card, "modulate:a", 0f, 0.2f);
+        var tween = CreateTween();
+        tween.TweenProperty(screen, "modulate:a", 0f, 0.25f);
         tween.Chain().TweenCallback(Callable.From(QueueFree));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
+
+    private static string ReadName(Deterministic.GameFramework.ECS.Entity entity)
+    {
+        var state = ReactiveSystem.Instance.BoundState;
+        if (state != null && state.HasComponent<NameComponent>(entity))
+            return state.GetComponent<NameComponent>(entity).Name.ToString();
+        return $"Entity #{entity.Id}";
+    }
 
     private static void Spawn(SceneTree tree, BreedResultData data, Node3D visualNode)
     {

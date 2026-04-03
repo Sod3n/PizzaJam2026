@@ -25,6 +25,10 @@ public static partial class HelperDefinition
             _ => 0 // Assistant has no bag
         };
 
+        // Name from config
+        var info = HelperConfig.GetByType(helperType);
+        ctx.AddComponent(entity, new NameComponent { Name = info.Name });
+
         // Generate random skin
         var random = new DeterministicRandom((uint)entity.Id + 3000);
         var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random);
