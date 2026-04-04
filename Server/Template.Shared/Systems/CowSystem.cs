@@ -438,9 +438,10 @@ public class CowSystem : ISystem
                 // Twins: 5% chance for same-pref breeds (no house limit — twin follows player until dismissed)
                 if (sameTier && babyCow != Entity.Null)
                 {
-                    if (breedRandom.NextInt(100) < 5)
+                    if (breedRandom.NextInt(100) < 1)
                     {
-                        var twinCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, false, 0);
+                        var babySkin = state.GetComponent<SkinComponent>(babyCow);
+                        var twinCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, false, 0, twinSkin: babySkin);
                         if (twinCow != Entity.Null)
                         {
                             ref var twinComp = ref state.GetComponent<CowComponent>(twinCow);
@@ -497,7 +498,7 @@ public class CowSystem : ISystem
         ILogger.Log($"[CowSystem] Love house breed complete. Released cows {cow1.Id} and {cow2.Id} back to player {playerEntity.Id}");
     }
 
-    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false, int breedCount = 0)
+    private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false, int breedCount = 0, SkinComponent? twinSkin = null)
     {
         var skinA = state.GetComponent<SkinComponent>(parentA);
         var skinB = state.GetComponent<SkinComponent>(parentB);
@@ -513,7 +514,7 @@ public class CowSystem : ISystem
         uint seed = (uint)(newCow.Id ^ (gameTime?.CurrentTick ?? 0));
         var random = new DeterministicRandom(seed);
 
-        var crossbredSkin = GameData.GD.SkinsData.CrossbreedSkin(ref random, skinA, skinB);
+        var crossbredSkin = twinSkin ?? GameData.GD.SkinsData.CrossbreedSkin(ref random, skinA, skinB);
 
         // Guaranteed max Megaaaabooba at breed #30
         if (breedCount == GlobalResourcesComponent.GuaranteedMegaBreed)

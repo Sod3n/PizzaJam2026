@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Template.Godot.Core;
+using Template.Godot.Visuals;
 using Template.Shared.Components;
 using Template.Shared.Features.Movement;
 using Template.Shared.Actions;
@@ -53,6 +54,8 @@ public partial class InputManager : Node
 
 	public override void _Input(InputEvent @event)
 	{
+		if (BreedResultOverlay.IsActive) return;
+
 		// Touch input for mobile
 		if (@event is InputEventScreenTouch touch)
 		{
@@ -77,6 +80,7 @@ public partial class InputManager : Node
 	public override void _PhysicsProcess(double delta)
 	{
 		if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
+		if (BreedResultOverlay.IsActive) return;
 
 		var localPlayerId = GameManager.Instance.LocalPlayerId;
 		if (localPlayerId == 0) return;

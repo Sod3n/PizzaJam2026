@@ -50,140 +50,6 @@ ambient_light_energy = 2.0
 layer = 200
 script = ExtResource("1_script")
 
-[node name="Root" type="Control" parent="." unique_id=1460041238]
-unique_name_in_owner = true
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Backdrop" type="ColorRect" parent="Root" unique_id=516829122]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0)
-
-[node name="Card" type="Panel" parent="Root" unique_id=1292092924]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 200.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Title" type="Label" parent="Root/Card" unique_id=154630240]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 50.0
-offset_bottom = 95.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 28
-text = "NEW ARRIVAL!"
-horizontal_alignment = 1
-
-[node name="ProfLabel" type="Label" parent="Root/Card" unique_id=1971967728]
-layout_mode = 0
-offset_left = 1213.0
-offset_top = 447.0
-offset_right = 1483.0
-offset_bottom = 482.0
-theme_override_font_sizes/font_size = 20
-text = "Profession:"
-
-[node name="ProfValue" type="Label" parent="Root/Card" unique_id=49720521]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 1493.0
-offset_top = 447.0
-offset_right = 1993.0
-offset_bottom = 482.0
-theme_override_font_sizes/font_size = 20
-text = "-"
-
-[node name="FoodLabel" type="Label" parent="Root/Card" unique_id=1018027913]
-layout_mode = 0
-offset_left = 1213.0
-offset_top = 507.0
-offset_right = 1483.0
-offset_bottom = 542.0
-theme_override_font_sizes/font_size = 20
-text = "Food Preference:"
-
-[node name="FoodValue" type="Label" parent="Root/Card" unique_id=1520077862]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 1493.0
-offset_top = 507.0
-offset_right = 1993.0
-offset_bottom = 542.0
-theme_override_font_sizes/font_size = 20
-text = "-"
-
-[node name="StamLabel" type="Label" parent="Root/Card" unique_id=1146752841]
-layout_mode = 0
-offset_left = 1213.0
-offset_top = 567.0
-offset_right = 1483.0
-offset_bottom = 602.0
-theme_override_font_sizes/font_size = 20
-text = "Stamina:"
-
-[node name="StamValue" type="Label" parent="Root/Card" unique_id=816110837]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 1493.0
-offset_top = 567.0
-offset_right = 1993.0
-offset_bottom = 602.0
-theme_override_font_sizes/font_size = 20
-text = "-"
-
-[node name="FollowsLabel" type="Label" parent="Root/Card" unique_id=1533790188]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 1213.0
-offset_top = 627.0
-offset_right = 1483.0
-offset_bottom = 662.0
-theme_override_font_sizes/font_size = 20
-text = "Follows:"
-
-[node name="FollowsValue" type="Label" parent="Root/Card" unique_id=443891967]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 1493.0
-offset_top = 627.0
-offset_right = 1993.0
-offset_bottom = 662.0
-theme_override_font_sizes/font_size = 20
-text = "-"
-
-[node name="Hint" type="Label" parent="Root/Card" unique_id=1714079273]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -50.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_font_sizes/font_size = 14
-text = "[ click to continue ]"
-horizontal_alignment = 1
-
 [node name="GachaScreen" type="Control" parent="." unique_id=878999940]
 layout_mode = 3
 anchors_preset = 15
@@ -318,23 +184,23 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = -133.0
-offset_right = -31.0
-offset_bottom = -19.0
+offset_left = 123.0
+offset_top = -136.0
+offset_right = 62.0
+offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 0
+scale = Vector2(0.5, 0.5)
 pivot_offset = Vector2(35, 35)
 texture = ExtResource("2_8lr5e")
 stretch_mode = 2
 
 [node name="CharViewport" type="SubViewportContainer" parent="GachaScreen/Control" unique_id=1155269493]
 layout_mode = 0
-offset_left = -9.0
-offset_top = -158.0
-offset_right = 351.0
-offset_bottom = 342.0
-scale = Vector2(1.5, 1.5)
+offset_left = 75.0
+offset_top = 51.0
+offset_right = 435.0
+offset_bottom = 551.0
 stretch = true
 
 [node name="Viewport" type="SubViewport" parent="GachaScreen/Control/CharViewport" unique_id=1839745442]
@@ -379,29 +245,30 @@ pivot_offset = Vector2(35, 35)
 texture = ExtResource("4_aa4cw")
 stretch_mode = 3
 
-[node name="FoodPreferenceIcon" type="TextureRect" parent="GachaScreen/Bottom" unique_id=1676684514]
+[node name="FoodPreferenceIcon" type="TextureRect" parent="GachaScreen/Bottom/StatsBack" unique_id=1676684514]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 860.0
-offset_top = -72.0
-offset_right = -980.0
-offset_bottom = -23.0
+offset_left = 858.0001
+offset_top = -80.00002
+offset_right = -981.9999
+offset_bottom = -31.000023
 grow_horizontal = 2
 grow_vertical = 0
+rotation = 0.5235988
 pivot_offset = Vector2(35, 35)
 texture = ExtResource("6_slt83")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="MaxExhaust" type="Label" parent="GachaScreen/Bottom" unique_id=504113439]
+[node name="MaxExhaust" type="Label" parent="GachaScreen/Bottom/StatsBack" unique_id=504113439]
 layout_mode = 0
 offset_left = 976.0
-offset_top = 1003.0
+offset_top = 39.0
 offset_right = 1061.0
-offset_bottom = 1065.0
+offset_bottom = 101.0
 theme_override_colors/font_color = Color(0.20392157, 0.3882353, 0.23921569, 1)
 theme_override_fonts/font = ExtResource("2_fuvob")
 theme_override_font_sizes/font_size = 35

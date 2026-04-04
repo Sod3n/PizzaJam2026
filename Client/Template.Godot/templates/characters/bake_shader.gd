@@ -8,11 +8,13 @@ var baked_rect: TextureRect
 
 func _ready() -> void:
 	original_material = material as ShaderMaterial
-	await get_tree().create_timer(1).timeout
-	game_viewport = Global.main_subviewport
 
 func bake_background() -> void:
 	if baked:
+		return
+	game_viewport = Global.main_subviewport
+	if game_viewport == null:
+		push_warning("bake_background: no game viewport available, skipping bake")
 		return
 
 	await RenderingServer.frame_post_draw

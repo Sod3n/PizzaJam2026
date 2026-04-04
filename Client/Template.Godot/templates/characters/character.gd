@@ -21,6 +21,8 @@ extends CharacterBody3D
 	get(): return enable_bounce
 	set(value):
 		enable_bounce = value
+		if bounce_tween == null:
+			return
 		if enable_bounce:
 			bounce_tween.play()
 		else:
