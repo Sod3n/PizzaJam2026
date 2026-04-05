@@ -12,169 +12,178 @@ namespace Template.Godot.Input;
 
 public partial class InputManager : Node
 {
-	private Vector2 _lastDirection = new Vector2(float.MaxValue, float.MaxValue);
-	private float _lastSpeed = -1f;
+    private Vector2 _lastDirection = new Vector2(float.MaxValue, float.MaxValue);
+    private float _lastSpeed = -1f;
 
-	// Touch joystick state
-	private int _touchIndex = -1;
-	private Vector2 _touchStart;
-	private const float TouchDeadzone = 20f;
-	private const float TouchMaxRadius = 100f;
+    // Touch joystick state
+    private int _touchIndex = -1;
+    private Vector2 _touchStart;
+    private const float TouchDeadzone = 20f;
+    private const float TouchMaxRadius = 100f;
 
-	public override void _Ready()
-	{
-		// Register WASD actions
-		RegisterKeyAction("move_up", Key.W);
-		RegisterKeyAction("move_down", Key.S);
-		RegisterKeyAction("move_left", Key.A);
-		RegisterKeyAction("move_right", Key.D);
-		RegisterKeyAction("sprint", Key.Shift);
-		RegisterKeyAction("interact", Key.Space);
+    public override void _Ready()
+    {
+        // Register WASD actions
+        RegisterKeyAction("move_up", Key.W);
+        RegisterKeyAction("move_down", Key.S);
+        RegisterKeyAction("move_left", Key.A);
+        RegisterKeyAction("move_right", Key.D);
+        RegisterKeyAction("sprint", Key.Shift);
+        RegisterKeyAction("interact", Key.Space);
 
-		// Register gamepad actions
-		if (!InputMap.HasAction("gamepad_interact"))
-		{
-			InputMap.AddAction("gamepad_interact");
-			var ev = new InputEventJoypadButton();
-			ev.ButtonIndex = JoyButton.A;
-			InputMap.ActionAddEvent("gamepad_interact", ev);
-		}
-	}
+        // Register gamepad actions
+        if (!InputMap.HasAction("gamepad_interact"))
+        {
+            InputMap.AddAction("gamepad_interact");
+            var ev = new InputEventJoypadButton();
+            ev.ButtonIndex = JoyButton.A;
+            InputMap.ActionAddEvent("gamepad_interact", ev);
+        }
+    }
 
-	private void RegisterKeyAction(string name, Key key)
-	{
-		if (!InputMap.HasAction(name))
-		{
-			InputMap.AddAction(name);
-			var ev = new InputEventKey();
-			ev.Keycode = key;
-			InputMap.ActionAddEvent(name, ev);
-		}
-	}
+    private void RegisterKeyAction(string name, Key key)
+    {
+        if (!InputMap.HasAction(name))
+        {
+            InputMap.AddAction(name);
+            var ev = new InputEventKey();
+            ev.Keycode = key;
+            InputMap.ActionAddEvent(name, ev);
+        }
+    }
 
-	public override void _Input(InputEvent @event)
-	{
-		if (BreedResultOverlay.IsActive) return;
+    public override void _Input(InputEvent @event)
+    {
+        // F key toggles the Family Tree overlay (works even during overlays so you can close it)
+        if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.F }
+            && !BreedResultOverlay.IsActive)
+        {
+            FamilyTreeOverlay.Toggle(GetTree());
+            GetViewport().SetInputAsHandled();
+            return;
+        }
 
-		// Touch input for mobile
-		if (@event is InputEventScreenTouch touch)
-		{
-			if (touch.Pressed && _touchIndex == -1)
-			{
-				_touchIndex = touch.Index;
-				_touchStart = touch.Position;
-			}
-			else if (!touch.Pressed && touch.Index == _touchIndex)
-			{
-				// Release: check if it was a tap (interact) or drag (movement)
-				float dragDist = touch.Position.DistanceTo(_touchStart);
-				if (dragDist < TouchDeadzone)
-				{
-					SendInteract();
-				}
-				_touchIndex = -1;
-			}
-		}
-	}
+        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || BuildingInfoOverlay.IsActive || LovePopupOverlay.IsActive) return;
 
-	public override void _PhysicsProcess(double delta)
-	{
-		if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
-		if (BreedResultOverlay.IsActive) return;
+        // Touch input for mobile
+        if (@event is InputEventScreenTouch touch)
+        {
+            if (touch.Pressed && _touchIndex == -1)
+            {
+                _touchIndex = touch.Index;
+                _touchStart = touch.Position;
+            }
+            else if (!touch.Pressed && touch.Index == _touchIndex)
+            {
+                // Release: check if it was a tap (interact) or drag (movement)
+                float dragDist = touch.Position.DistanceTo(_touchStart);
+                if (dragDist < TouchDeadzone)
+                {
+                    SendInteract();
+                }
+                _touchIndex = -1;
+            }
+        }
+    }
 
-		var localPlayerId = GameManager.Instance.LocalPlayerId;
-		if (localPlayerId == 0) return;
+    public override void _PhysicsProcess(double delta)
+    {
+        if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
+        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || BuildingInfoOverlay.IsActive || LovePopupOverlay.IsActive) return;
 
-		// --- Interaction ---
-		if (global::Godot.Input.IsActionJustPressed("ui_accept") ||
-		    global::Godot.Input.IsActionJustPressed("interact") ||
-		    global::Godot.Input.IsActionJustPressed("gamepad_interact"))
-		{
-			SendInteract();
-		}
+        var localPlayerId = GameManager.Instance.LocalPlayerId;
+        if (localPlayerId == 0) return;
 
-		// --- Movement ---
-		var direction = Vector2.Zero;
+        // --- Interaction ---
+        if (global::Godot.Input.IsActionJustPressed("ui_accept") ||
+            global::Godot.Input.IsActionJustPressed("interact") ||
+            global::Godot.Input.IsActionJustPressed("gamepad_interact"))
+        {
+            SendInteract();
+        }
 
-		// Arrow keys
-		if (global::Godot.Input.IsActionPressed("ui_up")) direction.Y -= 1;
-		if (global::Godot.Input.IsActionPressed("ui_down")) direction.Y += 1;
-		if (global::Godot.Input.IsActionPressed("ui_left")) direction.X -= 1;
-		if (global::Godot.Input.IsActionPressed("ui_right")) direction.X += 1;
+        // --- Movement ---
+        var direction = Vector2.Zero;
 
-		// WASD
-		if (global::Godot.Input.IsActionPressed("move_up")) direction.Y -= 1;
-		if (global::Godot.Input.IsActionPressed("move_down")) direction.Y += 1;
-		if (global::Godot.Input.IsActionPressed("move_left")) direction.X -= 1;
-		if (global::Godot.Input.IsActionPressed("move_right")) direction.X += 1;
+        // Arrow keys
+        if (global::Godot.Input.IsActionPressed("ui_up")) direction.Y -= 1;
+        if (global::Godot.Input.IsActionPressed("ui_down")) direction.Y += 1;
+        if (global::Godot.Input.IsActionPressed("ui_left")) direction.X -= 1;
+        if (global::Godot.Input.IsActionPressed("ui_right")) direction.X += 1;
 
-		// Gamepad left stick
-		var joyX = global::Godot.Input.GetJoyAxis(0, JoyAxis.LeftX);
-		var joyY = global::Godot.Input.GetJoyAxis(0, JoyAxis.LeftY);
-		if (Math.Abs(joyX) > 0.2f) direction.X += joyX;
-		if (Math.Abs(joyY) > 0.2f) direction.Y += joyY;
+        // WASD
+        if (global::Godot.Input.IsActionPressed("move_up")) direction.Y -= 1;
+        if (global::Godot.Input.IsActionPressed("move_down")) direction.Y += 1;
+        if (global::Godot.Input.IsActionPressed("move_left")) direction.X -= 1;
+        if (global::Godot.Input.IsActionPressed("move_right")) direction.X += 1;
 
-		// Touch joystick (drag)
-		if (_touchIndex >= 0)
-		{
-			var touchCurrent = GetViewport().GetMousePosition(); // approximation for current touch
-			var touchDelta = touchCurrent - _touchStart;
-			if (touchDelta.Length() > TouchDeadzone)
-			{
-				direction += touchDelta.Normalized() * Math.Min(touchDelta.Length() / TouchMaxRadius, 1f);
-			}
-		}
+        // Gamepad left stick
+        var joyX = global::Godot.Input.GetJoyAxis(0, JoyAxis.LeftX);
+        var joyY = global::Godot.Input.GetJoyAxis(0, JoyAxis.LeftY);
+        if (Math.Abs(joyX) > 0.2f) direction.X += joyX;
+        if (Math.Abs(joyY) > 0.2f) direction.Y += joyY;
 
-		// Clamp and normalize
-		if (direction.LengthSquared() > 1f)
-			direction = direction.Normalized();
+        // Touch joystick (drag)
+        if (_touchIndex >= 0)
+        {
+            var touchCurrent = GetViewport().GetMousePosition(); // approximation for current touch
+            var touchDelta = touchCurrent - _touchStart;
+            if (touchDelta.Length() > TouchDeadzone)
+            {
+                direction += touchDelta.Normalized() * Math.Min(touchDelta.Length() / TouchMaxRadius, 1f);
+            }
+        }
 
-		// Sprint (shift = x2 speed)
-		bool sprinting = global::Godot.Input.IsActionPressed("sprint");
-		float speed = sprinting ? 20f : 10f;
+        // Clamp and normalize
+        if (direction.LengthSquared() > 1f)
+            direction = direction.Normalized();
 
-		var fixedDirection = new Deterministic.GameFramework.Types.Vector2((float)direction.X, (float)direction.Y);
+        // Sprint (shift = x2 speed)
+        bool sprinting = global::Godot.Input.IsActionPressed("sprint");
+        float speed = sprinting ? 20f : 15f;
 
-		// Send action if direction or speed changed
-		bool dirChanged = direction.DistanceSquaredTo(_lastDirection) > 0.001f;
-		bool speedChanged = Math.Abs(speed - _lastSpeed) > 0.01f;
+        var fixedDirection = new Deterministic.GameFramework.Types.Vector2((float)direction.X, (float)direction.Y);
 
-		if (dirChanged || speedChanged)
-		{
-			_lastDirection = direction;
-			_lastSpeed = speed;
+        // Send action if direction or speed changed
+        bool dirChanged = direction.DistanceSquaredTo(_lastDirection) > 0.001f;
+        bool speedChanged = Math.Abs(speed - _lastSpeed) > 0.01f;
 
-			var action = new SetMoveDirectionAction
-			{
-				Direction = fixedDirection,
-				Speed = (int)speed
-			};
+        if (dirChanged || speedChanged)
+        {
+            _lastDirection = direction;
+            _lastSpeed = speed;
 
-			if (GameManager.Instance.OfflineMode)
-			{
-				GameManager.Instance.ScheduleOfflineAction(action, localPlayerId);
-			}
-			else
-			{
-				GameManager.Instance.GameClient.Execute(action, localPlayerId);
-			}
-		}
-	}
+            var action = new SetMoveDirectionAction
+            {
+                Direction = fixedDirection,
+                Speed = (int)speed
+            };
 
-	private void SendInteract()
-	{
-		var localPlayerId = GameManager.Instance.LocalPlayerId;
-		if (localPlayerId == 0) return;
+            if (GameManager.Instance.OfflineMode)
+            {
+                GameManager.Instance.ScheduleOfflineAction(action, localPlayerId);
+            }
+            else
+            {
+                GameManager.Instance.GameClient.Execute(action, localPlayerId);
+            }
+        }
+    }
 
-		if (GameManager.Instance.OfflineMode)
-		{
-			var interactAction = new InteractAction { UserId = GameManager.Instance.OfflineUserId };
-			GameManager.Instance.ScheduleOfflineAction(interactAction, localPlayerId);
-		}
-		else
-		{
-			var interactAction = new InteractAction { UserId = GameManager.Instance.GameClient.PlayerId };
-			GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
-		}
-	}
+    private void SendInteract()
+    {
+        var localPlayerId = GameManager.Instance.LocalPlayerId;
+        if (localPlayerId == 0) return;
+
+        if (GameManager.Instance.OfflineMode)
+        {
+            var interactAction = new InteractAction { UserId = GameManager.Instance.OfflineUserId };
+            GameManager.Instance.ScheduleOfflineAction(interactAction, localPlayerId);
+        }
+        else
+        {
+            var interactAction = new InteractAction { UserId = GameManager.Instance.GameClient.PlayerId };
+            GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
+        }
+    }
 }

@@ -192,17 +192,46 @@ public partial class BreedResultOverlay : CanvasLayer
 
     // ── Input ─────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Returns true when the event represents an "advance/skip" press.
+    /// Accepts the same inputs used for interaction in InputManager:
+    ///   mouse left-click, screen tap, Space (interact), Enter/ui_accept,
+    ///   and gamepad A button.
+    /// </summary>
+    private static bool IsAdvancePress(InputEvent @event)
+    {
+        // Mouse left-click
+        if (@event is InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left })
+            return true;
+
+        // Touch screen tap (release after short drag = tap)
+        if (@event is InputEventScreenTouch { Pressed: true })
+            return true;
+
+        // Keyboard / gamepad actions (Space, Enter, Gamepad A)
+        if (@event.IsPressed() && !@event.IsEcho())
+        {
+            if (@event.IsAction("interact") ||
+                @event.IsAction("ui_accept") ||
+                @event.IsAction("gamepad_interact"))
+                return true;
+        }
+
+        return false;
+    }
+
     public override void _Input(InputEvent @event)
     {
-        if (@event is not InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left })
+        if (!IsAdvancePress(@event))
             return;
         GetViewport().SetInputAsHandled();
 
         switch (_phase)
         {
             case Phase.Reveal:
-                _SkipToPreview();
-                break;
+                // Do not allow skipping during the reveal animation.
+                // The player must wait for the reveal to finish.
+                return;
             case Phase.Preview:
                 _phase = Phase.Dismissed;
                 _Dismiss();

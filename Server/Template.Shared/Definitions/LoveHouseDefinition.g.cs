@@ -26,8 +26,8 @@ public static partial class LoveHouseDefinition
         component.CowId2 = Entity.Null;
         component.BreedProgress = 0;
         component.BreedCost = 0;
-        component.SameTierBreedCount = 0;
         component.HeartPercent = 0;
+        component.CooldownTicksRemaining = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

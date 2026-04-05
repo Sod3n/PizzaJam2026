@@ -37,11 +37,12 @@ public static partial class HelperDefinition
         component.BagApple = 0;
         component.BagMushroom = 0;
         component.BagMilk = 0;
-        component.BagVitaminShake = 0;
-        component.BagAppleYogurt = 0;
+        component.BagCarrotMilkshake = 0;
+        component.BagVitaminMix = 0;
         component.BagPurplePotion = 0;
         component.BagCoins = 0;
         component.BagCapacity = 0;
+        component.WantedFoodType = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

@@ -15,9 +15,10 @@ public partial class HelperComponentNode : Node
     [Export] public int BagApple;
     [Export] public int BagMushroom;
     [Export] public int BagMilk;
-    [Export] public int BagVitaminShake;
-    [Export] public int BagAppleYogurt;
+    [Export] public int BagCarrotMilkshake;
+    [Export] public int BagVitaminMix;
     [Export] public int BagPurplePotion;
     [Export] public int BagCoins;
     [Export] public int BagCapacity;
+    [Export] public int WantedFoodType;
 }

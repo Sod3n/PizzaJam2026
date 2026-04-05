@@ -1,0 +1,84 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://shaders/sway.gdshader" id="shader"]
+[ext_resource type="Texture2D" path="res://sprites/export/icons/Grass_/1.png" id="tex_sign"]
+[ext_resource type="Texture2D" path="res://sprites/house.png" id="tex_house"]
+[ext_resource type="Script" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="anim_script"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/WarehouseSignComponentNode.cs" id="fw_comp"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sign"]
+render_priority = -1
+shader = ExtResource("shader")
+shader_parameter/albedo_texture = ExtResource("tex_sign")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_sign"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_sign")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_house")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_icon"]
+render_priority = -1
+shader = ExtResource("shader")
+shader_parameter/albedo_texture = ExtResource("tex_sign")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_icon"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_sign")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_house")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="WarehouseSign" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "WarehouseSign"
+StableIdSeed = "warehousesign-entity-seed"
+
+[node name="WarehouseSignComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_comp")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+ShapeRadius = 0.8
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="Sign" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.18816209, 2.389846, -1.1771166)
+material_override = SubResource("ShaderMaterial_sign")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_sign")
+script = ExtResource("anim_script")
+
+[node name="StatusIcon" type="AnimatedSprite3D" parent="."]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0.028004616, 0.78785324, -0.32304233)
+material_override = SubResource("ShaderMaterial_icon")
+modulate = Color(0.8, 0.2, 0.2, 1)
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_icon")
+script = ExtResource("anim_script")

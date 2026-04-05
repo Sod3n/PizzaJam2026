@@ -9,13 +9,14 @@
 [ext_resource type="Script" uid="uid://1ni4ix16yuim" path="res://Scripts/Framework/Components/LoveHouseComponentNode.cs" id="fw_lovehouse"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_u1qar"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yfgae"]
 render_priority = -1
 shader = ExtResource("4_yfgae")
 shader_parameter/albedo_texture = ExtResource("5_r6cki")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_lbt5b"]
 animations = [{
@@ -52,7 +53,7 @@ ShapeHeight = 2.0
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=1942393034]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.18842411, 1.3655618, -0.80295324)
-material_override = SubResource("ShaderMaterial_u1qar")
+material_override = SubResource("ShaderMaterial_yfgae")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_lbt5b")
 script = ExtResource("8_no7kv")

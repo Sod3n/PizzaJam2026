@@ -14,6 +14,7 @@ namespace Template.Shared.Systems;
 public class HelperSystem : ISystem
 {
     private const float TargetReachedDistSq = 9f;    // 3^2 — for sell points and land
+    private const float PlayerReturnDistSq = 36f;   // 6^2 — helpers stop farther from player (2x normal)
     private const float GatherReachedDistSq = 4f;   // 2^2 — closer for food collection
     private const int GatherWorkDuration = 30;        // 0.5 sec
     private const int SellWorkDuration = 10;          // per item
@@ -90,6 +91,11 @@ public class HelperSystem : ISystem
                     UpdateMilker(state, entity, ref helper);
                     break;
             }
+
+            // ─── Warehouse auto-deposit: when warehouse is enabled, helpers skip player pickup ───
+            helper = ref state.GetComponent<HelperComponent>(entity);
+            if (helper.Type != HelperType.Assistant)
+                TryWarehouseAutoDeposit(state, entity, ref helper);
         }
 
         // Update pets: follow their target helper
@@ -122,7 +128,7 @@ public class HelperSystem : ISystem
         SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
     }
 
-    // ─── Gatherer: find food → harvest → return to player → deposit ───
+    // ─── Gatherer: find food → harvest → return to player → wait for pickup ───
 
     private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
     {
@@ -204,58 +210,41 @@ public class HelperSystem : ISystem
                     return;
                 }
                 var playerPos = state.GetComponent<Transform2D>(helper.OwnerPlayer).Position;
-                if (NavigateToward(state, entity, playerPos, TargetReachedDistSq))
+                if (NavigateToward(state, entity, playerPos, PlayerReturnDistSq))
                 {
-                    helper.State = HelperState.Depositing;
+                    // Wait for player to interact and pick up resources
+                    helper.State = HelperState.WaitingForPickup;
                 }
                 break;
 
-            case HelperState.Depositing:
-                // Show gained icon on player (player receives the resource)
-                string foodKey = helper.BagGrass > 0 ? StateKeys.Grass
-                    : helper.BagCarrot > 0 ? StateKeys.Carrot
-                    : helper.BagApple > 0 ? StateKeys.Apple
-                    : helper.BagMushroom > 0 ? StateKeys.Mushroom : "";
-                var ownerPlayer = helper.OwnerPlayer;
-                DepositFoodToGlobal(state, ref helper);
-                if (!string.IsNullOrEmpty(foodKey) && ownerPlayer != Entity.Null)
-                    state.AddComponent(ownerPlayer, new EnterStateComponent { Key = StateKeys.GainedResource, Param = foodKey, Age = 0 });
-                helper = ref state.GetComponent<HelperComponent>(entity);
-                helper.State = HelperState.Idle;
+            case HelperState.WaitingForPickup:
+                // Follow player while waiting for pickup interaction
+                if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                {
+                    SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+                }
+                // Resources are picked up via HandleHelperInteraction in InteractActionService
                 break;
         }
     }
 
-    // ─── Seller: player gives milk → sell at sell point → deposit coins ───
+    // ─── Seller: player gives milk → sell at sell point → return with coins → wait for pickup ───
 
     private void UpdateSeller(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
     {
         switch (helper.State)
         {
             case HelperState.Idle:
-                // Follow player while waiting
+                // Wait near player for interaction to load bag with milk (like builder waits for coins)
                 if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
                 {
                     SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
                     helper = ref state.GetComponent<HelperComponent>(entity);
                 }
-                // Auto-take milk products from global resources
-                {
-                    int prevMilk = helper.BagMilk, prevShake = helper.BagVitaminShake;
-                    int prevYogurt = helper.BagAppleYogurt, prevPotion = helper.BagPurplePotion;
-                    if (TakeMilkFromGlobal(state, ref helper))
-                    {
-                        // Show icon for the first type actually taken
-                        string takenKey = (helper.BagMilk > prevMilk) ? StateKeys.Milk
-                            : (helper.BagVitaminShake > prevShake) ? StateKeys.VitaminShake
-                            : (helper.BagAppleYogurt > prevYogurt) ? StateKeys.AppleYogurt
-                            : (helper.BagPurplePotion > prevPotion) ? StateKeys.PurplePotion
-                            : StateKeys.Milk;
-                        state.AddComponent(entity, new EnterStateComponent { Key = StateKeys.GainedResource, Param = takenKey, Age = 0 });
-                        helper = ref state.GetComponent<HelperComponent>(entity);
-                        helper.State = HelperState.SeekingTarget;
-                    }
-                }
+                // If bag has milk products (loaded by player interact), go sell
+                if (HasMilkInBag(ref helper))
+                    helper.State = HelperState.SeekingTarget;
                 break;
 
             case HelperState.SeekingTarget:
@@ -290,12 +279,8 @@ public class HelperSystem : ISystem
                 if (helper.WorkTimer >= helper.WorkDuration)
                 {
                     helper.WorkTimer = 0;
-                    // Sell 5 items at once (always)
-                    int sellCount = 5;
-                    for (int s = 0; s < sellCount; s++)
-                    {
-                        if (!SellOneItem(ref helper)) break;
-                    }
+                    // Sell 1 item per work cycle (1x speed)
+                    SellOneItem(ref helper);
                     // Visual feedback on sell point
                     if (helper.TargetEntity != Entity.Null)
                         state.AddComponent(helper.TargetEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = StateKeys.Coins, Age = 0 });
@@ -313,19 +298,21 @@ public class HelperSystem : ISystem
                     return;
                 }
                 var sellerReturnPos = state.GetComponent<Transform2D>(helper.OwnerPlayer).Position;
-                if (NavigateToward(state, entity, sellerReturnPos, TargetReachedDistSq))
+                if (NavigateToward(state, entity, sellerReturnPos, PlayerReturnDistSq))
                 {
-                    helper.State = HelperState.Depositing;
+                    // Wait for player to interact and pick up coins
+                    helper.State = HelperState.WaitingForPickup;
                 }
                 break;
 
-            case HelperState.Depositing:
-                // Icon on player — player receives the coins
-                if (helper.BagCoins > 0 && helper.OwnerPlayer != Entity.Null)
-                    state.AddComponent(helper.OwnerPlayer, new EnterStateComponent { Key = StateKeys.GainedResource, Param = StateKeys.Coins, Age = 0 });
-                DepositCoinsToGlobal(state, ref helper);
-                helper = ref state.GetComponent<HelperComponent>(entity);
-                helper.State = HelperState.Idle;
+            case HelperState.WaitingForPickup:
+                // Follow player while waiting for pickup interaction
+                if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                {
+                    SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+                }
+                // Coins are picked up via HandleHelperInteraction in InteractActionService
                 break;
         }
     }
@@ -434,12 +421,24 @@ public class HelperSystem : ISystem
                     return;
                 }
                 var builderReturnPos = state.GetComponent<Transform2D>(helper.OwnerPlayer).Position;
-                if (NavigateToward(state, entity, builderReturnPos, TargetReachedDistSq))
+                if (NavigateToward(state, entity, builderReturnPos, PlayerReturnDistSq))
                 {
-                    // Return unused coins
-                    DepositCoinsToGlobal(state, ref helper);
-                    helper.State = HelperState.Idle;
+                    // If carrying unused coins, wait for player to pick them up
+                    if (helper.BagCoins > 0)
+                        helper.State = HelperState.WaitingForPickup;
+                    else
+                        helper.State = HelperState.Idle;
                 }
+                break;
+
+            case HelperState.WaitingForPickup:
+                // Follow player while waiting for pickup interaction
+                if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                {
+                    SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+                }
+                // Coins are picked up via HandleHelperInteraction in InteractActionService
                 break;
         }
     }
@@ -510,22 +509,64 @@ public class HelperSystem : ISystem
         return nearest;
     }
 
-    // ─── Milker: find house with milkable cow → go there → milk it ───
+    // ─── Milker: find house → follow player asking for food → receive food → go milk → return with milk → wait for pickup ───
 
     private void UpdateMilker(EntityWorld state, Entity entity, ref HelperComponent helper)
     {
         switch (helper.State)
         {
             case HelperState.Idle:
-            case HelperState.SeekingTarget:
-                var milkTarget = FindMilkableHouse(state, entity, helper.OwnerPlayer);
-                if (milkTarget == Entity.Null)
+                // Find a milkable house and determine what food it needs
+                if (helper.TargetEntity == Entity.Null || !state.HasComponent<HouseComponent>(helper.TargetEntity))
                 {
-                    StopMovement(state, entity);
-                    return;
+                    var milkTarget = FindMilkableHouse(state, entity, helper.OwnerPlayer);
+                    if (milkTarget == Entity.Null)
+                    {
+                        helper.WantedFoodType = -1;
+                        // Follow player while searching
+                        if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                        {
+                            SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
+                            helper = ref state.GetComponent<HelperComponent>(entity);
+                        }
+                        return;
+                    }
+                    helper.TargetEntity = milkTarget;
+
+                    // Determine which food the house/cow needs
+                    var house = state.GetComponent<HouseComponent>(milkTarget);
+                    if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
+                    {
+                        var cow = state.GetComponent<CowComponent>(house.CowId);
+                        helper.WantedFoodType = ResolveMilkerFoodType(cow, house.SelectedFood);
+                    }
+                    else
+                    {
+                        helper.WantedFoodType = FoodType.Grass;
+                    }
                 }
-                helper.TargetEntity = milkTarget;
-                helper.State = HelperState.MovingToTarget;
+
+                // If we already have food in bag for this house, go milk immediately
+                if (helper.GetFoodTotal() > 0)
+                {
+                    helper.State = HelperState.MovingToTarget;
+                    break;
+                }
+
+                // Follow player while waiting for food interaction
+                if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                {
+                    SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+                }
+                // Food is loaded via HandleHelperInteraction in InteractActionService
+                break;
+
+            case HelperState.SeekingTarget:
+                // Re-evaluate target house after milking
+                helper.TargetEntity = Entity.Null;
+                helper.WantedFoodType = -1;
+                helper.State = HelperState.Idle;
                 break;
 
             case HelperState.MovingToTarget:
@@ -535,9 +576,43 @@ public class HelperSystem : ISystem
                     helper.WorkTimer = 0;
                     return;
                 }
+                // Validate the house still has a milkable cow
+                {
+                    var houseCheck = state.GetComponent<HouseComponent>(helper.TargetEntity);
+                    if (houseCheck.CowId == Entity.Null || !state.HasComponent<CowComponent>(houseCheck.CowId))
+                    {
+                        helper.State = HelperState.SeekingTarget;
+                        helper.WorkTimer = 0;
+                        return;
+                    }
+                    var cowCheck = state.GetComponent<CowComponent>(houseCheck.CowId);
+                    if (cowCheck.IsDepressed || cowCheck.IsMilking || cowCheck.Exhaust >= cowCheck.MaxExhaust)
+                    {
+                        helper.State = HelperState.SeekingTarget;
+                        helper.WorkTimer = 0;
+                        return;
+                    }
+                }
                 var housePos = state.GetComponent<Transform2D>(helper.TargetEntity).Position;
                 if (NavigateToward(state, entity, housePos, TargetReachedDistSq))
                 {
+                    // Arrived at house — hide milker and cow, begin milking
+                    if (state.HasComponent<HouseComponent>(helper.TargetEntity))
+                    {
+                        var house = state.GetComponent<HouseComponent>(helper.TargetEntity);
+                        if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
+                        {
+                            ref var cow = ref state.GetComponent<CowComponent>(house.CowId);
+                            if (!cow.IsDepressed && !cow.IsMilking && cow.Exhaust <= cow.MaxExhaust / 2)
+                            {
+                                cow.IsMilking = true;
+                                // Hide both milker and cow (like player milking does)
+                                state.HideEntity(entity);
+                                state.HideEntity(house.CowId);
+                                helper = ref state.GetComponent<HelperComponent>(entity);
+                            }
+                        }
+                    }
                     helper.State = HelperState.Working;
                     helper.WorkTimer = 0;
                     helper.WorkDuration = MilkWorkDuration;
@@ -545,6 +620,7 @@ public class HelperSystem : ISystem
                 break;
 
             case HelperState.Working:
+                // Milker and cow are hidden during this phase
                 helper.WorkTimer++;
                 if (helper.WorkTimer >= helper.WorkDuration)
                 {
@@ -557,15 +633,18 @@ public class HelperSystem : ISystem
                         if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
                         {
                             var cow = state.GetComponent<CowComponent>(house.CowId);
-                            if (!cow.IsDepressed && !cow.IsMilking && cow.Exhaust < cow.MaxExhaust)
+                            if (cow.Exhaust < cow.MaxExhaust)
                             {
-                                int foodToUse = InteractionLogic.ResolveFoodForCow(state, cow, house.SelectedFood);
+                                // Determine food to use from the helper's bag
+                                int foodToUse = ResolveFoodFromBag(ref helper, house.SelectedFood, cow.PreferredFood);
                                 if (foodToUse >= 0)
                                 {
-                                    int milkPower = 1;
-                                    if (helper.OwnerPlayer != Entity.Null && state.HasComponent<PlayerStateComponent>(helper.OwnerPlayer))
-                                        milkPower = System.Math.Max(1, state.GetComponent<PlayerStateComponent>(helper.OwnerPlayer).ClickMultiplier);
-                                    bool produced = InteractionLogic.MilkCow(state, house.CowId, foodToUse, milkPower, out bool cowDone);
+                                    int milkPower = 1; // helpers always milk at 1x speed (no player click multiplier)
+
+                                    // Milk into helper's own bag, consuming food from helper's bag
+                                    bool produced = InteractionLogic.MilkCowFromBag(state, house.CowId, foodToUse, milkPower, ref helper, out bool cowDone);
+
+                                    // Fire interaction visual on house (squish + heart burst)
                                     state.AddComponent(helper.TargetEntity, new EnterStateComponent
                                     {
                                         Key = StateKeys.Interacted, Param = produced ? "milk_ok" : "milk_fail", Age = 0
@@ -579,12 +658,98 @@ public class HelperSystem : ISystem
 
                     if (!milked)
                     {
+                        // Done milking — unhide milker and cow
+                        MilkerFinishMilking(state, entity, ref helper);
                         helper = ref state.GetComponent<HelperComponent>(entity);
                         helper.TargetEntity = Entity.Null;
-                        helper.State = HelperState.SeekingTarget;
+                        helper.WantedFoodType = -1;
+
+                        // If we have milk in bag, return to player for pickup
+                        if (helper.GetMilkTotal() > 0)
+                            helper.State = HelperState.Returning;
+                        else
+                            helper.State = HelperState.SeekingTarget;
                     }
                 }
                 break;
+
+            case HelperState.Returning:
+                if (helper.OwnerPlayer == Entity.Null || !state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                {
+                    helper.State = HelperState.Idle;
+                    return;
+                }
+                var milkerReturnPos = state.GetComponent<Transform2D>(helper.OwnerPlayer).Position;
+                if (NavigateToward(state, entity, milkerReturnPos, PlayerReturnDistSq))
+                {
+                    // Wait for player to interact and pick up milk
+                    helper.State = HelperState.WaitingForPickup;
+                }
+                break;
+
+            case HelperState.WaitingForPickup:
+                // Follow player while waiting for pickup interaction
+                if (helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer))
+                {
+                    SwarmFollow.Follow(state, entity, helper.OwnerPlayer);
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+                }
+                // Milk is picked up via HandleHelperInteraction in InteractActionService
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Determine which food type the milker should request from the player for a given cow/house.
+    /// Uses the house's selected food if the cow supports that tier, otherwise the cow's preferred food.
+    /// </summary>
+    private static int ResolveMilkerFoodType(CowComponent cow, int houseSelectedFood)
+    {
+        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
+        if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier)
+            return houseSelectedFood;
+        return cow.PreferredFood;
+    }
+
+    /// <summary>
+    /// Determine which food to use from the milker's bag using the linear chain.
+    /// Tries the house's selected food first (with prerequisite check), then falls back
+    /// to highest available tier the cow supports.
+    /// </summary>
+    private static int ResolveFoodFromBag(ref HelperComponent helper, int houseSelectedFood, int cowPreferredFood)
+    {
+        int cowMaxTier = FoodType.MaxTier(cowPreferredFood);
+
+        // Try house-selected food first (respecting chain prerequisites)
+        if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && helper.GetBagFood(houseSelectedFood) > 0)
+        {
+            int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
+            if (prereq < 0 || helper.GetBagMilkProduct(prereq) > 0)
+                return houseSelectedFood;
+        }
+
+        // Fall back to highest available tier from bag
+        return InteractionLogic.ResolveHighestTierFoodFromBag(ref helper, cowMaxTier, out _);
+    }
+
+    /// <summary>
+    /// Unhide the milker and cow when milking is done.
+    /// </summary>
+    private static void MilkerFinishMilking(EntityWorld state, Entity milkerEntity, ref HelperComponent helper)
+    {
+        // Unhide milker
+        state.UnhideEntity(milkerEntity);
+
+        // Unhide the cow and mark it as no longer milking
+        if (helper.TargetEntity != Entity.Null && state.HasComponent<HouseComponent>(helper.TargetEntity))
+        {
+            var house = state.GetComponent<HouseComponent>(helper.TargetEntity);
+            if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
+            {
+                ref var cow = ref state.GetComponent<CowComponent>(house.CowId);
+                cow.IsMilking = false;
+                state.UnhideEntity(house.CowId);
+            }
         }
     }
 
@@ -595,15 +760,6 @@ public class HelperSystem : ISystem
         Entity best = Entity.Null;
         Float bestScore = -1f;
 
-        // Find global resources to check food availability
-        Entity globalResEntity = Entity.Null;
-        foreach (var ge in state.Filter<GlobalResourcesComponent>())
-        { globalResEntity = ge; break; }
-        if (globalResEntity == Entity.Null) return Entity.Null;
-        var globalRes = state.GetComponent<GlobalResourcesComponent>(globalResEntity);
-        int totalFood = globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom;
-        if (totalFood <= 0) return Entity.Null;
-
         foreach (var houseEntity in state.Filter<HouseComponent>())
         {
             var house = state.GetComponent<HouseComponent>(houseEntity);
@@ -612,34 +768,22 @@ public class HelperSystem : ISystem
 
             var cow = state.GetComponent<CowComponent>(house.CowId);
             if (cow.IsDepressed || cow.IsMilking || cow.Exhaust >= cow.MaxExhaust) continue;
-
-            // Check if we have food this cow can eat (prefer preferred food)
-            bool hasFood = globalRes.GetFood(cow.PreferredFood) > 0;
-            if (!hasFood)
-            {
-                // Check any food
-                for (int f = FoodType.Grass; f <= FoodType.Mushroom; f++)
-                {
-                    if (globalRes.GetFood(f) > 0) { hasFood = true; break; }
-                }
-            }
-            if (!hasFood) continue;
+            // Only target cows with more than half their capacity remaining
+            if (cow.Exhaust > cow.MaxExhaust / 2) continue;
 
             var housePos = state.GetComponent<Transform2D>(houseEntity).Position;
             var distSq = Vector2.DistanceSquared(myPos, housePos);
             if (distSq < 1f) distSq = 1f;
 
-            // Score: prefer higher-tier cows with preferred food available
+            // Score: prefer higher-tier cows
             int tierValue = cow.PreferredFood switch
             {
-                FoodType.Mushroom => 100,
-                FoodType.Apple => 10,
-                FoodType.Carrot => 3,
+                FoodType.Mushroom => 200,
+                FoodType.Apple => 20,
+                FoodType.Carrot => 6,
                 _ => 1
             };
-            bool preferred = globalRes.GetFood(cow.PreferredFood) > 0;
-            float value = tierValue * (preferred ? 5f : 1f);
-            Float score = (Float)(value / (float)distSq);
+            Float score = (Float)(tierValue / (float)distSq);
 
             if (score > bestScore)
             {
@@ -669,9 +813,9 @@ public class HelperSystem : ISystem
             // Prefer valuable food: value weight / distance
             int value = food.FoodType switch
             {
-                FoodType.Mushroom => 100,
-                FoodType.Apple => 10,
-                FoodType.Carrot => 3,
+                FoodType.Mushroom => 200,
+                FoodType.Apple => 20,
+                FoodType.Carrot => 6,
                 _ => 1
             };
             Float score = (Float)value / distSq;
@@ -772,8 +916,8 @@ public class HelperSystem : ISystem
 
             // Take milk products up to capacity
             while (taken < capacity && global.Milk > 0) { global.Milk--; helper.BagMilk++; taken++; }
-            while (taken < capacity && global.VitaminShake > 0) { global.VitaminShake--; helper.BagVitaminShake++; taken++; }
-            while (taken < capacity && global.AppleYogurt > 0) { global.AppleYogurt--; helper.BagAppleYogurt++; taken++; }
+            while (taken < capacity && global.CarrotMilkshake > 0) { global.CarrotMilkshake--; helper.BagCarrotMilkshake++; taken++; }
+            while (taken < capacity && global.VitaminMix > 0) { global.VitaminMix--; helper.BagVitaminMix++; taken++; }
             while (taken < capacity && global.PurplePotion > 0) { global.PurplePotion--; helper.BagPurplePotion++; taken++; }
 
             return taken > 0;
@@ -783,16 +927,16 @@ public class HelperSystem : ISystem
 
     private bool HasMilkInBag(ref HelperComponent helper)
     {
-        return helper.BagMilk > 0 || helper.BagVitaminShake > 0
-            || helper.BagAppleYogurt > 0 || helper.BagPurplePotion > 0;
+        return helper.BagMilk > 0 || helper.BagCarrotMilkshake > 0
+            || helper.BagVitaminMix > 0 || helper.BagPurplePotion > 0;
     }
 
     private bool SellOneItem(ref HelperComponent helper)
     {
         // Sell most valuable first
         if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.PurplePotion); return true; }
-        if (helper.BagAppleYogurt > 0) { helper.BagAppleYogurt--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.AppleYogurt); return true; }
-        if (helper.BagVitaminShake > 0) { helper.BagVitaminShake--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.VitaminShake); return true; }
+        if (helper.BagVitaminMix > 0) { helper.BagVitaminMix--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.VitaminMix); return true; }
+        if (helper.BagCarrotMilkshake > 0) { helper.BagCarrotMilkshake--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.CarrotMilkshake); return true; }
         if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.Milk); return true; }
         return false;
     }
@@ -821,5 +965,174 @@ public class HelperSystem : ISystem
             return true;
         }
         return false;
+    }
+
+    // ─── Warehouse auto-deposit ──��
+
+    /// <summary>
+    /// Find an enabled warehouse entity. Returns Entity.Null if none exists or none is enabled.
+    /// </summary>
+    private static Entity FindEnabledWarehouse(EntityWorld state)
+    {
+        foreach (var entity in state.Filter<WarehouseComponent>())
+        {
+            var wh = state.GetComponent<WarehouseComponent>(entity);
+            if (wh.Enabled == 1 && state.HasComponent<Transform2D>(entity))
+                return entity;
+        }
+        return Entity.Null;
+    }
+
+    /// <summary>
+    /// When an enabled warehouse exists, helpers skip the "return to player + wait for pickup" loop.
+    /// Instead they navigate to the warehouse and auto-deposit resources into global storage.
+    /// For Idle sellers/builders/milkers, auto-load resources from global storage without player interaction.
+    /// </summary>
+    private void TryWarehouseAutoDeposit(EntityWorld state, Entity entity, ref HelperComponent helper)
+    {
+        var warehouse = FindEnabledWarehouse(state);
+        if (warehouse == Entity.Null) return;
+
+        var warehousePos = state.GetComponent<Transform2D>(warehouse).Position;
+
+        switch (helper.State)
+        {
+            case HelperState.WaitingForPickup:
+                // Instead of following player, navigate to warehouse
+                if (NavigateToward(state, entity, warehousePos, TargetReachedDistSq))
+                {
+                    // Arrived at warehouse — auto-deposit all resources to global
+                    WarehouseDeposit(state, entity, ref helper);
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+
+                    // Fire visual feedback on warehouse
+                    state.AddComponent(warehouse, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+                    helper = ref state.GetComponent<HelperComponent>(entity);
+
+                    // Reset to idle/seeking for next task
+                    helper.State = helper.Type == HelperType.Gatherer ? HelperState.SeekingTarget : HelperState.Idle;
+                }
+                break;
+
+            case HelperState.Returning:
+                // Redirect to warehouse instead of player
+                if (helper.HasAnyResources())
+                {
+                    if (NavigateToward(state, entity, warehousePos, TargetReachedDistSq))
+                    {
+                        WarehouseDeposit(state, entity, ref helper);
+                        helper = ref state.GetComponent<HelperComponent>(entity);
+
+                        state.AddComponent(warehouse, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+                        helper = ref state.GetComponent<HelperComponent>(entity);
+
+                        helper.State = helper.Type == HelperType.Gatherer ? HelperState.SeekingTarget : HelperState.Idle;
+                    }
+                }
+                break;
+
+            case HelperState.Idle:
+                // Auto-load resources for sellers/builders/milkers without player interaction
+                if (helper.Type == HelperType.Seller)
+                {
+                    // Auto-load milk products from global
+                    foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
+                    {
+                        ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+                        int transferred = 0;
+                        int capacity = helper.BagCapacity - helper.GetBagTotal();
+
+                        while (transferred < capacity && gr.Milk > 0) { gr.Milk--; helper.BagMilk++; transferred++; }
+                        while (transferred < capacity && gr.CarrotMilkshake > 0) { gr.CarrotMilkshake--; helper.BagCarrotMilkshake++; transferred++; }
+                        while (transferred < capacity && gr.VitaminMix > 0) { gr.VitaminMix--; helper.BagVitaminMix++; transferred++; }
+                        while (transferred < capacity && gr.PurplePotion > 0) { gr.PurplePotion--; helper.BagPurplePotion++; transferred++; }
+
+                        if (transferred > 0)
+                            helper.State = HelperState.SeekingTarget;
+                        break;
+                    }
+                }
+                else if (helper.Type == HelperType.Builder)
+                {
+                    // Auto-load coins from global
+                    foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
+                    {
+                        ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+                        int needed = helper.BagCapacity - helper.BagCoins;
+                        int toGive = System.Math.Min(needed, gr.Coins);
+                        if (toGive > 0)
+                        {
+                            gr.Coins -= toGive;
+                            helper.BagCoins += toGive;
+                            helper.State = HelperState.SeekingTarget;
+                        }
+                        break;
+                    }
+                }
+                else if (helper.Type == HelperType.Milker && helper.WantedFoodType >= 0 && helper.GetFoodTotal() == 0)
+                {
+                    // Auto-load food for milkers from global
+                    foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
+                    {
+                        ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+                        int foodType = helper.WantedFoodType;
+                        int capacity = helper.BagCapacity - helper.GetBagTotal();
+                        int available = gr.GetFood(foodType);
+                        int toGive = System.Math.Min(capacity, available);
+                        if (toGive > 0)
+                        {
+                            for (int i = 0; i < toGive; i++)
+                                gr.ConsumeFood(foodType);
+                            switch (foodType)
+                            {
+                                case FoodType.Grass: helper.BagGrass += toGive; break;
+                                case FoodType.Carrot: helper.BagCarrot += toGive; break;
+                                case FoodType.Apple: helper.BagApple += toGive; break;
+                                case FoodType.Mushroom: helper.BagMushroom += toGive; break;
+                            }
+                            helper.State = HelperState.MovingToTarget;
+                        }
+                        break;
+                    }
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Deposit all helper bag contents into global resources.
+    /// </summary>
+    private static void WarehouseDeposit(EntityWorld state, Entity helperEntity, ref HelperComponent helper)
+    {
+        foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
+        {
+            ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+
+            // Food
+            gr.AddFood(FoodType.Grass, helper.BagGrass);
+            gr.AddFood(FoodType.Carrot, helper.BagCarrot);
+            gr.AddFood(FoodType.Apple, helper.BagApple);
+            gr.AddFood(FoodType.Mushroom, helper.BagMushroom);
+            helper.BagGrass = 0;
+            helper.BagCarrot = 0;
+            helper.BagApple = 0;
+            helper.BagMushroom = 0;
+
+            // Milk products
+            gr.AddMilkProduct(MilkProduct.Milk, helper.BagMilk);
+            gr.AddMilkProduct(MilkProduct.CarrotMilkshake, helper.BagCarrotMilkshake);
+            gr.AddMilkProduct(MilkProduct.VitaminMix, helper.BagVitaminMix);
+            gr.AddMilkProduct(MilkProduct.PurplePotion, helper.BagPurplePotion);
+            helper.BagMilk = 0;
+            helper.BagCarrotMilkshake = 0;
+            helper.BagVitaminMix = 0;
+            helper.BagPurplePotion = 0;
+
+            // Coins
+            gr.Coins += helper.BagCoins;
+            helper.BagCoins = 0;
+
+            break;
+        }
     }
 }

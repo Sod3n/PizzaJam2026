@@ -14,7 +14,26 @@ public partial class LandView
         { LandType.CarrotFarm, "res://sprites/export/homes/Rabbit_Home_.png" },
         { LandType.AppleOrchard, "res://sprites/export/homes/Hours_Home_.png" },
         { LandType.MushroomCave, "res://sprites/export/homes/Mash_Home_.png" },
+        { LandType.Warehouse, "res://sprites/export/homes/A_bar.png" },
     };
+
+    /// <summary>
+    /// Returns a dark tint color for the land sign based on Manhattan grid distance.
+    /// Colors progress through the spectrum so players can visually gauge how far
+    /// a plot is from the center (and therefore how expensive it will be).
+    /// </summary>
+    private static Color GetDistanceTintColor(int gridDist)
+    {
+        return gridDist switch
+        {
+            <= 1 => new Color(0.15f, 0.35f, 0.15f), // dark green
+            2    => new Color(0.15f, 0.15f, 0.40f), // dark blue
+            3    => new Color(0.30f, 0.10f, 0.35f), // dark purple
+            4    => new Color(0.40f, 0.10f, 0.10f), // dark red
+            5    => new Color(0.45f, 0.25f, 0.08f), // dark orange
+            _    => new Color(0.45f, 0.38f, 0.08f), // dark gold (dist 6+)
+        };
+    }
 
     partial void OnSpawned(LandViewModel vm, Node3D visualNode)
     {
@@ -56,6 +75,14 @@ public partial class LandView
                     sprite.PixelSize *= baseSize / newSize;
             }
         }
+
+        // Tint the sign background based on grid distance from center
+        int gx = vm.Land.Land.Arm.CurrentValue;
+        int gy = vm.Land.Land.Ring.CurrentValue;
+        int gridDist = System.Math.Abs(gx) + System.Math.Abs(gy);
+        var signSprite = visualNode.GetNodeOrNull<AnimatedSprite3D>("AnimatedSprite3D2");
+        if (signSprite != null)
+            signSprite.Modulate = GetDistanceTintColor(gridDist);
 
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);

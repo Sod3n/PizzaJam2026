@@ -11,7 +11,7 @@ public class PropSpawnSystem : ISystem
 {
     private const int SpawnTick = 0;
     private const int PropCount = 150;
-    private const float MinLandLabelBuffer = 1f; // Small buffer so props don't overlap land price labels
+    private const float MinLandLabelBuffer = 2f; // Buffer so props don't spawn too close to land/buildings
     private const float MinPropDistance = 4f;    // Minimum distance between props
     private const float MinSameTypeDistance = 8f; // Minimum distance between same prop type (prevents clusters)
     private const uint Seed = 98765;

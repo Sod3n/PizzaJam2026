@@ -12,10 +12,55 @@ namespace Template.Shared.Actions;
 public static class InteractionLogic
 {
     /// <summary>
-    /// Milk a cow: consume food, produce milk product, advance exhaust.
-    /// Returns true if milk was produced, false if blocked or no resources.
+    /// Resolve the highest tier recipe the cow can produce given global resources.
+    /// Searches from the cow's max tier down to tier 0 (Grass/Milk).
+    /// Returns the food type to use for that tier, or -1 if nothing is possible.
+    /// Also outputs the prerequisite milk product that will be consumed (-1 for tier 0).
     /// </summary>
-    public static bool MilkCow(EntityWorld state, Entity cowEntity, int foodToUse, int exhaustPerClick, out bool cowDone)
+    public static int ResolveHighestTierFood(ref GlobalResourcesComponent globalRes, int cowMaxTier, out int prereqProduct)
+    {
+        prereqProduct = -1;
+        // Try from highest tier the cow supports down to Grass
+        for (int tier = cowMaxTier; tier >= FoodType.Grass; tier--)
+        {
+            if (globalRes.GetFood(tier) <= 0) continue;
+
+            int prereq = FoodType.PrerequisiteProduct(tier);
+            if (prereq >= 0 && globalRes.GetMilkProduct(prereq) <= 0) continue;
+
+            prereqProduct = prereq;
+            return tier;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// Resolve the highest tier recipe from a helper's bag.
+    /// </summary>
+    public static int ResolveHighestTierFoodFromBag(ref HelperComponent bag, int cowMaxTier, out int prereqProduct)
+    {
+        prereqProduct = -1;
+        for (int tier = cowMaxTier; tier >= FoodType.Grass; tier--)
+        {
+            if (bag.GetBagFood(tier) <= 0) continue;
+
+            int prereq = FoodType.PrerequisiteProduct(tier);
+            if (prereq >= 0 && bag.GetBagMilkProduct(prereq) <= 0) continue;
+
+            prereqProduct = prereq;
+            return tier;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// Milk a cow using the LINEAR PROGRESSION chain.
+    /// The cow's PreferredFood determines its max tier. The method automatically selects
+    /// the highest tier recipe available based on global resources (food + prerequisite product).
+    /// Consumes food and prerequisite product, produces the tier's milk product.
+    /// Returns true if milk was produced this click, false otherwise.
+    /// </summary>
+    public static bool MilkCow(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, out bool cowDone)
     {
         cowDone = false;
         if (!state.HasComponent<CowComponent>(cowEntity)) return false;
@@ -24,11 +69,38 @@ public static class InteractionLogic
         if (gre == Entity.Null) return false;
 
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
 
-        if (globalRes.GetFood(foodToUse) <= 0 || cow.Exhaust >= cow.MaxExhaust) return false;
+        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
+
+        // If the hint food is valid and available, try to use it at its tier
+        // Otherwise fall back to highest available tier
+        int foodToUse;
+        int prereqProduct;
+
+        if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && globalRes.GetFood(hintFoodType) > 0)
+        {
+            int prereq = FoodType.PrerequisiteProduct(hintFoodType);
+            if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
+            {
+                foodToUse = hintFoodType;
+                prereqProduct = prereq;
+            }
+            else
+            {
+                // Hint food available but prerequisite product missing — fall back
+                foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+            }
+        }
+        else
+        {
+            foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+        }
+
+        if (foodToUse < 0) { cowDone = true; return false; }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        int milkAmount = isPreferred ? 5 : 1;
+        int milkAmount = isPreferred ? 2 : 1;
 
         // Non-preferred food: 50% chance to produce nothing (food still consumed)
         bool milkBlocked = false;
@@ -40,18 +112,29 @@ public static class InteractionLogic
             milkBlocked = milkRng.NextInt(100) < 50;
         }
 
+        // Consume food and advance exhaust
         int remaining = cow.MaxExhaust - cow.Exhaust;
         int availableFood = globalRes.GetFood(foodToUse);
         int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(remaining, availableFood));
         for (int i = 0; i < clicks; i++)
             globalRes.ConsumeFood(foodToUse);
-        int milkProduct = FoodType.ToMilkProduct(foodToUse);
-        if (!milkBlocked)
-            globalRes.AddMilkProduct(milkProduct, milkAmount * clicks);
         cow.Exhaust += clicks;
 
-        cowDone = cow.Exhaust >= cow.MaxExhaust || globalRes.GetFood(foodToUse) <= 0;
-        return !milkBlocked;
+        // Only produce milk every 4th click (when exhaust reaches a multiple of 4)
+        bool producedMilk = false;
+        if (!milkBlocked && cow.Exhaust % 4 == 0)
+        {
+            // Consume prerequisite product (if any)
+            if (prereqProduct >= 0)
+                globalRes.ConsumeMilkProduct(prereqProduct);
+
+            int milkProduct = FoodType.ToMilkProduct(foodToUse);
+            globalRes.AddMilkProduct(milkProduct, milkAmount * 4);
+            producedMilk = true;
+        }
+
+        cowDone = cow.Exhaust >= cow.MaxExhaust || ResolveHighestTierFood(ref globalRes, cowMaxTier, out _) < 0;
+        return producedMilk;
     }
 
     /// <summary>
@@ -114,7 +197,9 @@ public static class InteractionLogic
     }
 
     /// <summary>
-    /// Pick best food for a cow: house selection → preferred → any available (highest tier first).
+    /// Pick best food for a cow using the linear chain: tries the highest tier the cow supports
+    /// (checking both food and prerequisite availability), falling back to lower tiers.
+    /// The houseSelectedFood is tried first if valid.
     /// Returns -1 if no food available.
     /// </summary>
     public static int ResolveFoodForCow(EntityWorld state, CowComponent cow, int houseSelectedFood)
@@ -122,15 +207,178 @@ public static class InteractionLogic
         ref var globalRes = ref GetGlobalRes(state, out Entity gre);
         if (gre == Entity.Null) return -1;
 
-        if (houseSelectedFood >= 0 && globalRes.GetFood(houseSelectedFood) > 0)
-            return houseSelectedFood;
-        if (globalRes.GetFood(cow.PreferredFood) > 0)
-            return cow.PreferredFood;
-        for (int f = FoodType.Mushroom; f >= FoodType.Grass; f--)
+        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
+
+        // If house has a selected food, try it first (if cow supports that tier)
+        if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && globalRes.GetFood(houseSelectedFood) > 0)
         {
-            if (globalRes.GetFood(f) > 0) return f;
+            int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
+            if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
+                return houseSelectedFood;
         }
-        return -1;
+
+        // Fall back to highest available tier
+        int food = ResolveHighestTierFood(ref globalRes, cowMaxTier, out _);
+        return food;
+    }
+
+    /// <summary>
+    /// Milk a cow, placing the product into a helper's bag instead of global resources.
+    /// Consumes food from global resources, produces into helper bag.
+    /// Uses the linear chain: auto-selects highest tier based on cow max tier and global resources.
+    /// Returns true if milk was produced this click, false otherwise.
+    /// </summary>
+    public static bool MilkCowToBag(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, ref HelperComponent helperBag, out bool cowDone)
+    {
+        cowDone = false;
+        if (!state.HasComponent<CowComponent>(cowEntity)) return false;
+
+        ref var globalRes = ref GetGlobalRes(state, out Entity gre);
+        if (gre == Entity.Null) return false;
+
+        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
+
+        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
+
+        int foodToUse;
+        int prereqProduct;
+
+        if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && globalRes.GetFood(hintFoodType) > 0)
+        {
+            int prereq = FoodType.PrerequisiteProduct(hintFoodType);
+            if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
+            {
+                foodToUse = hintFoodType;
+                prereqProduct = prereq;
+            }
+            else
+            {
+                foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+            }
+        }
+        else
+        {
+            foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+        }
+
+        if (foodToUse < 0) { cowDone = true; return false; }
+
+        bool isPreferred = foodToUse == cow.PreferredFood;
+        int milkAmount = isPreferred ? 2 : 1;
+
+        // Non-preferred food: 50% chance to produce nothing (food still consumed)
+        bool milkBlocked = false;
+        if (!isPreferred)
+        {
+            var gameTime = state.GetCustomData<IGameTime>();
+            uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
+            var milkRng = new DeterministicRandom(milkSeed);
+            milkBlocked = milkRng.NextInt(100) < 50;
+        }
+
+        // Consume food from global and advance exhaust
+        int remaining = cow.MaxExhaust - cow.Exhaust;
+        int availableFood = globalRes.GetFood(foodToUse);
+        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(remaining, availableFood));
+        for (int i = 0; i < clicks; i++)
+            globalRes.ConsumeFood(foodToUse);
+        cow.Exhaust += clicks;
+
+        // Only produce milk every 4th click
+        bool producedMilk = false;
+        if (!milkBlocked && cow.Exhaust % 4 == 0)
+        {
+            // Consume prerequisite product from global
+            if (prereqProduct >= 0)
+                globalRes.ConsumeMilkProduct(prereqProduct);
+
+            int milkProduct = FoodType.ToMilkProduct(foodToUse);
+            int totalMilk = milkAmount * 4;
+            helperBag.AddBagMilkProduct(milkProduct, totalMilk);
+            producedMilk = true;
+        }
+
+        cowDone = cow.Exhaust >= cow.MaxExhaust || ResolveHighestTierFood(ref globalRes, cowMaxTier, out _) < 0;
+        return producedMilk;
+    }
+
+    /// <summary>
+    /// Milk a cow using food AND prerequisite products from the helper's own bag.
+    /// Places the milk product into the helper's bag.
+    /// Uses the linear chain: auto-selects highest tier based on cow max tier and bag contents.
+    /// Returns true if milk was produced this click, false otherwise.
+    /// </summary>
+    public static bool MilkCowFromBag(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, ref HelperComponent helperBag, out bool cowDone)
+    {
+        cowDone = false;
+        if (!state.HasComponent<CowComponent>(cowEntity)) return false;
+
+        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
+
+        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
+
+        int foodToUse;
+        int prereqProduct;
+
+        if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && helperBag.GetBagFood(hintFoodType) > 0)
+        {
+            int prereq = FoodType.PrerequisiteProduct(hintFoodType);
+            if (prereq < 0 || helperBag.GetBagMilkProduct(prereq) > 0)
+            {
+                foodToUse = hintFoodType;
+                prereqProduct = prereq;
+            }
+            else
+            {
+                foodToUse = ResolveHighestTierFoodFromBag(ref helperBag, cowMaxTier, out prereqProduct);
+            }
+        }
+        else
+        {
+            foodToUse = ResolveHighestTierFoodFromBag(ref helperBag, cowMaxTier, out prereqProduct);
+        }
+
+        if (foodToUse < 0) { cowDone = true; return false; }
+
+        bool isPreferred = foodToUse == cow.PreferredFood;
+        int milkAmount = isPreferred ? 2 : 1;
+
+        // Non-preferred food: 50% chance to produce nothing (food still consumed)
+        bool milkBlocked = false;
+        if (!isPreferred)
+        {
+            var gameTime = state.GetCustomData<IGameTime>();
+            uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
+            var milkRng = new DeterministicRandom(milkSeed);
+            milkBlocked = milkRng.NextInt(100) < 50;
+        }
+
+        // Consume food from bag and advance exhaust
+        int remaining = cow.MaxExhaust - cow.Exhaust;
+        int availableFood = helperBag.GetBagFood(foodToUse);
+        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(remaining, availableFood));
+        for (int i = 0; i < clicks; i++)
+            helperBag.ConsumeBagFood(foodToUse);
+        cow.Exhaust += clicks;
+
+        // Only produce milk every 4th click
+        bool producedMilk = false;
+        if (!milkBlocked && cow.Exhaust % 4 == 0)
+        {
+            // Consume prerequisite product from bag
+            if (prereqProduct >= 0)
+                helperBag.ConsumeBagMilkProduct(prereqProduct);
+
+            int milkProduct = FoodType.ToMilkProduct(foodToUse);
+            int totalMilk = milkAmount * 4;
+            helperBag.AddBagMilkProduct(milkProduct, totalMilk);
+            producedMilk = true;
+        }
+
+        cowDone = cow.Exhaust >= cow.MaxExhaust || ResolveHighestTierFoodFromBag(ref helperBag, cowMaxTier, out _) < 0;
+        return producedMilk;
     }
 
     /// <summary>Fire visual feedback on an entity.</summary>

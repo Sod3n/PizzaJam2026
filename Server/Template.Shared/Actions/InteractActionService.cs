@@ -111,6 +111,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         {
             success = HandleFoodSignInteraction(ctx, nearestTarget);
         }
+        else if (ctx.State.HasComponent<WarehouseSignComponent>(nearestTarget))
+        {
+            success = HandleWarehouseSignInteraction(ctx, nearestTarget);
+        }
         else if (ctx.State.HasComponent<GrassComponent>(nearestTarget))
         {
             var foodType = ctx.State.GetComponent<GrassComponent>(nearestTarget).FoodType;
@@ -148,6 +152,16 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             // Show not-enough popup above target, not above player
             ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = missingResource, Age = 0 });
             ILogger.Log($"[InteractActionService] Not enough {missingResource} for interaction with {nearestTarget.Id}");
+        }
+        else
+        {
+            // No action taken — show building info popup if the target is a known building
+            string infoKey = GetBuildingInfoKey(ctx, nearestTarget);
+            if (infoKey != null)
+            {
+                ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.BuildingInfo, Param = infoKey, Age = 0 });
+                ILogger.Log($"[InteractActionService] Showing building info '{infoKey}' for entity {nearestTarget.Id}");
+            }
         }
     }
 
@@ -201,8 +215,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             var c1 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId1);
             var c2 = ctx.State.GetComponent<CowComponent>(loveHouse.CowId2);
             bool sameTier = c1.PreferredFood == c2.PreferredFood;
-            if (sameTier)
-                heartPercent = loveHouse.SameTierBreedCount >= LoveHouseComponent.GuaranteedUpgradeEvery - 1 ? 90 : 70;
+
+            // Love pair: guaranteed upgrade — always show hearts
+            bool isLovePair = c1.LoveTarget == loveHouse.CowId2 || c2.LoveTarget == loveHouse.CowId1;
+            if (isLovePair)
+                heartPercent = 95;
+            else if (sameTier)
+                heartPercent = 70;
             else
             {
                 int tierGap = System.Math.Abs(c1.PreferredFood - c2.PreferredFood);
@@ -224,9 +243,23 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     {
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
 
-        // Clicking a cow that's following us → dismiss it (stop following)
+        // Clicking a cow that's following us
         if (cow.FollowingPlayer == playerEntity)
         {
+            // Love cow interaction: show love popup instead of dismissing
+            if (cow.LoveTarget != Entity.Null)
+            {
+                // Get the target cow's name for the popup message
+                string targetName = "???";
+                if (ctx.State.HasComponent<NameComponent>(cow.LoveTarget))
+                    targetName = ctx.State.GetComponent<NameComponent>(cow.LoveTarget).Name.ToString();
+
+                ctx.State.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
+                ILogger.Log($"[InteractActionService] Love cow {cowEntity.Id} interacted — loves {targetName} (cow {cow.LoveTarget.Id})");
+                return true;
+            }
+
+            // Normal dismiss: stop following
             // Find next cow in chain (the one following this cow)
             Entity next = Entity.Null;
             foreach (var ce in ctx.State.Filter<CowComponent>())
@@ -288,7 +321,16 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (cow.IsMilking) return false;
         if (cow.IsDepressed) return false;
-        if (globalRes.GetFood(house.SelectedFood) <= 0 || cow.Exhaust >= cow.MaxExhaust)
+        if (cow.Exhaust >= cow.MaxExhaust)
+        {
+            missingResource = FoodTypeToKey(house.SelectedFood);
+            return false;
+        }
+
+        // Check if ANY tier recipe is available for this cow (chain logic)
+        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
+        int availableFood = InteractionLogic.ResolveHighestTierFood(ref globalRes, cowMaxTier, out _);
+        if (availableFood < 0)
         {
             missingResource = FoodTypeToKey(house.SelectedFood);
             return false;
@@ -383,6 +425,24 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
+    private bool HandleWarehouseSignInteraction(Context ctx, Entity signEntity)
+    {
+        ref var sign = ref ctx.State.GetComponent<WarehouseSignComponent>(signEntity);
+
+        // Toggle: 0 → 1 → 0
+        sign.Enabled = sign.Enabled == 0 ? 1 : 0;
+
+        // Also update the linked warehouse's Enabled state
+        if (sign.WarehouseId != Entity.Null && ctx.State.HasComponent<WarehouseComponent>(sign.WarehouseId))
+        {
+            ref var warehouse = ref ctx.State.GetComponent<WarehouseComponent>(sign.WarehouseId);
+            warehouse.Enabled = sign.Enabled;
+        }
+
+        ILogger.Log($"[InteractActionService] Warehouse sign {signEntity.Id} toggled to {(sign.Enabled == 1 ? "ENABLED" : "DISABLED")}");
+        return true;
+    }
+
     private bool HandleFoodInteraction(Context ctx, Entity foodEntity, ref GlobalResourcesComponent globalRes)
     {
         ref var grass = ref ctx.State.GetComponent<GrassComponent>(foodEntity);
@@ -416,6 +476,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (cowToAssign == Entity.Null) return false;
 
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
+
+        // Block assignment while love house is on cooldown
+        if (loveHouse.CooldownTicksRemaining > 0)
+        {
+            ILogger.Log($"[InteractActionService] Love house {loveHouseEntity.Id} is on cooldown, cannot assign cow");
+            return false;
+        }
 
         // Check if love house already has 2 cows (full)
         if (loveHouse.CowId1 != Entity.Null && loveHouse.CowId2 != Entity.Null) return false;
@@ -480,6 +547,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
 
+        // Block breeding while love house is on cooldown
+        if (loveHouse.CooldownTicksRemaining > 0)
+        {
+            ILogger.Log($"[InteractActionService] Love house {loveHouseEntity.Id} is on cooldown ({loveHouse.CooldownTicksRemaining} ticks remaining)");
+            return false;
+        }
+
         // Count cows vs houses to check room for calf
         int cowCount = 0;
         foreach (var _ in ctx.State.Filter<CowComponent>())
@@ -505,8 +579,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             breedCost = System.Math.Max(3, (c1.MaxExhaust + c2.MaxExhaust) / 2);
 
             bool sameTier = c1.PreferredFood == c2.PreferredFood;
-            if (sameTier)
-                heartPercent = loveHouse.SameTierBreedCount >= LoveHouseComponent.GuaranteedUpgradeEvery - 1 ? 95 : 85;
+
+            // Love pair: guaranteed upgrade — always show hearts
+            bool isLovePair = c1.LoveTarget == loveHouse.CowId2 || c2.LoveTarget == loveHouse.CowId1;
+            if (isLovePair)
+                heartPercent = 95;
+            else if (sameTier)
+                heartPercent = 85;
             else
             {
                 int tierGap = System.Math.Abs(c1.PreferredFood - c2.PreferredFood);
@@ -662,15 +741,22 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     {
         ref var helper = ref ctx.State.GetComponent<HelperComponent>(helperEntity);
 
-        if (helper.Type == HelperType.Seller)
+        // Priority 1: If helper is waiting for pickup, collect resources from helper
+        if (helper.State == HelperState.WaitingForPickup)
+        {
+            return PickupFromHelper(ctx, helperEntity, ref helper, ref globalRes);
+        }
+
+        // Priority 2: Give resources TO helper (seller gets milk, builder gets coins)
+        if (helper.Type == HelperType.Seller && helper.State == HelperState.Idle)
         {
             // Transfer milk products from global to seller's bag
             int transferred = 0;
             int capacity = helper.BagCapacity - helper.GetBagTotal();
 
             while (transferred < capacity && globalRes.Milk > 0) { globalRes.Milk--; helper.BagMilk++; transferred++; }
-            while (transferred < capacity && globalRes.VitaminShake > 0) { globalRes.VitaminShake--; helper.BagVitaminShake++; transferred++; }
-            while (transferred < capacity && globalRes.AppleYogurt > 0) { globalRes.AppleYogurt--; helper.BagAppleYogurt++; transferred++; }
+            while (transferred < capacity && globalRes.CarrotMilkshake > 0) { globalRes.CarrotMilkshake--; helper.BagCarrotMilkshake++; transferred++; }
+            while (transferred < capacity && globalRes.VitaminMix > 0) { globalRes.VitaminMix--; helper.BagVitaminMix++; transferred++; }
             while (transferred < capacity && globalRes.PurplePotion > 0) { globalRes.PurplePotion--; helper.BagPurplePotion++; transferred++; }
 
             if (transferred > 0)
@@ -679,7 +765,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 return true;
             }
         }
-        else if (helper.Type == HelperType.Builder)
+        else if (helper.Type == HelperType.Builder && helper.State == HelperState.Idle)
         {
             // Give builder all available coins (up to bag capacity)
             int needed = helper.BagCapacity - helper.BagCoins;
@@ -692,8 +778,121 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 return true;
             }
         }
+        else if (helper.Type == HelperType.Milker && helper.State == HelperState.Idle && helper.WantedFoodType >= 0)
+        {
+            // Give milker the food it needs AND the prerequisite milk products for the chain
+            int foodType = helper.WantedFoodType;
+            int capacity = helper.BagCapacity - helper.GetBagTotal();
+            int available = globalRes.GetFood(foodType);
+            int toGive = System.Math.Max(0, System.Math.Min(capacity, available));
+            if (toGive > 0)
+            {
+                for (int i = 0; i < toGive; i++)
+                    globalRes.ConsumeFood(foodType);
+                switch (foodType)
+                {
+                    case FoodType.Grass: helper.BagGrass += toGive; break;
+                    case FoodType.Carrot: helper.BagCarrot += toGive; break;
+                    case FoodType.Apple: helper.BagApple += toGive; break;
+                    case FoodType.Mushroom: helper.BagMushroom += toGive; break;
+                }
+
+                // Also give prerequisite milk products needed for the chain recipe
+                int prereq = FoodType.PrerequisiteProduct(foodType);
+                if (prereq >= 0)
+                {
+                    // Give enough prerequisite products (1 per 4 food, since milk is produced every 4 clicks)
+                    int prereqNeeded = System.Math.Max(1, toGive / 4);
+                    int prereqCapacity = helper.BagCapacity - helper.GetBagTotal();
+                    int prereqAvailable = globalRes.GetMilkProduct(prereq);
+                    int prereqToGive = System.Math.Min(prereqNeeded, System.Math.Min(prereqCapacity, prereqAvailable));
+                    for (int i = 0; i < prereqToGive; i++)
+                        globalRes.ConsumeMilkProduct(prereq);
+                    helper.AddBagMilkProduct(prereq, prereqToGive);
+                }
+
+                ILogger.Log($"[InteractActionService] Gave {toGive} food (type={foodType}) to Milker helper {helperEntity.Id}");
+                return true;
+            }
+        }
 
         return false;
+    }
+
+    /// <summary>
+    /// Player picks up resources from a helper that is in WaitingForPickup state.
+    /// Transfers the helper's bag contents into global resources and resets helper to Idle.
+    /// </summary>
+    private bool PickupFromHelper(Context ctx, Entity helperEntity, ref HelperComponent helper, ref GlobalResourcesComponent globalRes)
+    {
+        bool pickedUp = false;
+        string gainedKey = "";
+
+        // Pick up food (from gatherer)
+        if (helper.GetFoodTotal() > 0)
+        {
+            gainedKey = helper.BagGrass > 0 ? StateKeys.Grass
+                : helper.BagCarrot > 0 ? StateKeys.Carrot
+                : helper.BagApple > 0 ? StateKeys.Apple
+                : helper.BagMushroom > 0 ? StateKeys.Mushroom : "";
+
+            globalRes.AddFood(FoodType.Grass, helper.BagGrass);
+            globalRes.AddFood(FoodType.Carrot, helper.BagCarrot);
+            globalRes.AddFood(FoodType.Apple, helper.BagApple);
+            globalRes.AddFood(FoodType.Mushroom, helper.BagMushroom);
+            helper.BagGrass = 0;
+            helper.BagCarrot = 0;
+            helper.BagApple = 0;
+            helper.BagMushroom = 0;
+            pickedUp = true;
+        }
+
+        // Pick up milk products (from milker)
+        if (helper.GetMilkTotal() > 0)
+        {
+            if (string.IsNullOrEmpty(gainedKey))
+            {
+                gainedKey = helper.BagMilk > 0 ? StateKeys.Milk
+                    : helper.BagCarrotMilkshake > 0 ? StateKeys.CarrotMilkshake
+                    : helper.BagVitaminMix > 0 ? StateKeys.VitaminMix
+                    : helper.BagPurplePotion > 0 ? StateKeys.PurplePotion : "";
+            }
+
+            globalRes.AddMilkProduct(MilkProduct.Milk, helper.BagMilk);
+            globalRes.AddMilkProduct(MilkProduct.CarrotMilkshake, helper.BagCarrotMilkshake);
+            globalRes.AddMilkProduct(MilkProduct.VitaminMix, helper.BagVitaminMix);
+            globalRes.AddMilkProduct(MilkProduct.PurplePotion, helper.BagPurplePotion);
+            helper.BagMilk = 0;
+            helper.BagCarrotMilkshake = 0;
+            helper.BagVitaminMix = 0;
+            helper.BagPurplePotion = 0;
+            pickedUp = true;
+        }
+
+        // Pick up coins (from seller or builder returning unused coins)
+        if (helper.BagCoins > 0)
+        {
+            if (string.IsNullOrEmpty(gainedKey))
+                gainedKey = StateKeys.Coins;
+
+            globalRes.Coins += helper.BagCoins;
+            helper.BagCoins = 0;
+            pickedUp = true;
+        }
+
+        if (pickedUp)
+        {
+            // Show gained resource icon on player
+            if (!string.IsNullOrEmpty(gainedKey))
+            {
+                ctx.State.AddComponent(ctx.Entity, new EnterStateComponent { Key = StateKeys.GainedResource, Param = gainedKey, Age = 0 });
+                helper = ref ctx.State.GetComponent<HelperComponent>(helperEntity);
+            }
+            helper.State = HelperState.Idle;
+            ILogger.Log($"[InteractActionService] Player picked up resources from helper {helperEntity.Id} (type={helper.Type})");
+        }
+
+        return pickedUp;
     }
 
     private static string FoodTypeToKey(int foodType) => foodType switch
@@ -750,16 +949,16 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             case LandType.HelperAssistant:
                 {
                     HelperAssistantDefinition.Create(ctx, position);
-                    // Assistant is a pet (follows player, no bag) — x2 click speed
                     var assistant = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
                     ctx.State.AddComponent(assistant, new BreedBornComponent());
                     if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
                     {
                         ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
                         ps.AssistantHelper = assistant;
-                        ps.ClickMultiplier = 2;
+                        // Each assistant pet doubles click speed: first = x2, second = x4
+                        ps.ClickMultiplier = System.Math.Max(ps.ClickMultiplier, 1) * 2;
                         var gt1 = ctx.State.GetCustomData<IGameTime>();
-                        ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier=4");
+                        ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier={ps.ClickMultiplier}");
                     }
                     break;
                 }
@@ -788,6 +987,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             case LandType.UpgradeSeller:
                 UpgradeSellerDefinition.Create(ctx, position);
                 SpawnUpgradePet(ctx, position, playerEntity, HelperType.Seller);
+                break;
+            case LandType.Warehouse:
+                WarehouseDefinition.Create(ctx, position);
                 break;
             case LandType.Decoration:
                 DecorationDefinition.Create(ctx, position);
@@ -822,6 +1024,27 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         var gt = ctx.State.GetCustomData<IGameTime>();
         float min = gt != null ? gt.CurrentTick / 60f / 60f : -1;
         ILogger.Log($"[UpgradePet] Upgraded helper type={helperType} at {min:F1}m");
+    }
+
+    /// <summary>
+    /// Returns a building info param key for the given entity, or null if it's not a known building.
+    /// Used to show info popups when the player interacts with a building that has no primary action.
+    /// </summary>
+    private static string GetBuildingInfoKey(Context ctx, Entity entity)
+    {
+        if (ctx.State.HasComponent<SellPointComponent>(entity)) return StateKeys.InfoSellPoint;
+        if (ctx.State.HasComponent<HouseComponent>(entity)) return StateKeys.InfoHouse;
+        if (ctx.State.HasComponent<LoveHouseComponent>(entity)) return StateKeys.InfoLoveHouse;
+        if (ctx.State.HasComponent<CarrotFarmComponent>(entity)) return StateKeys.InfoCarrotFarm;
+        if (ctx.State.HasComponent<AppleOrchardComponent>(entity)) return StateKeys.InfoAppleOrchard;
+        if (ctx.State.HasComponent<MushroomCaveComponent>(entity)) return StateKeys.InfoMushroomCave;
+        if (ctx.State.HasComponent<HelperAssistantComponent>(entity)) return StateKeys.InfoHelperAssistant;
+        if (ctx.State.HasComponent<UpgradeGathererComponent>(entity)) return StateKeys.InfoUpgradeGatherer;
+        if (ctx.State.HasComponent<UpgradeBuilderComponent>(entity)) return StateKeys.InfoUpgradeBuilder;
+        if (ctx.State.HasComponent<UpgradeSellerComponent>(entity)) return StateKeys.InfoUpgradeSeller;
+        if (ctx.State.HasComponent<UpgradeAssistantComponent>(entity)) return StateKeys.InfoUpgradeAssistant;
+        if (ctx.State.HasComponent<DecorationComponent>(entity)) return StateKeys.InfoDecoration;
+        return null;
     }
 
     /// <summary>Forwarding stub for backward compatibility.</summary>

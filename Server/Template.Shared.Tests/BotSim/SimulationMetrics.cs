@@ -26,7 +26,7 @@ public class SimulationMetrics
         public int Tick;
         // Current values (what's in storage right now)
         public int Grass, Carrot, Apple, Mushroom;
-        public int Milk, VitaminShake, AppleYogurt, PurplePotion;
+        public int Milk, CarrotMilkshake, VitaminMix, PurplePotion;
         public int Coins;
         public int Houses, LoveHouses, SellPoints, FoodFarms, Helpers, Pets;
         public int Cows, HousedCows, FollowingCows, WildCows;
@@ -36,7 +36,7 @@ public class SimulationMetrics
         public int CumFood, CumMilk, CumCoins;
 
         public int TotalFood => Grass + Carrot + Apple + Mushroom;
-        public int TotalMilk => Milk + VitaminShake + AppleYogurt + PurplePotion;
+        public int TotalMilk => Milk + CarrotMilkshake + VitaminMix + PurplePotion;
         public int TotalBuildings => Houses + LoveHouses + SellPoints + FoodFarms;
     }
 
@@ -60,7 +60,7 @@ public class SimulationMetrics
         {
             var r = game.State.GetComponent<GlobalResourcesComponent>(e);
             s.Grass = r.Grass; s.Carrot = r.Carrot; s.Apple = r.Apple; s.Mushroom = r.Mushroom;
-            s.Milk = r.Milk; s.VitaminShake = r.VitaminShake; s.AppleYogurt = r.AppleYogurt; s.PurplePotion = r.PurplePotion;
+            s.Milk = r.Milk; s.CarrotMilkshake = r.CarrotMilkshake; s.VitaminMix = r.VitaminMix; s.PurplePotion = r.PurplePotion;
             s.Coins = r.Coins;
             break;
         }
@@ -150,7 +150,7 @@ public class SimulationMetrics
         {
             sb.AppendLine("── Final Game State ──");
             sb.AppendLine($"  Food:      Grass={final_.Grass} Carrot={final_.Carrot} Apple={final_.Apple} Mushroom={final_.Mushroom} (total={final_.TotalFood})");
-            sb.AppendLine($"  Products:  Milk={final_.Milk} VitaShake={final_.VitaminShake} AppleYog={final_.AppleYogurt} PurplePot={final_.PurplePotion} (total={final_.TotalMilk})");
+            sb.AppendLine($"  Products:  Milk={final_.Milk} CarrotShake={final_.CarrotMilkshake} VitaMix={final_.VitaminMix} PurplePot={final_.PurplePotion} (total={final_.TotalMilk})");
             sb.AppendLine($"  Coins:     {final_.Coins}");
             sb.AppendLine($"  Buildings: Houses={final_.Houses} LoveHouses={final_.LoveHouses} SellPoints={final_.SellPoints} FoodFarms={final_.FoodFarms}");
             sb.AppendLine($"  Helpers:   {final_.Helpers}");
@@ -233,14 +233,14 @@ public class SimulationMetrics
     {
         var ci = System.Globalization.CultureInfo.InvariantCulture;
         var sb = new StringBuilder();
-        sb.AppendLine("Tick,Seconds,Minutes,Grass,Carrot,Apple,Mushroom,TotalFood,Milk,VitaminShake,AppleYogurt,PurplePotion,TotalMilk,Coins,CumFood,CumMilk,CumCoins,Houses,LoveHouses,SellPoints,FoodFarms,TotalBuildings,Helpers,Cows,HousedCows,FollowingCows,WildCows,LandPlots,TotalLandRemaining,FinalStructure");
+        sb.AppendLine("Tick,Seconds,Minutes,Grass,Carrot,Apple,Mushroom,TotalFood,Milk,CarrotMilkshake,VitaminMix,PurplePotion,TotalMilk,Coins,CumFood,CumMilk,CumCoins,Houses,LoveHouses,SellPoints,FoodFarms,TotalBuildings,Helpers,Cows,HousedCows,FollowingCows,WildCows,LandPlots,TotalLandRemaining,FinalStructure");
         foreach (var s in Snapshots)
         {
             sb.AppendLine(string.Format(ci,
                 "{0},{1:F1},{2:F2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29}",
                 s.Tick, s.Tick / 60f, s.Tick / 3600f,
                 s.Grass, s.Carrot, s.Apple, s.Mushroom, s.TotalFood,
-                s.Milk, s.VitaminShake, s.AppleYogurt, s.PurplePotion, s.TotalMilk,
+                s.Milk, s.CarrotMilkshake, s.VitaminMix, s.PurplePotion, s.TotalMilk,
                 s.Coins,
                 s.CumFood, s.CumMilk, s.CumCoins,
                 s.Houses, s.LoveHouses, s.SellPoints, s.FoodFarms, s.TotalBuildings, s.Helpers,

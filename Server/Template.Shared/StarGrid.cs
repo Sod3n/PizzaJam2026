@@ -9,9 +9,9 @@ namespace Template.Shared;
 
 public static class StarGrid
 {
-    public const float GridStep = 10f;
+    public const float GridStep = 12.6f;
     public const float OuterRadius = 90f;
-    public const float InnerRadius = 15f;
+    public const float InnerRadius = 25f;
     private const int StarPoints = 5;
 
     /// <summary>
@@ -83,6 +83,7 @@ public static class StarGrid
             case LandType.UpgradeBuilder: return 2;
             case LandType.UpgradeSeller: return 2;
             case LandType.UpgradeAssistant: return 2;
+            case LandType.Warehouse: return 2;
             case LandType.Decoration: return -1; // half cost (handled in GetThreshold)
             default: return 1; // House
         }
@@ -133,11 +134,25 @@ public static class StarGrid
         (LandType.MushroomCave,  7, 9, true),
         // Non-farm specials — no angular constraint
         (LandType.HelperAssistant, 2, 0, false),
+        (LandType.HelperAssistant, 5, 14, false), // second player pet — first unlock at dist 5
         (LandType.UpgradeGatherer, 4, 1, false),
         (LandType.UpgradeBuilder,  5, 2, false),
         (LandType.UpgradeSeller,   6, 3, false),
-        (LandType.UpgradeAssistant, 6, 4, false),  // late-game: x5 click speed (x10 total)
+        (LandType.UpgradeAssistant, 6, 10, false),  // late-game: x5 click speed (x10 total)
+        // Warehouse — mid-early game, helpers auto-deposit resources
+        (LandType.Warehouse,    3, 15, false),
+        // Second sell point — mid game expansion
+        (LandType.SellPoint,    5, 12, false),
+        // Love houses — first at dist 4, second at dist 5
+        (LandType.LoveHouse,    4, 13, false),
+        (LandType.LoveHouse,    5, 11, false),
     };
+
+    /// <summary>
+    /// How far past the trigger distance before we relax the farm quadrant constraint.
+    /// Guarantees farms always spawn even if the player expands in only one direction.
+    /// </summary>
+    private const int FarmQuadrantRelaxDist = 2;
 
     /// <summary>
     /// Check if this grid position should become a special building.
@@ -160,14 +175,17 @@ public static class StarGrid
             if (dist < triggerDist) continue;
             if ((gr.SpawnedSpecials & (1 << bit)) != 0) continue;
 
-            // Helper buildings only spawn when helpers are enabled
-            if (!isFarm && gr.HelpersEnabled == 0) continue;
+            // Helper/upgrade buildings only spawn when helpers are enabled
+            // (LoveHouse and SellPoint are not farms but also not helper-gated)
+            if (!isFarm && type != LandType.LoveHouse && type != LandType.SellPoint && gr.HelpersEnabled == 0) continue;
 
             // Farms require angular separation: different quadrant than last farm.
             // First farm (LastFarmGX/GY both 0) has no constraint.
+            // Relax constraint when far enough past trigger distance to guarantee placement.
             if (isFarm && (gr.LastFarmGX != 0 || gr.LastFarmGY != 0))
             {
-                if (GetQuadrant(gx, gy) == GetQuadrant(gr.LastFarmGX, gr.LastFarmGY))
+                bool relaxed = dist >= triggerDist + FarmQuadrantRelaxDist;
+                if (!relaxed && GetQuadrant(gx, gy) == GetQuadrant(gr.LastFarmGX, gr.LastFarmGY))
                     continue;
             }
 
@@ -297,7 +315,8 @@ public static class StarGrid
                  ctx.State.HasComponent<UpgradeBuilderComponent>(entity) ||
                  ctx.State.HasComponent<UpgradeSellerComponent>(entity) ||
                  ctx.State.HasComponent<UpgradeAssistantComponent>(entity) ||
-                 ctx.State.HasComponent<DecorationComponent>(entity)))
+                 ctx.State.HasComponent<DecorationComponent>(entity) ||
+                 ctx.State.HasComponent<WarehouseComponent>(entity)))
             {
                 var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
                 float dx = (float)(pos.X - px);

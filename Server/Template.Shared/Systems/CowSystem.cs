@@ -28,6 +28,14 @@ public class CowSystem : ISystem
     }
     public void Update(EntityWorld state)
     {
+        // Tick down love house breed cooldowns
+        foreach (var lhEntity in state.Filter<LoveHouseComponent>())
+        {
+            ref var lh = ref state.GetComponent<LoveHouseComponent>(lhEntity);
+            if (lh.CooldownTicksRemaining > 0)
+                lh.CooldownTicksRemaining--;
+        }
+
         // Handle state completions on players
         foreach (var playerEntity in state.Filter<ExitStateComponent>())
         {
@@ -76,19 +84,34 @@ public class CowSystem : ISystem
             }
         }
 
-        // Handle Cow Exhaust & Visibility
+        // Handle Cow Exhaust & Depression & Visibility
         foreach (var cowEntity in state.Filter<CowComponent>())
         {
             ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
 
-            if (cow is { Exhaust: > 0, IsMilking: false })
+            // Depression timer: fixed 30-second countdown, independent of exhaust
+            if (cow.IsDepressed)
             {
                 // Depressed cows stay visible (but non-interactable) — unhide if still hidden from breeding
-                if (cow.IsDepressed && state.HasComponent<HiddenComponent>(cowEntity))
+                if (state.HasComponent<HiddenComponent>(cowEntity))
                 {
                     state.UnhideEntity(cowEntity);
                 }
 
+                if (cow.DepressionTicksRemaining > 0)
+                {
+                    cow.DepressionTicksRemaining--;
+                }
+
+                if (cow.DepressionTicksRemaining <= 0)
+                {
+                    cow.IsDepressed = false;
+                    cow.DepressionTicksRemaining = 0;
+                    ILogger.Log($"[CowSystem] Cow {cowEntity.Id} recovered from depression (30s timer expired)");
+                }
+            }
+            else if (cow is { Exhaust: > 0, IsMilking: false })
+            {
                 var gameTime = state.GetCustomData<IGameTime>();
                 if (gameTime != null)
                 {
@@ -96,11 +119,6 @@ public class CowSystem : ISystem
                     if (random.NextInt(0, 750) == 0)
                     {
                         cow.Exhaust--;
-                        if (cow.Exhaust <= 0 && cow.IsDepressed)
-                        {
-                            cow.IsDepressed = false;
-                            ILogger.Log($"[CowSystem] Cow {cowEntity.Id} recovered from depression");
-                        }
                     }
                 }
             }
@@ -325,25 +343,28 @@ public class CowSystem : ISystem
         if (state.HasComponent<CowComponent>(cow1) && state.HasComponent<CowComponent>(cow2)
             && state.HasComponent<SkinComponent>(cow1) && state.HasComponent<SkinComponent>(cow2))
         {
-            // Track same-tier breeding for guaranteed upgrade
+            // Check if this is a love pair for guaranteed upgrade
             var parentACow = state.GetComponent<CowComponent>(cow1);
             var parentBCow = state.GetComponent<CowComponent>(cow2);
             bool sameTier = parentACow.PreferredFood == parentBCow.PreferredFood;
             bool guaranteedUpgrade = false;
 
-            if (sameTier)
+            // Love pair: if either cow has the other as LoveTarget, it's a guaranteed upgrade
+            if (parentACow.LoveTarget == cow2 || parentBCow.LoveTarget == cow1)
             {
-                loveHouse.SameTierBreedCount++;
-                if (loveHouse.SameTierBreedCount >= LoveHouseComponent.GuaranteedUpgradeEvery)
+                guaranteedUpgrade = true;
+                ILogger.Log($"[CowSystem] Love pair bred! Guaranteed tier upgrade for cows {cow1.Id} and {cow2.Id}");
+                // Clear love targets after breeding
+                if (state.HasComponent<CowComponent>(cow1))
                 {
-                    guaranteedUpgrade = true;
-                    loveHouse.SameTierBreedCount = 0;
-                    ILogger.Log($"[CowSystem] Guaranteed tier upgrade! (after {LoveHouseComponent.GuaranteedUpgradeEvery} same-tier breeds)");
+                    ref var c1Love = ref state.GetComponent<CowComponent>(cow1);
+                    c1Love.LoveTarget = Entity.Null;
                 }
-            }
-            else
-            {
-                loveHouse.SameTierBreedCount = 0;
+                if (state.HasComponent<CowComponent>(cow2))
+                {
+                    ref var c2Love = ref state.GetComponent<CowComponent>(cow2);
+                    c2Love.LoveTarget = Entity.Null;
+                }
             }
 
             var gameTime = state.GetCustomData<IGameTime>();
@@ -351,8 +372,9 @@ public class CowSystem : ISystem
             var breedRandom = new DeterministicRandom(breedSeed);
 
             // Different-pref breeding: chance of failure based on tier gap
+            // Love pairs never fail — the whole point is a guaranteed upgrade
             bool breedFailed = false;
-            if (!sameTier)
+            if (!sameTier && !guaranteedUpgrade)
             {
                 int tierGap = System.Math.Abs(parentACow.PreferredFood - parentBCow.PreferredFood);
                 // 1 tier apart = 50%, 2 tiers = 75%, 3 tiers = 90%
@@ -367,19 +389,20 @@ public class CowSystem : ISystem
 
             if (breedFailed)
             {
-                // Both cows enter depression: exhaust maxed out, hidden in house until recovery
+                // Both cows enter depression: fixed 30s timer, visible but non-interactable until recovery
                 ILogger.Log($"[CowSystem] Breed FAILED! Cows {cow1.Id} and {cow2.Id} are depressed (tier gap: {System.Math.Abs(parentACow.PreferredFood - parentBCow.PreferredFood)})");
+                const int DepressionDurationTicks = 1800; // 30 seconds at 60 TPS
                 if (state.HasComponent<CowComponent>(cow1))
                 {
                     ref var c1 = ref state.GetComponent<CowComponent>(cow1);
-                    c1.Exhaust = c1.MaxExhaust;
                     c1.IsDepressed = true;
+                    c1.DepressionTicksRemaining = DepressionDurationTicks;
                 }
                 if (state.HasComponent<CowComponent>(cow2))
                 {
                     ref var c2 = ref state.GetComponent<CowComponent>(cow2);
-                    c2.Exhaust = c2.MaxExhaust;
                     c2.IsDepressed = true;
+                    c2.DepressionTicksRemaining = DepressionDurationTicks;
                 }
             }
             else
@@ -394,6 +417,23 @@ public class CowSystem : ISystem
                 ref var gr = ref state.GetComponent<GlobalResourcesComponent>(globalResEntity);
                 gr.TotalBreedCount++;
                 breedCount = gr.TotalBreedCount;
+
+                // Love system: trigger love event every 2-4 breeds
+                if (gr.NextLoveBreedCount == 0)
+                {
+                    // First time: set initial threshold (after 2-4 breeds)
+                    var loveSeed = new DeterministicRandom((uint)(breedCount ^ 0xBEEF));
+                    gr.NextLoveBreedCount = breedCount + loveSeed.NextInt(2, 5);
+                }
+
+                if (breedCount >= gr.NextLoveBreedCount)
+                {
+                    TriggerLoveEvent(state, playerEntity, breedCount);
+                    // Re-get after filter iteration in TriggerLoveEvent
+                    gr = ref state.GetComponent<GlobalResourcesComponent>(globalResEntity);
+                    var nextSeed = new DeterministicRandom((uint)(breedCount * 31337));
+                    gr.NextLoveBreedCount = breedCount + nextSeed.NextInt(2, 5);
+                }
             }
 
             // Helper unlock: deterministic at breed count threshold
@@ -471,6 +511,7 @@ public class CowSystem : ISystem
             ReturnCowToHouse(state, cow2);
         }
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
+        loveHouse.CooldownTicksRemaining = LoveHouseComponent.BreedCooldownTicks;
 
         // Baby cow follows the player
         if (babyCow != Entity.Null && state.HasComponent<CowComponent>(babyCow))
@@ -496,6 +537,137 @@ public class CowSystem : ISystem
         ResetState(state, playerEntity, ref sc);
 
         ILogger.Log($"[CowSystem] Love house breed complete. Released cows {cow1.Id} and {cow2.Id} back to player {playerEntity.Id}");
+    }
+
+    /// <summary>
+    /// Trigger a love event: pick a random cow to fall in love with the highest-tier cow.
+    /// The "lover" cow starts following the player and has its LoveTarget set.
+    /// </summary>
+    private static void TriggerLoveEvent(EntityWorld state, Entity playerEntity, int breedCount)
+    {
+        // Find the highest preferred food cow that is in a house (the "target")
+        Entity bestTarget = Entity.Null;
+        int bestFood = -1;
+        foreach (var cowEntity in state.Filter<CowComponent>())
+        {
+            var cow = state.GetComponent<CowComponent>(cowEntity);
+            // Must be in a regular house, not following anyone, not depressed, not already a love target
+            if (cow.HouseId == Entity.Null) continue;
+            if (!state.HasComponent<HouseComponent>(cow.HouseId)) continue;
+            if (cow.FollowingPlayer != Entity.Null) continue;
+            if (cow.IsDepressed) continue;
+            if (cow.LoveTarget != Entity.Null) continue;
+
+            if (cow.PreferredFood > bestFood)
+            {
+                bestFood = cow.PreferredFood;
+                bestTarget = cowEntity;
+            }
+        }
+
+        if (bestTarget == Entity.Null)
+        {
+            ILogger.Log($"[CowSystem] Love event skipped: no valid target cow found");
+            return;
+        }
+
+        // Pick a random different cow to be the "lover" — must also be in a house
+        var loveSeed = new DeterministicRandom((uint)(breedCount * 7 + bestTarget.Id));
+        Entity lover = Entity.Null;
+        int candidateCount = 0;
+
+        // Count eligible candidates first
+        foreach (var cowEntity in state.Filter<CowComponent>())
+        {
+            if (cowEntity == bestTarget) continue;
+            var cow = state.GetComponent<CowComponent>(cowEntity);
+            if (cow.HouseId == Entity.Null) continue;
+            if (!state.HasComponent<HouseComponent>(cow.HouseId)) continue;
+            if (cow.FollowingPlayer != Entity.Null) continue;
+            if (cow.IsDepressed) continue;
+            if (cow.LoveTarget != Entity.Null) continue;
+            candidateCount++;
+        }
+
+        if (candidateCount == 0)
+        {
+            ILogger.Log($"[CowSystem] Love event skipped: no eligible lover cow found");
+            return;
+        }
+
+        int chosen = loveSeed.NextInt(candidateCount);
+        int idx = 0;
+        foreach (var cowEntity in state.Filter<CowComponent>())
+        {
+            if (cowEntity == bestTarget) continue;
+            var cow = state.GetComponent<CowComponent>(cowEntity);
+            if (cow.HouseId == Entity.Null) continue;
+            if (!state.HasComponent<HouseComponent>(cow.HouseId)) continue;
+            if (cow.FollowingPlayer != Entity.Null) continue;
+            if (cow.IsDepressed) continue;
+            if (cow.LoveTarget != Entity.Null) continue;
+            if (idx == chosen) { lover = cowEntity; break; }
+            idx++;
+        }
+
+        if (lover == Entity.Null) return;
+
+        // Set the love target on the lover cow
+        ref var loverCow = ref state.GetComponent<CowComponent>(lover);
+        loverCow.LoveTarget = bestTarget;
+
+        // Remove lover from its house
+        var loverHouseId = loverCow.HouseId;
+        if (loverHouseId != Entity.Null && state.HasComponent<HouseComponent>(loverHouseId))
+        {
+            ref var house = ref state.GetComponent<HouseComponent>(loverHouseId);
+            if (house.CowId == lover)
+                house.CowId = Entity.Null;
+        }
+
+        // Make the lover follow the player
+        loverCow = ref state.GetComponent<CowComponent>(lover);
+        loverCow.PreviousHouseId = loverCow.HouseId;
+        loverCow.HouseId = Entity.Null;
+        loverCow.FollowingPlayer = playerEntity;
+
+        // Add to end of follow chain
+        ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+        if (ps.FollowingCow == Entity.Null)
+        {
+            ps.FollowingCow = lover;
+            loverCow = ref state.GetComponent<CowComponent>(lover);
+            loverCow.FollowTarget = playerEntity;
+        }
+        else
+        {
+            Entity lastCow = Entity.Null;
+            var current = ps.FollowingCow;
+            int safety = 0;
+            while (safety < 100)
+            {
+                Entity next = Entity.Null;
+                foreach (var ce in state.Filter<CowComponent>())
+                {
+                    ref var c = ref state.GetComponent<CowComponent>(ce);
+                    if (c.FollowTarget == current && c.FollowingPlayer != Entity.Null)
+                    { next = ce; break; }
+                }
+                if (next == Entity.Null) { lastCow = current; break; }
+                current = next;
+                safety++;
+            }
+            if (lastCow == Entity.Null) lastCow = ps.FollowingCow;
+            loverCow = ref state.GetComponent<CowComponent>(lover);
+            loverCow.FollowTarget = lastCow;
+        }
+
+        // Notify the client about the love event via EnterState on the lover cow
+        string targetName = state.HasComponent<NameComponent>(bestTarget) ? state.GetComponent<NameComponent>(bestTarget).Name.ToString() : $"Cow #{bestTarget.Id}";
+        state.AddComponent(lover, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
+
+        string loverName = state.HasComponent<NameComponent>(lover) ? state.GetComponent<NameComponent>(lover).Name.ToString() : $"Cow #{lover.Id}";
+        ILogger.Log($"[CowSystem] Love event! {loverName} (cow {lover.Id}) fell in love with {targetName} (cow {bestTarget.Id})");
     }
 
     private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false, int breedCount = 0, SkinComponent? twinSkin = null)
@@ -538,9 +710,13 @@ public class CowSystem : ISystem
                 totalExhaust += skinDef.Exhaust;
         }
         if (totalExhaust <= 0) totalExhaust = 10;
+        // Round up to nearest multiple of 4 so milking always completes cleanly
+        totalExhaust = ((totalExhaust + 3) / 4) * 4;
 
         ref var newCowComp = ref state.GetComponent<CowComponent>(newCow);
         newCowComp.MaxExhaust = totalExhaust;
+        newCowComp.ParentA = parentA;
+        newCowComp.ParentB = parentB;
 
         // Inherit food preference from parents
         var parentACow = state.GetComponent<CowComponent>(parentA);
@@ -556,10 +732,10 @@ public class CowSystem : ISystem
         else
         {
             // If breeding succeeded, parents are same-tier or got lucky with diff-tier
-            // Same-tier: 75% upgrade / 1% downgrade / 24% inherit
-            // Diff-tier (survived fail check): 50% upgrade / 1% downgrade / 49% inherit
+            // Same-tier: 25% upgrade / 1% downgrade / 74% inherit
+            // Diff-tier (survived fail check): 15% upgrade / 1% downgrade / 84% inherit
             bool sameFood = parentACow.PreferredFood == parentBCow.PreferredFood;
-            int upgradeChance = sameFood ? 75 : 50;
+            int upgradeChance = sameFood ? 25 : 15;
             int prefRoll = random.NextInt(100);
             if (prefRoll < upgradeChance)
             {

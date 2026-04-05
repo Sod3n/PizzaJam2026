@@ -432,7 +432,7 @@ offset_right = 1127.0
 offset_bottom = 290.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
 
-[node name="VitaminShakeCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2057385170]
+[node name="CarrotMilkshakeCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2057385170]
 layout_mode = 0
 offset_left = 1166.0
 offset_top = 214.0
@@ -440,7 +440,7 @@ offset_right = 1240.0
 offset_bottom = 288.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
 
-[node name="AppleYogurtCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1047730158]
+[node name="VitaminMixCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1047730158]
 layout_mode = 0
 offset_left = 1277.0
 offset_top = 214.0
@@ -522,7 +522,7 @@ texture = ExtResource("29_lu4ek")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="VitaminShakeIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=841107671]
+[node name="CarrotMilkshakeIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=841107671]
 layout_mode = 0
 offset_left = 1168.0
 offset_top = 216.0
@@ -533,7 +533,7 @@ pivot_offset = Vector2(35, 35)
 expand_mode = 1
 stretch_mode = 4
 
-[node name="AppleYogurtIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=237178285]
+[node name="VitaminMixIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=237178285]
 layout_mode = 0
 offset_left = 1279.0
 offset_top = 216.0
@@ -557,9 +557,9 @@ stretch_mode = 4
 
 [node name="Grass" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1787843798]
 layout_mode = 0
-offset_left = 570.0
+offset_left = 548.0
 offset_top = 200.0
-offset_right = 630.0
+offset_right = 648.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -567,14 +567,15 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Milk" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=438230214]
 layout_mode = 0
-offset_left = 1060.0
+offset_left = 1038.0
 offset_top = 200.0
-offset_right = 1120.0
+offset_right = 1138.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -582,29 +583,31 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Coins" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1451730019]
 layout_mode = 0
-offset_left = 443.0
+offset_left = 421.0
 offset_top = 200.0
-offset_right = 503.0
+offset_right = 521.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
-text = "0"
+text = "10000"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Carrot" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1021002626]
 layout_mode = 0
-offset_left = 681.0
+offset_left = 659.0
 offset_top = 200.0
-offset_right = 741.0
+offset_right = 759.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -612,14 +615,15 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Apple" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2087341196]
 layout_mode = 0
-offset_left = 792.0
+offset_left = 770.0
 offset_top = 200.0
-offset_right = 852.0
+offset_right = 870.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -627,14 +631,15 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Mushroom" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1074602623]
 layout_mode = 0
-offset_left = 903.0
+offset_left = 881.0
 offset_top = 200.0
-offset_right = 963.0
+offset_right = 981.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -642,14 +647,15 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VitaminShake" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=430290442]
+[node name="CarrotMilkshake" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=430290442]
 layout_mode = 0
-offset_left = 1173.0
+offset_left = 1151.0
 offset_top = 200.0
-offset_right = 1233.0
+offset_right = 1251.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -657,14 +663,15 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="AppleYogurt" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1343337995]
+[node name="VitaminMix" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1343337995]
 layout_mode = 0
-offset_left = 1284.0
+offset_left = 1262.0
 offset_top = 200.0
-offset_right = 1344.0
+offset_right = 1362.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -672,14 +679,15 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="PurplePotion" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1899059630]
 layout_mode = 0
-offset_left = 1387.0
+offset_left = 1365.0
 offset_top = 200.0
-offset_right = 1462.0
+offset_right = 1465.0
 offset_bottom = 238.0
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -687,6 +695,7 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/normal_font_size = 28
 text = "0"
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 

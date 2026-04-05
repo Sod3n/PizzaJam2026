@@ -33,6 +33,23 @@ extends CharacterBody3D
 ## How high the skin node moves during the cycle.
 @export var bounce_height: float = 0.1
 
+@export_group("Idle Sway")
+## When false, replaces the gentle idle sway with a bounce-in-place animation.
+@export var enable_idle_sway: bool = true:
+	get(): return enable_idle_sway
+	set(value):
+		if enable_idle_sway == value:
+			return
+		enable_idle_sway = value
+		if not is_inside_tree():
+			return
+		if enable_idle_sway:
+			_stop_bounce_only()
+			start_fancy_idle_3d()
+		else:
+			stop_idle()
+			_start_bounce_only()
+
 var start_scale_y: float
 var start_rot_z: float
 var start_skin_y: float
@@ -40,6 +57,7 @@ var start_skin_y: float
 var bounce_tween: Tween
 var rot_tween: Tween
 var scale_tween: Tween
+var bounce_in_place_tween: Tween
 var _effect_local_pos: Vector3
 
 func _ready() -> void:
@@ -59,7 +77,10 @@ func _ready() -> void:
 		move_effect.global_transform = effect_transform
 		move_effect.visible = false
 
-	start_fancy_idle_3d()
+	if enable_idle_sway:
+		start_fancy_idle_3d()
+	else:
+		_start_bounce_only()
 
 func stop_idle() -> void:
 	if rot_tween: rot_tween.kill()
@@ -71,6 +92,10 @@ func stop_idle() -> void:
 	if skin_node: skin_node.position.y = start_skin_y
 
 func start_fancy_idle_3d() -> void:
+	# Kill any existing idle tweens to avoid duplicates when restarting
+	if rot_tween: rot_tween.kill()
+	if scale_tween: scale_tween.kill()
+	if bounce_tween: bounce_tween.kill()
 	rot_tween = get_tree().create_tween().set_loops()
 	scale_tween = get_tree().create_tween().set_loops()
 
@@ -115,3 +140,22 @@ func _spawn_land_effect() -> void:
 	await move_effect.animation_finished
 	if is_instance_valid(move_effect):
 		move_effect.visible = false
+
+func _start_bounce_only() -> void:
+	_stop_bounce_only()
+	if not skin_node:
+		return
+	# Same vertical bounce as start_fancy_idle_3d, without rotation or scale sway
+	var cycle_speed = duration / 2.0
+	bounce_in_place_tween = get_tree().create_tween().set_loops()
+	bounce_in_place_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	bounce_in_place_tween.tween_property(skin_node, "position:y", start_skin_y + bounce_height, cycle_speed)
+	bounce_in_place_tween.chain().tween_property(skin_node, "position:y", start_skin_y, cycle_speed)
+	bounce_in_place_tween.chain().tween_callback(_spawn_land_effect).set_delay(0)
+
+func _stop_bounce_only() -> void:
+	if bounce_in_place_tween:
+		bounce_in_place_tween.kill()
+		bounce_in_place_tween = null
+	if skin_node:
+		skin_node.position.y = start_skin_y

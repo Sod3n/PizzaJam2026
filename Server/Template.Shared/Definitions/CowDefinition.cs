@@ -27,6 +27,8 @@ public static partial class CowDefinition
                 totalExhaust += skinDef.Exhaust;
         }
         if (totalExhaust <= 0) totalExhaust = 10;
+        // Round up to nearest multiple of 4 so milking always completes cleanly
+        totalExhaust = ((totalExhaust + 3) / 4) * 4;
 
         // Weighted random: common cows prefer cheap food, rare cows prefer expensive food
         component.PreferredFood = FoodType.RandomPreferred(ref random);

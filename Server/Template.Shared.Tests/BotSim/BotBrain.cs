@@ -290,9 +290,9 @@ public class BotBrain
     private static float TierCoinValue(int preferredFood) => preferredFood switch
     {
         0 => 1f,    // Grass  → Milk
-        1 => 5f,    // Carrot → VitaminShake
-        2 => 25f,   // Apple  → AppleYogurt
-        3 => 100f,  // Mushroom → PurplePotion
+        1 => 6f,    // Carrot → CarrotMilkshake
+        2 => 20f,   // Apple  → VitaminMix
+        3 => 200f,  // Mushroom → PurplePotion
         _ => 1f,
     };
 
@@ -391,7 +391,7 @@ public class BotBrain
         var playerPos = _game.State.HasComponent<Transform2D>(_player)
             ? _game.State.GetComponent<Transform2D>(_player).Position : Vector2.Zero;
         int totalFood = globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom;
-        int totalMilk = globalRes.Milk + globalRes.VitaminShake + globalRes.AppleYogurt + globalRes.PurplePotion;
+        int totalMilk = globalRes.Milk + globalRes.CarrotMilkshake + globalRes.VitaminMix + globalRes.PurplePotion;
 
         // ── Score each option: value / (travel_ticks + work_ticks) ──
         int assistMult = System.Math.Max(1, ps.ClickMultiplier);
@@ -948,6 +948,7 @@ public class BotBrain
         foreach (var e in _game.State.Filter<LoveHouseComponent>())
         {
             var lh = _game.State.GetComponent<LoveHouseComponent>(e);
+            if (lh.CooldownTicksRemaining > 0) continue; // skip love houses on cooldown
             if (lh.CowId1 == Entity.Null || lh.CowId2 == Entity.Null)
                 return e;
         }
@@ -1013,6 +1014,7 @@ public class BotBrain
         foreach (var e in _game.State.Filter<LoveHouseComponent>())
         {
             var lh = _game.State.GetComponent<LoveHouseComponent>(e);
+            if (lh.CooldownTicksRemaining > 0) continue; // skip love houses on cooldown
             if (lh.CowId1 != Entity.Null && lh.CowId2 != Entity.Null)
                 return e;
         }
@@ -1142,9 +1144,9 @@ public class BotBrain
                 if (land.Type == LandType.MushroomCave)
                     score /= 10;       // PurplePotion = 18 coins — rush this
                 else if (land.Type == LandType.AppleOrchard)
-                    score /= 6;        // AppleYogurt = 6 coins — on path to mushroom
+                    score /= 6;        // VitaminMix = 20 coins — on path to mushroom
                 else if (land.Type == LandType.CarrotFarm)
-                    score /= 4;        // VitaminShake = 2 coins
+                    score /= 4;        // CarrotMilkshake = 6 coins
             }
 
             // Priority: Assistant building — doubles click output, very valuable

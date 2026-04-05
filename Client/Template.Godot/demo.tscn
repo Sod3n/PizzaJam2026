@@ -37,6 +37,8 @@
 [ext_resource type="PackedScene" path="res://templates/environment/UpgradeBuilder.tscn" id="tpl_upgradebuilder"]
 [ext_resource type="PackedScene" path="res://templates/environment/UpgradeGatherer.tscn" id="tpl_upgradegatherer"]
 [ext_resource type="PackedScene" path="res://templates/environment/UpgradeSeller.tscn" id="tpl_upgradeseller"]
+[ext_resource type="PackedScene" path="res://templates/environment/Warehouse.tscn" id="tpl_warehouse"]
+[ext_resource type="PackedScene" path="res://templates/environment/WarehouseSign.tscn" id="tpl_warehousesign"]
 [ext_resource type="Script" uid="uid://c0hln4wxe6hyd" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
 [ext_resource type="Script" uid="uid://o67l46k5a8dj" path="res://Scripts/Visuals/CarrotFarmView.cs" id="view_carrotfarm"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
@@ -60,6 +62,8 @@
 [ext_resource type="Script" uid="uid://bhaw2lc4hhrbj" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
 [ext_resource type="Script" uid="uid://cpchm5xkwlt1h" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
+[ext_resource type="Script" path="res://Scripts/Visuals/WarehouseView.cs" id="view_warehouse"]
+[ext_resource type="Script" path="res://Scripts/Visuals/WarehouseSignView.cs" id="view_warehousesign"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -4324,6 +4328,14 @@ Prefab = ExtResource("tpl_decoration")
 [node name="FoodSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1116882817]
 script = ExtResource("view_foodsign")
 Prefab = ExtResource("tpl_foodsign")
+
+[node name="WarehouseView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_warehouse")
+Prefab = ExtResource("tpl_warehouse")
+
+[node name="WarehouseSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+script = ExtResource("view_warehousesign")
+Prefab = ExtResource("tpl_warehousesign")
 
 [node name="PropView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2051443311]
 script = ExtResource("view_prop")

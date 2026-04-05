@@ -1,6 +1,7 @@
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Types;
+using Deterministic.GameFramework.Physics2D.Components;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using Deterministic.GameFramework.DAR;
@@ -16,6 +17,13 @@ public class GrassSpawnSystem : ISystem
     // Spawn Area (centered at origin, matching StarGrid bounds)
     private readonly Vector2 _minPos = new Vector2(-30, -30);
     private readonly Vector2 _maxPos = new Vector2(30, 30);
+
+    /// <summary>
+    /// Minimum clearance distance from any building center.
+    /// Buildings use collision shapes up to ~4.6 wide (CarrotFarm),
+    /// so half-diagonal + margin keeps food visually outside.
+    /// </summary>
+    private const float BuildingClearance = 3f;
 
     public void Update(EntityWorld state)
     {
@@ -49,22 +57,26 @@ public class GrassSpawnSystem : ISystem
         if (grassCount < MaxFoodPerType)
             SpawnFood(context, baseSeed, FoodType.Grass);
 
-        // Each farm spawns 1 food per interval (2 farms = 2x spawn rate)
-        for (int i = 0; i < carrotFarms && carrotCount + i < MaxFoodPerType; i++)
-            SpawnFood(context, baseSeed + 1000u + (uint)i * 100, FoodType.Carrot);
+        // Non-grass resources spawn at half rate: only every other interval
+        if (gameTime.CurrentTick % (SpawnInterval * 2) == 0)
+        {
+            for (int i = 0; i < carrotFarms && carrotCount + i < MaxFoodPerType; i++)
+                SpawnFood(context, baseSeed + 1000u + (uint)i * 100, FoodType.Carrot);
 
-        for (int i = 0; i < appleFarms && appleCount + i < MaxFoodPerType; i++)
-            SpawnFood(context, baseSeed + 2000u + (uint)i * 100, FoodType.Apple);
+            for (int i = 0; i < appleFarms && appleCount + i < MaxFoodPerType; i++)
+                SpawnFood(context, baseSeed + 2000u + (uint)i * 100, FoodType.Apple);
 
-        for (int i = 0; i < mushroomFarms && mushroomCount + i < MaxFoodPerType; i++)
-            SpawnFood(context, baseSeed + 3000u + (uint)i * 100, FoodType.Mushroom);
+            for (int i = 0; i < mushroomFarms && mushroomCount + i < MaxFoodPerType; i++)
+                SpawnFood(context, baseSeed + 3000u + (uint)i * 100, FoodType.Mushroom);
+        }
     }
 
     private const int MaxSpawnAttempts = 10;
 
     private void SpawnFood(Context context, uint seed, int foodType)
     {
-        var navState = context.State.GetCustomData<NavigationState>();
+        // Use CDTNavigationState — the game uses CDTNavigationSystem (not the old NavigationSystem)
+        var navState = context.State.GetCustomData<CDTNavigationState>();
         var random = new DeterministicRandom(seed);
 
         for (int attempt = 0; attempt < MaxSpawnAttempts; attempt++)
@@ -73,12 +85,18 @@ public class GrassSpawnSystem : ISystem
             var y = random.NextInt((int)_minPos.Y, (int)_maxPos.Y);
             var pos = new Vector2(x, y);
 
-            // Only spawn on walkable nav mesh (clear of buildings/obstacles)
+            // Check 1: Only spawn on walkable CDT nav mesh (clear of obstacles)
             if (navState?.Map != null && navState.PhysicsBaked)
             {
                 if (navState.Map.FindTriangle(pos) < 0)
                     continue; // position is inside an obstacle, try again
             }
+
+            // Check 2: Explicit building proximity check as safety net.
+            // Even if the nav mesh is not yet baked, this prevents spawning
+            // on or near any building (StaticBody2D entities on the Physics layer).
+            if (IsNearBuilding(context.State, pos))
+                continue;
 
             var entity = foodType switch
             {
@@ -91,5 +109,45 @@ public class GrassSpawnSystem : ISystem
             food.FoodType = foodType;
             return;
         }
+    }
+
+    /// <summary>
+    /// Returns true if the position overlaps with or is too close to any building.
+    /// Checks all StaticBody2D entities on the Physics collision layer (buildings, walls,
+    /// land plots, farms, etc.) against their actual collision shapes.
+    /// </summary>
+    private static bool IsNearBuilding(EntityWorld state, Vector2 pos)
+    {
+        foreach (var entity in state.Filter<StaticBody2D, Transform2D, CollisionShape2D>())
+        {
+            var body = state.GetComponent<StaticBody2D>(entity);
+            // Only check Physics-layer bodies (buildings, walls, land) — skip Interactable-only entities
+            if ((body.CollisionLayer & (uint)CollisionLayer.Physics) == 0)
+                continue;
+
+            var transform = state.GetComponent<Transform2D>(entity);
+            var shape = state.GetComponent<CollisionShape2D>(entity);
+            var buildingPos = transform.Position;
+
+            float dx = (float)(pos.X - buildingPos.X);
+            float dy = (float)(pos.Y - buildingPos.Y);
+
+            if (shape.Type == CollisionShapeType.Rectangle)
+            {
+                // AABB check with clearance margin
+                float halfW = (float)shape.Rectangle.Size.X / 2f + BuildingClearance;
+                float halfH = (float)shape.Rectangle.Size.Y / 2f + BuildingClearance;
+                if (System.Math.Abs(dx) < halfW && System.Math.Abs(dy) < halfH)
+                    return true;
+            }
+            else if (shape.Type == CollisionShapeType.Circle)
+            {
+                // Circle check with clearance margin
+                float radius = (float)shape.Circle.Radius + BuildingClearance;
+                if (dx * dx + dy * dy < radius * radius)
+                    return true;
+            }
+        }
+        return false;
     }
 }

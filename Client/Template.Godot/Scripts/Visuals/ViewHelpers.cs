@@ -35,8 +35,9 @@ public static class ViewHelpers
 
         SetupNotEnoughResource(vm, visualNode);
         SetupGainedResource(vm, visualNode);
+        SetupBuildingInfo(vm, visualNode);
         animateNode ??= visualNode;
-        vm.OnInteract.Subscribe(_ =>
+        vm.OnInteract.Subscribe(param =>
         {
             Callable.From(() =>
             {
@@ -51,7 +52,9 @@ public static class ViewHelpers
                 tween.Chain().TweenProperty(animateNode, "scale", origScale, 0.1f);
                 animateNode.SetMeta("scale_tween", tween);
 
-                SpawnHeartBlast(visualNode, vm.Entity);
+                // Only show heart blast when milk is actually produced (every 4th click)
+                if (param != "milk_fail")
+                    SpawnHeartBlast(visualNode, vm.Entity);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }
@@ -156,6 +159,18 @@ public static class ViewHelpers
                     if (sprite != null)
                         sprite.Modulate = new Color(1f, 0.85f, 0.85f);
                 }
+            }).CallDeferred();
+        }).AddTo(vm.Disposables);
+    }
+
+    public static void SetupBuildingInfo(EntityViewModel vm, Node3D visualNode)
+    {
+        vm.OnBuildingInfo.Subscribe(infoKey =>
+        {
+            Callable.From(() =>
+            {
+                if (!Node.IsInstanceValid(visualNode)) return;
+                BuildingInfoOverlay.Show(visualNode.GetTree(), infoKey);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }

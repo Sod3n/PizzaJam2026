@@ -36,7 +36,7 @@ public class GameplayScene : IScene
         var state = loop.State;
 
         float center = 0f;
-        float halfSize = StarGrid.OuterRadius + 5f; // Slightly larger than star bounds
+        float halfSize = StarGrid.OuterRadius + StarGrid.GridStep; // Ensure bounds cover farthest grid position
         float wallThickness = 1f;
 
         // Top Wall (Horizontal)

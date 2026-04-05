@@ -11,8 +11,8 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int Apple;
     [Export] public int Mushroom;
     [Export] public int Milk;
-    [Export] public int VitaminShake;
-    [Export] public int AppleYogurt;
+    [Export] public int CarrotMilkshake;
+    [Export] public int VitaminMix;
     [Export] public int PurplePotion;
     [Export] public int Coins;
     [Export] public int TotalBreedCount;
@@ -21,4 +21,5 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int LastFarmGX;
     [Export] public int LastFarmGY;
     [Export] public int HelpersSpawned;
+    [Export] public int NextLoveBreedCount;
 }

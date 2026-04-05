@@ -175,7 +175,7 @@ public class SkinsData : GameData<Skin>
             }
             else
             {
-                // Random mutation (80%)
+                // Random mutation (30%)
                 var skins = _skinsByType[type];
                 if (skins.Count == 0) continue;
 

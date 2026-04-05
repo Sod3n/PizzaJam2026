@@ -17,11 +17,13 @@ public static partial class HelperDefinition
         ref var component = ref ctx.GetComponent<HelperComponent>(entity);
         component.Type = helperType;
         component.OwnerPlayer = ownerPlayer;
+        component.WantedFoodType = -1;
         component.BagCapacity = helperType switch
         {
-            HelperType.Gatherer => 10,
-            HelperType.Seller => 5,
-            HelperType.Builder => 20,
+            HelperType.Gatherer => 75,
+            HelperType.Seller => 500,
+            HelperType.Builder => 500,
+            HelperType.Milker => 125,
             _ => 0 // Assistant has no bag
         };
 

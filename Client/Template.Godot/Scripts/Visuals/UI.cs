@@ -21,8 +21,8 @@ public partial class UI : CanvasLayer
     private RichTextLabel _carrotLabel;
     private RichTextLabel _appleLabel;
     private RichTextLabel _mushroomLabel;
-    private RichTextLabel _vitaminShakeLabel;
-    private RichTextLabel _appleYogurtLabel;
+    private RichTextLabel _carrotMilkshakeLabel;
+    private RichTextLabel _vitaminMixLabel;
     private RichTextLabel _purplePotionLabel;
 
     // Metrics nodes (optional — only bound if present in scene tree)
@@ -43,8 +43,8 @@ public partial class UI : CanvasLayer
         _carrotLabel = GetNode<RichTextLabel>("Control/BottomBar/Carrot");
         _appleLabel = GetNode<RichTextLabel>("Control/BottomBar/Apple");
         _mushroomLabel = GetNode<RichTextLabel>("Control/BottomBar/Mushroom");
-        _vitaminShakeLabel = GetNode<RichTextLabel>("Control/BottomBar/VitaminShake");
-        _appleYogurtLabel = GetNode<RichTextLabel>("Control/BottomBar/AppleYogurt");
+        _carrotMilkshakeLabel = GetNode<RichTextLabel>("Control/BottomBar/CarrotMilkshake");
+        _vitaminMixLabel = GetNode<RichTextLabel>("Control/BottomBar/VitaminMix");
         _purplePotionLabel = GetNode<RichTextLabel>("Control/BottomBar/PurplePotion");
 
         // Metrics labels (optional — null if not in scene)
@@ -129,12 +129,12 @@ public partial class UI : CanvasLayer
             Callable.From(() => _mushroomLabel.Text = $"{v}").CallDeferred()
         ).AddTo(_disposables);
 
-        vm.Resources.VitaminShake.Subscribe(v =>
-            Callable.From(() => _vitaminShakeLabel.Text = $"{v}").CallDeferred()
+        vm.Resources.CarrotMilkshake.Subscribe(v =>
+            Callable.From(() => _carrotMilkshakeLabel.Text = $"{v}").CallDeferred()
         ).AddTo(_disposables);
 
-        vm.Resources.AppleYogurt.Subscribe(v =>
-            Callable.From(() => _appleYogurtLabel.Text = $"{v}").CallDeferred()
+        vm.Resources.VitaminMix.Subscribe(v =>
+            Callable.From(() => _vitaminMixLabel.Text = $"{v}").CallDeferred()
         ).AddTo(_disposables);
 
         vm.Resources.PurplePotion.Subscribe(v =>

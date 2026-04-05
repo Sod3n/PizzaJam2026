@@ -699,7 +699,7 @@ public class BotSimulationTests
                     foreach (var _ in game.State.Filter<FinalStructureComponent>())
                     { fsState = "DONE"; break; }
 
-                _output.WriteLine($"[{tick / 3600f:F0}m] houses={houses} cows={cows}(housed={housed},exhaust={exhausted},wild={wild},follow={following}) helpers={helpers} lands={lands} coins={globalRes.Coins} food={globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom} milk={globalRes.Milk + globalRes.VitaminShake + globalRes.AppleYogurt + globalRes.PurplePotion} FS={fsState} | last={bot.LastAction} | {bot.ActionStats()}");
+                _output.WriteLine($"[{tick / 3600f:F0}m] houses={houses} cows={cows}(housed={housed},exhaust={exhausted},wild={wild},follow={following}) helpers={helpers} lands={lands} coins={globalRes.Coins} food={globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom} milk={globalRes.Milk + globalRes.CarrotMilkshake + globalRes.VitaminMix + globalRes.PurplePotion} FS={fsState} | last={bot.LastAction} | {bot.ActionStats()}");
             }
 
             bot.PreTick(tick);

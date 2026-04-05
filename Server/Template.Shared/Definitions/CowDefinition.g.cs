@@ -36,6 +36,10 @@ public static partial class CowDefinition
         component.FollowTarget = Entity.Null;
         component.PreferredFood = 0;
         component.IsDepressed = false;
+        component.DepressionTicksRemaining = 0;
+        component.LoveTarget = Entity.Null;
+        component.ParentA = Entity.Null;
+        component.ParentB = Entity.Null;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

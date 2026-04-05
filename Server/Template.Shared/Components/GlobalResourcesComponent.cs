@@ -12,8 +12,8 @@ public struct GlobalResourcesComponent : IComponent
     public int Apple;
     public int Mushroom;
     public int Milk;
-    public int VitaminShake;
-    public int AppleYogurt;
+    public int CarrotMilkshake;
+    public int VitaminMix;
     public int PurplePotion;
     public int Coins;
     public int TotalBreedCount; // Global breed counter — used for helper unlock thresholds
@@ -29,6 +29,7 @@ public struct GlobalResourcesComponent : IComponent
     public const int MilkerUnlockBreed = 10;
     public const int GuaranteedMegaBreed = 12;
     public int HelpersSpawned; // How many helpers have been spawned (index into unlock sequence)
+    public int NextLoveBreedCount; // Breed count at which the next love event triggers (0 = not yet set)
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)
@@ -74,9 +75,35 @@ public struct GlobalResourcesComponent : IComponent
         switch (milkProduct)
         {
             case MilkProduct.Milk: Milk += amount; break;
-            case MilkProduct.VitaminShake: VitaminShake += amount; break;
-            case MilkProduct.AppleYogurt: AppleYogurt += amount; break;
+            case MilkProduct.CarrotMilkshake: CarrotMilkshake += amount; break;
+            case MilkProduct.VitaminMix: VitaminMix += amount; break;
             case MilkProduct.PurplePotion: PurplePotion += amount; break;
+        }
+    }
+
+    /// <summary>Get the amount of a specific milk product.</summary>
+    public int GetMilkProduct(int milkProduct)
+    {
+        return milkProduct switch
+        {
+            MilkProduct.Milk => Milk,
+            MilkProduct.CarrotMilkshake => CarrotMilkshake,
+            MilkProduct.VitaminMix => VitaminMix,
+            MilkProduct.PurplePotion => PurplePotion,
+            _ => 0
+        };
+    }
+
+    /// <summary>Consume 1 unit of a specific milk product. Returns false if none available.</summary>
+    public bool ConsumeMilkProduct(int milkProduct)
+    {
+        switch (milkProduct)
+        {
+            case MilkProduct.Milk: if (Milk <= 0) return false; Milk--; return true;
+            case MilkProduct.CarrotMilkshake: if (CarrotMilkshake <= 0) return false; CarrotMilkshake--; return true;
+            case MilkProduct.VitaminMix: if (VitaminMix <= 0) return false; VitaminMix--; return true;
+            case MilkProduct.PurplePotion: if (PurplePotion <= 0) return false; PurplePotion--; return true;
+            default: return false;
         }
     }
 
@@ -84,14 +111,14 @@ public struct GlobalResourcesComponent : IComponent
     public bool HasAnyFood() => Grass > 0 || Carrot > 0 || Apple > 0 || Mushroom > 0;
 
     /// <summary>Check if any milk product is available.</summary>
-    public bool HasAnyMilkProduct() => Milk > 0 || VitaminShake > 0 || AppleYogurt > 0 || PurplePotion > 0;
+    public bool HasAnyMilkProduct() => Milk > 0 || CarrotMilkshake > 0 || VitaminMix > 0 || PurplePotion > 0;
 
     /// <summary>Consume 1 of any milk product. Returns true if consumed.</summary>
     public bool ConsumeAnyMilkProduct()
     {
         if (Milk > 0) { Milk--; return true; }
-        if (VitaminShake > 0) { VitaminShake--; return true; }
-        if (AppleYogurt > 0) { AppleYogurt--; return true; }
+        if (CarrotMilkshake > 0) { CarrotMilkshake--; return true; }
+        if (VitaminMix > 0) { VitaminMix--; return true; }
         if (PurplePotion > 0) { PurplePotion--; return true; }
         return false;
     }
@@ -101,8 +128,8 @@ public struct GlobalResourcesComponent : IComponent
     {
         // Sell most valuable first
         if (PurplePotion > 0) { PurplePotion--; return MilkProduct.CoinValue(MilkProduct.PurplePotion); }
-        if (AppleYogurt > 0) { AppleYogurt--; return MilkProduct.CoinValue(MilkProduct.AppleYogurt); }
-        if (VitaminShake > 0) { VitaminShake--; return MilkProduct.CoinValue(MilkProduct.VitaminShake); }
+        if (VitaminMix > 0) { VitaminMix--; return MilkProduct.CoinValue(MilkProduct.VitaminMix); }
+        if (CarrotMilkshake > 0) { CarrotMilkshake--; return MilkProduct.CoinValue(MilkProduct.CarrotMilkshake); }
         if (Milk > 0) { Milk--; return MilkProduct.CoinValue(MilkProduct.Milk); }
         return 0;
     }

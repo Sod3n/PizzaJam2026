@@ -149,7 +149,7 @@
     "type": "Top",
     "weight": 20,
     "empty": null,
-    "exhaust": 4
+    "exhaust": 6
   },
   "20": {
     "id": 20,
@@ -157,7 +157,7 @@
     "type": "Top",
     "weight": 5,
     "empty": null,
-    "exhaust": 14
+    "exhaust": 35
   },
   "21": {
     "id": 21,
@@ -165,7 +165,7 @@
     "type": "Top",
     "weight": 7,
     "empty": null,
-    "exhaust": 12
+    "exhaust": 25
   },
   "22": {
     "id": 22,
@@ -173,7 +173,7 @@
     "type": "Top",
     "weight": 5,
     "empty": null,
-    "exhaust": 14
+    "exhaust": 35
   },
   "23": {
     "id": 23,
@@ -181,7 +181,7 @@
     "type": "Top",
     "weight": 7,
     "empty": null,
-    "exhaust": 12
+    "exhaust": 25
   },
   "24": {
     "id": 24,
@@ -189,7 +189,7 @@
     "type": "Top",
     "weight": 2,
     "empty": null,
-    "exhaust": 58
+    "exhaust": 75
   },
   "25": {
     "id": 25,
@@ -237,13 +237,13 @@
     "type": "Top",
     "weight": 10,
     "empty": null,
-    "exhaust": 9
+    "exhaust": 15
   },
   "33": {
     "id": 33,
     "path": "Hand/_____46",
     "type": "Hand",
-    "weight": 20,
+    "weight": 1,
     "empty": null,
     "exhaust": 1
   },
@@ -251,7 +251,7 @@
     "id": 34,
     "path": "Hand/_____47",
     "type": "Hand",
-    "weight": 10,
+    "weight": 1,
     "empty": null,
     "exhaust": 3
   },
@@ -259,7 +259,7 @@
     "id": 35,
     "path": "Hand/_____53",
     "type": "Hand",
-    "weight": 10,
+    "weight": 1,
     "empty": null,
     "exhaust": 3
   },
@@ -269,7 +269,7 @@
     "type": "Top",
     "weight": 5,
     "empty": null,
-    "exhaust": 14
+    "exhaust": 35
   },
   "37": {
     "id": 37,
@@ -277,13 +277,13 @@
     "type": "Top",
     "weight": 5,
     "empty": null,
-    "exhaust": 14
+    "exhaust": 35
   },
   "38": {
     "id": 38,
     "path": "",
     "type": "BackHair",
-    "weight": 15,
+    "weight": 1,
     "empty": null,
     "exhaust": 0
   },
@@ -291,7 +291,7 @@
     "id": 39,
     "path": "",
     "type": "Hand",
-    "weight": 15,
+    "weight": 1,
     "empty": null,
     "exhaust": 0
   },
@@ -299,7 +299,7 @@
     "id": 40,
     "path": "Back_hair/1",
     "type": "BackHair",
-    "weight": 20,
+    "weight": 1,
     "empty": null,
     "exhaust": 1
   },
@@ -307,7 +307,7 @@
     "id": 41,
     "path": "Back_hair/2",
     "type": "BackHair",
-    "weight": 10,
+    "weight": 1,
     "empty": null,
     "exhaust": 3
   },
@@ -315,7 +315,7 @@
     "id": 42,
     "path": "Back_hair/3",
     "type": "BackHair",
-    "weight": 10,
+    "weight": 1,
     "empty": null,
     "exhaust": 3
   }

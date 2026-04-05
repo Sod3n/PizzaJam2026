@@ -4,18 +4,18 @@
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="2_s4hiu"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="3_6r21p"]
 [ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="5_5xdiy"]
-[ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="6_d3vyn"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://bm7b5tl6sss0d" path="res://Scripts/Framework/Components/HouseComponentNode.cs" id="fw_house"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_bwe53"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gevk7"]
 render_priority = -1
 shader = ExtResource("1_eavrv")
 shader_parameter/albedo_texture = ExtResource("5_5xdiy")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_gevk7"]
 animations = [{
@@ -25,32 +25,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("2_s4hiu")
-}],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_d3vyn"]
-region = Rect2(0, 250, 1033, 674)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_p28da"]
-region = Rect2(0, 1514, 1033, 757)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_5xdiy"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("6_d3vyn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_d3vyn")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_p28da")
-}, {
-"duration": 1.0,
-"texture": null
 }],
 "loop": true,
 "name": &"default",
@@ -77,25 +51,17 @@ ShapeHeight = 2.0
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=78079650]
 transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.3162969, -0.7434305)
-material_override = SubResource("ShaderMaterial_bwe53")
+material_override = SubResource("ShaderMaterial_gevk7")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_gevk7")
 frame_progress = 0.54646957
 script = ExtResource("3_6r21p")
 
 [node name="Capacity" type="Label3D" parent="." unique_id=1555101329]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8882186, 2.1158667, 0)
 no_depth_test = true
 render_priority = 2
 outline_render_priority = 1
 text = "10/10"
 font_size = 128
 horizontal_alignment = 0
-
-[node name="Skin2" type="AnimatedSprite3D" parent="." unique_id=1382611059]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 2.9802327e-09, 0, -2.9802327e-09, 0.2, -0.74465454, 2.3296936, 0.173539)
-sorting_offset = -10.0
-alpha_cut = 2
-texture_filter = 0
-sprite_frames = SubResource("SpriteFrames_5xdiy")
-script = ExtResource("3_6r21p")

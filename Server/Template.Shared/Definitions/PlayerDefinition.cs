@@ -26,6 +26,9 @@ public static partial class PlayerDefinition
         body.Velocity = Vector2.Zero;
         body.UpDirection = new Vector2(0, -1);
 
+        // Add a NameComponent so UI lookups (e.g. breed result "Pet of …") resolve the player name
+        ctx.AddComponent(entity, new NameComponent { Name = new FixedString32("Andrey") });
+
         // Set return position now that we have the final position
         ref var ps = ref ctx.GetComponent<PlayerStateComponent>(entity);
         ps.ReturnPosition = position;

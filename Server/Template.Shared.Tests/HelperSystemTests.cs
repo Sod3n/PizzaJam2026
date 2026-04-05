@@ -82,7 +82,7 @@ public class HelperSystemTests
     // ─── Gatherer Tests ───
 
     [Fact]
-    public void Gatherer_ShouldCollectFoodAndDeposit()
+    public void Gatherer_ShouldCollectFoodAndWaitForPickup()
     {
         var game = CreateGame();
         var userId = System.Guid.NewGuid();
@@ -106,15 +106,7 @@ public class HelperSystemTests
             grass.MaxDurability = 20;
         }
 
-        // Get initial global resources
-        int initialGrass = 0;
-        foreach (var e in game.State.Filter<GlobalResourcesComponent>())
-        {
-            initialGrass = game.State.GetComponent<GlobalResourcesComponent>(e).Grass;
-            break;
-        }
-
-        _output.WriteLine($"Initial grass: {initialGrass}");
+        _output.WriteLine($"Starting gatherer test...");
 
         for (int tick = 0; tick < 600; tick++)
         {
@@ -128,15 +120,19 @@ public class HelperSystemTests
             }
         }
 
-        int finalGrass = 0;
-        foreach (var e in game.State.Filter<GlobalResourcesComponent>())
-        {
-            finalGrass = game.State.GetComponent<GlobalResourcesComponent>(e).Grass;
-            break;
-        }
+        var finalHelper = game.State.GetComponent<HelperComponent>(gatherer);
+        _output.WriteLine($"Final: State={finalHelper.State} BagGrass={finalHelper.BagGrass}");
 
-        _output.WriteLine($"Final grass: {finalGrass}");
-        finalGrass.Should().BeGreaterThan(initialGrass, "Gatherer should have deposited food");
+        // Gatherer should have collected food into its bag and be waiting for pickup (or still collecting)
+        int totalFood = finalHelper.GetFoodTotal();
+        totalFood.Should().BeGreaterThan(0, "Gatherer should have food in its bag");
+
+        // If bag is full, should be in WaitingForPickup or Returning state
+        if (finalHelper.IsBagFull())
+        {
+            finalHelper.State.Should().BeOneOf(new[] { HelperState.Returning, HelperState.WaitingForPickup },
+                "Gatherer with full bag should be returning or waiting for pickup");
+        }
     }
 
     [Fact]
@@ -167,35 +163,23 @@ public class HelperSystemTests
     // ─── Seller Tests ───
 
     [Fact]
-    public void Seller_ShouldSellMilkAndDepositCoins()
+    public void Seller_ShouldSellMilkAndReturnWithCoins()
     {
         var game = CreateGame();
         var userId = System.Guid.NewGuid();
         var player = SpawnPlayer(game, userId);
         var ctx = new Context(game.State, Entity.Null, null!);
 
-        // Give player some milk
-        foreach (var e in game.State.Filter<GlobalResourcesComponent>())
-        {
-            ref var global = ref game.State.GetComponent<GlobalResourcesComponent>(e);
-            global.Milk = 5;
-            break;
-        }
-
-        // Spawn seller near player
+        // Spawn seller near player and directly load milk into its bag
+        // (Seller now requires player interaction to receive milk, like builder needs coins)
         var seller = HelperDefinition.Create(ctx, new Vector2(0, 0), HelperType.Seller, player);
+        ref var sellerComp = ref game.State.GetComponent<HelperComponent>(seller);
+        sellerComp.BagMilk = 5;
 
         // Need a sell point nearby
         SellPointDefinition.Create(ctx, new Vector2(10, 0));
 
-        int initialCoins = 0;
-        foreach (var e in game.State.Filter<GlobalResourcesComponent>())
-        {
-            initialCoins = game.State.GetComponent<GlobalResourcesComponent>(e).Coins;
-            break;
-        }
-
-        _output.WriteLine($"Initial coins: {initialCoins}, milk: 5");
+        _output.WriteLine($"Initial: BagMilk=5, BagCoins=0");
 
         for (int tick = 0; tick < 300; tick++)
         {
@@ -209,18 +193,13 @@ public class HelperSystemTests
             }
         }
 
-        int finalCoins = 0;
-        int finalMilk = 0;
-        foreach (var e in game.State.Filter<GlobalResourcesComponent>())
-        {
-            var global = game.State.GetComponent<GlobalResourcesComponent>(e);
-            finalCoins = global.Coins;
-            finalMilk = global.Milk;
-            break;
-        }
+        var finalHelper = game.State.GetComponent<HelperComponent>(seller);
+        _output.WriteLine($"Final: State={finalHelper.State} BagMilk={finalHelper.BagMilk} BagCoins={finalHelper.BagCoins}");
 
-        _output.WriteLine($"Final coins: {finalCoins}, milk: {finalMilk}");
-        finalCoins.Should().BeGreaterThan(initialCoins, "Seller should have earned coins from selling milk");
+        // Seller should have sold milk and have coins in bag (or be waiting for pickup)
+        // Either coins are in bag or already deposited, milk should be consumed
+        (finalHelper.BagCoins > 0 || finalHelper.BagMilk < 5).Should().BeTrue(
+            "Seller should have sold at least some milk and earned coins");
     }
 
     // ─── Builder Tests ───

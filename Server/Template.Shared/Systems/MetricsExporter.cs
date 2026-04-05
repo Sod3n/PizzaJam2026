@@ -18,7 +18,7 @@ public class MetricsExporter
     private const string Header =
         "Tick,Seconds,Minutes," +
         "Grass,Carrot,Apple,Mushroom,TotalFood," +
-        "Milk,VitaminShake,AppleYogurt,PurplePotion,TotalMilk," +
+        "Milk,CarrotMilkshake,VitaminMix,PurplePotion,TotalMilk," +
         "Coins,CumFood,CumMilk,CumCoins," +
         "Houses,LoveHouses,SellPoints,FoodFarms,Helpers,Pets," +
         "Cows,HousedCows,WildCows," +
@@ -60,19 +60,19 @@ public class MetricsExporter
 
         // Find GlobalResourcesComponent
         int grass = 0, carrot = 0, apple = 0, mushroom = 0;
-        int milk = 0, vitaminShake = 0, appleYogurt = 0, purplePotion = 0;
+        int milk = 0, carrotMilkshake = 0, vitaminMix = 0, purplePotion = 0;
         int coins = 0;
         foreach (var e in state.Filter<GlobalResourcesComponent>())
         {
             var r = state.GetComponent<GlobalResourcesComponent>(e);
             grass = r.Grass; carrot = r.Carrot; apple = r.Apple; mushroom = r.Mushroom;
-            milk = r.Milk; vitaminShake = r.VitaminShake; appleYogurt = r.AppleYogurt; purplePotion = r.PurplePotion;
+            milk = r.Milk; carrotMilkshake = r.CarrotMilkshake; vitaminMix = r.VitaminMix; purplePotion = r.PurplePotion;
             coins = r.Coins;
             break;
         }
 
         int totalFood = grass + carrot + apple + mushroom;
-        int totalMilk = milk + vitaminShake + appleYogurt + purplePotion;
+        int totalMilk = milk + carrotMilkshake + vitaminMix + purplePotion;
 
         if (!_headerWritten)
         {
@@ -92,7 +92,7 @@ public class MetricsExporter
             "{33}",
             m.ElapsedTicks, m.ElapsedTicks / 60f, m.ElapsedTicks / 3600f,
             grass, carrot, apple, mushroom, totalFood,
-            milk, vitaminShake, appleYogurt, purplePotion, totalMilk,
+            milk, carrotMilkshake, vitaminMix, purplePotion, totalMilk,
             coins, m.CumFood, m.CumMilk, m.CumCoins,
             m.Houses, m.LoveHouses, m.SellPoints, m.FoodFarms, m.Helpers, m.Pets,
             m.Cows, m.HousedCows, m.WildCows,

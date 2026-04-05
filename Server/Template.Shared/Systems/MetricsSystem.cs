@@ -23,7 +23,7 @@ public class MetricsSystem : ISystem
             {
                 var r = state.GetComponent<GlobalResourcesComponent>(e);
                 curFood = r.Grass + r.Carrot + r.Apple + r.Mushroom;
-                curMilk = r.Milk + r.VitaminShake + r.AppleYogurt + r.PurplePotion;
+                curMilk = r.Milk + r.CarrotMilkshake + r.VitaminMix + r.PurplePotion;
                 curCoins = r.Coins;
                 break;
             }

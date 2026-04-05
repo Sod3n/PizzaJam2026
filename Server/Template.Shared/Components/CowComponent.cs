@@ -18,6 +18,10 @@ public struct CowComponent : IComponent
     public Vector2 SpawnPosition;
     public Entity FollowingPlayer;
     public Entity FollowTarget; // Entity this cow actually follows (player or previous cow in chain)
-    public int PreferredFood; // FoodType constant — this cow's preferred food gives 3x milk output
-    public bool IsDepressed;  // Depressed after failed breed — hides in house, can't interact until exhaust recovers to 0
+    public int PreferredFood; // FoodType constant — this cow's preferred food gives 2x milk output
+    public bool IsDepressed;  // Depressed after failed breed — hides in house, can't interact until timer expires
+    public int DepressionTicksRemaining; // Countdown timer for depression recovery (1800 ticks = 30s at 60 TPS)
+    public Entity LoveTarget; // Entity of the cow this cow is in love with (guaranteed upgrade when bred together)
+    public Entity ParentA; // First parent entity (Entity.Null for wild/starter cows)
+    public Entity ParentB; // Second parent entity (Entity.Null for wild/starter cows)
 }

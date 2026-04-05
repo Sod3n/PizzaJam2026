@@ -21,6 +21,7 @@ public static class LandType
     public const int UpgradeSeller = 10;
     public const int UpgradeAssistant = 11; // Late-game: x5 click speed (x10 with HelperAssistant)
     public const int Decoration = 12;       // Stub building — costs coins but doesn't house cows
+    public const int Warehouse = 13;        // Warehouse — helpers auto-deposit resources when enabled
 
     /// <summary>Get the FoodType this farm land type produces, or -1 if not a farm.</summary>
     public static int GetFoodType(int landType)
