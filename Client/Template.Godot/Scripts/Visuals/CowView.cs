@@ -78,7 +78,7 @@ public partial class CowView
         // Heart icon — visible above cow when it is part of a love pair (either lover or target)
         var heartIcon = new Sprite3D();
         heartIcon.Texture = _heartSprite;
-        heartIcon.PixelSize = 0.005f;
+        heartIcon.PixelSize = 0.0005f;
         heartIcon.Billboard = BaseMaterial3D.BillboardModeEnum.Enabled;
         heartIcon.AlphaCut = SpriteBase3D.AlphaCutMode.OpaquePrepass;
         heartIcon.Shaded = false;

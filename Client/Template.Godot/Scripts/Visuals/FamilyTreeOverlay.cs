@@ -146,13 +146,8 @@ public partial class FamilyTreeOverlay : CanvasLayer
             int hType = helper.Type;
             string subtitle = hType >= 0 && hType < HelperTypeNames.Length ? HelperTypeNames[hType] : "Helper";
 
-            Entity parentA = Entity.Null, parentB = Entity.Null;
-            if (state.HasComponent<CowComponent>(entity))
-            {
-                var cow = state.GetComponent<CowComponent>(entity);
-                parentA = cow.ParentA;
-                parentB = cow.ParentB;
-            }
+            Entity parentA = helper.ParentA;
+            Entity parentB = helper.ParentB;
 
             _nodes[entity.Id] = new CowNode
             {
@@ -427,9 +422,9 @@ public partial class FamilyTreeOverlay : CanvasLayer
             {
                 if (!IsInstanceValid(charNode)) return;
                 charNode.Call("stop_idle");
-                _StripPixelShaders(charNode);
                 SkinVisualizer.UpdateSkins(charNode, node.Skin.Value.Skins);
                 SkinVisualizer.UpdateColors(charNode, node.Skin.Value.Colors);
+                _StripPixelShaders(charNode);
                 viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.Once;
             }).CallDeferred();
 

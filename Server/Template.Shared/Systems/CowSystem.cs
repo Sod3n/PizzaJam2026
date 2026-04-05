@@ -471,6 +471,9 @@ public class CowSystem : ISystem
                     var ctx = new Context(state, playerEntity, null!);
 
                     babyHelper = Definitions.HelperDefinition.Create(ctx, spawnPos, neededHelper, playerEntity);
+                    ref var helperComp = ref state.GetComponent<HelperComponent>(babyHelper);
+                    helperComp.ParentA = cow1;
+                    helperComp.ParentB = cow2;
                     state.AddComponent(babyHelper, new BreedBornComponent());
                     ref var gr2 = ref state.GetComponent<GlobalResourcesComponent>(globalResEntity);
                     gr2.HelpersSpawned++;

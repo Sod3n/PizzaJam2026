@@ -466,9 +466,12 @@ public class HelperSystem : ISystem
             navAgent.IsNavigationFinished = false;
         }
 
-        // Apply navigation velocity to character body (computed by NavigationSystem)
+        // Apply navigation velocity with ORCA avoidance against the player.
+        // Without this, autonomous helpers steer straight through the player
+        // since the player is not a static obstacle in the navmesh.
+        var vel = SwarmFollow.ApplyOrcaForNav(state, entity, myPos, navAgent.Velocity);
         ref var charBody = ref state.GetComponent<CharacterBody2D>(entity);
-        charBody.Velocity = navAgent.Velocity;
+        charBody.Velocity = vel;
 
         // Face movement direction
         if (navAgent.Velocity.SqrMagnitude > (Float)0.01f)

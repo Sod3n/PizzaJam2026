@@ -53,6 +53,10 @@ public struct HelperComponent : IComponent
     /// </summary>
     public int WantedFoodType;
 
+    // Breeding lineage — which cows were bred to produce this helper
+    public Entity ParentA;
+    public Entity ParentB;
+
     public int GetBagTotal() => BagGrass + BagCarrot + BagApple + BagMushroom
                               + BagMilk + BagCarrotMilkshake + BagVitaminMix + BagPurplePotion
                               + BagCoins;

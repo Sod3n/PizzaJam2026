@@ -139,6 +139,15 @@ public static class SwarmFollow
 
     // ─── ORCA: adjust velocity to avoid collision with moving neighbors ───
 
+    /// <summary>
+    /// Public ORCA avoidance for use during autonomous navigation (non-Follow helpers).
+    /// Deflects velocity away from nearby helpers, cows, and the player.
+    /// </summary>
+    public static Vector2 ApplyOrcaForNav(EntityWorld state, Entity self, Vector2 myPos, Vector2 vel)
+    {
+        return ApplyOrca(state, self, myPos, vel);
+    }
+
     private static Vector2 ApplyOrca(EntityWorld state, Entity self, Vector2 myPos, Vector2 vel)
     {
         var adj = vel;

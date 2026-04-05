@@ -43,6 +43,8 @@ public static partial class HelperDefinition
         component.BagCoins = 0;
         component.BagCapacity = 0;
         component.WantedFoodType = 0;
+        component.ParentA = Entity.Null;
+        component.ParentB = Entity.Null;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

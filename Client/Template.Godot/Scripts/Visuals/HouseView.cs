@@ -34,20 +34,8 @@ public partial class HouseView
             }).AddTo(vm.Disposables);
         }
 
-        // Cow name label — shows the name of the cow assigned to this house
-        var cowNameLabel = new Label3D();
-        cowNameLabel.Text = "";
-        cowNameLabel.FontSize = 72;
-        cowNameLabel.Modulate = new Color(1f, 0.95f, 0.8f, 0.95f);
-        cowNameLabel.OutlineModulate = new Color(0.2f, 0.15f, 0.1f, 1f);
-        cowNameLabel.OutlineSize = 4;
-        cowNameLabel.Position = new Vector3(0, 2.8f, 0);
-        cowNameLabel.NoDepthTest = true;
-        cowNameLabel.RenderPriority = 3;
-        cowNameLabel.OutlineRenderPriority = 2;
-        cowNameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        cowNameLabel.Visible = false;
-        visualNode.AddChild(cowNameLabel);
+        // Cow name label — defined in House.tscn
+        var cowNameLabel = visualNode.GetNodeOrNull<Label3D>("CowName");
 
         vm.House.House.CowId.Subscribe(cowIdInt =>
         {
