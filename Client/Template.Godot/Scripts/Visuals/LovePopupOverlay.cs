@@ -47,11 +47,11 @@ public partial class LovePopupOverlay : CanvasLayer
         panel.CustomMinimumSize = new Vector2(420, 0);
 
         var styleBox = new StyleBoxFlat();
-        styleBox.BgColor = new Color(0.15f, 0.05f, 0.1f, 0.92f);
-        styleBox.CornerRadiusTopLeft = 16;
-        styleBox.CornerRadiusTopRight = 16;
-        styleBox.CornerRadiusBottomLeft = 16;
-        styleBox.CornerRadiusBottomRight = 16;
+        styleBox.BgColor = UITheme.PanelBg;
+        styleBox.CornerRadiusTopLeft = UITheme.CornerRadius;
+        styleBox.CornerRadiusTopRight = UITheme.CornerRadius;
+        styleBox.CornerRadiusBottomLeft = UITheme.CornerRadius;
+        styleBox.CornerRadiusBottomRight = UITheme.CornerRadius;
         styleBox.ContentMarginLeft = 32;
         styleBox.ContentMarginRight = 32;
         styleBox.ContentMarginTop = 24;
@@ -78,7 +78,7 @@ public partial class LovePopupOverlay : CanvasLayer
         nameLabel.Text = loverName;
         nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
         nameLabel.AddThemeFontSizeOverride("font_size", 28);
-        nameLabel.AddThemeColorOverride("font_color", new Color(1f, 0.7f, 0.8f));
+        UITheme.StyleLabel(nameLabel);
         vbox.AddChild(nameLabel);
 
         // Love message
@@ -86,7 +86,7 @@ public partial class LovePopupOverlay : CanvasLayer
         msgLabel.Text = $"Hey I really like {targetName}!";
         msgLabel.HorizontalAlignment = HorizontalAlignment.Center;
         msgLabel.AddThemeFontSizeOverride("font_size", 22);
-        msgLabel.AddThemeColorOverride("font_color", Colors.White);
+        UITheme.StyleLabel(msgLabel);
         msgLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         vbox.AddChild(msgLabel);
 
@@ -95,7 +95,7 @@ public partial class LovePopupOverlay : CanvasLayer
         hintLabel.Text = "Breed them together for a guaranteed upgrade!";
         hintLabel.HorizontalAlignment = HorizontalAlignment.Center;
         hintLabel.AddThemeFontSizeOverride("font_size", 14);
-        hintLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.5f, 0.55f));
+        UITheme.StyleLabel(hintLabel, false);
         hintLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         vbox.AddChild(hintLabel);
 
@@ -103,12 +103,12 @@ public partial class LovePopupOverlay : CanvasLayer
         dismissHint.Text = "Tap to dismiss";
         dismissHint.HorizontalAlignment = HorizontalAlignment.Center;
         dismissHint.AddThemeFontSizeOverride("font_size", 14);
-        dismissHint.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.55f));
+        UITheme.StyleLabel(dismissHint, false);
         vbox.AddChild(dismissHint);
 
         // Full-screen background
         var background = new ColorRect();
-        background.Color = new Color(0.1f, 0, 0.05f, 0.4f);
+        background.Color = UITheme.OverlayDim;
         background.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 
         var root = new Control();

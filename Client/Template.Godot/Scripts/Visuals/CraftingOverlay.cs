@@ -124,7 +124,7 @@ public partial class CraftingOverlay : CanvasLayer
 
         // Dim background
         var bg = new ColorRect();
-        bg.Color = new Color(0, 0, 0, 0.55f);
+        bg.Color = UITheme.OverlayDim;
         bg.SetAnchorsPreset(Control.LayoutPreset.FullRect);
         root.AddChild(bg);
 
@@ -136,11 +136,11 @@ public partial class CraftingOverlay : CanvasLayer
         panel.CustomMinimumSize = new Vector2(520, 0);
 
         var panelStyle = new StyleBoxFlat();
-        panelStyle.BgColor = new Color(0.08f, 0.1f, 0.14f, 0.95f);
-        panelStyle.CornerRadiusTopLeft = 16;
-        panelStyle.CornerRadiusTopRight = 16;
-        panelStyle.CornerRadiusBottomLeft = 16;
-        panelStyle.CornerRadiusBottomRight = 16;
+        panelStyle.BgColor = UITheme.PanelBg;
+        panelStyle.CornerRadiusTopLeft = UITheme.CornerRadius;
+        panelStyle.CornerRadiusTopRight = UITheme.CornerRadius;
+        panelStyle.CornerRadiusBottomLeft = UITheme.CornerRadius;
+        panelStyle.CornerRadiusBottomRight = UITheme.CornerRadius;
         panelStyle.ContentMarginLeft = 28;
         panelStyle.ContentMarginRight = 28;
         panelStyle.ContentMarginTop = 20;
@@ -157,7 +157,7 @@ public partial class CraftingOverlay : CanvasLayer
         title.Text = "Crafting Recipes";
         title.HorizontalAlignment = HorizontalAlignment.Center;
         title.AddThemeFontSizeOverride("font_size", 28);
-        title.AddThemeColorOverride("font_color", new Color(0.95f, 0.9f, 0.75f));
+        UITheme.StyleLabel(title);
         outerVBox.AddChild(title);
 
         // Subtitle
@@ -165,7 +165,7 @@ public partial class CraftingOverlay : CanvasLayer
         subtitle.Text = "Milking Chain";
         subtitle.HorizontalAlignment = HorizontalAlignment.Center;
         subtitle.AddThemeFontSizeOverride("font_size", 16);
-        subtitle.AddThemeColorOverride("font_color", new Color(0.6f, 0.65f, 0.7f));
+        UITheme.StyleLabel(subtitle, false);
         outerVBox.AddChild(subtitle);
 
         // Separator
@@ -189,7 +189,7 @@ public partial class CraftingOverlay : CanvasLayer
         hint.Text = "Press C or Escape to close";
         hint.HorizontalAlignment = HorizontalAlignment.Center;
         hint.AddThemeFontSizeOverride("font_size", 14);
-        hint.AddThemeColorOverride("font_color", new Color(0.45f, 0.45f, 0.5f));
+        UITheme.StyleLabel(hint, false);
         outerVBox.AddChild(hint);
 
         // Fade in
@@ -205,11 +205,11 @@ public partial class CraftingOverlay : CanvasLayer
         // Row container with dark background
         var rowPanel = new PanelContainer();
         var rowStyle = new StyleBoxFlat();
-        rowStyle.BgColor = new Color(0.12f, 0.14f, 0.2f, 0.8f);
-        rowStyle.CornerRadiusTopLeft = 8;
-        rowStyle.CornerRadiusTopRight = 8;
-        rowStyle.CornerRadiusBottomLeft = 8;
-        rowStyle.CornerRadiusBottomRight = 8;
+        rowStyle.BgColor = UITheme.CardBg;
+        rowStyle.CornerRadiusTopLeft = UITheme.CornerRadius;
+        rowStyle.CornerRadiusTopRight = UITheme.CornerRadius;
+        rowStyle.CornerRadiusBottomLeft = UITheme.CornerRadius;
+        rowStyle.CornerRadiusBottomRight = UITheme.CornerRadius;
         rowStyle.ContentMarginLeft = 12;
         rowStyle.ContentMarginRight = 12;
         rowStyle.ContentMarginTop = 8;
@@ -291,7 +291,7 @@ public partial class CraftingOverlay : CanvasLayer
         label.Text = labelText;
         label.HorizontalAlignment = HorizontalAlignment.Center;
         label.AddThemeFontSizeOverride("font_size", 11);
-        label.AddThemeColorOverride("font_color", new Color(0.75f, 0.75f, 0.8f));
+        UITheme.StyleLabel(label, false);
         vbox.AddChild(label);
 
         return vbox;

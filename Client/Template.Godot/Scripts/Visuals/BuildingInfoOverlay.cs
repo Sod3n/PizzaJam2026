@@ -70,11 +70,10 @@ public partial class BuildingInfoOverlay : CanvasLayer
 
         // Theme override for rounded dark background
         var styleBox = new StyleBoxFlat();
-        styleBox.BgColor = new Color(0.1f, 0.1f, 0.15f, 0.92f);
-        styleBox.CornerRadiusTopLeft = 16;
-        styleBox.CornerRadiusTopRight = 16;
-        styleBox.CornerRadiusBottomLeft = 16;
-        styleBox.CornerRadiusBottomRight = 16;
+        styleBox.BgColor = UITheme.PanelBg;
+        styleBox.BorderColor = UITheme.Border;
+        styleBox.SetBorderWidthAll(UITheme.BorderWidth);
+        styleBox.SetCornerRadiusAll(UITheme.CornerRadius);
         styleBox.ContentMarginLeft = 32;
         styleBox.ContentMarginRight = 32;
         styleBox.ContentMarginTop = 24;
@@ -89,14 +88,14 @@ public partial class BuildingInfoOverlay : CanvasLayer
         _nameLabel.Text = buildingName;
         _nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
         _nameLabel.AddThemeFontSizeOverride("font_size", 32);
-        _nameLabel.AddThemeColorOverride("font_color", Colors.White);
+        UITheme.StyleLabel(_nameLabel);
         vbox.AddChild(_nameLabel);
 
         _descLabel = new Label();
         _descLabel.Text = description;
         _descLabel.HorizontalAlignment = HorizontalAlignment.Center;
         _descLabel.AddThemeFontSizeOverride("font_size", 20);
-        _descLabel.AddThemeColorOverride("font_color", new Color(0.8f, 0.8f, 0.85f));
+        UITheme.StyleLabel(_descLabel, false);
         _descLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         vbox.AddChild(_descLabel);
 
@@ -104,12 +103,12 @@ public partial class BuildingInfoOverlay : CanvasLayer
         hint.Text = "Tap to dismiss";
         hint.HorizontalAlignment = HorizontalAlignment.Center;
         hint.AddThemeFontSizeOverride("font_size", 14);
-        hint.AddThemeColorOverride("font_color", new Color(0.5f, 0.5f, 0.55f));
+        UITheme.StyleLabel(hint, false);
         vbox.AddChild(hint);
 
         // Full-screen background to catch clicks
         _background = new ColorRect();
-        _background.Color = new Color(0, 0, 0, 0.4f);
+        _background.Color = UITheme.OverlayDim;
         _background.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 
         // Add background first, then panel on top

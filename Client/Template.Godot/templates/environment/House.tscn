@@ -58,23 +58,23 @@ frame_progress = 0.54646957
 script = ExtResource("3_6r21p")
 
 [node name="CowName" type="Label3D" parent="." unique_id=16327977]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0077174306, 2.5890048, 0)
 no_depth_test = true
 render_priority = 3
 outline_render_priority = 2
-modulate = Color(1, 0.95, 0.8, 0.95)
-outline_modulate = Color(0.111957364, 0.07987375, 0.047772318, 1)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
 text = "Daisy"
-font_size = 72
+font_size = 128
 outline_size = 30
 
 [node name="Capacity" type="Label3D" parent="." unique_id=1555101329]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8882186, 2.1158667, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.010448039, 1.9048715, 0)
 no_depth_test = true
 render_priority = 2
 outline_render_priority = 1
-outline_modulate = Color(0.111957364, 0.07987375, 0.047772318, 1)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
 text = "10/10"
-font_size = 128
+font_size = 112
 outline_size = 30
-horizontal_alignment = 0

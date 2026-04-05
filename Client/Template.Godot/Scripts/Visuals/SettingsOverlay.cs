@@ -25,11 +25,11 @@ public partial class SettingsOverlay : CanvasLayer
     private HSlider _saySomethingSlider;
     private Label _saySomethingValueLabel;
 
-    // Colors
-    private static readonly Color TitleColor = new(0.95f, 0.9f, 0.75f);
-    private static readonly Color SectionColor = new(0.8f, 0.75f, 0.55f);
-    private static readonly Color LabelColor = new(0.75f, 0.75f, 0.8f);
-    private static readonly Color HintColor = new(0.45f, 0.45f, 0.5f);
+    // Colors (structural UI colors from shared theme)
+    private static readonly Color TitleColor = UITheme.Title;
+    private static readonly Color SectionColor = UITheme.Title;
+    private static readonly Color LabelColor = UITheme.Subtitle;
+    private static readonly Color HintColor = UITheme.Subtitle;
     private static readonly Color ConnectedColor = new(0.4f, 0.9f, 0.4f);
     private static readonly Color DisconnectedColor = new(0.7f, 0.7f, 0.7f);
 
@@ -70,7 +70,7 @@ public partial class SettingsOverlay : CanvasLayer
 
         // Dim background
         var bg = new ColorRect();
-        bg.Color = new Color(0, 0, 0, 0.6f);
+        bg.Color = UITheme.OverlayDim;
         bg.SetAnchorsPreset(Control.LayoutPreset.FullRect);
         root.AddChild(bg);
 
@@ -92,11 +92,11 @@ public partial class SettingsOverlay : CanvasLayer
         panel.CustomMinimumSize = new Vector2(520, 0);
 
         var panelStyle = new StyleBoxFlat();
-        panelStyle.BgColor = new Color(0.08f, 0.1f, 0.14f, 0.95f);
-        panelStyle.CornerRadiusTopLeft = 16;
-        panelStyle.CornerRadiusTopRight = 16;
-        panelStyle.CornerRadiusBottomLeft = 16;
-        panelStyle.CornerRadiusBottomRight = 16;
+        panelStyle.BgColor = UITheme.PanelBg;
+        panelStyle.CornerRadiusTopLeft = UITheme.CornerRadius;
+        panelStyle.CornerRadiusTopRight = UITheme.CornerRadius;
+        panelStyle.CornerRadiusBottomLeft = UITheme.CornerRadius;
+        panelStyle.CornerRadiusBottomRight = UITheme.CornerRadius;
         panelStyle.ContentMarginLeft = 28;
         panelStyle.ContentMarginRight = 28;
         panelStyle.ContentMarginTop = 20;
@@ -139,6 +139,8 @@ public partial class SettingsOverlay : CanvasLayer
         _nameCowsToggle.ButtonPressed = TwitchSettings.NameCowsFromChat;
         _nameCowsToggle.AddThemeFontSizeOverride("font_size", 16);
         _nameCowsToggle.AddThemeColorOverride("font_color", LabelColor);
+        _nameCowsToggle.AddThemeColorOverride("font_outline_color", UITheme.TextOutline);
+        _nameCowsToggle.AddThemeConstantOverride("outline_size", UITheme.TextOutlineSize);
         _nameCowsToggle.Toggled += on =>
         {
             TwitchSettings.NameCowsFromChat = on;
@@ -152,6 +154,8 @@ public partial class SettingsOverlay : CanvasLayer
         _enableRewardsToggle.ButtonPressed = TwitchSettings.EnableRewards;
         _enableRewardsToggle.AddThemeFontSizeOverride("font_size", 16);
         _enableRewardsToggle.AddThemeColorOverride("font_color", LabelColor);
+        _enableRewardsToggle.AddThemeColorOverride("font_outline_color", UITheme.TextOutline);
+        _enableRewardsToggle.AddThemeConstantOverride("outline_size", UITheme.TextOutlineSize);
         _enableRewardsToggle.Toggled += on =>
         {
             TwitchSettings.EnableRewards = on;
@@ -221,6 +225,8 @@ public partial class SettingsOverlay : CanvasLayer
         label.HorizontalAlignment = align;
         label.AddThemeFontSizeOverride("font_size", fontSize);
         label.AddThemeColorOverride("font_color", color);
+        label.AddThemeColorOverride("font_outline_color", UITheme.TextOutline);
+        label.AddThemeConstantOverride("outline_size", UITheme.TextOutlineSize);
         parent.AddChild(label);
         return label;
     }
@@ -246,6 +252,8 @@ public partial class SettingsOverlay : CanvasLayer
         label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
         label.AddThemeFontSizeOverride("font_size", 16);
         label.AddThemeColorOverride("font_color", LabelColor);
+        label.AddThemeColorOverride("font_outline_color", UITheme.TextOutline);
+        label.AddThemeConstantOverride("outline_size", UITheme.TextOutlineSize);
         headerRow.AddChild(label);
 
         var valueLabel = new Label();
@@ -288,8 +296,8 @@ public partial class SettingsOverlay : CanvasLayer
     private static void _StyleButton(Button button)
     {
         var normalStyle = new StyleBoxFlat();
-        normalStyle.BgColor = new Color(0.2f, 0.25f, 0.35f, 1f);
-        normalStyle.SetCornerRadiusAll(8);
+        normalStyle.BgColor = UITheme.CardBg;
+        normalStyle.SetCornerRadiusAll(UITheme.CornerRadius);
         normalStyle.ContentMarginLeft = 12;
         normalStyle.ContentMarginRight = 12;
         normalStyle.ContentMarginTop = 6;
@@ -297,8 +305,8 @@ public partial class SettingsOverlay : CanvasLayer
         button.AddThemeStyleboxOverride("normal", normalStyle);
 
         var hoverStyle = new StyleBoxFlat();
-        hoverStyle.BgColor = new Color(0.3f, 0.35f, 0.5f, 1f);
-        hoverStyle.SetCornerRadiusAll(8);
+        hoverStyle.BgColor = UITheme.CardBg.Lightened(0.15f);
+        hoverStyle.SetCornerRadiusAll(UITheme.CornerRadius);
         hoverStyle.ContentMarginLeft = 12;
         hoverStyle.ContentMarginRight = 12;
         hoverStyle.ContentMarginTop = 6;
@@ -306,8 +314,8 @@ public partial class SettingsOverlay : CanvasLayer
         button.AddThemeStyleboxOverride("hover", hoverStyle);
 
         var pressedStyle = new StyleBoxFlat();
-        pressedStyle.BgColor = new Color(0.15f, 0.2f, 0.3f, 1f);
-        pressedStyle.SetCornerRadiusAll(8);
+        pressedStyle.BgColor = UITheme.CardBg.Darkened(0.15f);
+        pressedStyle.SetCornerRadiusAll(UITheme.CornerRadius);
         pressedStyle.ContentMarginLeft = 12;
         pressedStyle.ContentMarginRight = 12;
         pressedStyle.ContentMarginTop = 6;

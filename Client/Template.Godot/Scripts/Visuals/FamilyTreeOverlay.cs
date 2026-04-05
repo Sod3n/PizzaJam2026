@@ -37,18 +37,18 @@ public partial class FamilyTreeOverlay : CanvasLayer
     private static readonly string[] FoodNames = { "Grass", "Carrot", "Apple", "Mushroom" };
     private static readonly Color[] FoodColors =
     {
-        new(0.4f, 0.75f, 0.3f),   // Grass - green
+        new(0.25f, 0.55f, 0.15f),  // Grass - darker green (distinct from mint bg)
         new(0.9f, 0.55f, 0.15f),  // Carrot - orange
         new(0.85f, 0.25f, 0.25f), // Apple - red
         new(0.6f, 0.3f, 0.8f),    // Mushroom - purple
     };
 
-    private static readonly Color LineColor = new(0.6f, 0.6f, 0.6f, 0.7f);
-    private static readonly Color BgColor = new(0.08f, 0.1f, 0.14f, 0.92f);
-    private static readonly Color NodeBgColor = new(0.15f, 0.18f, 0.25f, 1f);
-    private static readonly Color NodeBorderColor = new(0.35f, 0.4f, 0.5f, 1f);
-    private static readonly Color TitleColor = new(0.95f, 0.9f, 0.75f);
-    private static readonly Color SubtitleColor = new(0.7f, 0.7f, 0.7f);
+    private static readonly Color LineColor = UITheme.Line;
+    private static readonly Color BgColor = UITheme.OverlayDim;
+    private static readonly Color NodeBgColor = UITheme.CardBg;
+    private static readonly Color NodeBorderColor = UITheme.Border;
+    private static readonly Color TitleColor = UITheme.Title;
+    private static readonly Color SubtitleColor = UITheme.Subtitle;
 
     // Tree data
     private static readonly string[] HelperTypeNames = { "Assistant", "Gatherer", "Seller", "Builder", "Milker" };
@@ -238,7 +238,7 @@ public partial class FamilyTreeOverlay : CanvasLayer
         lineDrawer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
 
         // Cross-link color (dashed look via lighter color) for secondary parent lines
-        var crossLinkColor = new Color(0.5f, 0.5f, 0.7f, 0.5f);
+        var crossLinkColor = UITheme.CrossLink;
 
         foreach (var kvp in _nodes)
         {
@@ -435,7 +435,7 @@ public partial class FamilyTreeOverlay : CanvasLayer
         var nameLabel = new Label();
         nameLabel.Text = node.Name;
         nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        nameLabel.AddThemeColorOverride("font_color", TitleColor);
+        UITheme.StyleLabel(nameLabel);
         nameLabel.AddThemeFontSizeOverride("font_size", 14);
         vbox.AddChild(nameLabel);
 
@@ -444,6 +444,8 @@ public partial class FamilyTreeOverlay : CanvasLayer
         foodLabel.Text = node.Subtitle;
         foodLabel.HorizontalAlignment = HorizontalAlignment.Center;
         foodLabel.AddThemeColorOverride("font_color", foodColor);
+        foodLabel.AddThemeColorOverride("font_outline_color", UITheme.TextOutline);
+        foodLabel.AddThemeConstantOverride("outline_size", UITheme.TextOutlineSize);
         foodLabel.AddThemeFontSizeOverride("font_size", 12);
         vbox.AddChild(foodLabel);
 
