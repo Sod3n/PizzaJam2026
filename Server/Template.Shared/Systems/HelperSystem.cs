@@ -712,15 +712,15 @@ public class HelperSystem : ISystem
     }
 
     /// <summary>
-    /// Determine which food to use from the milker's bag using the linear chain.
-    /// Tries the house's selected food first (with prerequisite check), then falls back
-    /// to highest available tier the cow supports.
+    /// Determine which food to use from the milker's bag.
+    /// Strict: only allows the house's selected food — no fallback to lower tiers.
+    /// Returns -1 if the selected food or its prerequisite is unavailable in the bag.
     /// </summary>
     private static int ResolveFoodFromBag(ref HelperComponent helper, int houseSelectedFood, int cowPreferredFood)
     {
         int cowMaxTier = FoodType.MaxTier(cowPreferredFood);
 
-        // Try house-selected food first (respecting chain prerequisites)
+        // Strict: only allow the house's selected food, no fallback
         if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && helper.GetBagFood(houseSelectedFood) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
@@ -728,8 +728,8 @@ public class HelperSystem : ISystem
                 return houseSelectedFood;
         }
 
-        // Fall back to highest available tier from bag
-        return InteractionLogic.ResolveHighestTierFoodFromBag(ref helper, cowMaxTier, out _);
+        // No fallback — selected food or prerequisite not available in bag
+        return -1;
     }
 
     /// <summary>

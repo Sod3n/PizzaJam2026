@@ -330,9 +330,20 @@ public static class SkinVisualizer
             {
                 var mat = spriteNode.MaterialOverride as ShaderMaterial;
                 if (mat != null)
+                {
+                    // Duplicate material so each instance has its own color_replace
+                    if (!spriteNode.HasMeta("mat_unique"))
+                    {
+                        mat = (ShaderMaterial)mat.Duplicate();
+                        spriteNode.MaterialOverride = mat;
+                        spriteNode.SetMeta("mat_unique", true);
+                    }
                     mat.SetShaderParameter("color_replace", new Color(r, g, b));
+                }
                 else
+                {
                     spriteNode.Modulate = new Color(r, g, b);
+                }
             }
             else
             {

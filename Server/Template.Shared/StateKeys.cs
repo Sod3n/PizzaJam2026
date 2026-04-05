@@ -26,6 +26,7 @@ public static class StateKeys
     public const string Coins = "coins";
     public const string Houses = "houses";
     public const string Cows = "cows";
+    public const string CowTired = "cow_tired";
 
     // BuildingInfo param keys (used as Param when Key == BuildingInfo)
     public const string InfoSellPoint = "sell_point";
@@ -40,4 +41,6 @@ public static class StateKeys
     public const string InfoUpgradeSeller = "upgrade_seller";
     public const string InfoUpgradeAssistant = "upgrade_assistant";
     public const string InfoDecoration = "decoration";
+    public const string InfoWarehouse = "warehouse";
+    public const string InfoDepressed = "depressed";
 }

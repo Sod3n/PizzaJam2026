@@ -22,6 +22,7 @@ public struct CowComponent : IComponent
     public bool IsDepressed;  // Depressed after failed breed — hides in house, can't interact until timer expires
     public int DepressionTicksRemaining; // Countdown timer for depression recovery (1800 ticks = 30s at 60 TPS)
     public Entity LoveTarget; // Entity of the cow this cow is in love with (guaranteed upgrade when bred together)
+    public bool LoveConfessed; // True after the player has interacted with this love cow and seen the popup
     public Entity ParentA; // First parent entity (Entity.Null for wild/starter cows)
     public Entity ParentB; // Second parent entity (Entity.Null for wild/starter cows)
 }

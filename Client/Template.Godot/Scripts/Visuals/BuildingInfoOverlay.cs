@@ -21,15 +21,17 @@ public partial class BuildingInfoOverlay : CanvasLayer
         { StateKeys.InfoSellPoint,        ("Sell Point",        "Sell your milk products for coins here") },
         { StateKeys.InfoHouse,            ("Cow House",         "Assign a cow here to start milking") },
         { StateKeys.InfoLoveHouse,        ("Love Hotel",        "Bring two cows here to breed") },
-        { StateKeys.InfoCarrotFarm,       ("Carrot Farm",       "Grows carrots automatically over time") },
-        { StateKeys.InfoAppleOrchard,     ("Apple Orchard",     "Grows apples automatically over time") },
-        { StateKeys.InfoMushroomCave,     ("Mushroom Cave",     "Grows mushrooms automatically over time") },
+        { StateKeys.InfoCarrotFarm,       ("Carrot Farm",       "With it carrots will grow in the world") },
+        { StateKeys.InfoAppleOrchard,     ("Apple Orchard",     "With it apples will grow in the world") },
+        { StateKeys.InfoMushroomCave,     ("Mushroom Cave",     "With it mushrooms will grow in the world") },
         { StateKeys.InfoHelperAssistant,  ("Assistant House",   "Home of your assistant helper") },
         { StateKeys.InfoUpgradeGatherer,  ("Gatherer Upgrade",  "Upgraded your gatherer helper") },
         { StateKeys.InfoUpgradeBuilder,   ("Builder Upgrade",   "Upgraded your builder helper") },
         { StateKeys.InfoUpgradeSeller,    ("Seller Upgrade",    "Upgraded your seller helper") },
         { StateKeys.InfoUpgradeAssistant, ("Assistant Upgrade", "Upgraded your assistant helper") },
         { StateKeys.InfoDecoration,       ("Decoration",        "A nice decoration for your farm") },
+        { StateKeys.InfoWarehouse,        ("Warehouse",         "Stores your items and resources") },
+        { StateKeys.InfoDepressed,        ("Sad Cow",            "Sad about a bad breeding experience. Needs some time to rest.") },
     };
 
     // Cached nodes

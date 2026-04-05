@@ -26,12 +26,12 @@ public partial class LandView
     {
         return gridDist switch
         {
-            <= 1 => new Color(0.15f, 0.35f, 0.15f), // dark green
-            2    => new Color(0.15f, 0.15f, 0.40f), // dark blue
-            3    => new Color(0.30f, 0.10f, 0.35f), // dark purple
-            4    => new Color(0.40f, 0.10f, 0.10f), // dark red
-            5    => new Color(0.45f, 0.25f, 0.08f), // dark orange
-            _    => new Color(0.45f, 0.38f, 0.08f), // dark gold (dist 6+)
+            <= 1 => new Color(0.1f, 0.5f, 0.1f),    // dark green
+            2    => new Color(0.1f, 0.15f, 0.55f),  // dark blue
+            3    => new Color(0.4f, 0.1f, 0.5f),    // dark purple
+            4    => new Color(0.55f, 0.08f, 0.08f),  // dark red
+            5    => new Color(0.6f, 0.3f, 0.05f),   // dark orange
+            _    => new Color(0.6f, 0.5f, 0.05f),   // dark gold (dist 6+)
         };
     }
 

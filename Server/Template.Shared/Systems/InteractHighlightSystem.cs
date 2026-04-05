@@ -2,6 +2,7 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Types;
+using Template.Shared.Actions;
 using Template.Shared.Components;
 
 namespace Template.Shared.Systems;
@@ -67,7 +68,7 @@ public class InteractHighlightSystem : ISystem
             if (!state.HasComponent<Transform2D>(entity)) continue;
 
             // Only highlight entities that are actually interactable
-            if (!IsInteractable(state, entity)) continue;
+            if (!InteractionLogic.IsInteractable(state, entity)) continue;
 
             var pos = state.GetComponent<Transform2D>(entity).Position;
             var distSq = Vector2.DistanceSquared(playerPos, pos);
@@ -82,16 +83,4 @@ public class InteractHighlightSystem : ISystem
         return nearest;
     }
 
-    private static bool IsInteractable(EntityWorld state, Entity entity)
-    {
-        return state.HasComponent<GrassComponent>(entity)
-            || state.HasComponent<CowComponent>(entity)
-            || state.HasComponent<HouseComponent>(entity)
-            || state.HasComponent<LoveHouseComponent>(entity)
-            || state.HasComponent<FoodSignComponent>(entity)
-            || state.HasComponent<SellPointComponent>(entity)
-            || state.HasComponent<LandComponent>(entity)
-            || state.HasComponent<FinalStructureComponent>(entity)
-            || state.HasComponent<HelperComponent>(entity);
-    }
 }

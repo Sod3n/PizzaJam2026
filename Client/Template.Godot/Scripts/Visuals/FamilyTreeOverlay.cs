@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using Template.Shared.Components;
+using Template.Godot.Twitch;
 
 namespace Template.Godot.Visuals;
 
@@ -50,11 +51,15 @@ public partial class FamilyTreeOverlay : CanvasLayer
     private static readonly Color SubtitleColor = new(0.7f, 0.7f, 0.7f);
 
     // Tree data
+    private static readonly string[] HelperTypeNames = { "Assistant", "Gatherer", "Seller", "Builder", "Milker" };
+    private static readonly Color HelperColor = new(0.3f, 0.8f, 0.9f); // cyan
+
     private struct CowNode
     {
         public Entity Entity;
         public string Name;
-        public int PreferredFood;
+        public int PreferredFood; // -1 for helpers
+        public string Subtitle;   // food name or helper type
         public Entity ParentA;
         public Entity ParentB;
         public List<Entity> Children;
@@ -104,21 +109,59 @@ public partial class FamilyTreeOverlay : CanvasLayer
             if (!state.HasComponent<CowComponent>(entity)) continue;
             var cow = state.GetComponent<CowComponent>(entity);
 
-            string name = "???";
-            if (state.HasComponent<NameComponent>(entity))
-                name = state.GetComponent<NameComponent>(entity).Name.ToString();
+            string name = TwitchIntegration.GetDisplayName(entity);
 
             SkinComponent? skin = null;
             if (state.HasComponent<SkinComponent>(entity))
                 skin = state.GetComponent<SkinComponent>(entity);
 
+            int food = cow.PreferredFood;
+            string subtitle = food >= 0 && food < FoodNames.Length ? FoodNames[food] : "Unknown";
+
             _nodes[entity.Id] = new CowNode
             {
                 Entity = entity,
                 Name = name,
-                PreferredFood = cow.PreferredFood,
+                PreferredFood = food,
+                Subtitle = subtitle,
                 ParentA = cow.ParentA,
                 ParentB = cow.ParentB,
+                Children = new List<Entity>(),
+                Skin = skin,
+            };
+        }
+
+        // 1b. Collect all helpers
+        foreach (var entity in state.Filter<HelperComponent>())
+        {
+            if (!state.HasComponent<HelperComponent>(entity)) continue;
+            var helper = state.GetComponent<HelperComponent>(entity);
+
+            string name = TwitchIntegration.GetDisplayName(entity);
+
+            SkinComponent? skin = null;
+            if (state.HasComponent<SkinComponent>(entity))
+                skin = state.GetComponent<SkinComponent>(entity);
+
+            int hType = helper.Type;
+            string subtitle = hType >= 0 && hType < HelperTypeNames.Length ? HelperTypeNames[hType] : "Helper";
+
+            Entity parentA = Entity.Null, parentB = Entity.Null;
+            if (state.HasComponent<CowComponent>(entity))
+            {
+                var cow = state.GetComponent<CowComponent>(entity);
+                parentA = cow.ParentA;
+                parentB = cow.ParentB;
+            }
+
+            _nodes[entity.Id] = new CowNode
+            {
+                Entity = entity,
+                Name = name,
+                PreferredFood = -1,
+                Subtitle = subtitle,
+                ParentA = parentA,
+                ParentB = parentB,
                 Children = new List<Entity>(),
                 Skin = skin,
             };
@@ -323,7 +366,8 @@ public partial class FamilyTreeOverlay : CanvasLayer
 
         // Style the panel
         int food = node.PreferredFood;
-        Color foodColor = food >= 0 && food < FoodColors.Length ? FoodColors[food] : SubtitleColor;
+        Color foodColor = food >= 0 && food < FoodColors.Length ? FoodColors[food]
+            : food == -1 ? HelperColor : SubtitleColor;
 
         var style = new StyleBoxFlat();
         style.BgColor = NodeBgColor;
@@ -370,10 +414,10 @@ public partial class FamilyTreeOverlay : CanvasLayer
             // Camera
             var camera = new Camera3D();
             camera.Projection = Camera3D.ProjectionType.Orthogonal;
-            camera.Size = 15f;
+            camera.Size = 3f;
             camera.Transform = new Transform3D(
-                Basis.Identity, new Vector3(0, 7, 4)
-            ).LookingAt(new Vector3(0, 3, 0), Vector3.Up);
+                Basis.Identity, new Vector3(0, 5, 4)
+            ).LookingAt(new Vector3(0, 1.5f, 0), Vector3.Up);
             viewport.AddChild(camera);
 
             // Character instance
@@ -400,11 +444,9 @@ public partial class FamilyTreeOverlay : CanvasLayer
         nameLabel.AddThemeFontSizeOverride("font_size", 14);
         vbox.AddChild(nameLabel);
 
-        // Food preference indicator
-        string foodName = food >= 0 && food < FoodNames.Length ? FoodNames[food] : "Unknown";
-
+        // Subtitle (food tier or helper type)
         var foodLabel = new Label();
-        foodLabel.Text = foodName;
+        foodLabel.Text = node.Subtitle;
         foodLabel.HorizontalAlignment = HorizontalAlignment.Center;
         foodLabel.AddThemeColorOverride("font_color", foodColor);
         foodLabel.AddThemeFontSizeOverride("font_size", 12);

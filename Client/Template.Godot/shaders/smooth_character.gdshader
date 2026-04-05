@@ -23,8 +23,8 @@ void fragment() {
 
     // color_replace: replaces non-lineart pixels (white = no replace)
     float brightness = max(tex.r, max(tex.g, tex.b));
-    float lineart_mask = smoothstep(0.15, 0.3, brightness);
-    float replace_active = 1.0 - smoothstep(0.95, 1.0, min(color_replace.r, min(color_replace.g, color_replace.b)));
+    float lineart_mask = step(0.2, brightness);
+    float replace_active = 1.0 - step(0.95, min(color_replace.r, min(color_replace.g, color_replace.b)));
     vec3 replaced = mix(tex.rgb, color_replace.rgb, lineart_mask * replace_active);
     ALBEDO = replaced * COLOR.rgb;
     ALPHA = tex.a * COLOR.a;

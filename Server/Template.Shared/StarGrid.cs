@@ -143,9 +143,9 @@ public static class StarGrid
         (LandType.Warehouse,    3, 15, false),
         // Second sell point — mid game expansion
         (LandType.SellPoint,    5, 12, false),
-        // Love houses — first at dist 4, second at dist 5
+        // Love houses — first at dist 4, second at dist 3
         (LandType.LoveHouse,    4, 13, false),
-        (LandType.LoveHouse,    5, 11, false),
+        (LandType.LoveHouse,    3, 11, false),
     };
 
     /// <summary>

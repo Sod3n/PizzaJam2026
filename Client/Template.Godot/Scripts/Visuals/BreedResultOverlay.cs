@@ -1,6 +1,7 @@
 using Godot;
 using Deterministic.GameFramework.Reactive;
 using Template.Shared.Components;
+using Template.Godot.Twitch;
 
 using GVector3 = Godot.Vector3;
 
@@ -431,10 +432,7 @@ public partial class BreedResultOverlay : CanvasLayer
 
     private static string ReadName(Deterministic.GameFramework.ECS.Entity entity)
     {
-        var state = ReactiveSystem.Instance.BoundState;
-        if (state != null && state.HasComponent<NameComponent>(entity))
-            return state.GetComponent<NameComponent>(entity).Name.ToString();
-        return $"Entity #{entity.Id}";
+        return TwitchIntegration.GetDisplayName(entity);
     }
 
     private static void StripPixelShaders(Node node)

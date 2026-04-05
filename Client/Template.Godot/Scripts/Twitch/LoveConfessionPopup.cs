@@ -1,43 +1,35 @@
 using Godot;
-using Deterministic.GameFramework.ECS;
-using Template.Godot.Twitch;
 
-namespace Template.Godot.Visuals;
+namespace Template.Godot.Twitch;
 
 /// <summary>
-/// Simple overlay that displays when a cow in love is interacted with.
-/// Shows "Hey I really like {target cow name}!" and dismisses on any input.
+/// Popup overlay shown when a Twitch viewer redeems the Love Confession channel point reward.
+/// Displays "{username}'s cow has fallen in love!" and dismisses on tap/click.
 /// </summary>
-public partial class LovePopupOverlay : CanvasLayer
+public partial class LoveConfessionPopup : CanvasLayer
 {
-    private static LovePopupOverlay _current;
+    private static LoveConfessionPopup _current;
 
-    /// <summary>True while the love popup is on screen. Used to block game input.</summary>
+    /// <summary>True while the popup is on screen.</summary>
     public static bool IsActive => _current != null && Node.IsInstanceValid(_current);
 
     private static readonly Texture2D _heartTexture =
         GD.Load<Texture2D>("res://sprites/heart.png");
 
-    /// <summary>
-    /// Show a love popup for the given cow entity.
-    /// </summary>
-    public static void Show(SceneTree tree, Entity loverEntity, string targetCowName)
+    public static void Show(SceneTree tree, string username, string cowName)
     {
         // Dismiss any existing overlay
         if (_current != null && Node.IsInstanceValid(_current))
             _current.QueueFree();
 
-        // Get the lover cow's name (prefer Twitch override if available)
-        string loverName = TwitchIntegration.GetDisplayName(loverEntity);
-
-        var overlay = new LovePopupOverlay();
+        var overlay = new LoveConfessionPopup();
         _current = overlay;
         overlay.Layer = 100;
         tree.Root.AddChild(overlay);
-        overlay._Setup(loverName, targetCowName);
+        overlay._Setup(username, cowName);
     }
 
-    private void _Setup(string loverName, string targetName)
+    private void _Setup(string username, string cowName)
     {
         var panel = new PanelContainer();
         panel.Name = "Panel";
@@ -47,7 +39,7 @@ public partial class LovePopupOverlay : CanvasLayer
         panel.CustomMinimumSize = new Vector2(420, 0);
 
         var styleBox = new StyleBoxFlat();
-        styleBox.BgColor = new Color(0.15f, 0.05f, 0.1f, 0.92f);
+        styleBox.BgColor = new Color(0.15f, 0.05f, 0.15f, 0.92f);
         styleBox.CornerRadiusTopLeft = 16;
         styleBox.CornerRadiusTopRight = 16;
         styleBox.CornerRadiusBottomLeft = 16;
@@ -62,7 +54,7 @@ public partial class LovePopupOverlay : CanvasLayer
         vbox.AddThemeConstantOverride("separation", 12);
         panel.AddChild(vbox);
 
-        // Heart icon row
+        // Heart icon
         if (_heartTexture != null)
         {
             var heartRect = new TextureRect();
@@ -73,9 +65,17 @@ public partial class LovePopupOverlay : CanvasLayer
             vbox.AddChild(heartRect);
         }
 
-        // Cow name header
+        // Twitch badge
+        var twitchLabel = new Label();
+        twitchLabel.Text = "Twitch Love Confession";
+        twitchLabel.HorizontalAlignment = HorizontalAlignment.Center;
+        twitchLabel.AddThemeFontSizeOverride("font_size", 16);
+        twitchLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.4f, 0.8f));
+        vbox.AddChild(twitchLabel);
+
+        // Username header
         var nameLabel = new Label();
-        nameLabel.Text = loverName;
+        nameLabel.Text = username;
         nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
         nameLabel.AddThemeFontSizeOverride("font_size", 28);
         nameLabel.AddThemeColorOverride("font_color", new Color(1f, 0.7f, 0.8f));
@@ -83,22 +83,14 @@ public partial class LovePopupOverlay : CanvasLayer
 
         // Love message
         var msgLabel = new Label();
-        msgLabel.Text = $"Hey I really like {targetName}!";
+        msgLabel.Text = $"{cowName} has fallen in love!";
         msgLabel.HorizontalAlignment = HorizontalAlignment.Center;
         msgLabel.AddThemeFontSizeOverride("font_size", 22);
         msgLabel.AddThemeColorOverride("font_color", Colors.White);
         msgLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         vbox.AddChild(msgLabel);
 
-        // Hint
-        var hintLabel = new Label();
-        hintLabel.Text = "Breed them together for a guaranteed upgrade!";
-        hintLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        hintLabel.AddThemeFontSizeOverride("font_size", 14);
-        hintLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.5f, 0.55f));
-        hintLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        vbox.AddChild(hintLabel);
-
+        // Dismiss hint
         var dismissHint = new Label();
         dismissHint.Text = "Tap to dismiss";
         dismissHint.HorizontalAlignment = HorizontalAlignment.Center;
@@ -108,7 +100,7 @@ public partial class LovePopupOverlay : CanvasLayer
 
         // Full-screen background
         var background = new ColorRect();
-        background.Color = new Color(0.1f, 0, 0.05f, 0.4f);
+        background.Color = new Color(0.1f, 0, 0.1f, 0.4f);
         background.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 
         var root = new Control();
@@ -128,12 +120,9 @@ public partial class LovePopupOverlay : CanvasLayer
 
     public override void _Input(InputEvent @event)
     {
-        // Consume all input while active
         GetViewport().SetInputAsHandled();
 
-        if (!IsAdvancePress(@event))
-            return;
-
+        if (!IsAdvancePress(@event)) return;
         _Dismiss();
     }
 
@@ -141,10 +130,8 @@ public partial class LovePopupOverlay : CanvasLayer
     {
         if (@event is InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left })
             return true;
-
         if (@event is InputEventScreenTouch { Pressed: true })
             return true;
-
         if (@event.IsPressed() && !@event.IsEcho())
         {
             if (@event.IsAction("interact") ||
@@ -152,14 +139,12 @@ public partial class LovePopupOverlay : CanvasLayer
                 @event.IsAction("gamepad_interact"))
                 return true;
         }
-
         return false;
     }
 
     private void _Dismiss()
     {
         if (!IsInsideTree()) return;
-
         var root = GetChild(0);
         var tween = CreateTween();
         tween.TweenProperty(root, "modulate:a", 0f, 0.15f);

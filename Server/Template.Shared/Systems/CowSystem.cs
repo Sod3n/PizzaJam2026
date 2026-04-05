@@ -36,6 +36,28 @@ public class CowSystem : ISystem
                 lh.CooldownTicksRemaining--;
         }
 
+        // Tick down love event timer — when it reaches 0, fire the deferred love event
+        foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
+        {
+            ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+            if (gr.LoveEventTimer > 0)
+            {
+                gr.LoveEventTimer--;
+                if (gr.LoveEventTimer <= 0)
+                {
+                    var targetPlayer = gr.LoveEventCowTarget;
+                    var breedCountForLove = gr.LoveEventBreedCount;
+                    gr.LoveEventCowTarget = Entity.Null;
+                    gr.LoveEventBreedCount = 0;
+                    if (targetPlayer != Entity.Null && state.HasComponent<PlayerStateComponent>(targetPlayer))
+                    {
+                        ILogger.Log($"[CowSystem] Love event timer expired — triggering deferred love event for player {targetPlayer.Id}");
+                        TriggerLoveEvent(state, targetPlayer, breedCountForLove);
+                    }
+                }
+            }
+        }
+
         // Handle state completions on players
         foreach (var playerEntity in state.Filter<ExitStateComponent>())
         {
@@ -339,6 +361,7 @@ public class CowSystem : ISystem
 
         Entity babyCow = Entity.Null;
         Entity babyHelper = Entity.Null;
+        int breedCount = 0;
 
         if (state.HasComponent<CowComponent>(cow1) && state.HasComponent<CowComponent>(cow2)
             && state.HasComponent<SkinComponent>(cow1) && state.HasComponent<SkinComponent>(cow2))
@@ -411,28 +434,20 @@ public class CowSystem : ISystem
             Entity globalResEntity = Entity.Null;
             foreach (var ge in state.Filter<GlobalResourcesComponent>())
             { globalResEntity = ge; break; }
-            int breedCount = 0;
             if (globalResEntity != Entity.Null)
             {
                 ref var gr = ref state.GetComponent<GlobalResourcesComponent>(globalResEntity);
                 gr.TotalBreedCount++;
                 breedCount = gr.TotalBreedCount;
+                ILogger.Log($"[CowSystem] Breed #{breedCount} succeeded. NextLoveBreedCount={gr.NextLoveBreedCount}");
 
-                // Love system: trigger love event every 2-4 breeds
+                // Love system: initialize threshold on first breed (checked after parents return to houses)
                 if (gr.NextLoveBreedCount == 0)
                 {
                     // First time: set initial threshold (after 2-4 breeds)
                     var loveSeed = new DeterministicRandom((uint)(breedCount ^ 0xBEEF));
                     gr.NextLoveBreedCount = breedCount + loveSeed.NextInt(2, 5);
-                }
-
-                if (breedCount >= gr.NextLoveBreedCount)
-                {
-                    TriggerLoveEvent(state, playerEntity, breedCount);
-                    // Re-get after filter iteration in TriggerLoveEvent
-                    gr = ref state.GetComponent<GlobalResourcesComponent>(globalResEntity);
-                    var nextSeed = new DeterministicRandom((uint)(breedCount * 31337));
-                    gr.NextLoveBreedCount = breedCount + nextSeed.NextInt(2, 5);
+                    ILogger.Log($"[CowSystem] Love threshold initialized to {gr.NextLoveBreedCount}");
                 }
             }
 
@@ -513,6 +528,34 @@ public class CowSystem : ISystem
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
         loveHouse.CooldownTicksRemaining = LoveHouseComponent.BreedCooldownTicks;
 
+        // Love system: after every 2 breeds, set a random timer before the love event fires
+        // (instead of triggering immediately)
+        if (breedCount > 0)
+        {
+            Entity grEntity = Entity.Null;
+            foreach (var ge in state.Filter<GlobalResourcesComponent>())
+            { grEntity = ge; break; }
+            if (grEntity != Entity.Null)
+            {
+                ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+                if (breedCount >= gr.NextLoveBreedCount && gr.LoveEventTimer <= 0)
+                {
+                    // Set a random timer: 0 to 10800 ticks (0 to 3 minutes at 60 TPS)
+                    var timerSeed = new DeterministicRandom((uint)(breedCount * 31337));
+                    gr.LoveEventTimer = timerSeed.NextInt(0, 10801); // 0..10800 inclusive
+                    if (gr.LoveEventTimer == 0) gr.LoveEventTimer = 1; // Ensure at least 1 tick delay
+                    gr.LoveEventCowTarget = playerEntity;
+                    gr.LoveEventBreedCount = breedCount;
+                    ILogger.Log($"[CowSystem] Love event threshold reached: breedCount={breedCount} >= NextLoveBreedCount={gr.NextLoveBreedCount}. Timer set to {gr.LoveEventTimer} ticks ({gr.LoveEventTimer / 60f:F1}s)");
+
+                    // Schedule next love threshold
+                    var nextSeed = new DeterministicRandom((uint)(breedCount * 31337 + 7));
+                    gr.NextLoveBreedCount = breedCount + nextSeed.NextInt(2, 5);
+                    ILogger.Log($"[CowSystem] Next love threshold set to {gr.NextLoveBreedCount}");
+                }
+            }
+        }
+
         // Baby cow follows the player
         if (babyCow != Entity.Null && state.HasComponent<CowComponent>(babyCow))
         {
@@ -545,6 +588,18 @@ public class CowSystem : ISystem
     /// </summary>
     private static void TriggerLoveEvent(EntityWorld state, Entity playerEntity, int breedCount)
     {
+        // Debug: count cows in various states for diagnostics
+        int cowsInHouses = 0, cowsFollowing = 0, cowsDepressed = 0, cowsTotal = 0;
+        foreach (var ce in state.Filter<CowComponent>())
+        {
+            cowsTotal++;
+            var c = state.GetComponent<CowComponent>(ce);
+            if (c.HouseId != Entity.Null && state.HasComponent<HouseComponent>(c.HouseId)) cowsInHouses++;
+            if (c.FollowingPlayer != Entity.Null) cowsFollowing++;
+            if (c.IsDepressed) cowsDepressed++;
+        }
+        ILogger.Log($"[CowSystem] TriggerLoveEvent: total={cowsTotal} inHouses={cowsInHouses} following={cowsFollowing} depressed={cowsDepressed}");
+
         // Find the highest preferred food cow that is in a house (the "target")
         Entity bestTarget = Entity.Null;
         int bestFood = -1;
@@ -662,12 +717,11 @@ public class CowSystem : ISystem
             loverCow.FollowTarget = lastCow;
         }
 
-        // Notify the client about the love event via EnterState on the lover cow
-        string targetName = state.HasComponent<NameComponent>(bestTarget) ? state.GetComponent<NameComponent>(bestTarget).Name.ToString() : $"Cow #{bestTarget.Id}";
-        state.AddComponent(lover, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
-
+        // Do NOT show popup immediately — the cow follows the player with a need icon.
+        // The popup only triggers when the player interacts with the love cow.
         string loverName = state.HasComponent<NameComponent>(lover) ? state.GetComponent<NameComponent>(lover).Name.ToString() : $"Cow #{lover.Id}";
-        ILogger.Log($"[CowSystem] Love event! {loverName} (cow {lover.Id}) fell in love with {targetName} (cow {bestTarget.Id})");
+        string targetName = state.HasComponent<NameComponent>(bestTarget) ? state.GetComponent<NameComponent>(bestTarget).Name.ToString() : $"Cow #{bestTarget.Id}";
+        ILogger.Log($"[CowSystem] Love event! {loverName} (cow {lover.Id}) fell in love with {targetName} (cow {bestTarget.Id}) — waiting for player interaction");
     }
 
     private Entity SpawnCrossbredCow(EntityWorld state, Entity playerEntity, Entity parentA, Entity parentB, bool guaranteedUpgrade = false, int breedCount = 0, SkinComponent? twinSkin = null)

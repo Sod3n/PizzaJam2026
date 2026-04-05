@@ -38,6 +38,7 @@ public static partial class CowDefinition
         component.IsDepressed = false;
         component.DepressionTicksRemaining = 0;
         component.LoveTarget = Entity.Null;
+        component.LoveConfessed = false;
         component.ParentA = Entity.Null;
         component.ParentB = Entity.Null;
 

@@ -283,7 +283,7 @@
     "id": 38,
     "path": "",
     "type": "BackHair",
-    "weight": 1,
+    "weight": 20,
     "empty": null,
     "exhaust": 0
   },
@@ -291,7 +291,7 @@
     "id": 39,
     "path": "",
     "type": "Hand",
-    "weight": 1,
+    "weight": 20,
     "empty": null,
     "exhaust": 0
   },

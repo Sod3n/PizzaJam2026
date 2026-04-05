@@ -20,11 +20,12 @@ void fragment() {
     // Fix normal when flipped by negative scale
     if (!FRONT_FACING) NORMAL = -NORMAL;
 
-    // color_replace: replaces non-lineart pixels (white = no replace)
+    // color_replace: fully replaces non-lineart pixels (white = no replace)
+    // Hard cutoff so different base textures produce identical results
     // COLOR (modulate): multiplies the final result as usual
     float brightness = max(tex.r, max(tex.g, tex.b));
-    float lineart_mask = smoothstep(0.15, 0.3, brightness);
-    float replace_active = 1.0 - smoothstep(0.95, 1.0, min(color_replace.r, min(color_replace.g, color_replace.b)));
+    float lineart_mask = step(0.2, brightness);
+    float replace_active = 1.0 - step(0.95, min(color_replace.r, min(color_replace.g, color_replace.b)));
     vec3 replaced = mix(tex.rgb, color_replace.rgb, lineart_mask * replace_active);
     // Cooldown fill: darken from top (UV.y=0) down to cooldown_fill fraction
     // UV.y 0 = top, 1 = bottom; fill_line = 1 - cooldown_fill maps to the cutoff

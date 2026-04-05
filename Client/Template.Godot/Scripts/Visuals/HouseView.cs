@@ -1,8 +1,7 @@
 using Godot;
 using R3;
 using Deterministic.GameFramework.ECS;
-using Deterministic.GameFramework.Reactive;
-using Template.Shared.Components;
+using Template.Godot.Twitch;
 
 namespace Template.Godot.Visuals;
 
@@ -63,17 +62,8 @@ public partial class HouseView
                 }
                 else
                 {
-                    var state = ReactiveSystem.Instance.BoundState;
-                    if (state != null && state.HasComponent<NameComponent>(cowEntity))
-                    {
-                        cowNameLabel.Text = state.GetComponent<NameComponent>(cowEntity).Name.ToString();
-                        cowNameLabel.Visible = true;
-                    }
-                    else
-                    {
-                        cowNameLabel.Text = $"Cow #{cowEntity.Id}";
-                        cowNameLabel.Visible = true;
-                    }
+                    cowNameLabel.Text = TwitchIntegration.GetDisplayName(cowEntity);
+                    cowNameLabel.Visible = true;
                 }
             }).CallDeferred();
         }).AddTo(vm.Disposables);

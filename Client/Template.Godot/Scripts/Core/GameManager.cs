@@ -17,6 +17,7 @@ using Deterministic.GameFramework.Profiler;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Systems;
 using Template.Godot.Framework.Editor;
+using Template.Godot.Twitch;
 using FileAccess = Godot.FileAccess;
 
 namespace Template.Godot.Core;
@@ -58,6 +59,9 @@ public partial class GameManager : Node
         FrameworkDebugBridge.GetState = () => Game?.State;
         FrameworkDebugBridge.IsRunning = () => _isRunning;
         GD.Print("=== Initializing Godot Client ===");
+
+        // Initialize Twitch integration when the game starts
+        OnGameStarted += TwitchIntegration.Initialize;
 
         ILogger.SetLogger(new GodotLogger());
 
@@ -360,6 +364,7 @@ public partial class GameManager : Node
     public override void _ExitTree()
     {
         _isRunning = false;
+        TwitchIntegration.Shutdown();
         _localPlayerSubscription?.Dispose();
         Game.Loop.OnTick -= AutoSaveTick;
         Game.Loop.OnTick -= MetricsExportTick;

@@ -246,16 +246,26 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         // Clicking a cow that's following us
         if (cow.FollowingPlayer == playerEntity)
         {
-            // Love cow interaction: show love popup instead of dismissing
+            // Love cow interaction: first click shows confession popup, subsequent clicks are no-ops (cow keeps following)
             if (cow.LoveTarget != Entity.Null)
             {
-                // Get the target cow's name for the popup message
-                string targetName = "???";
-                if (ctx.State.HasComponent<NameComponent>(cow.LoveTarget))
-                    targetName = ctx.State.GetComponent<NameComponent>(cow.LoveTarget).Name.ToString();
+                if (!cow.LoveConfessed)
+                {
+                    // First interaction: show the love popup and mark as confessed
+                    string targetName = "???";
+                    if (ctx.State.HasComponent<NameComponent>(cow.LoveTarget))
+                        targetName = ctx.State.GetComponent<NameComponent>(cow.LoveTarget).Name.ToString();
 
-                ctx.State.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
-                ILogger.Log($"[InteractActionService] Love cow {cowEntity.Id} interacted — loves {targetName} (cow {cow.LoveTarget.Id})");
+                    ref var cowRef = ref ctx.State.GetComponent<CowComponent>(cowEntity);
+                    cowRef.LoveConfessed = true;
+
+                    ctx.State.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
+                    ILogger.Log($"[InteractActionService] Love cow {cowEntity.Id} confessed — loves {targetName} (cow {cow.LoveTarget.Id})");
+                }
+                else
+                {
+                    ILogger.Log($"[InteractActionService] Love cow {cowEntity.Id} already confessed — still following player");
+                }
                 return true;
             }
 
@@ -300,7 +310,11 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         // Can't tame a cow that's being milked, depressed, or already following someone
         if (cow.IsMilking) return false;
-        if (cow.IsDepressed) return false;
+        if (cow.IsDepressed)
+        {
+            ctx.State.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.BuildingInfo, Param = StateKeys.InfoDepressed, Age = 0 });
+            return true;
+        }
         if (cow.FollowingPlayer != Entity.Null) return false;
 
         StateDefinitions.Begin(ref sc, StateKeys.Taming);
@@ -323,16 +337,34 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (cow.IsDepressed) return false;
         if (cow.Exhaust >= cow.MaxExhaust)
         {
-            missingResource = FoodTypeToKey(house.SelectedFood);
+            missingResource = StateKeys.CowTired;
             return false;
         }
 
-        // Check if ANY tier recipe is available for this cow (chain logic)
+        // Strict check: only allow the exact recipe for the house's selected food.
+        // No fallback to lower tiers.
+        int selectedFood = house.SelectedFood;
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-        int availableFood = InteractionLogic.ResolveHighestTierFood(ref globalRes, cowMaxTier, out _);
-        if (availableFood < 0)
+
+        // Selected food must be within the cow's tier range
+        if (selectedFood < 0 || selectedFood > cowMaxTier)
         {
-            missingResource = FoodTypeToKey(house.SelectedFood);
+            missingResource = FoodTypeToKey(selectedFood);
+            return false;
+        }
+
+        // Must have the selected food available
+        if (globalRes.GetFood(selectedFood) <= 0)
+        {
+            missingResource = FoodTypeToKey(selectedFood);
+            return false;
+        }
+
+        // Must have the prerequisite milk product (if any)
+        int prereq = FoodType.PrerequisiteProduct(selectedFood);
+        if (prereq >= 0 && globalRes.GetMilkProduct(prereq) <= 0)
+        {
+            missingResource = MilkProductToKey(prereq);
             return false;
         }
 
@@ -393,6 +425,11 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             if (entity == playerEntity) continue;
             if (entity == zoneEntity) continue;
             if (!ctx.State.HasComponent<Transform2D>(entity)) continue;
+
+            // Only consider entities that are actually interactable — must match
+            // the same filter used by InteractHighlightSystem so the highlighted
+            // entity is always the one the interact action will target.
+            if (!InteractionLogic.IsInteractable(ctx.State, entity)) continue;
 
             var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
             var distSq = Vector2.DistanceSquared(playerPos, pos);
@@ -904,6 +941,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         _ => StateKeys.Food
     };
 
+    private static string MilkProductToKey(int milkProduct) => milkProduct switch
+    {
+        MilkProduct.Milk => StateKeys.Milk,
+        MilkProduct.CarrotMilkshake => StateKeys.CarrotMilkshake,
+        MilkProduct.VitaminMix => StateKeys.VitaminMix,
+        MilkProduct.PurplePotion => StateKeys.PurplePotion,
+        _ => StateKeys.Milk
+    };
+
     private Entity GetGlobalResourcesEntity(Context ctx)
     {
         foreach (var entity in ctx.State.Filter<GlobalResourcesComponent>())
@@ -1044,6 +1090,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (ctx.State.HasComponent<UpgradeSellerComponent>(entity)) return StateKeys.InfoUpgradeSeller;
         if (ctx.State.HasComponent<UpgradeAssistantComponent>(entity)) return StateKeys.InfoUpgradeAssistant;
         if (ctx.State.HasComponent<DecorationComponent>(entity)) return StateKeys.InfoDecoration;
+        if (ctx.State.HasComponent<WarehouseComponent>(entity)) return StateKeys.InfoWarehouse;
         return null;
     }
 

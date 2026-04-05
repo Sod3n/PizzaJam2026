@@ -4,6 +4,7 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using Template.Shared;
 using Template.Shared.Components;
+using Template.Godot.Twitch;
 
 namespace Template.Godot.Visuals;
 
@@ -21,17 +22,31 @@ public partial class CowView
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
 
-        // Wanderer cows (no house, not following) keep bounce but disable sway
-        vm.Cow.Cow.HouseId.CombineLatest(vm.Cow.Cow.FollowingPlayer, (houseId, followingPlayer) =>
-            houseId == Entity.Null && followingPlayer == Entity.Null
-        ).Subscribe(isUnassigned =>
-        {
-            Callable.From(() =>
+        // Twitch integration: try to assign a chatter name to this cow
+        TwitchIntegration.TryAssignChatterName(vm.Entity);
+
+        // Wanderer cows (no house, not following) keep bounce but disable sway.
+        // Use a single polling observer so both fields are read atomically in the
+        // same tick, avoiding a transient isUnassigned=true when CombineLatest
+        // would fire for HouseId before FollowingPlayer's observer has polled.
+        var cowEntity = vm.Entity;
+        ReactiveSystem.Instance.Subscribe(
+            () =>
             {
-                if (characterNode != null && IsInstanceValid(characterNode))
-                    characterNode.SetDeferred("enable_idle_sway", !isUnassigned);
-            }).CallDeferred();
-        }).AddTo(vm.Disposables);
+                var s = ReactiveSystem.Instance.BoundState;
+                if (s == null || !s.HasComponent<CowComponent>(cowEntity)) return false;
+                var cow = s.GetComponent<CowComponent>(cowEntity);
+                return cow.HouseId == Entity.Null && cow.FollowingPlayer == Entity.Null;
+            },
+            isUnassigned =>
+            {
+                Callable.From(() =>
+                {
+                    if (characterNode != null && IsInstanceValid(characterNode))
+                        characterNode.SetDeferred("enable_idle_sway", !isUnassigned);
+                }).CallDeferred();
+            }
+        ).AddTo(vm.Disposables);
 
         // Show breed result overlay for newly-born cows (tagged server-side with BreedBornComponent)
         var state = ReactiveSystem.Instance.BoundState;
@@ -60,7 +75,7 @@ public partial class CowView
             }).CallDeferred();
         }).AddTo(vm.Disposables);
 
-        // Heart icon — visible above cow when it is someone's love target
+        // Heart icon — visible above cow when it is part of a love pair (either lover or target)
         var heartIcon = new Sprite3D();
         heartIcon.Texture = _heartSprite;
         heartIcon.PixelSize = 0.005f;
@@ -73,13 +88,25 @@ public partial class CowView
         heartIcon.Visible = false;
         visualNode.AddChild(heartIcon);
 
-        // Check if any cow in the world has this cow as its LoveTarget
-        // We poll via a timer since we need to check all cows, not just this one
-        UpdateHeartVisibility(vm.Entity, heartIcon);
+        // Need icon — visible above love cow that hasn't confessed yet (wants player interaction)
+        var needIcon = new Label3D();
+        needIcon.Text = "!";
+        needIcon.FontSize = 128;
+        needIcon.Modulate = new Color(1f, 0.3f, 0.5f, 1f);
+        needIcon.OutlineModulate = new Color(0.5f, 0f, 0.2f, 1f);
+        needIcon.Position = new Vector3(0, 3.5f, 0);
+        needIcon.NoDepthTest = true;
+        needIcon.RenderPriority = 5;
+        needIcon.OutlineRenderPriority = 4;
+        needIcon.Visible = false;
+        visualNode.AddChild(needIcon);
+
+        // Poll heart and need icon visibility via a timer
+        UpdateLoveIcons(vm.Entity, heartIcon, needIcon);
         var heartTimer = new Timer();
         heartTimer.WaitTime = 0.5f;
         heartTimer.Autostart = true;
-        heartTimer.Timeout += () => UpdateHeartVisibility(vm.Entity, heartIcon);
+        heartTimer.Timeout += () => UpdateLoveIcons(vm.Entity, heartIcon, needIcon);
         visualNode.AddChild(heartTimer);
 
         // Love popup — when this cow is interacted with as a love cow, show the popup
@@ -88,34 +115,71 @@ public partial class CowView
                 && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.LoveCow)
             .Subscribe(x =>
             {
-                var param = ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Param;
-                var targetName = string.IsNullOrEmpty(param.ToString()) ? "???" : param.ToString();
+                // Try to resolve the target name via Twitch override (using LoveTarget entity)
+                var rState = ReactiveSystem.Instance.BoundState;
+                string targetName = "???";
+                if (rState != null && rState.HasComponent<CowComponent>(vm.Entity))
+                {
+                    var loveTarget = rState.GetComponent<CowComponent>(vm.Entity).LoveTarget;
+                    if (loveTarget != Entity.Null)
+                        targetName = TwitchIntegration.GetDisplayName(loveTarget);
+                }
+                if (targetName == "???")
+                {
+                    var param = rState?.GetComponent<EnterStateComponent>(x).Param;
+                    if (param != null && !string.IsNullOrEmpty(param.ToString()))
+                        targetName = param.ToString();
+                }
                 Callable.From(() => LovePopupOverlay.Show(GetTree(), vm.Entity, targetName)).CallDeferred();
             }).AddTo(vm.Disposables);
     }
 
-    private static void UpdateHeartVisibility(Entity thisEntity, Sprite3D heartIcon)
+    private static void UpdateLoveIcons(Entity thisEntity, Sprite3D heartIcon, Label3D needIcon)
     {
         if (!Node.IsInstanceValid(heartIcon)) return;
+        if (!Node.IsInstanceValid(needIcon)) return;
         var reactiveState = ReactiveSystem.Instance.BoundState;
-        if (reactiveState == null) { heartIcon.Visible = false; return; }
+        if (reactiveState == null) { heartIcon.Visible = false; needIcon.Visible = false; return; }
 
-        // Check if any cow has this cow as its love target AND is following a player (the lover is active)
         bool isLoveTarget = false;
+        bool isLover = false;
+        bool showNeedIcon = false;
+
+        // Check if this cow itself has a LoveTarget (meaning it IS the lover)
+        if (reactiveState.HasComponent<CowComponent>(thisEntity))
+        {
+            var thisCow = reactiveState.GetComponent<CowComponent>(thisEntity);
+            if (thisCow.LoveTarget != Entity.Null)
+            {
+                isLover = true;
+                // Show need icon if following a player but hasn't confessed yet
+                if (thisCow.FollowingPlayer != Entity.Null && !thisCow.LoveConfessed)
+                    showNeedIcon = true;
+            }
+        }
+
+        // Check if any other cow has this cow as its LoveTarget (meaning this cow is the target)
         foreach (var cowEntity in reactiveState.Filter<CowComponent>())
         {
+            if (cowEntity == thisEntity) continue;
             var cow = reactiveState.GetComponent<CowComponent>(cowEntity);
-            if (cow.LoveTarget == thisEntity && cow.FollowingPlayer != Entity.Null)
+            if (cow.LoveTarget == thisEntity)
             {
                 isLoveTarget = true;
                 break;
             }
         }
-        heartIcon.Visible = isLoveTarget;
+
+        // Show heart on both the lover and the target
+        heartIcon.Visible = isLoveTarget || isLover;
+        needIcon.Visible = showNeedIcon;
     }
 
     partial void OnDespawned(CowViewModel vm, Node3D visualNode)
     {
+        // Clean up Twitch name override for this entity
+        TwitchIntegration.RemoveNameOverride(vm.Entity.Id);
+
         ViewHelpers.PlayDisappear(visualNode, 0.3f, freeAfter: false);
     }
 }

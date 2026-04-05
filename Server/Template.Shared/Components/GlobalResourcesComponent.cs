@@ -30,6 +30,9 @@ public struct GlobalResourcesComponent : IComponent
     public const int GuaranteedMegaBreed = 12;
     public int HelpersSpawned; // How many helpers have been spawned (index into unlock sequence)
     public int NextLoveBreedCount; // Breed count at which the next love event triggers (0 = not yet set)
+    public int LoveEventTimer; // Countdown ticks until the pending love event fires (0 = no pending event)
+    public Entity LoveEventCowTarget; // Player entity to pass to TriggerLoveEvent when timer fires
+    public int LoveEventBreedCount; // Breed count to pass to TriggerLoveEvent when timer fires
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)

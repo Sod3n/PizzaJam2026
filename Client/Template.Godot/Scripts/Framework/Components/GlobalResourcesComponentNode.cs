@@ -22,4 +22,6 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int LastFarmGY;
     [Export] public int HelpersSpawned;
     [Export] public int NextLoveBreedCount;
+    [Export] public int LoveEventTimer;
+    [Export] public int LoveEventBreedCount;
 }

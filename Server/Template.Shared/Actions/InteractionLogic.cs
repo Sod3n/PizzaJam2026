@@ -55,8 +55,9 @@ public static class InteractionLogic
 
     /// <summary>
     /// Milk a cow using the LINEAR PROGRESSION chain.
-    /// The cow's PreferredFood determines its max tier. The method automatically selects
-    /// the highest tier recipe available based on global resources (food + prerequisite product).
+    /// The cow's PreferredFood determines its max tier. The hintFoodType (from the house food sign)
+    /// is used as the EXACT recipe — no fallback to lower tiers.
+    /// If the hint food or its prerequisite is missing, milking stops (cowDone = true).
     /// Consumes food and prerequisite product, produces the tier's milk product.
     /// Returns true if milk was produced this click, false otherwise.
     /// </summary>
@@ -71,10 +72,10 @@ public static class InteractionLogic
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
         if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
 
+
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // If the hint food is valid and available, try to use it at its tier
-        // Otherwise fall back to highest available tier
+        // Strict: use ONLY the hint food type (house food sign selection). No fallback.
         int foodToUse;
         int prereqProduct;
 
@@ -88,16 +89,17 @@ public static class InteractionLogic
             }
             else
             {
-                // Hint food available but prerequisite product missing — fall back
-                foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+                // Prerequisite product missing — do NOT fall back, stop milking
+                cowDone = true;
+                return false;
             }
         }
         else
         {
-            foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+            // Selected food not available or not supported by cow — stop milking
+            cowDone = true;
+            return false;
         }
-
-        if (foodToUse < 0) { cowDone = true; return false; }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
         int milkAmount = isPreferred ? 2 : 1;
@@ -133,7 +135,11 @@ public static class InteractionLogic
             producedMilk = true;
         }
 
-        cowDone = cow.Exhaust >= cow.MaxExhaust || ResolveHighestTierFood(ref globalRes, cowMaxTier, out _) < 0;
+        // Check if we can continue with the SAME recipe (no fallback)
+        cowDone = cow.Exhaust >= cow.MaxExhaust
+            || (cow.MaxExhaust - cow.Exhaust) < 4
+            || globalRes.GetFood(foodToUse) <= 0
+            || (prereqProduct >= 0 && globalRes.GetMilkProduct(prereqProduct) <= 0);
         return producedMilk;
     }
 
@@ -197,10 +203,9 @@ public static class InteractionLogic
     }
 
     /// <summary>
-    /// Pick best food for a cow using the linear chain: tries the highest tier the cow supports
-    /// (checking both food and prerequisite availability), falling back to lower tiers.
-    /// The houseSelectedFood is tried first if valid.
-    /// Returns -1 if no food available.
+    /// Resolve the exact food for a cow based on the house's selected food.
+    /// Strict: only allows the selected food type — no fallback to lower tiers.
+    /// Returns -1 if the selected food or its prerequisite is unavailable.
     /// </summary>
     public static int ResolveFoodForCow(EntityWorld state, CowComponent cow, int houseSelectedFood)
     {
@@ -209,7 +214,7 @@ public static class InteractionLogic
 
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // If house has a selected food, try it first (if cow supports that tier)
+        // Strict: only allow the house's selected food, no fallback
         if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && globalRes.GetFood(houseSelectedFood) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
@@ -217,15 +222,14 @@ public static class InteractionLogic
                 return houseSelectedFood;
         }
 
-        // Fall back to highest available tier
-        int food = ResolveHighestTierFood(ref globalRes, cowMaxTier, out _);
-        return food;
+        // No fallback — selected food or prerequisite not available
+        return -1;
     }
 
     /// <summary>
     /// Milk a cow, placing the product into a helper's bag instead of global resources.
     /// Consumes food from global resources, produces into helper bag.
-    /// Uses the linear chain: auto-selects highest tier based on cow max tier and global resources.
+    /// Uses the hint food type strictly — no fallback to lower tiers.
     /// Returns true if milk was produced this click, false otherwise.
     /// </summary>
     public static bool MilkCowToBag(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, ref HelperComponent helperBag, out bool cowDone)
@@ -239,8 +243,10 @@ public static class InteractionLogic
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
         if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
 
+
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
+        // Strict: use ONLY the hint food type. No fallback.
         int foodToUse;
         int prereqProduct;
 
@@ -254,15 +260,17 @@ public static class InteractionLogic
             }
             else
             {
-                foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+                // Prerequisite product missing — do NOT fall back, stop milking
+                cowDone = true;
+                return false;
             }
         }
         else
         {
-            foodToUse = ResolveHighestTierFood(ref globalRes, cowMaxTier, out prereqProduct);
+            // Selected food not available or not supported by cow — stop milking
+            cowDone = true;
+            return false;
         }
-
-        if (foodToUse < 0) { cowDone = true; return false; }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
         int milkAmount = isPreferred ? 2 : 1;
@@ -299,14 +307,18 @@ public static class InteractionLogic
             producedMilk = true;
         }
 
-        cowDone = cow.Exhaust >= cow.MaxExhaust || ResolveHighestTierFood(ref globalRes, cowMaxTier, out _) < 0;
+        // Check if we can continue with the SAME recipe (no fallback)
+        cowDone = cow.Exhaust >= cow.MaxExhaust
+            || (cow.MaxExhaust - cow.Exhaust) < 4
+            || globalRes.GetFood(foodToUse) <= 0
+            || (prereqProduct >= 0 && globalRes.GetMilkProduct(prereqProduct) <= 0);
         return producedMilk;
     }
 
     /// <summary>
     /// Milk a cow using food AND prerequisite products from the helper's own bag.
     /// Places the milk product into the helper's bag.
-    /// Uses the linear chain: auto-selects highest tier based on cow max tier and bag contents.
+    /// Uses the hint food type strictly — no fallback to lower tiers.
     /// Returns true if milk was produced this click, false otherwise.
     /// </summary>
     public static bool MilkCowFromBag(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, ref HelperComponent helperBag, out bool cowDone)
@@ -317,8 +329,10 @@ public static class InteractionLogic
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
         if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
 
+
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
+        // Strict: use ONLY the hint food type. No fallback.
         int foodToUse;
         int prereqProduct;
 
@@ -332,15 +346,17 @@ public static class InteractionLogic
             }
             else
             {
-                foodToUse = ResolveHighestTierFoodFromBag(ref helperBag, cowMaxTier, out prereqProduct);
+                // Prerequisite product missing — do NOT fall back, stop milking
+                cowDone = true;
+                return false;
             }
         }
         else
         {
-            foodToUse = ResolveHighestTierFoodFromBag(ref helperBag, cowMaxTier, out prereqProduct);
+            // Selected food not available or not supported by cow — stop milking
+            cowDone = true;
+            return false;
         }
-
-        if (foodToUse < 0) { cowDone = true; return false; }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
         int milkAmount = isPreferred ? 2 : 1;
@@ -377,8 +393,41 @@ public static class InteractionLogic
             producedMilk = true;
         }
 
-        cowDone = cow.Exhaust >= cow.MaxExhaust || ResolveHighestTierFoodFromBag(ref helperBag, cowMaxTier, out _) < 0;
+        // Check if we can continue with the SAME recipe (no fallback)
+        cowDone = cow.Exhaust >= cow.MaxExhaust
+            || (cow.MaxExhaust - cow.Exhaust) < 4
+            || helperBag.GetBagFood(foodToUse) <= 0
+            || (prereqProduct >= 0 && helperBag.GetBagMilkProduct(prereqProduct) <= 0);
         return producedMilk;
+    }
+
+    /// <summary>
+    /// Returns true if the entity is a valid interact target (used by both the
+    /// highlight system and the interact action service so they agree on which
+    /// entities are interactable).
+    /// </summary>
+    public static bool IsInteractable(EntityWorld state, Entity entity)
+    {
+        return state.HasComponent<GrassComponent>(entity)
+            || state.HasComponent<CowComponent>(entity)
+            || state.HasComponent<HouseComponent>(entity)
+            || state.HasComponent<LoveHouseComponent>(entity)
+            || state.HasComponent<FoodSignComponent>(entity)
+            || state.HasComponent<WarehouseSignComponent>(entity)
+            || state.HasComponent<SellPointComponent>(entity)
+            || state.HasComponent<LandComponent>(entity)
+            || state.HasComponent<FinalStructureComponent>(entity)
+            || state.HasComponent<HelperComponent>(entity)
+            || state.HasComponent<CarrotFarmComponent>(entity)
+            || state.HasComponent<AppleOrchardComponent>(entity)
+            || state.HasComponent<MushroomCaveComponent>(entity)
+            || state.HasComponent<HelperAssistantComponent>(entity)
+            || state.HasComponent<UpgradeGathererComponent>(entity)
+            || state.HasComponent<UpgradeBuilderComponent>(entity)
+            || state.HasComponent<UpgradeSellerComponent>(entity)
+            || state.HasComponent<UpgradeAssistantComponent>(entity)
+            || state.HasComponent<DecorationComponent>(entity)
+            || state.HasComponent<WarehouseComponent>(entity);
     }
 
     /// <summary>Fire visual feedback on an entity.</summary>

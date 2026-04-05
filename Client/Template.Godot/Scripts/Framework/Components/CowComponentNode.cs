@@ -13,4 +13,5 @@ public partial class CowComponentNode : Node
     [Export] public int PreferredFood;
     [Export] public bool IsDepressed;
     [Export] public int DepressionTicksRemaining;
+    [Export] public bool LoveConfessed;
 }
