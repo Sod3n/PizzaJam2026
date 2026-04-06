@@ -1,0 +1,312 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bpg176dniu7y7" path="res://Scripts/Visuals/SettingsOverlay.cs" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.522, 0.737, 0.698, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 32.0
+content_margin_top = 24.0
+content_margin_right = 32.0
+content_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.45, 0.65, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.5175, 0.7475, 0.713, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.3825, 0.5525, 0.527, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+
+[node name="SettingsOverlay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Background" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.08, 0.07, 0.85)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="CenterWrapper" type="CenterContainer" parent="Root/ScrollContainer"]
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="Panel" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper"]
+custom_minimum_size = Vector2(520, 0)
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Content" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_constants/outline_size = 6
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="TwitchSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TwitchHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+theme_override_constants/outline_size = 6
+text = "Twitch Integration"
+
+[node name="ConnectRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/ConnectRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "Not connected"
+
+[node name="ConnectButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/ConnectRow"]
+custom_minimum_size = Vector2(160, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Connect Twitch"
+
+[node name="NameCowsToggle" type="CheckButton" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "Name cows from chat"
+
+[node name="EnableRewardsToggle" type="CheckButton" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "Enable channel point rewards"
+
+[node name="LoveConfessionRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "Love Confession cost"
+
+[node name="ValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/HeaderRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "500"
+horizontal_alignment = 2
+
+[node name="Slider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+min_value = 100.0
+max_value = 10000.0
+step = 500.0
+value = 500.0
+
+[node name="RangeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow"]
+layout_mode = 2
+
+[node name="MinLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/RangeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_constants/outline_size = 6
+text = "100"
+
+[node name="MaxLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/RangeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_constants/outline_size = 6
+text = "10000"
+horizontal_alignment = 2
+
+[node name="SaySomethingRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "Say Something cost"
+
+[node name="ValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/HeaderRow"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "50"
+horizontal_alignment = 2
+
+[node name="Slider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+min_value = 50.0
+max_value = 5000.0
+step = 50.0
+value = 50.0
+
+[node name="RangeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow"]
+layout_mode = 2
+
+[node name="MinLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/RangeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_constants/outline_size = 6
+text = "50"
+
+[node name="MaxLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/RangeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_constants/outline_size = 6
+text = "5000"
+horizontal_alignment = 2
+
+[node name="GameSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="GameHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+theme_override_constants/outline_size = 6
+text = "Game"
+
+[node name="GamePlaceholder" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_constants/outline_size = 6
+text = "More settings coming soon..."
+
+[node name="CloseSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CloseHint" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_constants/outline_size = 6
+text = "Press Escape to close"
+horizontal_alignment = 1

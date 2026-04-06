@@ -15,8 +15,14 @@ public partial class LovePopupOverlay : CanvasLayer
     /// <summary>True while the love popup is on screen. Used to block game input.</summary>
     public static bool IsActive => _current != null && Node.IsInstanceValid(_current);
 
-    private static readonly Texture2D _heartTexture =
-        GD.Load<Texture2D>("res://sprites/heart.png");
+    private static readonly PackedScene _scene =
+        GD.Load<PackedScene>("res://Scenes/LovePopupOverlay.tscn");
+
+    // Cached node references
+    private Control _root;
+    private Label _nameLabel;
+    private Label _messageLabel;
+    private Label _hintLabel;
 
     /// <summary>
     /// Show a love popup for the given cow entity.
@@ -30,98 +36,29 @@ public partial class LovePopupOverlay : CanvasLayer
         // Get the lover cow's name (prefer Twitch override if available)
         string loverName = TwitchIntegration.GetDisplayName(loverEntity);
 
-        var overlay = new LovePopupOverlay();
+        var overlay = _scene.Instantiate<LovePopupOverlay>();
         _current = overlay;
-        overlay.Layer = 100;
         tree.Root.AddChild(overlay);
         overlay._Setup(loverName, targetCowName);
     }
 
     private void _Setup(string loverName, string targetName)
     {
-        var panel = new PanelContainer();
-        panel.Name = "Panel";
-        panel.SetAnchorsPreset(Control.LayoutPreset.Center);
-        panel.GrowHorizontal = Control.GrowDirection.Both;
-        panel.GrowVertical = Control.GrowDirection.Both;
-        panel.CustomMinimumSize = new Vector2(420, 0);
+        // Cache node references from scene
+        _root = GetNode<Control>("Root");
+        _nameLabel = GetNode<Label>("Root/Panel/VBoxContainer/NameLabel");
+        _messageLabel = GetNode<Label>("Root/Panel/VBoxContainer/MessageLabel");
+        _hintLabel = GetNode<Label>("Root/Panel/VBoxContainer/HintLabel");
 
-        var styleBox = new StyleBoxFlat();
-        styleBox.BgColor = UITheme.PanelBg;
-        styleBox.CornerRadiusTopLeft = UITheme.CornerRadius;
-        styleBox.CornerRadiusTopRight = UITheme.CornerRadius;
-        styleBox.CornerRadiusBottomLeft = UITheme.CornerRadius;
-        styleBox.CornerRadiusBottomRight = UITheme.CornerRadius;
-        styleBox.ContentMarginLeft = 32;
-        styleBox.ContentMarginRight = 32;
-        styleBox.ContentMarginTop = 24;
-        styleBox.ContentMarginBottom = 24;
-        panel.AddThemeStyleboxOverride("panel", styleBox);
-
-        var vbox = new VBoxContainer();
-        vbox.AddThemeConstantOverride("separation", 12);
-        panel.AddChild(vbox);
-
-        // Heart icon row
-        if (_heartTexture != null)
-        {
-            var heartRect = new TextureRect();
-            heartRect.Texture = _heartTexture;
-            heartRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-            heartRect.CustomMinimumSize = new Vector2(64, 64);
-            heartRect.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
-            vbox.AddChild(heartRect);
-        }
-
-        // Cow name header
-        var nameLabel = new Label();
-        nameLabel.Text = loverName;
-        nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        nameLabel.AddThemeFontSizeOverride("font_size", 28);
-        UITheme.StyleLabel(nameLabel);
-        vbox.AddChild(nameLabel);
-
-        // Love message
-        var msgLabel = new Label();
-        msgLabel.Text = $"Hey I really like {targetName}!";
-        msgLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        msgLabel.AddThemeFontSizeOverride("font_size", 22);
-        UITheme.StyleLabel(msgLabel);
-        msgLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        vbox.AddChild(msgLabel);
-
-        // Hint
-        var hintLabel = new Label();
-        hintLabel.Text = "Breed them together for a guaranteed upgrade!";
-        hintLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        hintLabel.AddThemeFontSizeOverride("font_size", 14);
-        UITheme.StyleLabel(hintLabel, false);
-        hintLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        vbox.AddChild(hintLabel);
-
-        var dismissHint = new Label();
-        dismissHint.Text = "Tap to dismiss";
-        dismissHint.HorizontalAlignment = HorizontalAlignment.Center;
-        dismissHint.AddThemeFontSizeOverride("font_size", 14);
-        UITheme.StyleLabel(dismissHint, false);
-        vbox.AddChild(dismissHint);
-
-        // Full-screen background
-        var background = new ColorRect();
-        background.Color = UITheme.OverlayDim;
-        background.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-
-        var root = new Control();
-        root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        root.MouseFilter = Control.MouseFilterEnum.Stop;
-        AddChild(root);
-        root.AddChild(background);
-        root.AddChild(panel);
+        // Set dynamic text content
+        _nameLabel.Text = loverName;
+        _messageLabel.Text = $"Hey I really like {targetName}!";
+        _hintLabel.Text = "Breed them together for a guaranteed upgrade!";
 
         // Fade in
-        root.Modulate = new Color(1, 1, 1, 0);
+        _root.Modulate = new Color(1, 1, 1, 0);
         var tween = CreateTween();
-        tween.TweenProperty(root, "modulate:a", 1f, 0.2f)
+        tween.TweenProperty(_root, "modulate:a", 1f, 0.2f)
             .SetTrans(Tween.TransitionType.Sine)
             .SetEase(Tween.EaseType.Out);
     }
@@ -160,9 +97,8 @@ public partial class LovePopupOverlay : CanvasLayer
     {
         if (!IsInsideTree()) return;
 
-        var root = GetChild(0);
         var tween = CreateTween();
-        tween.TweenProperty(root, "modulate:a", 0f, 0.15f);
+        tween.TweenProperty(_root, "modulate:a", 0f, 0.15f);
         tween.Chain().TweenCallback(Callable.From(() =>
         {
             _current = null;

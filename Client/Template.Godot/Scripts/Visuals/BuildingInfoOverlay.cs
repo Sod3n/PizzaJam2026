@@ -34,8 +34,11 @@ public partial class BuildingInfoOverlay : CanvasLayer
         { StateKeys.InfoDepressed,        ("Sad Cow",            "Sad about a bad breeding experience. Needs some time to rest.") },
     };
 
+    private static readonly PackedScene _scene =
+        GD.Load<PackedScene>("res://Scenes/BuildingInfoOverlay.tscn");
+
     // Cached nodes
-    private ColorRect _background;
+    private Control _root;
     private Label _nameLabel;
     private Label _descLabel;
 
@@ -51,78 +54,29 @@ public partial class BuildingInfoOverlay : CanvasLayer
         if (_current != null && Node.IsInstanceValid(_current))
             _current.QueueFree();
 
-        var overlay = new BuildingInfoOverlay();
+        if (_scene == null) return;
+
+        var overlay = _scene.Instantiate<BuildingInfoOverlay>();
         _current = overlay;
-        overlay.Layer = 100; // Above game, same priority as BreedResultOverlay
         tree.Root.AddChild(overlay);
         overlay._Setup(info.Name, info.Desc);
     }
 
     private void _Setup(string buildingName, string description)
     {
-        // Build UI in code (no scene file needed for this simple overlay)
-        var panel = new PanelContainer();
-        panel.Name = "Panel";
-        panel.SetAnchorsPreset(Control.LayoutPreset.Center);
-        panel.GrowHorizontal = Control.GrowDirection.Both;
-        panel.GrowVertical = Control.GrowDirection.Both;
-        panel.CustomMinimumSize = new Vector2(400, 0);
+        // Get node references from the scene
+        _root = GetNode<Control>("Control");
+        _nameLabel = GetNode<Label>("Control/Panel/VBoxContainer/NameLabel");
+        _descLabel = GetNode<Label>("Control/Panel/VBoxContainer/DescLabel");
 
-        // Theme override for rounded dark background
-        var styleBox = new StyleBoxFlat();
-        styleBox.BgColor = UITheme.PanelBg;
-        styleBox.BorderColor = UITheme.Border;
-        styleBox.SetBorderWidthAll(UITheme.BorderWidth);
-        styleBox.SetCornerRadiusAll(UITheme.CornerRadius);
-        styleBox.ContentMarginLeft = 32;
-        styleBox.ContentMarginRight = 32;
-        styleBox.ContentMarginTop = 24;
-        styleBox.ContentMarginBottom = 24;
-        panel.AddThemeStyleboxOverride("panel", styleBox);
-
-        var vbox = new VBoxContainer();
-        vbox.AddThemeConstantOverride("separation", 12);
-        panel.AddChild(vbox);
-
-        _nameLabel = new Label();
+        // Set text
         _nameLabel.Text = buildingName;
-        _nameLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        _nameLabel.AddThemeFontSizeOverride("font_size", 32);
-        UITheme.StyleLabel(_nameLabel);
-        vbox.AddChild(_nameLabel);
-
-        _descLabel = new Label();
         _descLabel.Text = description;
-        _descLabel.HorizontalAlignment = HorizontalAlignment.Center;
-        _descLabel.AddThemeFontSizeOverride("font_size", 20);
-        UITheme.StyleLabel(_descLabel, false);
-        _descLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        vbox.AddChild(_descLabel);
-
-        var hint = new Label();
-        hint.Text = "Tap to dismiss";
-        hint.HorizontalAlignment = HorizontalAlignment.Center;
-        hint.AddThemeFontSizeOverride("font_size", 14);
-        UITheme.StyleLabel(hint, false);
-        vbox.AddChild(hint);
-
-        // Full-screen background to catch clicks
-        _background = new ColorRect();
-        _background.Color = UITheme.OverlayDim;
-        _background.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-
-        // Add background first, then panel on top
-        var root = new Control();
-        root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        root.MouseFilter = Control.MouseFilterEnum.Stop;
-        AddChild(root);
-        root.AddChild(_background);
-        root.AddChild(panel);
 
         // Animate in: fade from transparent
-        root.Modulate = new Color(1, 1, 1, 0);
+        _root.Modulate = new Color(1, 1, 1, 0);
         var tween = CreateTween();
-        tween.TweenProperty(root, "modulate:a", 1f, 0.2f)
+        tween.TweenProperty(_root, "modulate:a", 1f, 0.2f)
             .SetTrans(Tween.TransitionType.Sine)
             .SetEase(Tween.EaseType.Out);
     }
@@ -161,9 +115,8 @@ public partial class BuildingInfoOverlay : CanvasLayer
     {
         if (!IsInsideTree()) return;
 
-        var root = GetChild(0);
         var tween = CreateTween();
-        tween.TweenProperty(root, "modulate:a", 0f, 0.15f);
+        tween.TweenProperty(_root, "modulate:a", 0f, 0.15f);
         tween.Chain().TweenCallback(Callable.From(() =>
         {
             _current = null;

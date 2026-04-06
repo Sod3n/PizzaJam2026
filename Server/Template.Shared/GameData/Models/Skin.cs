@@ -1,9 +1,5 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
 namespace Template.Shared.GameData.Models;
 
-[JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
 public class Skin
 {
     public int Id { get; set; }

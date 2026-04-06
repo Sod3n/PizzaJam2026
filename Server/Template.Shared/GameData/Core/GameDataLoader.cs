@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Template.Shared.GameData.Core;
 
 public static class GameDataLoader
 {
-    public static async Task LoadAsync<T>(GameData<T> gameData, string basePath, JsonSerializerSettings settings)
+    public static async Task LoadAsync<T>(GameData<T> gameData, string basePath, JsonSerializerOptions settings)
     {
         var filePath = System.IO.Path.Combine(basePath, gameData.Path);
         if (!File.Exists(filePath))
@@ -18,7 +18,7 @@ public static class GameDataLoader
         }
 
         var json = await File.ReadAllTextAsync(filePath);
-        var entries = JsonConvert.DeserializeObject<Dictionary<string, T>>(json, settings);
+        var entries = JsonSerializer.Deserialize<Dictionary<string, T>>(json, settings);
 
         if (entries == null)
         {
@@ -28,7 +28,7 @@ public static class GameDataLoader
         gameData.Load(entries);
     }
 
-    public static void Load<T>(GameData<T> gameData, string basePath, JsonSerializerSettings settings)
+    public static void Load<T>(GameData<T> gameData, string basePath, JsonSerializerOptions settings)
     {
         var filePath = System.IO.Path.Combine(basePath, gameData.Path);
         if (!File.Exists(filePath))
@@ -37,7 +37,7 @@ public static class GameDataLoader
         }
 
         var json = File.ReadAllText(filePath);
-        var entries = JsonConvert.DeserializeObject<Dictionary<string, T>>(json, settings);
+        var entries = JsonSerializer.Deserialize<Dictionary<string, T>>(json, settings);
 
         if (entries == null)
         {
@@ -47,9 +47,9 @@ public static class GameDataLoader
         gameData.Load(entries);
     }
 
-    public static void LoadRaw<T>(GameData<T> gameData, string json, JsonSerializerSettings settings)
+    public static void LoadRaw<T>(GameData<T> gameData, string json, JsonSerializerOptions settings)
     {
-        var entries = JsonConvert.DeserializeObject<Dictionary<string, T>>(json, settings);
+        var entries = JsonSerializer.Deserialize<Dictionary<string, T>>(json, settings);
 
         if (entries == null)
         {

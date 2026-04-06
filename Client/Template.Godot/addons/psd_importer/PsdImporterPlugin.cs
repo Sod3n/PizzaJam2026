@@ -1,40 +1,27 @@
 #if TOOLS
 using Godot;
 
-namespace Template.Godot.Editor
+namespace Template.Godot.Editor;
+
+[Tool]
+public partial class PsdImporterPlugin : EditorPlugin
 {
-    [Tool]
-    public partial class ImportButton : Button
+    private ImportButton _button;
+
+    public override void _EnterTree()
     {
-        public override void _Pressed()
-        {
-            GD.Print("[PSD Importer] Starting import...");
-            var importer = new PsdImporter();
-            importer._Run();
-            GD.Print("[PSD Importer] Done!");
-        }
+        _button = new ImportButton();
+        _button.Text = "Import PSDs";
+        AddControlToContainer(CustomControlContainer.Toolbar, _button);
     }
 
-    [Tool]
-    public partial class PsdImporterPlugin : EditorPlugin
+    public override void _ExitTree()
     {
-        private ImportButton _button;
-
-        public override void _EnterTree()
+        if (_button != null)
         {
-            _button = new ImportButton();
-            _button.Text = "Import PSDs";
-            AddControlToContainer(CustomControlContainer.Toolbar, _button);
-        }
-
-        public override void _ExitTree()
-        {
-            if (_button != null)
-            {
-                RemoveControlFromContainer(CustomControlContainer.Toolbar, _button);
-                _button.QueueFree();
-                _button = null;
-            }
+            RemoveControlFromContainer(CustomControlContainer.Toolbar, _button);
+            _button.QueueFree();
+            _button = null;
         }
     }
 }

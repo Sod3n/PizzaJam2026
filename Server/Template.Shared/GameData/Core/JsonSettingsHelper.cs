@@ -1,17 +1,13 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Template.Shared.GameData.Core;
 
 public static class JsonSettingsHelper
 {
-    public static readonly JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
+    public static readonly JsonSerializerOptions DefaultSettings = new JsonSerializerOptions
     {
-        ContractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new SnakeCaseNamingStrategy()
-        },
-        Formatting = Formatting.Indented
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true
     };
 }

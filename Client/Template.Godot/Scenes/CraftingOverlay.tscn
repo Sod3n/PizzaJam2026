@@ -1,0 +1,499 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://cle0jwemmwpdv" path="res://Scripts/Visuals/CraftingOverlay.cs" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://uwff6csdbj8y" path="res://sprites/export/icons/Grass_/1.png" id="2_grass"]
+[ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="3_milk"]
+[ext_resource type="Texture2D" uid="uid://1yqfj7ryol10" path="res://sprites/export/icons/Carrot_/1.png" id="4_carrot"]
+[ext_resource type="Texture2D" uid="uid://lmtb8dohmyt1" path="res://sprites/export/icons/Apply_/1.png" id="5_apple"]
+[ext_resource type="Texture2D" uid="uid://bvwxfefj3ba40" path="res://sprites/export/icons/Mashroom/1.png" id="6_mushroom"]
+[ext_resource type="Texture2D" uid="uid://5l2waaftxb6k" path="res://sprites/export/icons/Money_/1.png" id="7_coins"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.522, 0.737, 0.698, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 32.0
+content_margin_top = 24.0
+content_margin_right = 32.0
+content_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card1"]
+bg_color = Color(0.45, 0.65, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card2"]
+bg_color = Color(0.45, 0.65, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card3"]
+bg_color = Color(0.45, 0.65, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card4"]
+bg_color = Color(0.45, 0.65, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[node name="CraftingOverlay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Background" type="ColorRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.08, 0.07, 0.85)
+
+[node name="Panel" type="PanelContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -200.0
+offset_right = 260.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_minimum_size = Vector2(520, 0)
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 28
+text = "Crafting Recipes"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
+text = "Milking Chain"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Recipe1" type="PanelContainer" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card1")
+
+[node name="HBox" type="HBoxContainer" parent="Control/Panel/VBoxContainer/Recipe1"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Ingredient1" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe1/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe1/HBox/Ingredient1"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("2_grass")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Arrow" type="Label" parent="Control/Panel/VBoxContainer/Recipe1/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.9, 0.8, 0.4, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "  >>  "
+
+[node name="Result" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe1/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe1/HBox/Result"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="CoinBox" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe1/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe1/HBox/CoinBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+size_flags_horizontal = 4
+texture = ExtResource("7_coins")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="Control/Panel/VBoxContainer/Recipe1/HBox/CoinBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
+text = "1"
+horizontal_alignment = 1
+
+[node name="Recipe2" type="PanelContainer" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card2")
+
+[node name="HBox" type="HBoxContainer" parent="Control/Panel/VBoxContainer/Recipe2"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Ingredient1" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe2/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe2/HBox/Ingredient1"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="Plus" type="Label" parent="Control/Panel/VBoxContainer/Recipe2/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "+"
+
+[node name="Ingredient2" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe2/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe2/HBox/Ingredient2"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("4_carrot")
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="Arrow" type="Label" parent="Control/Panel/VBoxContainer/Recipe2/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.9, 0.8, 0.4, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "  >>  "
+
+[node name="Result" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe2/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe2/HBox/Result"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+modulate = Color(1, 0.7, 0.3, 1)
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="CoinBox" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe2/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe2/HBox/CoinBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+size_flags_horizontal = 4
+texture = ExtResource("7_coins")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="Control/Panel/VBoxContainer/Recipe2/HBox/CoinBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
+text = "6"
+horizontal_alignment = 1
+
+[node name="Recipe3" type="PanelContainer" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card3")
+
+[node name="HBox" type="HBoxContainer" parent="Control/Panel/VBoxContainer/Recipe3"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Ingredient1" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe3/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe3/HBox/Ingredient1"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+modulate = Color(1, 0.7, 0.3, 1)
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="Plus" type="Label" parent="Control/Panel/VBoxContainer/Recipe3/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "+"
+
+[node name="Ingredient2" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe3/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe3/HBox/Ingredient2"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("5_apple")
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="Arrow" type="Label" parent="Control/Panel/VBoxContainer/Recipe3/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.9, 0.8, 0.4, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "  >>  "
+
+[node name="Result" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe3/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe3/HBox/Result"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+modulate = Color(0.4, 0.9, 0.4, 1)
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="CoinBox" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe3/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe3/HBox/CoinBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+size_flags_horizontal = 4
+texture = ExtResource("7_coins")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="Control/Panel/VBoxContainer/Recipe3/HBox/CoinBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
+text = "20"
+horizontal_alignment = 1
+
+[node name="Recipe4" type="PanelContainer" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card4")
+
+[node name="HBox" type="HBoxContainer" parent="Control/Panel/VBoxContainer/Recipe4"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Ingredient1" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe4/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe4/HBox/Ingredient1"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+modulate = Color(0.4, 0.9, 0.4, 1)
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="Plus" type="Label" parent="Control/Panel/VBoxContainer/Recipe4/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "+"
+
+[node name="Ingredient2" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe4/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe4/HBox/Ingredient2"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("6_mushroom")
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="Arrow" type="Label" parent="Control/Panel/VBoxContainer/Recipe4/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.9, 0.8, 0.4, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "  >>  "
+
+[node name="Result" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe4/HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe4/HBox/Result"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+size_flags_horizontal = 4
+texture = ExtResource("3_milk")
+modulate = Color(0.7, 0.35, 0.95, 1)
+expand_mode = 1
+stretch_mode = 4
+
+
+[node name="CoinBox" type="VBoxContainer" parent="Control/Panel/VBoxContainer/Recipe4/HBox"]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Icon" type="TextureRect" parent="Control/Panel/VBoxContainer/Recipe4/HBox/CoinBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 24)
+size_flags_horizontal = 4
+texture = ExtResource("7_coins")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="Control/Panel/VBoxContainer/Recipe4/HBox/CoinBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
+text = "200"
+horizontal_alignment = 1
+
+[node name="Sep2" type="HSeparator" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Hint" type="Label" parent="Control/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "Press C or Escape to close"
+horizontal_alignment = 1

@@ -69,6 +69,7 @@ public class GameplayScene : IScene
         navWorldComp.CellSize = 2.0f;
         navWorldComp.AgentRadius = 0.5f;
         navWorldComp.ChunkSize = 20f;
+        
         navWorldComp.ObstacleMask = (uint)CollisionLayer.Physics;
         state.AddComponent(navWorld, navWorldComp);
 
