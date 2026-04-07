@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://bvwxfefj3ba40" path="res://sprites/export/icons/Mashroom/1.png" id="29_lu4ek"]
 [ext_resource type="Script" uid="uid://cefbc5s5mb1ym" path="res://Scripts/Framework/FrameworkChildEntity.cs" id="fw_child"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://chhimgnwlp4ue" path="res://Scripts/Framework/Components/NavMeshConstraintNode.cs" id="fw_navconstraint"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 [ext_resource type="Script" uid="uid://bnd6dercnrtkw" path="res://Scripts/Framework/Components/PlayerEntityNode.cs" id="fw_player"]
 [ext_resource type="Script" uid="uid://dd2p6nybks8wq" path="res://Scripts/Framework/Components/PlayerStateComponentNode.cs" id="fw_playerstate"]
@@ -40,7 +41,7 @@
 atlas = ExtResource("6_xl50o")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_lu4ek"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_e5bhk"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -53,7 +54,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("4_c7qr6")
 region = Rect2(0, 0, 512, 498)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_e5bhk"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bsw1x"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
@@ -62,7 +63,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_bsw1x"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rs134"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("12_hgbuf")
@@ -75,7 +76,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("5_xydrf")
 region = Rect2(0, 0, 658, 166)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_rs134"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ttbcv"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
@@ -88,7 +89,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("6_vhitc")
 region = Rect2(0, 0, 632, 142)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ttbcv"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4s6hu"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
@@ -97,7 +98,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4s6hu"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jio8y"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("14_y80ge")
@@ -110,7 +111,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("8_lkh7d")
 region = Rect2(0, 0, 337, 191)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jio8y"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j3ji0"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
@@ -119,7 +120,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_j3ji0"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rffjt"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("17_wl1od")
@@ -128,7 +129,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_rffjt"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k68af"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("9_u7nxn")
@@ -137,7 +138,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_k68af"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c6hnn"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/wind_strength = 0.0
@@ -145,7 +146,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_c6hnn"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_frewt"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("10_6q1hw")
@@ -253,6 +254,11 @@ script = ExtResource("fw_skin")
 [node name="PlayerStateComponent" type="Node" parent="Entity" unique_id=1582383701]
 script = ExtResource("fw_playerstate")
 
+[node name="NavMeshConstraint" type="Node" parent="Entity" unique_id=1575246103]
+script = ExtResource("fw_navconstraint")
+Slide = true
+PushOutOfObstacles = true
+
 [node name="InteractionZone" type="Node" parent="Entity" unique_id=2034575380]
 script = ExtResource("fw_child")
 ChildName = "InteractionZone"
@@ -274,37 +280,37 @@ skin_node = NodePath("ScaleAnchor/Skin2")
 visible = false
 
 [node name="Body" parent="Character/ScaleAnchor/Skin" index="0" unique_id=1133601551]
-material_override = SubResource("ShaderMaterial_lu4ek")
-
-[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
 material_override = SubResource("ShaderMaterial_e5bhk")
 
-[node name="BackHair" parent="Character/ScaleAnchor/Skin" index="2" unique_id=232127656]
+[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
 material_override = SubResource("ShaderMaterial_bsw1x")
 
-[node name="Torns" parent="Character/ScaleAnchor/Skin" index="3" unique_id=2031229694]
+[node name="BackHair" parent="Character/ScaleAnchor/Skin" index="2" unique_id=232127656]
 material_override = SubResource("ShaderMaterial_rs134")
 
-[node name="Ears" parent="Character/ScaleAnchor/Skin" index="4" unique_id=1368322551]
+[node name="Torns" parent="Character/ScaleAnchor/Skin" index="3" unique_id=2031229694]
 material_override = SubResource("ShaderMaterial_ttbcv")
 
-[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="5" unique_id=50470159]
+[node name="Ears" parent="Character/ScaleAnchor/Skin" index="4" unique_id=1368322551]
 material_override = SubResource("ShaderMaterial_4s6hu")
 
-[node name="Top" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2106512903]
+[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="5" unique_id=50470159]
 material_override = SubResource("ShaderMaterial_jio8y")
 
-[node name="Hand" parent="Character/ScaleAnchor/Skin" index="7" unique_id=599028963]
+[node name="Top" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2106512903]
 material_override = SubResource("ShaderMaterial_j3ji0")
 
-[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="8" unique_id=2120793389]
+[node name="Hand" parent="Character/ScaleAnchor/Skin" index="7" unique_id=599028963]
 material_override = SubResource("ShaderMaterial_rffjt")
 
-[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="9" unique_id=294789255]
+[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="8" unique_id=2120793389]
 material_override = SubResource("ShaderMaterial_k68af")
 
-[node name="Tail" parent="Character/ScaleAnchor/Skin" index="10" unique_id=543932425]
+[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="9" unique_id=294789255]
 material_override = SubResource("ShaderMaterial_c6hnn")
+
+[node name="Tail" parent="Character/ScaleAnchor/Skin" index="10" unique_id=543932425]
+material_override = SubResource("ShaderMaterial_frewt")
 
 [node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223347, 1423863731) index="1" unique_id=661096088]
 transform = Transform3D(0.99999976, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 4.9999995, 5.2107387, 0.17353888)

@@ -81,6 +81,10 @@ public class GameplayScene : IScene
         var metricsEntity = state.CreateEntity();
         state.AddComponent(metricsEntity, new MetricsComponent());
 
+        // Initialize skin spawn counts (deterministic weight decay, stored in ECS state)
+        var skinSpawnEntity = state.CreateEntity();
+        state.AddComponent(skinSpawnEntity, new SkinSpawnCountsComponent());
+
         // Single starting land plot at center — builds into a sell point
         // Buying it spawns 4 neighbors, which spawn their neighbors, etc.
         StarGrid.TrySpawnLand(context, 0, 0);

@@ -18,6 +18,7 @@ using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Systems;
 using Template.Godot.Framework.Editor;
 using Template.Godot.Twitch;
+using Template.Shared.Recording;
 using FileAccess = Godot.FileAccess;
 
 namespace Template.Godot.Core;
@@ -29,6 +30,9 @@ public partial class GameManager : Node
     [Export] public string ServerIp = "127.0.0.1";
     [Export] public int ServerPort = 9050;
     [Export] public bool OfflineMode = false;
+    [Export] public bool RecordInputs = false;
+
+    private InputRecorder _inputRecorder;
     public bool IsLoadedFromSave { get; private set; }
 
     public GameClient GameClient { get; private set; }
@@ -123,6 +127,7 @@ public partial class GameManager : Node
         };
 
         StartMetricsExport();
+        StartInputRecording();
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
@@ -221,6 +226,7 @@ public partial class GameManager : Node
             StartMetricsExport();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
+            GameProfiler.Enable(Game);
             SetupLocalPlayerDiscovery();
             OnGameStarted?.Invoke();
         }
@@ -249,6 +255,7 @@ public partial class GameManager : Node
             StartMetricsExport();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
+            GameProfiler.Enable(Game);
             SetupLocalPlayerDiscovery();
             OnGameStarted?.Invoke();
         }
@@ -331,6 +338,34 @@ public partial class GameManager : Node
         _pendingLoadState = saveData;
     }
 
+    private void StartInputRecording()
+    {
+        if (!RecordInputs) return;
+        _inputRecorder = new InputRecorder(Game);
+        _inputRecorder.Start();
+        GD.Print("[GameManager] Input recording STARTED");
+    }
+
+    /// <summary>
+    /// Call this to save the current recording (e.g. from a UI button or on quit).
+    /// Saves to ~/PizzaJam_Recordings/recording_TIMESTAMP.bin
+    /// </summary>
+    public void SaveInputRecording()
+    {
+        if (_inputRecorder == null) return;
+        _inputRecorder.Stop();
+
+        var dir = System.IO.Path.Combine(
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+            "PizzaJam_Recordings");
+        System.IO.Directory.CreateDirectory(dir);
+
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        var path = System.IO.Path.Combine(dir, $"recording_{timestamp}.bin");
+        _inputRecorder.Save(path);
+        GD.Print($"[GameManager] Recording saved: {path} ({_inputRecorder.ActionCount} actions)");
+    }
+
     private void StartMetricsExport()
     {
         if (!OS.IsDebugBuild()) return;
@@ -373,6 +408,7 @@ public partial class GameManager : Node
             var path = _metricsExporter.Finish(Game.State);
             GD.Print($"[GameManager] Metrics saved: {path}");
         }
+        SaveInputRecording();
         SaveGame();
         Game.Loop.Stop();
         GameClient?.Dispose();

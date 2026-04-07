@@ -15,8 +15,6 @@ public class SkinsData : GameData<Skin>
     private Dictionary<string, List<Skin>> _skinsByType = new();
     // Cache the total weight per type for performance
     private Dictionary<string, int> _totalWeightByType = new();
-    // Track how many times each skin has been spawned globally to decay its weight
-    private Dictionary<int, int> _spawnCounts = new();
 
     public override void Load(Dictionary<string, Skin> entries)
     {
@@ -50,26 +48,20 @@ public class SkinsData : GameData<Skin>
         return MaxMegaIds[random.NextInt(MaxMegaIds.Length)];
     }
 
-    private int GetEffectiveWeight(Skin skin)
+    private static int GetEffectiveWeight(Skin skin, ref SkinSpawnCountsComponent spawnCounts)
     {
-        _spawnCounts.TryGetValue(skin.Id, out int count);
+        int count = spawnCounts.GetCount(skin.Id);
         int weight = skin.Weight;
         for (int i = 0; i < count && weight > 1; i++)
             weight = System.Math.Max(1, weight / 2);
         return weight;
     }
 
-    private void RecordSpawn(int skinId)
-    {
-        _spawnCounts.TryGetValue(skinId, out int count);
-        _spawnCounts[skinId] = count + 1;
-    }
-
-    private Skin PickWeightedSkin(ref DeterministicRandom random, List<Skin> skins)
+    private static Skin PickWeightedSkin(ref DeterministicRandom random, List<Skin> skins, ref SkinSpawnCountsComponent spawnCounts)
     {
         int totalWeight = 0;
         foreach (var skin in skins)
-            totalWeight += GetEffectiveWeight(skin);
+            totalWeight += GetEffectiveWeight(skin, ref spawnCounts);
 
         if (totalWeight <= 0) return skins.Last();
 
@@ -77,14 +69,14 @@ public class SkinsData : GameData<Skin>
         int sum = 0;
         foreach (var skin in skins)
         {
-            sum += GetEffectiveWeight(skin);
+            sum += GetEffectiveWeight(skin, ref spawnCounts);
             if (target < sum)
                 return skin;
         }
         return skins.Last();
     }
 
-    public SkinComponent GenerateRandomSkin(ref DeterministicRandom random)
+    public SkinComponent GenerateRandomSkin(ref DeterministicRandom random, ref SkinSpawnCountsComponent spawnCounts)
     {
         var component = new SkinComponent
         {
@@ -100,11 +92,11 @@ public class SkinsData : GameData<Skin>
             var skins = _skinsByType[type];
             if (skins.Count == 0) continue;
 
-            var selectedSkin = PickWeightedSkin(ref random, skins);
+            var selectedSkin = PickWeightedSkin(ref random, skins, ref spawnCounts);
 
             var key = new FixedString32(type);
             component.Skins.Add(key, selectedSkin.Id);
-            RecordSpawn(selectedSkin.Id);
+            spawnCounts.RecordSpawn(selectedSkin.Id);
 
             var palette = GetColorPalette(type);
             if (palette != null)
@@ -132,7 +124,7 @@ public class SkinsData : GameData<Skin>
         return component;
     }
 
-    public SkinComponent CrossbreedSkin(ref DeterministicRandom random, SkinComponent parentA, SkinComponent parentB)
+    public SkinComponent CrossbreedSkin(ref DeterministicRandom random, SkinComponent parentA, SkinComponent parentB, ref SkinSpawnCountsComponent spawnCounts)
     {
         var component = new SkinComponent
         {
@@ -179,14 +171,14 @@ public class SkinsData : GameData<Skin>
                 var skins = _skinsByType[type];
                 if (skins.Count == 0) continue;
 
-                var selectedSkin = PickWeightedSkin(ref random, skins);
+                var selectedSkin = PickWeightedSkin(ref random, skins, ref spawnCounts);
                 selectedId = selectedSkin.Id;
                 component.Skins.Add(key, selectedId);
                 if (palette != null)
                     component.Colors.Add(key, PickWeightedColor(ref random, palette));
             }
 
-            RecordSpawn(selectedId);
+            spawnCounts.RecordSpawn(selectedId);
         }
 
         // BackHair shares Hair color

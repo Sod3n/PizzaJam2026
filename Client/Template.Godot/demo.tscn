@@ -26,7 +26,7 @@
 [ext_resource type="PackedScene" uid="uid://w5woq2tbf002" path="res://templates/environment/props/Flowers.tscn" id="tpl_flowers"]
 [ext_resource type="PackedScene" path="res://templates/environment/FoodFarm.tscn" id="tpl_foodfarm"]
 [ext_resource type="PackedScene" uid="uid://bu2yqslfpgg4k" path="res://templates/environment/FoodSign.tscn" id="tpl_foodsign"]
-[ext_resource type="PackedScene" path="res://templates/characters/Helper.tscn" id="tpl_helper"]
+[ext_resource type="PackedScene" uid="uid://dkty2oi8f11p0" path="res://templates/characters/Helper.tscn" id="tpl_helper"]
 [ext_resource type="PackedScene" path="res://templates/environment/HelperAssistant.tscn" id="tpl_helperassistant"]
 [ext_resource type="PackedScene" uid="uid://dgjkt2nsjuyuj" path="res://templates/characters/HelperPet.tscn" id="tpl_helperpet"]
 [ext_resource type="PackedScene" uid="uid://csft4r563rued" path="res://templates/environment/LoveHouse.tscn" id="tpl_lovehouse"]
@@ -62,8 +62,8 @@
 [ext_resource type="Script" uid="uid://bhaw2lc4hhrbj" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
 [ext_resource type="Script" uid="uid://cpchm5xkwlt1h" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
-[ext_resource type="Script" path="res://Scripts/Visuals/WarehouseView.cs" id="view_warehouse"]
-[ext_resource type="Script" path="res://Scripts/Visuals/WarehouseSignView.cs" id="view_warehousesign"]
+[ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/WarehouseView.cs" id="view_warehouse"]
+[ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/WarehouseSignView.cs" id="view_warehousesign"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -102,6 +102,7 @@ buffer = PackedFloat32Array(-1.07601, 0, -1.20455, 2.39808, 0, 1.61516, 0, 0, 1.
 
 [node name="Main" type="Node" parent="." unique_id=2048933969]
 script = ExtResource("1_884kg")
+RecordInputs = true
 
 [node name="InputManager" type="Node" parent="Main" unique_id=366168345]
 script = ExtResource("2_d4o4o")
@@ -4329,11 +4330,11 @@ Prefab = ExtResource("tpl_decoration")
 script = ExtResource("view_foodsign")
 Prefab = ExtResource("tpl_foodsign")
 
-[node name="WarehouseView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="WarehouseView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2058039428]
 script = ExtResource("view_warehouse")
 Prefab = ExtResource("tpl_warehouse")
 
-[node name="WarehouseSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views"]
+[node name="WarehouseSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398632]
 script = ExtResource("view_warehousesign")
 Prefab = ExtResource("tpl_warehousesign")
 

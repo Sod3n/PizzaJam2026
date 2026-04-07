@@ -38,9 +38,19 @@ public static partial class PlayerDefinition
 
     static partial void OnEntityCreated(Context ctx, Entity entity, ref PlayerEntity component, Dictionary<string, Entity> childEntities)
     {
+        // Get spawn counts from ECS state for deterministic weight decay
+        ref var spawnCounts = ref GetSpawnCounts(ctx);
+
         // Generate random skin
         var random = new DeterministicRandom((uint)entity.Id + 1000);
-        var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random);
+        var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random, ref spawnCounts);
         ctx.AddComponent(entity, skinComponent);
+    }
+
+    private static ref SkinSpawnCountsComponent GetSpawnCounts(Context ctx)
+    {
+        foreach (var e in ctx.State.Filter<SkinSpawnCountsComponent>())
+            return ref ctx.State.GetComponent<SkinSpawnCountsComponent>(e);
+        throw new System.InvalidOperationException("SkinSpawnCountsComponent entity not found");
     }
 }

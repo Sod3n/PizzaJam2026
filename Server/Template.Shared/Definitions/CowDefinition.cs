@@ -14,9 +14,12 @@ public static partial class CowDefinition
     {
         component.SpawnPosition = ctx.GetComponent<Transform2D>(entity).Position;
 
+        // Get spawn counts from ECS state for deterministic weight decay
+        ref var spawnCounts = ref GetSpawnCounts(ctx);
+
         // Generate random skin and calculate MaxExhaust from skin data
         var random = new DeterministicRandom((uint)entity.Id + 2000);
-        var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random);
+        var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random, ref spawnCounts);
         ctx.AddComponent(entity, skinComponent);
 
         int totalExhaust = 0;
@@ -42,5 +45,12 @@ public static partial class CowDefinition
         ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
         navAgent.AvoidanceEnabled = true;
         navAgent.AvoidanceMask = 1u; // Detect player on collision layer 1
+    }
+
+    private static ref SkinSpawnCountsComponent GetSpawnCounts(Context ctx)
+    {
+        foreach (var e in ctx.State.Filter<SkinSpawnCountsComponent>())
+            return ref ctx.State.GetComponent<SkinSpawnCountsComponent>(e);
+        throw new System.InvalidOperationException("SkinSpawnCountsComponent entity not found");
     }
 }

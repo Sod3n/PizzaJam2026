@@ -28,16 +28,15 @@ public class PropSpawnSystem : ISystem
             TotalWeight += SpawnWeights[i];
     }
 
-    private bool _spawned;
-
     public void Update(EntityWorld state)
     {
-        if (_spawned) return;
-
         var gameTime = state.GetCustomData<IGameTime>();
         if (gameTime == null || gameTime.CurrentTick != SpawnTick) return;
 
-        _spawned = true;
+        // Only spawn once — check if any props already exist in this world
+        foreach (var _ in state.Filter<PropComponent>())
+            return;
+
         SpawnAllProps(state);
     }
 

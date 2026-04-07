@@ -36,8 +36,8 @@ public static class TemplateGameFactory
         // 1. Create Game (encapsulates State, Loop, Dispatcher, Scheduler, SceneManager)
         var game = new Game(tickRate: tickRate);
 
-        // 2. Register physics system (Box2D = deterministic Fixed64, Rapier = float FFI)
-        game.Loop.Simulation.SystemRunner.EnableSystem(new Box2DPhysicsSystem());
+        // 2. Register physics system (stateless sensor queries — fully deterministic, no rollback issues)
+        game.Loop.Simulation.SystemRunner.EnableSystem(new SensorQuerySystem());
 
         // 3. Load Initial Scene
         game.SceneManager.LoadScene(new GameplayScene());

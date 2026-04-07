@@ -743,7 +743,8 @@ public class CowSystem : ISystem
         uint seed = (uint)(newCow.Id ^ (gameTime?.CurrentTick ?? 0));
         var random = new DeterministicRandom(seed);
 
-        var crossbredSkin = twinSkin ?? GameData.GD.SkinsData.CrossbreedSkin(ref random, skinA, skinB);
+        ref var spawnCounts = ref GetSpawnCounts(state);
+        var crossbredSkin = twinSkin ?? GameData.GD.SkinsData.CrossbreedSkin(ref random, skinA, skinB, ref spawnCounts);
 
         // Guaranteed max Megaaaabooba at breed #30
         if (breedCount == GlobalResourcesComponent.GuaranteedMegaBreed)
@@ -935,5 +936,12 @@ public class CowSystem : ISystem
         int spawnedCount = state.GetComponent<GlobalResourcesComponent>(globalResEntity).HelpersSpawned;
         if (spawnedCount >= HelperUnlockOrder.Length) return -1;
         return HelperUnlockOrder[spawnedCount].type;
+    }
+
+    private static ref SkinSpawnCountsComponent GetSpawnCounts(EntityWorld state)
+    {
+        foreach (var e in state.Filter<SkinSpawnCountsComponent>())
+            return ref state.GetComponent<SkinSpawnCountsComponent>(e);
+        throw new System.InvalidOperationException("SkinSpawnCountsComponent entity not found");
     }
 }

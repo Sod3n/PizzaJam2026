@@ -31,9 +31,12 @@ public static partial class HelperDefinition
         var info = HelperConfig.GetByType(helperType);
         ctx.AddComponent(entity, new NameComponent { Name = info.Name });
 
+        // Get spawn counts from ECS state for deterministic weight decay
+        ref var spawnCounts = ref GetSpawnCounts(ctx);
+
         // Generate random skin
         var random = new DeterministicRandom((uint)entity.Id + 3000);
-        var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random);
+        var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random, ref spawnCounts);
         ctx.AddComponent(entity, skinComponent);
 
         ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
@@ -43,5 +46,12 @@ public static partial class HelperDefinition
             navAgent.AvoidanceMask = 0;
 
         return entity;
+    }
+
+    private static ref SkinSpawnCountsComponent GetSpawnCounts(Context ctx)
+    {
+        foreach (var e in ctx.State.Filter<SkinSpawnCountsComponent>())
+            return ref ctx.State.GetComponent<SkinSpawnCountsComponent>(e);
+        throw new System.InvalidOperationException("SkinSpawnCountsComponent entity not found");
     }
 }
