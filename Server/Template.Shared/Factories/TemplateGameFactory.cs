@@ -36,7 +36,10 @@ public static class TemplateGameFactory
         // 1. Create Game (encapsulates State, Loop, Dispatcher, Scheduler, SceneManager)
         var game = new Game(tickRate: tickRate);
 
-        // 2. Load Initial Scene
+        // 2. Register physics system (Box2D = deterministic Fixed64, Rapier = float FFI)
+        game.Loop.Simulation.SystemRunner.EnableSystem(new Box2DPhysicsSystem());
+
+        // 3. Load Initial Scene
         game.SceneManager.LoadScene(new GameplayScene());
 
         return game;

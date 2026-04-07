@@ -9,7 +9,8 @@ using Template.Shared.Components;
 namespace Template.Shared.Systems;
 
 /// <summary>
-/// Swarm following using nav agent pathfinding + ORCA avoidance + velocity lerp.
+/// Swarm following using nav agent pathfinding + DtCrowd avoidance + velocity lerp.
+/// DtCrowd handles inter-agent avoidance (no more manual ORCA).
 /// </summary>
 public static class SwarmFollow
 {
@@ -19,7 +20,6 @@ public static class SwarmFollow
     private const float PlayerMovingThresholdSq = 0.5f;
     private const float LerpFactor = 0.2f;
     private const float SeparationDist = 1.8f;
-    private const float OrcaDist = 2.5f;
 
     public static void Follow(EntityWorld state, Entity entity, Entity targetPlayer)
     {
@@ -38,12 +38,10 @@ public static class SwarmFollow
 
         bool wasMoving = (float)body.Velocity.SqrMagnitude > 0.5f;
 
-        // Check if player is moving
         bool playerMoving = false;
         if (state.HasComponent<CharacterBody2D>(targetPlayer))
             playerMoving = (float)state.GetComponent<CharacterBody2D>(targetPlayer).Velocity.SqrMagnitude > PlayerMovingThresholdSq;
 
-        // If player is stationary and follower is already nearby, stay idle
         bool alreadyNearby = dist < IdleRangeDist && !wasMoving;
         bool inIdleRange = !playerMoving && alreadyNearby;
         float threshold = wasMoving ? StopDist : StartDist;
@@ -51,17 +49,14 @@ public static class SwarmFollow
         // ─── IDLE: within threshold, or player stationary and in range ───
         if (dist < threshold || inIdleRange)
         {
-            // Only separate from very close neighbors, no chasing
             var sep = GetSeparation(state, entity, myPos, SeparationDist);
 
             if ((float)sep.SqrMagnitude > 0.01f)
             {
-                // Apply separation directly (not lerped) so overlapping entities escape
                 body.Velocity = sep * (Float)3f;
             }
             else
             {
-                // Dampen to stop
                 body.Velocity = body.Velocity * (Float)0.8f;
                 if ((float)body.Velocity.SqrMagnitude < 0.05f)
                     body.Velocity = Vector2.Zero;
@@ -71,9 +66,8 @@ public static class SwarmFollow
             return;
         }
 
-        // ─── MOVING: use nav agent + ORCA ───
+        // ─── MOVING: use nav agent (DtCrowd handles avoidance) ───
 
-        // Update nav target
         var drift = (playerPos - navAgent.TargetPosition).SqrMagnitude;
         if ((float)drift > 2f || navAgent.IsNavigationFinished)
         {
@@ -81,13 +75,10 @@ public static class SwarmFollow
             navAgent.IsNavigationFinished = false;
         }
 
-        // Start from nav agent's pathfinding velocity
+        // DtCrowd computes velocity with inter-agent avoidance built in
         var desiredVel = navAgent.Velocity;
 
-        // ORCA: deflect away from nearby movers
-        desiredVel = ApplyOrca(state, entity, myPos, desiredVel);
-
-        // Velocity lerp
+        // Velocity lerp for smooth movement
         body.Velocity = body.Velocity + (desiredVel - body.Velocity) * (Float)LerpFactor;
 
         // Face direction
@@ -114,7 +105,6 @@ public static class SwarmFollow
             if (dSq >= radiusSq) return;
             if (dSq < 0.01f)
             {
-                // Overlapping: deterministic push based on ID difference
                 int d = self.Id - other.Id;
                 float a = d * 1.2566f;
                 sep = sep + new Vector2((Float)Math.Cos(a), (Float)Math.Sin(a)) * (Float)0.5f;
@@ -137,68 +127,14 @@ public static class SwarmFollow
         return sep;
     }
 
-    // ─── ORCA: adjust velocity to avoid collision with moving neighbors ───
-
     /// <summary>
-    /// Public ORCA avoidance for use during autonomous navigation (non-Follow helpers).
-    /// Deflects velocity away from nearby helpers, cows, and the player.
+    /// Apply avoidance for autonomous navigation.
+    /// With DtCrowd, the velocity already includes avoidance — just return it.
+    /// Kept for API compatibility with HelperSystem.
     /// </summary>
     public static Vector2 ApplyOrcaForNav(EntityWorld state, Entity self, Vector2 myPos, Vector2 vel)
     {
-        return ApplyOrca(state, self, myPos, vel);
-    }
-
-    private static Vector2 ApplyOrca(EntityWorld state, Entity self, Vector2 myPos, Vector2 vel)
-    {
-        var adj = vel;
-        float orcaDistSq = OrcaDist * OrcaDist * 4f;
-
-        void Deflect(Vector2 otherPos, Vector2 otherVel)
-        {
-            var rel = otherPos - myPos;
-            var dSq = (float)rel.SqrMagnitude;
-            if (dSq > orcaDistSq || dSq < 0.01f) return;
-
-            var d = (float)Float.Sqrt((Float)dSq);
-            var dir = rel / (Float)d;
-
-            // How fast we're approaching
-            var relVel = adj - otherVel * (Float)0.5f;
-            var approach = (float)Vector2.Dot(relVel, dir);
-
-            if (approach > 0 && d < OrcaDist * 2f)
-            {
-                // Remove approach component
-                adj = adj - dir * (Float)(approach * 0.6f);
-                // Small tangent to break deadlock
-                adj = adj + new Vector2(-dir.Y, dir.X) * (Float)(approach * 0.1f);
-            }
-        }
-
-        foreach (var e in state.Filter<HelperComponent>())
-        {
-            if (e == self) continue;
-            if (!state.HasComponent<Transform2D>(e) || !state.HasComponent<CharacterBody2D>(e)) continue;
-            Deflect(state.GetComponent<Transform2D>(e).Position, state.GetComponent<CharacterBody2D>(e).Velocity);
-        }
-
-        foreach (var e in state.Filter<CowComponent>())
-        {
-            if (e == self) continue;
-            if (!state.HasComponent<Transform2D>(e) || !state.HasComponent<CharacterBody2D>(e)) continue;
-            var c = state.GetComponent<CowComponent>(e);
-            if (c.FollowingPlayer == Entity.Null) continue;
-            Deflect(state.GetComponent<Transform2D>(e).Position, state.GetComponent<CharacterBody2D>(e).Velocity);
-        }
-
-        // Avoid player
-        foreach (var p in state.Filter<PlayerEntity>())
-        {
-            if (!state.HasComponent<Transform2D>(p)) continue;
-            Deflect(state.GetComponent<Transform2D>(p).Position, Vector2.Zero);
-        }
-
-        return adj;
+        return vel; // DtCrowd handles avoidance
     }
 
     public static void Reset() { }

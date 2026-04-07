@@ -43,6 +43,7 @@ shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_doawl"]
 animations = [{
@@ -66,6 +67,7 @@ shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_okgcy"]
 animations = [{
@@ -94,6 +96,7 @@ shader_parameter/albedo_texture = ExtResource("9_efe3o")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_qo6bs"]
 animations = [{
@@ -129,6 +132,7 @@ shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_t7j5h"]
 animations = [{
@@ -152,6 +156,7 @@ shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_oca4j"]
 animations = [{
@@ -171,6 +176,7 @@ shader_parameter/albedo_texture = ExtResource("11_egwm2")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_50s2t"]
 atlas = ExtResource("6_t7j5h")
@@ -210,6 +216,7 @@ shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_qsyed"]
 animations = [{
@@ -229,6 +236,7 @@ shader_parameter/albedo_texture = ExtResource("17_7s1ka")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_hm0tp"]
 animations = [{
@@ -251,6 +259,7 @@ shader_parameter/albedo_texture = ExtResource("13_tp46v")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_efe3o"]
 atlas = ExtResource("8_oca4j")
@@ -279,6 +288,7 @@ shader = ExtResource("1_t7j5h")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_krs60"]
 
@@ -289,6 +299,7 @@ shader_parameter/albedo_texture = ExtResource("11_oca4j")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_tp46v"]
 animations = [{
@@ -343,7 +354,7 @@ animations = [{
 transform = Transform3D(0.2, 0, 0, 0, 0.19518183, 0.043635447, 0, -0.043635447, 0.19518183, 0, -0.19223237, 0)
 script = ExtResource("1_qhcqh")
 skin_node = NodePath("ScaleAnchor/Skin")
-duration = 0.5
+duration = 0.462
 move_effect_y_offset = 0.5
 bounce_height = 2.0
 

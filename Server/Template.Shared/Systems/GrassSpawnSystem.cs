@@ -5,6 +5,7 @@ using Deterministic.GameFramework.Physics2D.Components;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using Deterministic.GameFramework.DAR;
+using Deterministic.GameFramework.Navigation2D.Components;
 using Deterministic.GameFramework.Navigation2D.Systems;
 
 namespace Template.Shared.Systems;
@@ -75,8 +76,15 @@ public class GrassSpawnSystem : ISystem
 
     private void SpawnFood(Context context, uint seed, int foodType)
     {
-        // Use CDTNavigationState — the game uses CDTNavigationSystem (not the old NavigationSystem)
+        // Read bake state from NavigationWorld2D (ECS component — survives rollback/sync).
+        // Read the CDT map from CDTNavigationState (derived cache — rebuilt after restore).
         var navState = context.State.GetCustomData<CDTNavigationState>();
+        bool physicsBaked = false;
+        foreach (var navEntity in context.State.Filter<NavigationWorld2D>())
+        {
+            physicsBaked = context.State.GetComponent<NavigationWorld2D>(navEntity).PhysicsBaked;
+            break;
+        }
         var random = new DeterministicRandom(seed);
 
         for (int attempt = 0; attempt < MaxSpawnAttempts; attempt++)
@@ -86,7 +94,7 @@ public class GrassSpawnSystem : ISystem
             var pos = new Vector2(x, y);
 
             // Check 1: Only spawn on walkable CDT nav mesh (clear of obstacles)
-            if (navState?.Map != null && navState.PhysicsBaked)
+            if (navState?.Map != null && physicsBaked)
             {
                 if (navState.Map.FindTriangle(pos) < 0)
                     continue; // position is inside an obstacle, try again
