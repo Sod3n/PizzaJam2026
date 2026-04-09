@@ -94,10 +94,10 @@ public class CowFollowSystem : ISystem
                 var distToTargetSq = (targetPos - cowPos).SqrMagnitude;
 
                 var targetDriftSq = (targetPos - navAgent.TargetPosition).SqrMagnitude;
-                if ((float)targetDriftSq > TargetUpdateThresholdSq || navAgent.IsNavigationFinished)
+                if (targetDriftSq > TargetUpdateThresholdSq || navAgent.IsNavigationFinished)
                     navAgent.TargetPosition = targetPos;
 
-                if ((float)distToTargetSq > navAgent.TargetDesiredDistance * navAgent.TargetDesiredDistance)
+                if (distToTargetSq > navAgent.TargetDesiredDistance * navAgent.TargetDesiredDistance)
                     navAgent.IsNavigationFinished = false;
 
                 // Velocity lerp for smooth movement

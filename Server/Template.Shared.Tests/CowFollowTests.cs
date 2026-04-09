@@ -566,11 +566,11 @@ public class CowFollowTests
             }
 
             // Check path waypoints for wall crossing
-            if (navState != null && navState.AgentPaths.TryGetValue(cow.Id, out var pathData) && pathData.PathPoints.Count > 0)
             {
-                for (int i = 0; i < pathData.PathPoints.Count; i++)
+                var navAgent = game.State.GetComponent<NavigationAgent2D>(cow);
+                for (int i = 0; i < navAgent.PathPointCount; i++)
                 {
-                    var wp = pathData.PathPoints[i];
+                    var wp = navAgent.PathPoints[i];
                     float wx = (float)wp.X;
                     float wy = (float)wp.Y;
                     if (wy >= wallYMin && wy <= wallYMax && wx >= wallXMin && wx <= wallXMax)
@@ -578,10 +578,9 @@ public class CowFollowTests
                         if (!pathThroughWall)
                         {
                             _output.WriteLine($"T{tick}: PATH WAYPOINT [{i}] INSIDE WALL at ({wx:F2},{wy:F2})");
-                            // Log all waypoints
-                            for (int j = 0; j < pathData.PathPoints.Count; j++)
+                            for (int j = 0; j < navAgent.PathPointCount; j++)
                             {
-                                var p = pathData.PathPoints[j];
+                                var p = navAgent.PathPoints[j];
                                 _output.WriteLine($"  WP[{j}]: ({(float)p.X:F2},{(float)p.Y:F2})");
                             }
                             pathThroughWall = true;
@@ -618,12 +617,12 @@ public class CowFollowTests
         finalDist.Should().BeLessThan(12f, "Cow should navigate around the wall");
 
         // Verify the path doesn't have segments that cross the wall body
-        if (navState != null && navState.AgentPaths.TryGetValue(cow.Id, out var finalPathData) && finalPathData.PathPoints.Count > 1)
         {
-            for (int i = 0; i < finalPathData.PathPoints.Count - 1; i++)
+            var finalNav = game.State.GetComponent<NavigationAgent2D>(cow);
+            for (int i = 0; i < finalNav.PathPointCount - 1; i++)
             {
-                var a = finalPathData.PathPoints[i];
-                var b = finalPathData.PathPoints[i + 1];
+                var a = finalNav.PathPoints[i];
+                var b = finalNav.PathPoints[i + 1];
                 // Check if the segment from a to b crosses the wall body
                 bool segmentCrossesWall = SegmentIntersectsRect(
                     (float)a.X, (float)a.Y, (float)b.X, (float)b.Y,

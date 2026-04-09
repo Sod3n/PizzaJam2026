@@ -734,16 +734,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return false;
     }
 
-    private static void DestroyNearbyProps(Context ctx, Vector2 position, float radius)
+    private static void DestroyNearbyProps(Context ctx, Vector2 position, Float radius)
     {
-        float radiusSq = radius * radius;
+        Float radiusSq = radius * radius;
         var toDelete = new System.Collections.Generic.List<Entity>();
         foreach (var entity in ctx.State.Filter<PropComponent>())
         {
             var propPos = ctx.State.GetComponent<Transform2D>(entity).Position;
-            float dx = (float)(propPos.X - position.X);
-            float dy = (float)(propPos.Y - position.Y);
-            if (dx * dx + dy * dy < radiusSq)
+            var diff = propPos - position;
+            if (diff.SqrMagnitude < radiusSq)
                 toDelete.Add(entity);
         }
         foreach (var entity in toDelete)

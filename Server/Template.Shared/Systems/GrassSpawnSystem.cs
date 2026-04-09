@@ -5,7 +5,6 @@ using Deterministic.GameFramework.Physics2D.Components;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using Deterministic.GameFramework.DAR;
-using Deterministic.GameFramework.Navigation2D.Components;
 using Deterministic.GameFramework.Navigation2D.Systems;
 
 namespace Template.Shared.Systems;
@@ -24,7 +23,7 @@ public class GrassSpawnSystem : ISystem
     /// Buildings use collision shapes up to ~4.6 wide (CarrotFarm),
     /// so half-diagonal + margin keeps food visually outside.
     /// </summary>
-    private const float BuildingClearance = 3f;
+    private static readonly Float BuildingClearance = (Float)3;
 
     public void Update(EntityWorld state)
     {
@@ -52,7 +51,7 @@ public class GrassSpawnSystem : ISystem
         foreach (var _ in state.Filter<MushroomCaveComponent>()) mushroomFarms++;
 
         var context = new Context(state, Entity.Null, null!);
-        uint baseSeed = (uint)state.NextEntityId + ((uint)gameTime.CurrentTick);
+        uint baseSeed = (uint)gameTime.CurrentTick * 2654435761u + (uint)grassCount * 31u + (uint)carrotCount * 37u + (uint)appleCount * 41u + (uint)mushroomCount * 43u;
 
         // Always spawn 1 grass per interval
         if (grassCount < MaxFoodPerType)
@@ -76,15 +75,7 @@ public class GrassSpawnSystem : ISystem
 
     private void SpawnFood(Context context, uint seed, int foodType)
     {
-        // Read bake state from NavigationWorld2D (ECS component — survives rollback/sync).
-        // Read the CDT map from CDTNavigationState (derived cache — rebuilt after restore).
-        var navState = context.State.GetCustomData<CDTNavigationState>();
-        bool physicsBaked = false;
-        foreach (var navEntity in context.State.Filter<NavigationWorld2D>())
-        {
-            physicsBaked = context.State.GetComponent<NavigationWorld2D>(navEntity).PhysicsBaked;
-            break;
-        }
+        // Nav mesh walkability is checked via NavigationQueries facade.
         var random = new DeterministicRandom(seed);
 
         for (int attempt = 0; attempt < MaxSpawnAttempts; attempt++)
@@ -94,11 +85,8 @@ public class GrassSpawnSystem : ISystem
             var pos = new Vector2(x, y);
 
             // Check 1: Only spawn on walkable CDT nav mesh (clear of obstacles)
-            if (navState?.Map != null && physicsBaked)
-            {
-                if (navState.Map.FindTriangle(pos) < 0)
-                    continue; // position is inside an obstacle, try again
-            }
+            if (!NavigationQueries.IsWalkable(context.State, pos))
+                continue; // position is inside an obstacle, try again
 
             // Check 2: Explicit building proximity check as safety net.
             // Even if the nav mesh is not yet baked, this prevents spawning
@@ -137,22 +125,21 @@ public class GrassSpawnSystem : ISystem
             var shape = state.GetComponent<CollisionShape2D>(entity);
             var buildingPos = transform.Position;
 
-            float dx = (float)(pos.X - buildingPos.X);
-            float dy = (float)(pos.Y - buildingPos.Y);
+            var diff = pos - buildingPos;
 
             if (shape.Type == CollisionShapeType.Rectangle)
             {
                 // AABB check with clearance margin
-                float halfW = (float)shape.Rectangle.Size.X / 2f + BuildingClearance;
-                float halfH = (float)shape.Rectangle.Size.Y / 2f + BuildingClearance;
-                if (System.Math.Abs(dx) < halfW && System.Math.Abs(dy) < halfH)
+                Float halfW = shape.Rectangle.Size.X * (Float)0.5f + BuildingClearance;
+                Float halfH = shape.Rectangle.Size.Y * (Float)0.5f + BuildingClearance;
+                if (Float.Abs(diff.X) < halfW && Float.Abs(diff.Y) < halfH)
                     return true;
             }
             else if (shape.Type == CollisionShapeType.Circle)
             {
                 // Circle check with clearance margin
-                float radius = (float)shape.Circle.Radius + BuildingClearance;
-                if (dx * dx + dy * dy < radius * radius)
+                Float radius = shape.Circle.Radius + BuildingClearance;
+                if (diff.SqrMagnitude < radius * radius)
                     return true;
             }
         }

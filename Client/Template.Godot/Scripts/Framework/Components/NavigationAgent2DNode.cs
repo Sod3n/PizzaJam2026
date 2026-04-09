@@ -22,4 +22,7 @@ public partial class NavigationAgent2DNode : Node
     [Export] public Vector2 Velocity;
     [Export] public Vector2 NextPathPosition;
     [Export] public float DistanceToTarget;
+    [Export] public byte PathIndex;
+    [Export] public byte PathPointCount;
+    [Export] public int CrowdAgentIndex;
 }

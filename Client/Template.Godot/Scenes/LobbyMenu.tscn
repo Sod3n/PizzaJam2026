@@ -60,6 +60,11 @@ custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 text = "Play Offline"
 
+[node name="RemoteServerCheck" type="CheckButton" parent="MainMenu/VBox"]
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
+text = "Remote Server"
+
 [node name="UseSaveCheck" type="CheckButton" parent="MainMenu/VBox" unique_id=543001680]
 custom_minimum_size = Vector2(300, 40)
 layout_mode = 2

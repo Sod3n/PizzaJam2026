@@ -54,10 +54,10 @@ Console.WriteLine($"NetworkServer resolved: {networkServer.GetType().Name}");
 
 var matchManager = app.Services.GetRequiredService<MatchManager>();
 
-// Auto-create a default match for testing
-var defaultMatchId = System.Guid.Parse("00000000-0000-0000-0000-000000000001");
-Console.WriteLine($"Creating default match: {defaultMatchId}");
-matchManager.CreateMatch(defaultMatchId);
+// // Auto-create a default match for testing
+// var defaultMatchId = System.Guid.Parse("00000000-0000-0000-0000-000000000001");
+// Console.WriteLine($"Creating default match: {defaultMatchId}");
+// matchManager.CreateMatch(defaultMatchId);
 
 app.Run();
 

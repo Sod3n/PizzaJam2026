@@ -14,6 +14,10 @@ public static class StarGrid
     public const float InnerRadius = 25f;
     private const int StarPoints = 5;
 
+    private static readonly Float GridStepF = (Float)GridStep;
+    private static readonly Float OuterRadiusF = (Float)OuterRadius;
+    private static readonly Float InnerRadiusF = (Float)InnerRadius;
+
     /// <summary>
     /// Minimum grid distance (Manhattan) between special buildings (LoveHouse, SellPoint).
     /// Ensures ~10-15 houses between each special building.
@@ -31,22 +35,37 @@ public static class StarGrid
         return null;
     }
 
+    // Pre-computed star vertices for deterministic point-in-polygon test
+    private static readonly Vector2[] StarVertices;
+
+    static StarGrid()
+    {
+        int vertCount = StarPoints * 2;
+        StarVertices = new Vector2[vertCount];
+        Float startAngle = -Float.Pi / (Float)2;
+
+        for (int i = 0; i < vertCount; i++)
+        {
+            Float angle = startAngle + (Float)i * Float.Pi / (Float)StarPoints;
+            Float radius = (i % 2 == 0) ? OuterRadiusF : InnerRadiusF;
+            StarVertices[i] = new Vector2(Float.Cos(angle) * radius, Float.Sin(angle) * radius);
+        }
+    }
+
     public static bool IsInsideStar(float px, float py)
     {
-        float startAngle = -(float)System.Math.PI / 2f;
+        return IsInsideStarF((Float)px, (Float)py);
+    }
+
+    public static bool IsInsideStarF(Float px, Float py)
+    {
         bool inside = false;
+        int vertCount = StarVertices.Length;
 
-        for (int i = 0, j = StarPoints * 2 - 1; i < StarPoints * 2; j = i++)
+        for (int i = 0, j = vertCount - 1; i < vertCount; j = i++)
         {
-            float ai = startAngle + i * (float)System.Math.PI / StarPoints;
-            float aj = startAngle + j * (float)System.Math.PI / StarPoints;
-            float ri = (i % 2 == 0) ? OuterRadius : InnerRadius;
-            float rj = (j % 2 == 0) ? OuterRadius : InnerRadius;
-
-            float xi = (float)System.Math.Cos(ai) * ri;
-            float yi = (float)System.Math.Sin(ai) * ri;
-            float xj = (float)System.Math.Cos(aj) * rj;
-            float yj = (float)System.Math.Sin(aj) * rj;
+            Float xi = StarVertices[i].X, yi = StarVertices[i].Y;
+            Float xj = StarVertices[j].X, yj = StarVertices[j].Y;
 
             if (((yi > py) != (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi))
                 inside = !inside;
@@ -227,7 +246,7 @@ public static class StarGrid
         for (int gy = -maxCoord; gy <= maxCoord; gy++)
             for (int gx = -maxCoord; gx <= maxCoord; gx++)
             {
-                if (!IsInsideStar(gx * GridStep, gy * GridStep)) continue;
+                if (!IsInsideStarF((Float)gx * GridStepF, (Float)gy * GridStepF)) continue;
                 if (GetFixedType(gx, gy).HasValue) continue; // skip fixed positions
                 candidates.Add((gx, gy, System.Math.Abs(gx) + System.Math.Abs(gy)));
             }
@@ -288,9 +307,9 @@ public static class StarGrid
     /// </summary>
     public static bool TrySpawnLand(Context ctx, int gx, int gy)
     {
-        float px = gx * GridStep;
-        float py = gy * GridStep;
-        if (!IsInsideStar(px, py)) return false;
+        Float px = (Float)gx * GridStepF;
+        Float py = (Float)gy * GridStepF;
+        if (!IsInsideStarF(px, py)) return false;
 
         // Check if a land plot already exists at these grid coords
         foreach (var entity in ctx.State.Filter<LandComponent>())
@@ -319,9 +338,8 @@ public static class StarGrid
                  ctx.State.HasComponent<WarehouseComponent>(entity)))
             {
                 var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
-                float dx = (float)(pos.X - px);
-                float dy = (float)(pos.Y - py);
-                if (dx * dx + dy * dy < 1f) return false;
+                var diff = pos - new Vector2(px, py);
+                if (diff.SqrMagnitude < Float.One) return false;
             }
         }
 

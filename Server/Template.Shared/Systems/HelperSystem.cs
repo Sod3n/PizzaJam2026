@@ -13,9 +13,9 @@ namespace Template.Shared.Systems;
 
 public class HelperSystem : ISystem
 {
-    private const float TargetReachedDistSq = 9f;    // 3^2 — for sell points and land
-    private const float PlayerReturnDistSq = 36f;   // 6^2 — helpers stop farther from player (2x normal)
-    private const float GatherReachedDistSq = 4f;   // 2^2 — closer for food collection
+    private static readonly Float TargetReachedDistSq = (Float)9;    // 3^2 — for sell points and land
+    private static readonly Float PlayerReturnDistSq = (Float)36;   // 6^2 — helpers stop farther from player (2x normal)
+    private static readonly Float GatherReachedDistSq = (Float)4;   // 2^2 — closer for food collection
     private const int GatherWorkDuration = 30;        // 0.5 sec
     private const int SellWorkDuration = 10;          // per item
     private const int BuildWorkDuration = 15;         // per coin
@@ -36,13 +36,13 @@ public class HelperSystem : ISystem
             if (closestPlayer != Entity.Null && closestPlayer != helper.OwnerPlayer)
             {
                 // Only switch if new player is significantly closer (>5 units closer)
-                const float switchThresholdSq = 25f; // 5^2
+                Float switchThresholdSq = (Float)25; // 5^2
                 var myPos = state.GetComponent<Transform2D>(entity).Position;
                 var newDist = Vector2.DistanceSquared(myPos, state.GetComponent<Transform2D>(closestPlayer).Position);
                 var oldDist = helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer)
                     ? Vector2.DistanceSquared(myPos, state.GetComponent<Transform2D>(helper.OwnerPlayer).Position)
                     : (Float)999999f;
-                if ((float)(oldDist - newDist) > switchThresholdSq)
+                if ((oldDist - newDist) > switchThresholdSq)
                     helper.OwnerPlayer = closestPlayer;
             }
             else if (helper.OwnerPlayer == Entity.Null)
@@ -60,7 +60,7 @@ public class HelperSystem : ISystem
                 // Assistant: wait near hidden player.
                 ref var body = ref state.GetComponent<CharacterBody2D>(entity);
                 body.Velocity = body.Velocity * (Float)0.8f;
-                if ((float)body.Velocity.SqrMagnitude < 0.05f)
+                if (body.Velocity.SqrMagnitude < (Float)0.05f)
                     body.Velocity = Vector2.Zero;
                 continue;
             }
@@ -445,13 +445,13 @@ public class HelperSystem : ISystem
 
     // ─── Navigation helper ───
 
-    private bool NavigateToward(EntityWorld state, Entity entity, Vector2 targetPos, float desiredDistSq)
+    private bool NavigateToward(EntityWorld state, Entity entity, Vector2 targetPos, Float desiredDistSq)
     {
         ref var navAgent = ref state.GetComponent<NavigationAgent2D>(entity);
         var myPos = state.GetComponent<Transform2D>(entity).Position;
         var distSq = (targetPos - myPos).SqrMagnitude;
 
-        if ((float)distSq <= desiredDistSq)
+        if (distSq <= desiredDistSq)
         {
             ref var body = ref state.GetComponent<CharacterBody2D>(entity);
             body.Velocity = Vector2.Zero;
@@ -460,7 +460,7 @@ public class HelperSystem : ISystem
         }
 
         var targetDriftSq = (targetPos - navAgent.TargetPosition).SqrMagnitude;
-        if ((float)targetDriftSq > 1f || navAgent.IsNavigationFinished)
+        if (targetDriftSq > Float.One || navAgent.IsNavigationFinished)
         {
             navAgent.TargetPosition = targetPos;
             navAgent.IsNavigationFinished = false;
@@ -786,7 +786,7 @@ public class HelperSystem : ISystem
                 FoodType.Carrot => 6,
                 _ => 1
             };
-            Float score = (Float)(tierValue / (float)distSq);
+            Float score = (Float)tierValue / distSq;
 
             if (score > bestScore)
             {

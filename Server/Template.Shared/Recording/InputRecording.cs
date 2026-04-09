@@ -18,20 +18,38 @@ public struct RecordedAction
 }
 
 /// <summary>
-/// Binary format for recorded game inputs. Dead simple:
+/// A state hash checkpoint captured at a specific tick during recording.
+/// </summary>
+public struct RecordedCheckpoint
+{
+    public long Tick;
+    public Guid Hash;
+    /// <summary>Serialized state at this tick. Only populated for the first checkpoint (for debugging).</summary>
+    public byte[]? StateData;
+}
+
+/// <summary>
+/// Binary format for recorded game inputs.
 ///
-/// Header:  [int32 version][int64 totalTicks][int32 actionCount]
-/// Actions: [int64 tick][int32 entityId][guid componentId][int32 dataLen][byte[] data] * N
-/// Footer:  [guid finalStateHash]
+/// v1 Header:  [int32 version=1][int64 totalTicks][int32 actionCount]
+///    Actions: [int64 tick][int32 entityId][guid componentId][int32 dataLen][byte[] data] * N
+///    Footer:  [guid finalStateHash]
+///
+/// v2 Header:  [int32 version=2][int64 totalTicks][int32 actionCount]
+///    Actions: (same as v1)
+///    Footer:  [guid finalStateHash]
+///    Checkpoints: [int32 checkpointCount][int64 tick + guid hash] * N
 ///
 /// To re-record: play the game with InputRecorder enabled, it writes this file.
-/// To test: load file, replay all actions, compare final hash.
+/// To test: load file, replay all actions, compare final hash and checkpoints.
 /// </summary>
 public static class InputRecording
 {
-    public const int FormatVersion = 1;
+    public const int FormatVersion = 3;
 
-    public static void Save(string path, long totalTicks, List<RecordedAction> actions, Guid finalStateHash)
+    public static void Save(string path, long totalTicks, List<RecordedAction> actions,
+        Guid finalStateHash, List<RecordedCheckpoint>? checkpoints = null,
+        byte[]? initialState = null, long startTick = 0)
     {
         using var fs = File.Create(path);
         using var w = new BinaryWriter(fs);
@@ -53,17 +71,39 @@ public static class InputRecording
 
         // Footer
         w.Write(finalStateHash.ToByteArray());
+
+        // Checkpoints (v2)
+        var cps = checkpoints ?? new List<RecordedCheckpoint>();
+        w.Write(cps.Count);
+        foreach (var cp in cps)
+        {
+            w.Write(cp.Tick);
+            w.Write(cp.Hash.ToByteArray());
+            // State data: write length + bytes (0 length = no data)
+            int stateLen = cp.StateData?.Length ?? 0;
+            w.Write(stateLen);
+            if (stateLen > 0)
+                w.Write(cp.StateData!);
+        }
+
+        // Initial state (v3) — the serialized EntityWorld at the tick recording started
+        int initialLen = initialState?.Length ?? 0;
+        w.Write(startTick);
+        w.Write(initialLen);
+        if (initialLen > 0)
+            w.Write(initialState!);
     }
 
-    public static (long totalTicks, List<RecordedAction> actions, Guid finalStateHash) Load(string path)
+    public static (long totalTicks, List<RecordedAction> actions, Guid finalStateHash,
+        List<RecordedCheckpoint> checkpoints, byte[]? initialState, long startTick) Load(string path)
     {
         using var fs = File.OpenRead(path);
         using var r = new BinaryReader(fs);
 
         // Header
         int version = r.ReadInt32();
-        if (version != FormatVersion)
-            throw new InvalidDataException($"Unknown recording version {version}, expected {FormatVersion}");
+        if (version < 1 || version > FormatVersion)
+            throw new InvalidDataException($"Unknown recording version {version}, expected 1-{FormatVersion}");
 
         long totalTicks = r.ReadInt64();
         int actionCount = r.ReadInt32();
@@ -86,6 +126,39 @@ public static class InputRecording
         // Footer
         var finalStateHash = new Guid(r.ReadBytes(16));
 
-        return (totalTicks, actions, finalStateHash);
+        // Checkpoints (v2+)
+        var checkpoints = new List<RecordedCheckpoint>();
+        if (version >= 2 && r.BaseStream.Position < r.BaseStream.Length)
+        {
+            int cpCount = r.ReadInt32();
+            for (int i = 0; i < cpCount; i++)
+            {
+                var cpTick = r.ReadInt64();
+                var cpHash = new Guid(r.ReadBytes(16));
+                byte[]? stateData = null;
+                int stateLen = r.ReadInt32();
+                if (stateLen > 0)
+                    stateData = r.ReadBytes(stateLen);
+                checkpoints.Add(new RecordedCheckpoint
+                {
+                    Tick = cpTick,
+                    Hash = cpHash,
+                    StateData = stateData
+                });
+            }
+        }
+
+        // Initial state (v3+)
+        byte[]? initialState = null;
+        long startTick = 0;
+        if (version >= 3 && r.BaseStream.Position < r.BaseStream.Length)
+        {
+            startTick = r.ReadInt64();
+            int initialLen = r.ReadInt32();
+            if (initialLen > 0)
+                initialState = r.ReadBytes(initialLen);
+        }
+
+        return (totalTicks, actions, finalStateHash, checkpoints, initialState, startTick);
     }
 }

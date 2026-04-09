@@ -11,9 +11,9 @@ public class PropSpawnSystem : ISystem
 {
     private const int SpawnTick = 0;
     private const int PropCount = 150;
-    private const float MinLandLabelBuffer = 2f; // Buffer so props don't spawn too close to land/buildings
-    private const float MinPropDistance = 4f;    // Minimum distance between props
-    private const float MinSameTypeDistance = 8f; // Minimum distance between same prop type (prevents clusters)
+    private static readonly Float MinLandLabelBuffer = (Float)2; // Buffer so props don't spawn too close to land/buildings
+    private static readonly Float MinPropDistance = (Float)4;    // Minimum distance between props
+    private static readonly Float MinSameTypeDistance = (Float)8; // Minimum distance between same prop type (prevents clusters)
     private const uint Seed = 98765;
 
     // Spawn weights per prop type (higher = more common)
@@ -68,11 +68,11 @@ public class PropSpawnSystem : ISystem
             attempts++;
 
             // Generate random position within the star boundary
-            float x = (float)random.NextFloat(new Float(-StarGrid.OuterRadius), new Float(StarGrid.OuterRadius));
-            float y = (float)random.NextFloat(new Float(-StarGrid.OuterRadius), new Float(StarGrid.OuterRadius));
+            Float x = random.NextFloat(new Float(-StarGrid.OuterRadius), new Float(StarGrid.OuterRadius));
+            Float y = random.NextFloat(new Float(-StarGrid.OuterRadius), new Float(StarGrid.OuterRadius));
 
             // Must be inside the star shape
-            if (!StarGrid.IsInsideStar(x, y)) continue;
+            if (!StarGrid.IsInsideStarF(x, y)) continue;
 
             var candidatePos = new Vector2(x, y);
 
@@ -104,14 +104,13 @@ public class PropSpawnSystem : ISystem
         }
     }
 
-    private static bool IsTooClose(Vector2 candidate, System.Collections.Generic.List<Vector2> positions, float minDist)
+    private static bool IsTooClose(Vector2 candidate, System.Collections.Generic.List<Vector2> positions, Float minDist)
     {
-        float minDistSq = minDist * minDist;
+        Float minDistSq = minDist * minDist;
         for (int i = 0; i < positions.Count; i++)
         {
-            float dx = (float)(candidate.X - positions[i].X);
-            float dy = (float)(candidate.Y - positions[i].Y);
-            if (dx * dx + dy * dy < minDistSq) return true;
+            var diff = candidate - positions[i];
+            if (diff.SqrMagnitude < minDistSq) return true;
         }
         return false;
     }

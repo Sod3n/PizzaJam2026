@@ -226,7 +226,7 @@ public class DesyncRecoveryTests : IDisposable
             return;
         }
 
-        var (totalTicks, actions, _) = InputRecording.Load(path);
+        var (totalTicks, actions, _, _, _, _) = InputRecording.Load(path);
         _output.WriteLine($"Recording: {recordingFile} ({totalTicks} ticks, {actions.Count} actions)");
 
         // Restore point: 1/3 into the recording

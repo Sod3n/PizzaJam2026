@@ -15,6 +15,7 @@ public partial class LobbyMenu : CanvasLayer
     private Button _joinBtn;
     private Button _offlineBtn;
     private CheckButton _useSaveCheck;
+    private CheckButton _remoteServerCheck;
 
     private Label _lobbyCodeLabel;
     private Button _copyCodeBtn;
@@ -39,6 +40,7 @@ public partial class LobbyMenu : CanvasLayer
         _joinBtn = _mainMenu.GetNode<Button>("VBox/JoinBtn");
         _offlineBtn = _mainMenu.GetNode<Button>("VBox/OfflineBtn");
         _useSaveCheck = _mainMenu.GetNode<CheckButton>("VBox/UseSaveCheck");
+        _remoteServerCheck = _mainMenu.GetNode<CheckButton>("VBox/RemoteServerCheck");
 
         _lobbyCodeLabel = _createPanel.GetNode<Label>("VBox/CodeLabel");
         _copyCodeBtn = _createPanel.GetNode<Button>("VBox/CopyBtn");
@@ -56,6 +58,7 @@ public partial class LobbyMenu : CanvasLayer
         _joinBtn.Pressed += OnJoinPressed;
         _offlineBtn.Pressed += OnOfflinePressed;
         _useSaveCheck.Visible = GameManager.Instance.HasSaveFile();
+        _remoteServerCheck.Toggled += OnRemoteServerToggled;
 
         _copyCodeBtn.Pressed += OnCopyCodePressed;
         _startMatchBtn.Pressed += OnStartMatchPressed;
@@ -90,6 +93,11 @@ public partial class LobbyMenu : CanvasLayer
         _joinPanel.Visible = false;
         _waitingPanel.Visible = false;
         panel.Visible = true;
+    }
+
+    private void OnRemoteServerToggled(bool toggled)
+    {
+        GameManager.Instance.SetUseRemoteServer(toggled);
     }
 
     private void OnCreatePressed()

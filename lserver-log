@@ -1,0 +1,2229 @@
+info: Microsoft.AspNetCore.Mvc.Infrastructure.DefaultActionDescriptorCollectionProvider[1]
+      No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+Resolving MatchBroadcaster...
+[LiteNetLibServer] Starting on port 9050...
+[LiteNetLibServer] Start result: True
+MatchBroadcaster resolved.
+NetworkServer resolved: LiteNetLibNetworkServer
+[LiteNetLibServer] Polling loop started.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/a1/Documents/GitHub/PizzaJam2026-copy/Server/Template.Server
+[ComponentId] Registered World -> Local(0) Stable(Stable(00000000-0000-0000-0000-000072b3622d))
+[ServiceLocator] Registered assembly: Deterministic.GameFramework.ECS
+[ComponentId] Registered SceneTag -> Local(1) Stable(Stable(6b42507d-9d00-4138-9275-15a8b046aa07))
+[ServiceLocator] Registered assembly: Deterministic.GameFramework.Common
+[ComponentId] Registered TransientEntity -> Local(2) Stable(Stable(88888888-8888-8888-8888-888888888888))
+[ServiceLocator] Registered assembly: Deterministic.GameFramework.DAR
+[ComponentId] Registered Transform2D -> Local(3) Stable(Stable(aafea77a-2300-4eef-9ffc-071170bb9a26))
+[ServiceLocator] Registered assembly: Deterministic.GameFramework.TwoD
+[ComponentId] Registered CharacterBody2D -> Local(4) Stable(Stable(1f3b7788-2947-4d66-9d33-1275d2757278))
+[ComponentId] Registered Area2D -> Local(5) Stable(Stable(42ac8ac3-53d6-40ca-9f7e-5daee2548ba6))
+[ComponentId] Registered StaticBody2D -> Local(6) Stable(Stable(56221147-3807-449e-8c88-e92544a47833))
+[ComponentId] Registered RigidBody2D -> Local(7) Stable(Stable(8014592a-3375-4c07-ae29-598114227003))
+[ComponentId] Registered CollisionShape2D -> Local(8) Stable(Stable(c9075775-7634-45e0-a006-037000784226))
+[ComponentId] Registered PhysicsWorldState -> Local(9) Stable(Stable(fb4fe7e4-2244-48ea-9ec5-0a972a3861d4))
+[ServiceLocator] Registered assembly: Deterministic.GameFramework.TwoD.Physics
+[ComponentId] Registered NavigationRegion2D -> Local(10) Stable(Stable(b7e2a1c3-4d56-4f89-a012-3e4f5a6b7c8d))
+[ComponentId] Registered NavigationAgent2D -> Local(11) Stable(Stable(c8f3b2d4-5e67-4a90-b123-4f5a6b7c8d9e))
+[ComponentId] Registered NavigationObstacle2D -> Local(12) Stable(Stable(d9a4c3e5-6f78-4b01-c234-5a6b7c8d9e0f))
+[ComponentId] Registered NavigationWorld2D -> Local(13) Stable(Stable(ea5b4d6c-7f89-4012-d345-6a7b8c9d0e1f))
+[ComponentId] Registered NavMeshConstraint -> Local(14) Stable(Stable(f7a23b1c-9d45-4e67-b8c2-3a1f5d7e9b04))
+[ServiceLocator] Registered assembly: Deterministic.GameFramework.TwoD.Navigation
+[ComponentId] Registered RejectedComponent -> Local(15) Stable(Stable(131a66f5-08d7-408f-9d5b-90a7e8b9b880))
+[ComponentId] Registered AddPlayerAction -> Local(16) Stable(Stable(34c0145a-7bf6-4f42-bc08-0771b46cd23e))
+[ComponentId] Registered RemovePlayerAction -> Local(17) Stable(Stable(3a95595e-d3b2-4694-b9a9-b0d2bde23223))
+[ComponentId] Registered GrassComponent -> Local(18) Stable(Stable(432c54c2-ff73-9454-b2ad-483a305898ca))
+[ComponentId] Registered InteractAction -> Local(19) Stable(Stable(45d1256b-8cf7-5e53-cd19-1882c57de34f))
+[ComponentId] Registered WallComponent -> Local(20) Stable(Stable(4910d42f-ad66-7d59-bd9a-c6389ab8c2dc))
+[ComponentId] Registered SetMoveDirectionAction -> Local(21) Stable(Stable(495f96cc-8e29-4901-9e83-bd6b5cb0c293))
+[ComponentId] Registered CoinComponent -> Local(22) Stable(Stable(5d2c8e1a-4b9f-4f8a-9c7d-2e3f1a0b5c6d))
+[ComponentId] Registered AltInteractAction -> Local(23) Stable(Stable(71a2b3c4-d5e6-4f78-9a0b-1c2d3e4f5a6b))
+[ComponentId] Registered PlayerEntity -> Local(24) Stable(Stable(7677ab14-04a9-965c-960f-2d4db849f226))
+[ComponentId] Registered InteractedComponent -> Local(25) Stable(Stable(7babed6d-282d-4298-89cd-9f45bcf8a756))
+[ComponentId] Registered LandComponent -> Local(26) Stable(Stable(861f6742-9fbc-055e-b43d-b0f04d1b057f))
+[ComponentId] Registered PlayerStateComponent -> Local(27) Stable(Stable(870d8ebd-fec0-6a51-ae7f-a00f2712a1ce))
+[ComponentId] Registered SellPointComponent -> Local(28) Stable(Stable(8cc5f1c6-9a7c-0955-8319-05b750929366))
+[ComponentId] Registered ScoreComponent -> Local(29) Stable(Stable(8f1d3c2b-5a6e-4d9f-8b7c-1e2a3f4b5c6d))
+[ComponentId] Registered SkinComponent -> Local(30) Stable(Stable(a1b2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d))
+[ComponentId] Registered GlobalResourcesComponent -> Local(31) Stable(Stable(a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d))
+[ComponentId] Registered InteractHighlightComponent -> Local(32) Stable(Stable(a1e7c3b2-5f4d-4a8e-9b2c-6d3f1e8a7b5c))
+[ComponentId] Registered FoodFarmComponent -> Local(33) Stable(Stable(a2f3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c))
+[ComponentId] Registered LoveHouseComponent -> Local(34) Stable(Stable(a3b4c5d6-e7f8-1234-5678-9abcdef01234))
+[ComponentId] Registered StateComponent -> Local(35) Stable(Stable(a3b4c5d6-e7f8-4a9b-0c1d-2e3f4a5b6c7d))
+[ComponentId] Registered HelperPetComponent -> Local(36) Stable(Stable(a7b3c9d2-e4f5-4a6b-8c1d-9e0f2a3b4c5d))
+[ComponentId] Registered EnterStateComponent -> Local(37) Stable(Stable(b4c5d6e7-f8a9-4b0c-1d2e-3f4a5b6c7d8e))
+[ComponentId] Registered NameComponent -> Local(38) Stable(Stable(b7a3e9d2-f5c1-4a8b-9d6e-3c2f1a0b4e5d))
+[ComponentId] Registered MetricsComponent -> Local(39) Stable(Stable(b7e3a1d9-4f2c-48e6-9a1b-5d3c7f8e2a0b))
+[ComponentId] Registered FinalStructureComponent -> Local(40) Stable(Stable(ba8aface-147f-ca54-be3e-b1547f32b73e))
+[ComponentId] Registered FoodSignComponent -> Local(41) Stable(Stable(c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f))
+[ComponentId] Registered ExitStateComponent -> Local(42) Stable(Stable(c5d6e7f8-a9b0-4c1d-2e3f-4a5b6c7d8e9f))
+[ComponentId] Registered PropComponent -> Local(43) Stable(Stable(c7d8e9f0-a1b2-4c3d-8e5f-6a7b8c9d0e1f))
+[ComponentId] Registered HouseComponent -> Local(44) Stable(Stable(cb92c8de-61fa-f358-acef-82ab01ca21fe))
+[ComponentId] Registered CarrotFarmComponent -> Local(45) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef1))
+[ComponentId] Registered AppleOrchardComponent -> Local(46) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef2))
+[ComponentId] Registered MushroomCaveComponent -> Local(47) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef3))
+[ComponentId] Registered HelperAssistantComponent -> Local(48) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef4))
+[ComponentId] Registered UpgradeGathererComponent -> Local(49) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef5))
+[ComponentId] Registered UpgradeBuilderComponent -> Local(50) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef6))
+[ComponentId] Registered UpgradeSellerComponent -> Local(51) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef7))
+[ComponentId] Registered UpgradeAssistantComponent -> Local(52) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef8))
+[ComponentId] Registered DecorationComponent -> Local(53) Stable(Stable(cf001234-5678-9abc-def0-aabbccddeef9))
+[ComponentId] Registered WarehouseComponent -> Local(54) Stable(Stable(cf001234-5678-9abc-def0-aabbccddf001))
+[ComponentId] Registered WarehouseSignComponent -> Local(55) Stable(Stable(cf001234-5678-9abc-def0-aabbccddf002))
+[ComponentId] Registered HelperComponent -> Local(56) Stable(Stable(d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a))
+[ComponentId] Registered TestEntityComponent -> Local(57) Stable(Stable(ea7a3602-1b4e-d355-8a64-c0f7a1c6836b))
+[ComponentId] Registered SkinSpawnCountsComponent -> Local(58) Stable(Stable(f3a7b2c1-9d4e-4f5a-8b6c-1e2d3f4a5b6c))
+[ComponentId] Registered BreedBornComponent -> Local(59) Stable(Stable(f3e2d1c0-b9a8-4f7e-9d6c-5b4a3c2d1e0f))
+[ComponentId] Registered HiddenComponent -> Local(60) Stable(Stable(fc48881c-3e29-4bbb-8585-751a65979f96))
+[ComponentId] Registered CowComponent -> Local(61) Stable(Stable(fcf83639-f988-e35a-8fcc-1f0ebc71fb9e))
+[ServiceLocator] Registered assembly: Template.Shared
+[SceneManager] Registering 11 systems...
+[GameplayScene] Entering scene...
+[CowDefinition] Created Cow 90 with MaxExhaust: 36, PreferredFood: 0 (Skins: 7)
+[CowDefinition] Created Cow 91 with MaxExhaust: 28, PreferredFood: 1 (Skins: 7)
+[StateVerificationService] Initialized for Match e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d. Interval: 60 ticks.
+[GamePacketProcessor] JoinMatch requested for match e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d by 0
+[Server] JoinGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d add peer 0
+[GamePacketProcessor] Player 8420cdcf-d595-ef65-66e7-dff9f98764da (0) joined match e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d
+MISMATCH tri=0 slot=0 edge=(175,1048) cdtN=-1 dtN=161 constraint=True
+MISMATCH tri=0 slot=2 edge=(4,175) cdtN=161 dtN=65535 constraint=False
+MISMATCH tri=1 slot=0 edge=(263,86) cdtN=1405 dtN=65535 constraint=False
+MISMATCH tri=1 slot=2 edge=(259,263) cdtN=-1 dtN=1405 constraint=True
+MISMATCH tri=4 slot=0 edge=(20,966) cdtN=1426 dtN=65535 constraint=False
+MISMATCH tri=4 slot=2 edge=(15,20) cdtN=-1 dtN=1426 constraint=True
+MISMATCH tri=5 slot=0 edge=(87,1094) cdtN=-1 dtN=239 constraint=True
+MISMATCH tri=5 slot=2 edge=(256,87) cdtN=239 dtN=65535 constraint=False
+MISMATCH tri=6 slot=0 edge=(183,174) cdtN=-1 dtN=20 constraint=True
+MISMATCH tri=6 slot=2 edge=(557,183) cdtN=20 dtN=65535 constraint=False
+MISMATCH tri=8 slot=0 edge=(16,964) cdtN=1425 dtN=65535 constraint=False
+MISMATCH tri=8 slot=2 edge=(11,16) cdtN=-1 dtN=1425 constraint=True
+MISMATCH tri=11 slot=0 edge=(28,970) cdtN=1430 dtN=65535 constraint=False
+MISMATCH tri=11 slot=2 edge=(23,28) cdtN=-1 dtN=1430 constraint=True
+MISMATCH tri=12 slot=0 edge=(24,968) cdtN=1428 dtN=65535 constraint=False
+MISMATCH tri=12 slot=2 edge=(19,24) cdtN=-1 dtN=1428 constraint=True
+MISMATCH tri=13 slot=0 edge=(242,247) cdtN=94 dtN=201 constraint=True
+MISMATCH tri=13 slot=2 edge=(573,242) cdtN=201 dtN=65535 constraint=False
+MISMATCH tri=15 slot=0 edge=(83,256) cdtN=239 dtN=65535 constraint=False
+MISMATCH tri=15 slot=2 edge=(1000,83) cdtN=-1 dtN=239 constraint=True
+MISMATCH tri=16 slot=0 edge=(191,182) cdtN=-1 dtN=624 constraint=True
+MISMATCH tri=16 slot=2 edge=(559,191) cdtN=624 dtN=65535 constraint=False
+MISMATCH tri=18 slot=0 edge=(64,988) cdtN=1447 dtN=65535 constraint=False
+MISMATCH tri=18 slot=2 edge=(59,64) cdtN=-1 dtN=1447 constraint=True
+MISMATCH tri=19 slot=0 edge=(178,183) cdtN=22 dtN=88 constraint=True
+MISMATCH tri=19 slot=2 edge=(558,178) cdtN=88 dtN=65535 constraint=False
+MISMATCH tri=21 slot=0 edge=(72,992) cdtN=1450 dtN=65535 constraint=False
+MISMATCH tri=21 slot=2 edge=(67,72) cdtN=-1 dtN=1450 constraint=True
+MISMATCH tri=24 slot=0 edge=(48,980) cdtN=1439 dtN=65535 constraint=False
+MISMATCH tri=24 slot=2 edge=(43,48) cdtN=-1 dtN=1439 constraint=True
+MISMATCH tri=25 slot=0 edge=(56,984) cdtN=1443 dtN=65535 constraint=False
+MISMATCH tri=25 slot=2 edge=(51,56) cdtN=-1 dtN=1443 constraint=True
+MISMATCH tri=32 slot=0 edge=(1092,953) cdtN=288 dtN=65535 constraint=False
+MISMATCH tri=32 slot=2 edge=(82,1092) cdtN=-1 dtN=288 constraint=True
+MISMATCH tri=34 slot=0 edge=(207,198) cdtN=-1 dtN=179 constraint=True
+MISMATCH tri=34 slot=2 edge=(563,207) cdtN=179 dtN=65535 constraint=False
+MISMATCH tri=45 slot=0 edge=(179,1047) cdtN=-1 dtN=9 constraint=True
+MISMATCH tri=45 slot=2 edge=(556,179) cdtN=9 dtN=65535 constraint=False
+MISMATCH tri=47 slot=0 edge=(46,53) cdtN=-1 dtN=324 constraint=True
+MISMATCH tri=47 slot=2 edge=(777,46) cdtN=324 dtN=65535 constraint=False
+MISMATCH tri=48 slot=0 edge=(50,57) cdtN=-1 dtN=1056 constraint=True
+MISMATCH tri=48 slot=2 edge=(796,50) cdtN=1056 dtN=65535 constraint=False
+MISMATCH tri=54 slot=0 edge=(14,21) cdtN=-1 dtN=740 constraint=True
+MISMATCH tri=54 slot=2 edge=(619,14) cdtN=740 dtN=65535 constraint=False
+MISMATCH tri=55 slot=0 edge=(6,13) cdtN=-1 dtN=659 constraint=True
+MISMATCH tri=55 slot=2 edge=(577,6) cdtN=659 dtN=65535 constraint=False
+MISMATCH tri=56 slot=0 edge=(10,17) cdtN=-1 dtN=700 constraint=True
+MISMATCH tri=56 slot=2 edge=(598,10) cdtN=700 dtN=65535 constraint=False
+MISMATCH tri=57 slot=0 edge=(292,289) cdtN=1567 dtN=1381 constraint=True
+MISMATCH tri=57 slot=2 edge=(941,292) cdtN=1381 dtN=65535 constraint=False
+MISMATCH tri=65 slot=0 edge=(18,25) cdtN=-1 dtN=782 constraint=True
+MISMATCH tri=65 slot=2 edge=(640,18) cdtN=782 dtN=65535 constraint=False
+MISMATCH tri=68 slot=0 edge=(30,37) cdtN=-1 dtN=905 constraint=True
+MISMATCH tri=68 slot=2 edge=(703,30) cdtN=905 dtN=65535 constraint=False
+MISMATCH tri=69 slot=0 edge=(22,29) cdtN=-1 dtN=823 constraint=True
+MISMATCH tri=69 slot=2 edge=(661,22) cdtN=823 dtN=65535 constraint=False
+MISMATCH tri=70 slot=0 edge=(26,33) cdtN=-1 dtN=864 constraint=True
+MISMATCH tri=70 slot=2 edge=(682,26) cdtN=864 dtN=65535 constraint=False
+MISMATCH tri=79 slot=0 edge=(34,41) cdtN=-1 dtN=947 constraint=True
+MISMATCH tri=79 slot=2 edge=(724,34) cdtN=947 dtN=65535 constraint=False
+MISMATCH tri=83 slot=0 edge=(38,45) cdtN=-1 dtN=985 constraint=True
+MISMATCH tri=83 slot=2 edge=(743,38) cdtN=985 dtN=65535 constraint=False
+MISMATCH tri=84 slot=0 edge=(42,49) cdtN=-1 dtN=325 constraint=True
+MISMATCH tri=84 slot=2 edge=(761,42) cdtN=325 dtN=65535 constraint=False
+MISMATCH tri=88 slot=0 edge=(187,178) cdtN=-1 dtN=28 constraint=True
+MISMATCH tri=88 slot=2 edge=(558,187) cdtN=28 dtN=65535 constraint=False
+MISMATCH tri=92 slot=0 edge=(120,115) cdtN=-1 dtN=946 constraint=True
+MISMATCH tri=92 slot=2 edge=(723,120) cdtN=946 dtN=65535 constraint=False
+MISMATCH tri=93 slot=0 edge=(93,89) cdtN=-1 dtN=227 constraint=True
+MISMATCH tri=93 slot=2 edge=(254,93) cdtN=227 dtN=65535 constraint=False
+MISMATCH tri=97 slot=0 edge=(29,26) cdtN=1054 dtN=69 constraint=True
+MISMATCH tri=97 slot=2 edge=(661,29) cdtN=69 dtN=65535 constraint=False
+MISMATCH tri=101 slot=0 edge=(116,111) cdtN=-1 dtN=904 constraint=True
+MISMATCH tri=101 slot=2 edge=(702,116) cdtN=904 dtN=65535 constraint=False
+MISMATCH tri=107 slot=0 edge=(247,238) cdtN=-1 dtN=13 constraint=True
+MISMATCH tri=107 slot=2 edge=(573,247) cdtN=13 dtN=65535 constraint=False
+MISMATCH tri=110 slot=0 edge=(112,107) cdtN=-1 dtN=863 constraint=True
+MISMATCH tri=110 slot=2 edge=(681,112) cdtN=863 dtN=65535 constraint=False
+MISMATCH tri=113 slot=0 edge=(104,99) cdtN=-1 dtN=781 constraint=True
+MISMATCH tri=113 slot=2 edge=(639,104) cdtN=781 dtN=65535 constraint=False
+MISMATCH tri=117 slot=0 edge=(346,347) cdtN=-1 dtN=1036 constraint=True
+MISMATCH tri=117 slot=2 edge=(768,346) cdtN=1036 dtN=65535 constraint=False
+MISMATCH tri=118 slot=0 edge=(100,95) cdtN=-1 dtN=739 constraint=True
+MISMATCH tri=118 slot=2 edge=(618,100) cdtN=739 dtN=65535 constraint=False
+MISMATCH tri=122 slot=0 edge=(96,91) cdtN=-1 dtN=699 constraint=True
+MISMATCH tri=122 slot=2 edge=(597,96) cdtN=699 dtN=65535 constraint=False
+MISMATCH tri=125 slot=0 edge=(57,54) cdtN=37 dtN=48 constraint=True
+MISMATCH tri=125 slot=2 edge=(796,57) cdtN=48 dtN=65535 constraint=False
+MISMATCH tri=131 slot=0 edge=(133,126) cdtN=-1 dtN=1481 constraint=True
+MISMATCH tri=131 slot=2 edge=(1022,133) cdtN=1481 dtN=65535 constraint=False
+MISMATCH tri=132 slot=0 edge=(230,235) cdtN=1524 dtN=646 constraint=True
+MISMATCH tri=132 slot=2 edge=(570,230) cdtN=646 dtN=65535 constraint=False
+MISMATCH tri=135 slot=0 edge=(125,118) cdtN=-1 dtN=1476 constraint=True
+MISMATCH tri=135 slot=2 edge=(1018,125) cdtN=1476 dtN=65535 constraint=False
+MISMATCH tri=136 slot=0 edge=(481,482) cdtN=-1 dtN=505 constraint=True
+MISMATCH tri=136 slot=2 edge=(850,481) cdtN=505 dtN=65535 constraint=False
+MISMATCH tri=137 slot=0 edge=(129,122) cdtN=-1 dtN=1479 constraint=True
+MISMATCH tri=137 slot=2 edge=(1020,129) cdtN=1479 dtN=65535 constraint=False
+MISMATCH tri=139 slot=0 edge=(117,110) cdtN=-1 dtN=1472 constraint=True
+MISMATCH tri=139 slot=2 edge=(1014,117) cdtN=1472 dtN=65535 constraint=False
+MISMATCH tri=141 slot=0 edge=(121,114) cdtN=-1 dtN=1475 constraint=True
+MISMATCH tri=141 slot=2 edge=(1016,121) cdtN=1475 dtN=65535 constraint=False
+MISMATCH tri=143 slot=0 edge=(109,102) cdtN=-1 dtN=1468 constraint=True
+MISMATCH tri=143 slot=2 edge=(1010,109) cdtN=1468 dtN=65535 constraint=False
+MISMATCH tri=145 slot=0 edge=(113,106) cdtN=-1 dtN=1470 constraint=True
+MISMATCH tri=145 slot=2 edge=(1012,113) cdtN=1470 dtN=65535 constraint=False
+MISMATCH tri=147 slot=0 edge=(101,94) cdtN=-1 dtN=1463 constraint=True
+MISMATCH tri=147 slot=2 edge=(1006,101) cdtN=1463 dtN=65535 constraint=False
+MISMATCH tri=149 slot=0 edge=(105,98) cdtN=-1 dtN=1466 constraint=True
+MISMATCH tri=149 slot=2 edge=(1008,105) cdtN=1466 dtN=65535 constraint=False
+MISMATCH tri=152 slot=0 edge=(97,90) cdtN=-1 dtN=1462 constraint=True
+MISMATCH tri=152 slot=2 edge=(1003,97) cdtN=1462 dtN=65535 constraint=False
+MISMATCH tri=153 slot=0 edge=(477,478) cdtN=-1 dtN=1234 constraint=True
+MISMATCH tri=153 slot=2 edge=(869,477) cdtN=1234 dtN=65535 constraint=False
+MISMATCH tri=156 slot=0 edge=(81,913) cdtN=1326 dtN=65535 constraint=False
+MISMATCH tri=156 slot=2 edge=(74,81) cdtN=-1 dtN=1326 constraint=True
+MISMATCH tri=160 slot=0 edge=(199,190) cdtN=-1 dtN=476 constraint=True
+MISMATCH tri=160 slot=2 edge=(561,199) cdtN=476 dtN=65535 constraint=False
+MISMATCH tri=161 slot=0 edge=(4,8) cdtN=-1 dtN=0 constraint=True
+MISMATCH tri=161 slot=2 edge=(175,4) cdtN=0 dtN=65535 constraint=False
+MISMATCH tri=162 slot=0 edge=(176,172) cdtN=-1 dtN=208 constraint=True
+MISMATCH tri=162 slot=2 edge=(5,176) cdtN=208 dtN=65535 constraint=False
+MISMATCH tri=165 slot=0 edge=(174,179) cdtN=10 dtN=6 constraint=True
+MISMATCH tri=165 slot=2 edge=(557,174) cdtN=6 dtN=65535 constraint=False
+MISMATCH tri=168 slot=0 edge=(195,186) cdtN=-1 dtN=475 constraint=True
+MISMATCH tri=168 slot=2 edge=(560,195) cdtN=475 dtN=65535 constraint=False
+MISMATCH tri=170 slot=0 edge=(219,210) cdtN=-1 dtN=339 constraint=True
+MISMATCH tri=170 slot=2 edge=(566,219) cdtN=339 dtN=65535 constraint=False
+MISMATCH tri=172 slot=0 edge=(203,194) cdtN=-1 dtN=464 constraint=True
+MISMATCH tri=172 slot=2 edge=(562,203) cdtN=464 dtN=65535 constraint=False
+MISMATCH tri=176 slot=0 edge=(215,206) cdtN=-1 dtN=467 constraint=True
+MISMATCH tri=176 slot=2 edge=(565,215) cdtN=467 dtN=65535 constraint=False
+MISMATCH tri=177 slot=0 edge=(211,202) cdtN=-1 dtN=443 constraint=True
+MISMATCH tri=177 slot=2 edge=(564,211) cdtN=443 dtN=65535 constraint=False
+MISMATCH tri=178 slot=0 edge=(434,677) cdtN=553 dtN=65535 constraint=False
+MISMATCH tri=178 slot=2 edge=(433,434) cdtN=-1 dtN=553 constraint=True
+MISMATCH tri=179 slot=0 edge=(207,563) cdtN=34 dtN=65535 constraint=False
+MISMATCH tri=179 slot=2 edge=(202,207) cdtN=196 dtN=34 constraint=True
+MISMATCH tri=184 slot=0 edge=(428,697) cdtN=548 dtN=65535 constraint=False
+MISMATCH tri=184 slot=2 edge=(435,428) cdtN=-1 dtN=548 constraint=True
+MISMATCH tri=185 slot=0 edge=(223,214) cdtN=-1 dtN=538 constraint=True
+MISMATCH tri=185 slot=2 edge=(567,223) cdtN=538 dtN=65535 constraint=False
+MISMATCH tri=191 slot=0 edge=(227,218) cdtN=-1 dtN=480 constraint=True
+MISMATCH tri=191 slot=2 edge=(568,227) cdtN=480 dtN=65535 constraint=False
+MISMATCH tri=194 slot=0 edge=(37,34) cdtN=41 dtN=68 constraint=True
+MISMATCH tri=194 slot=2 edge=(703,37) cdtN=68 dtN=65535 constraint=False
+MISMATCH tri=207 slot=0 edge=(255,246) cdtN=-1 dtN=655 constraint=True
+MISMATCH tri=207 slot=2 edge=(575,255) cdtN=655 dtN=65535 constraint=False
+MISMATCH tri=208 slot=0 edge=(176,5) cdtN=162 dtN=65535 constraint=False
+MISMATCH tri=208 slot=2 edge=(1050,176) cdtN=-1 dtN=162 constraint=True
+MISMATCH tri=213 slot=0 edge=(184,177) cdtN=-1 dtN=1458 constraint=True
+MISMATCH tri=213 slot=2 edge=(1049,184) cdtN=1458 dtN=65535 constraint=False
+MISMATCH tri=215 slot=0 edge=(515,719) cdtN=166 dtN=65535 constraint=False
+MISMATCH tri=215 slot=2 edge=(514,515) cdtN=-1 dtN=166 constraint=True
+MISMATCH tri=219 slot=0 edge=(192,185) cdtN=-1 dtN=214 constraint=True
+MISMATCH tri=219 slot=2 edge=(1053,192) cdtN=214 dtN=65535 constraint=False
+MISMATCH tri=222 slot=0 edge=(200,193) cdtN=-1 dtN=217 constraint=True
+MISMATCH tri=222 slot=2 edge=(1057,200) cdtN=217 dtN=65535 constraint=False
+MISMATCH tri=223 slot=0 edge=(180,173) cdtN=-1 dtN=1502 constraint=True
+MISMATCH tri=223 slot=2 edge=(1045,180) cdtN=1502 dtN=65535 constraint=False
+MISMATCH tri=224 slot=0 edge=(91,92) cdtN=129 dtN=698 constraint=True
+MISMATCH tri=224 slot=2 edge=(596,91) cdtN=698 dtN=65535 constraint=False
+MISMATCH tri=225 slot=0 edge=(208,201) cdtN=-1 dtN=209 constraint=True
+MISMATCH tri=225 slot=2 edge=(1061,208) cdtN=209 dtN=65535 constraint=False
+MISMATCH tri=226 slot=0 edge=(188,181) cdtN=-1 dtN=232 constraint=True
+MISMATCH tri=226 slot=2 edge=(1051,188) cdtN=232 dtN=65535 constraint=False
+MISMATCH tri=228 slot=0 edge=(216,209) cdtN=-1 dtN=211 constraint=True
+MISMATCH tri=228 slot=2 edge=(1065,216) cdtN=211 dtN=65535 constraint=False
+MISMATCH tri=230 slot=0 edge=(196,189) cdtN=-1 dtN=220 constraint=True
+MISMATCH tri=230 slot=2 edge=(1055,196) cdtN=220 dtN=65535 constraint=False
+MISMATCH tri=231 slot=0 edge=(249,88) cdtN=478 dtN=65535 constraint=False
+MISMATCH tri=231 slot=2 edge=(253,249) cdtN=-1 dtN=478 constraint=True
+MISMATCH tri=234 slot=0 edge=(204,197) cdtN=-1 dtN=202 constraint=True
+MISMATCH tri=234 slot=2 edge=(1059,204) cdtN=202 dtN=65535 constraint=False
+MISMATCH tri=238 slot=0 edge=(212,205) cdtN=-1 dtN=216 constraint=True
+MISMATCH tri=238 slot=2 edge=(1063,212) cdtN=216 dtN=65535 constraint=False
+MISMATCH tri=239 slot=0 edge=(83,87) cdtN=-1 dtN=15 constraint=True
+MISMATCH tri=239 slot=2 edge=(256,83) cdtN=15 dtN=65535 constraint=False
+MISMATCH tri=240 slot=0 edge=(85,82) cdtN=948 dtN=1365 constraint=True
+MISMATCH tri=240 slot=2 edge=(933,85) cdtN=1365 dtN=65535 constraint=False
+MISMATCH tri=241 slot=0 edge=(36,974) cdtN=1433 dtN=65535 constraint=False
+MISMATCH tri=241 slot=2 edge=(31,36) cdtN=-1 dtN=1433 constraint=True
+MISMATCH tri=243 slot=0 edge=(267,1093) cdtN=86 dtN=65535 constraint=False
+MISMATCH tri=243 slot=2 edge=(258,267) cdtN=-1 dtN=86 constraint=True
+MISMATCH tri=246 slot=0 edge=(275,1097) cdtN=250 dtN=65535 constraint=False
+MISMATCH tri=246 slot=2 edge=(266,275) cdtN=-1 dtN=250 constraint=True
+MISMATCH tri=255 slot=0 edge=(334,171) cdtN=321 dtN=65535 constraint=False
+MISMATCH tri=255 slot=2 edge=(1131,334) cdtN=-1 dtN=321 constraint=True
+MISMATCH tri=256 slot=0 edge=(283,1101) cdtN=1411 dtN=65535 constraint=False
+MISMATCH tri=256 slot=2 edge=(274,283) cdtN=-1 dtN=1411 constraint=True
+MISMATCH tri=257 slot=0 edge=(279,1099) cdtN=253 dtN=65535 constraint=False
+MISMATCH tri=257 slot=2 edge=(270,279) cdtN=-1 dtN=253 constraint=True
+MISMATCH tri=259 slot=0 edge=(287,1103) cdtN=275 dtN=65535 constraint=False
+MISMATCH tri=259 slot=2 edge=(278,287) cdtN=-1 dtN=275 constraint=True
+MISMATCH tri=261 slot=0 edge=(331,1125) cdtN=1579 dtN=65535 constraint=False
+MISMATCH tri=261 slot=2 edge=(322,331) cdtN=-1 dtN=1579 constraint=True
+MISMATCH tri=270 slot=0 edge=(315,1117) cdtN=1566 dtN=65535 constraint=False
+MISMATCH tri=270 slot=2 edge=(306,315) cdtN=-1 dtN=1566 constraint=True
+MISMATCH tri=271 slot=0 edge=(323,1121) cdtN=1572 dtN=65535 constraint=False
+MISMATCH tri=271 slot=2 edge=(314,323) cdtN=-1 dtN=1572 constraint=True
+MISMATCH tri=273 slot=0 edge=(307,1113) cdtN=1559 dtN=65535 constraint=False
+MISMATCH tri=273 slot=2 edge=(298,307) cdtN=-1 dtN=1559 constraint=True
+MISMATCH tri=277 slot=0 edge=(288,285) cdtN=1564 dtN=1379 constraint=True
+MISMATCH tri=277 slot=2 edge=(940,288) cdtN=1379 dtN=65535 constraint=False
+MISMATCH tri=280 slot=0 edge=(395,388) cdtN=-1 dtN=1342 constraint=True
+MISMATCH tri=280 slot=2 edge=(921,395) cdtN=1342 dtN=65535 constraint=False
+MISMATCH tri=285 slot=0 edge=(474,475) cdtN=-1 dtN=1301 constraint=True
+MISMATCH tri=285 slot=2 edge=(901,474) cdtN=1301 dtN=65535 constraint=False
+MISMATCH tri=288 slot=0 edge=(1092,260) cdtN=-1 dtN=32 constraint=True
+MISMATCH tri=288 slot=2 edge=(953,1092) cdtN=32 dtN=65535 constraint=False
+MISMATCH tri=290 slot=0 edge=(257,264) cdtN=-1 dtN=1408 constraint=True
+MISMATCH tri=290 slot=2 edge=(954,257) cdtN=1408 dtN=65535 constraint=False
+MISMATCH tri=296 slot=0 edge=(354,355) cdtN=-1 dtN=1039 constraint=True
+MISMATCH tri=296 slot=2 edge=(770,354) cdtN=1039 dtN=65535 constraint=False
+MISMATCH tri=297 slot=0 edge=(269,276) cdtN=-1 dtN=1412 constraint=True
+MISMATCH tri=297 slot=2 edge=(957,269) cdtN=1412 dtN=65535 constraint=False
+MISMATCH tri=298 slot=0 edge=(265,272) cdtN=-1 dtN=1410 constraint=True
+MISMATCH tri=298 slot=2 edge=(956,265) cdtN=1410 dtN=65535 constraint=False
+MISMATCH tri=299 slot=0 edge=(261,268) cdtN=-1 dtN=1409 constraint=True
+MISMATCH tri=299 slot=2 edge=(955,261) cdtN=1409 dtN=65535 constraint=False
+MISMATCH tri=304 slot=0 edge=(273,280) cdtN=-1 dtN=1414 constraint=True
+MISMATCH tri=304 slot=2 edge=(958,273) cdtN=1414 dtN=65535 constraint=False
+MISMATCH tri=311 slot=0 edge=(281,288) cdtN=-1 dtN=1417 constraint=True
+MISMATCH tri=311 slot=2 edge=(960,281) cdtN=1417 dtN=65535 constraint=False
+MISMATCH tri=312 slot=0 edge=(277,284) cdtN=-1 dtN=1415 constraint=True
+MISMATCH tri=312 slot=2 edge=(959,277) cdtN=1415 dtN=65535 constraint=False
+MISMATCH tri=317 slot=0 edge=(336,333) cdtN=1593 dtN=368 constraint=True
+MISMATCH tri=317 slot=2 edge=(952,336) cdtN=368 dtN=65535 constraint=False
+MISMATCH tri=319 slot=0 edge=(170,166) cdtN=-1 dtN=1592 constraint=True
+MISMATCH tri=319 slot=2 edge=(337,170) cdtN=1592 dtN=65535 constraint=False
+MISMATCH tri=320 slot=0 edge=(1091,1) cdtN=-1 dtN=1545 constraint=True
+MISMATCH tri=320 slot=2 edge=(1002,1091) cdtN=1545 dtN=65535 constraint=False
+MISMATCH tri=321 slot=0 edge=(334,338) cdtN=-1 dtN=255 constraint=True
+MISMATCH tri=321 slot=2 edge=(171,334) cdtN=255 dtN=65535 constraint=False
+MISMATCH tri=322 slot=0 edge=(239,230) cdtN=-1 dtN=337 constraint=True
+MISMATCH tri=322 slot=2 edge=(571,239) cdtN=337 dtN=65535 constraint=False
+MISMATCH tri=323 slot=0 edge=(45,42) cdtN=1022 dtN=83 constraint=True
+MISMATCH tri=323 slot=2 edge=(743,45) cdtN=83 dtN=65535 constraint=False
+MISMATCH tri=326 slot=0 edge=(542,543) cdtN=-1 dtN=594 constraint=True
+MISMATCH tri=326 slot=2 edge=(356,542) cdtN=594 dtN=65535 constraint=False
+MISMATCH tri=330 slot=0 edge=(238,243) cdtN=1530 dtN=192 constraint=True
+MISMATCH tri=330 slot=2 edge=(572,238) cdtN=192 dtN=65535 constraint=False
+MISMATCH tri=331 slot=0 edge=(344,345) cdtN=-1 dtN=1003 constraint=True
+MISMATCH tri=331 slot=2 edge=(752,344) cdtN=1003 dtN=65535 constraint=False
+MISMATCH tri=332 slot=0 edge=(348,349) cdtN=-1 dtN=1077 constraint=True
+MISMATCH tri=332 slot=2 edge=(788,348) cdtN=1077 dtN=65535 constraint=False
+MISMATCH tri=333 slot=0 edge=(243,234) cdtN=-1 dtN=330 constraint=True
+MISMATCH tri=333 slot=2 edge=(572,243) cdtN=330 dtN=65535 constraint=False
+MISMATCH tri=334 slot=0 edge=(546,547) cdtN=-1 dtN=601 constraint=True
+MISMATCH tri=334 slot=2 edge=(769,546) cdtN=601 dtN=65535 constraint=False
+MISMATCH tri=337 slot=0 edge=(234,239) cdtN=188 dtN=648 constraint=True
+MISMATCH tri=337 slot=2 edge=(571,234) cdtN=648 dtN=65535 constraint=False
+MISMATCH tri=339 slot=0 edge=(219,566) cdtN=170 dtN=65535 constraint=False
+MISMATCH tri=339 slot=2 edge=(214,219) cdtN=1513 dtN=170 constraint=True
+MISMATCH tri=341 slot=0 edge=(545,753) cdtN=1005 dtN=65535 constraint=False
+MISMATCH tri=341 slot=2 edge=(544,545) cdtN=-1 dtN=1005 constraint=True
+MISMATCH tri=343 slot=0 edge=(360,361) cdtN=-1 dtN=967 constraint=True
+MISMATCH tri=343 slot=2 edge=(734,360) cdtN=967 dtN=65535 constraint=False
+MISMATCH tri=344 slot=0 edge=(362,363) cdtN=-1 dtN=401 constraint=True
+MISMATCH tri=344 slot=2 edge=(405,362) cdtN=401 dtN=65535 constraint=False
+MISMATCH tri=346 slot=0 edge=(53,50) cdtN=40 dtN=47 constraint=True
+MISMATCH tri=346 slot=2 edge=(777,53) cdtN=47 dtN=65535 constraint=False
+MISMATCH tri=349 slot=0 edge=(49,46) cdtN=42 dtN=84 constraint=True
+MISMATCH tri=349 slot=2 edge=(761,49) cdtN=84 dtN=65535 constraint=False
+MISMATCH tri=351 slot=0 edge=(442,443) cdtN=-1 dtN=583 constraint=True
+MISMATCH tri=351 slot=2 edge=(534,442) cdtN=583 dtN=65535 constraint=False
+MISMATCH tri=354 slot=0 edge=(368,369) cdtN=-1 dtN=521 constraint=True
+MISMATCH tri=354 slot=2 edge=(492,368) cdtN=521 dtN=65535 constraint=False
+MISMATCH tri=356 slot=0 edge=(412,806) cdtN=421 dtN=65535 constraint=False
+MISMATCH tri=356 slot=2 edge=(419,412) cdtN=-1 dtN=421 constraint=True
+MISMATCH tri=357 slot=0 edge=(355,348) cdtN=-1 dtN=173 constraint=True
+MISMATCH tri=357 slot=2 edge=(789,355) cdtN=173 dtN=65535 constraint=False
+MISMATCH tri=358 slot=0 edge=(374,768) cdtN=590 dtN=65535 constraint=False
+MISMATCH tri=358 slot=2 edge=(373,374) cdtN=-1 dtN=590 constraint=True
+MISMATCH tri=362 slot=0 edge=(375,376) cdtN=-1 dtN=329 constraint=True
+MISMATCH tri=362 slot=2 edge=(540,375) cdtN=329 dtN=65535 constraint=False
+MISMATCH tri=364 slot=0 edge=(349,350) cdtN=-1 dtN=366 constraint=True
+MISMATCH tri=364 slot=2 edge=(378,349) cdtN=366 dtN=65535 constraint=False
+MISMATCH tri=365 slot=0 edge=(377,378) cdtN=-1 dtN=1037 constraint=True
+MISMATCH tri=365 slot=2 edge=(769,377) cdtN=1037 dtN=65535 constraint=False
+MISMATCH tri=368 slot=0 edge=(336,952) cdtN=317 dtN=65535 constraint=False
+MISMATCH tri=368 slot=2 edge=(329,336) cdtN=-1 dtN=317 constraint=True
+MISMATCH tri=370 slot=0 edge=(492,369) cdtN=354 dtN=65535 constraint=False
+MISMATCH tri=370 slot=2 edge=(499,492) cdtN=-1 dtN=354 constraint=True
+MISMATCH tri=377 slot=0 edge=(508,718) cdtN=933 dtN=65535 constraint=False
+MISMATCH tri=377 slot=2 edge=(515,508) cdtN=-1 dtN=933 constraint=True
+MISMATCH tri=380 slot=0 edge=(392,393) cdtN=-1 dtN=484 constraint=True
+MISMATCH tri=380 slot=2 edge=(468,392) cdtN=484 dtN=65535 constraint=False
+MISMATCH tri=381 slot=0 edge=(284,281) cdtN=1563 dtN=1377 constraint=True
+MISMATCH tri=381 slot=2 edge=(939,284) cdtN=1377 dtN=65535 constraint=False
+MISMATCH tri=385 slot=0 edge=(371,364) cdtN=-1 dtN=1221 constraint=True
+MISMATCH tri=385 slot=2 edge=(861,371) cdtN=1221 dtN=65535 constraint=False
+MISMATCH tri=387 slot=0 edge=(391,392) cdtN=-1 dtN=1300 constraint=True
+MISMATCH tri=387 slot=2 edge=(900,391) cdtN=1300 dtN=65535 constraint=False
+MISMATCH tri=390 slot=0 edge=(404,405) cdtN=-1 dtN=361 constraint=True
+MISMATCH tri=390 slot=2 edge=(544,404) cdtN=361 dtN=65535 constraint=False
+MISMATCH tri=398 slot=0 edge=(512,513) cdtN=-1 dtN=551 constraint=True
+MISMATCH tri=398 slot=2 edge=(697,512) cdtN=551 dtN=65535 constraint=False
+MISMATCH tri=400 slot=0 edge=(361,362) cdtN=-1 dtN=403 constraint=True
+MISMATCH tri=400 slot=2 edge=(406,361) cdtN=403 dtN=65535 constraint=False
+MISMATCH tri=401 slot=0 edge=(405,406) cdtN=-1 dtN=344 constraint=True
+MISMATCH tri=401 slot=2 edge=(362,405) cdtN=344 dtN=65535 constraint=False
+MISMATCH tri=406 slot=0 edge=(409,410) cdtN=-1 dtN=970 constraint=True
+MISMATCH tri=406 slot=2 edge=(735,409) cdtN=970 dtN=65535 constraint=False
+MISMATCH tri=408 slot=0 edge=(419,807) cdtN=1113 dtN=65535 constraint=False
+MISMATCH tri=408 slot=2 edge=(418,419) cdtN=-1 dtN=1113 constraint=True
+MISMATCH tri=411 slot=0 edge=(372,373) cdtN=-1 dtN=415 constraint=True
+MISMATCH tri=411 slot=2 edge=(788,372) cdtN=415 dtN=65535 constraint=False
+MISMATCH tri=412 slot=0 edge=(416,768) cdtN=414 dtN=65535 constraint=False
+MISMATCH tri=412 slot=2 edge=(415,416) cdtN=-1 dtN=414 constraint=True
+MISMATCH tri=413 slot=0 edge=(414,415) cdtN=-1 dtN=1109 constraint=True
+MISMATCH tri=413 slot=2 edge=(787,414) cdtN=1109 dtN=65535 constraint=False
+MISMATCH tri=415 slot=0 edge=(379,372) cdtN=-1 dtN=409 constraint=True
+MISMATCH tri=415 slot=2 edge=(788,379) cdtN=409 dtN=65535 constraint=False
+MISMATCH tri=416 slot=0 edge=(416,417) cdtN=-1 dtN=414 constraint=True
+MISMATCH tri=416 slot=2 edge=(373,416) cdtN=414 dtN=65535 constraint=False
+MISMATCH tri=421 slot=0 edge=(412,413) cdtN=-1 dtN=356 constraint=True
+MISMATCH tri=421 slot=2 edge=(806,412) cdtN=356 dtN=65535 constraint=False
+MISMATCH tri=425 slot=0 edge=(425,426) cdtN=-1 dtN=1110 constraint=True
+MISMATCH tri=425 slot=2 edge=(805,425) cdtN=1110 dtN=65535 constraint=False
+MISMATCH tri=427 slot=0 edge=(509,510) cdtN=-1 dtN=397 constraint=True
+MISMATCH tri=427 slot=2 edge=(717,509) cdtN=397 dtN=65535 constraint=False
+MISMATCH tri=429 slot=0 edge=(231,222) cdtN=-1 dtN=431 constraint=True
+MISMATCH tri=429 slot=2 edge=(569,231) cdtN=431 dtN=65535 constraint=False
+MISMATCH tri=430 slot=0 edge=(235,226) cdtN=-1 dtN=132 constraint=True
+MISMATCH tri=430 slot=2 edge=(570,235) cdtN=132 dtN=65535 constraint=False
+MISMATCH tri=431 slot=0 edge=(226,231) cdtN=535 dtN=644 constraint=True
+MISMATCH tri=431 slot=2 edge=(569,226) cdtN=644 dtN=65535 constraint=False
+MISMATCH tri=437 slot=0 edge=(432,433) cdtN=-1 dtN=812 constraint=True
+MISMATCH tri=437 slot=2 edge=(676,432) cdtN=812 dtN=65535 constraint=False
+MISMATCH tri=438 slot=0 edge=(435,698) cdtN=550 dtN=65535 constraint=False
+MISMATCH tri=438 slot=2 edge=(434,435) cdtN=-1 dtN=550 constraint=True
+MISMATCH tri=440 slot=0 edge=(421,422) cdtN=-1 dtN=1147 constraint=True
+MISMATCH tri=440 slot=2 edge=(824,421) cdtN=1147 dtN=65535 constraint=False
+MISMATCH tri=441 slot=0 edge=(41,38) cdtN=35 dtN=79 constraint=True
+MISMATCH tri=441 slot=2 edge=(724,41) cdtN=79 dtN=65535 constraint=False
+MISMATCH tri=443 slot=0 edge=(211,564) cdtN=177 dtN=65535 constraint=False
+MISMATCH tri=443 slot=2 edge=(206,211) cdtN=1508 dtN=177 constraint=True
+MISMATCH tri=444 slot=0 edge=(453,539) cdtN=589 dtN=65535 constraint=False
+MISMATCH tri=444 slot=2 edge=(452,453) cdtN=-1 dtN=589 constraint=True
+MISMATCH tri=447 slot=0 edge=(516,517) cdtN=-1 dtN=1027 constraint=True
+MISMATCH tri=447 slot=2 edge=(764,516) cdtN=1027 dtN=65535 constraint=False
+MISMATCH tri=448 slot=0 edge=(440,441) cdtN=-1 dtN=991 constraint=True
+MISMATCH tri=448 slot=2 edge=(746,440) cdtN=991 dtN=65535 constraint=False
+MISMATCH tri=451 slot=0 edge=(441,442) cdtN=-1 dtN=585 constraint=True
+MISMATCH tri=451 slot=2 edge=(535,441) cdtN=585 dtN=65535 constraint=False
+MISMATCH tri=452 slot=0 edge=(532,533) cdtN=-1 dtN=1060 constraint=True
+MISMATCH tri=452 slot=2 edge=(781,532) cdtN=1060 dtN=65535 constraint=False
+MISMATCH tri=455 slot=0 edge=(524,804) cdtN=458 dtN=65535 constraint=False
+MISMATCH tri=455 slot=2 edge=(531,524) cdtN=-1 dtN=458 constraint=True
+MISMATCH tri=459 slot=0 edge=(450,451) cdtN=-1 dtN=1107 constraint=True
+MISMATCH tri=459 slot=2 edge=(804,450) cdtN=1107 dtN=65535 constraint=False
+MISMATCH tri=461 slot=0 edge=(457,458) cdtN=-1 dtN=558 constraint=True
+MISMATCH tri=461 slot=2 edge=(517,457) cdtN=558 dtN=65535 constraint=False
+MISMATCH tri=464 slot=0 edge=(203,562) cdtN=172 dtN=65535 constraint=False
+MISMATCH tri=464 slot=2 edge=(198,203) cdtN=656 dtN=172 constraint=True
+MISMATCH tri=466 slot=0 edge=(527,528) cdtN=-1 dtN=1029 constraint=True
+MISMATCH tri=466 slot=2 edge=(766,527) cdtN=1029 dtN=65535 constraint=False
+MISMATCH tri=467 slot=0 edge=(215,565) cdtN=176 dtN=65535 constraint=False
+MISMATCH tri=467 slot=2 edge=(210,215) cdtN=195 dtN=176 constraint=True
+MISMATCH tri=468 slot=0 edge=(454,455) cdtN=-1 dtN=588 constraint=True
+MISMATCH tri=468 slot=2 edge=(537,454) cdtN=588 dtN=65535 constraint=False
+MISMATCH tri=470 slot=0 edge=(524,525) cdtN=-1 dtN=458 constraint=True
+MISMATCH tri=470 slot=2 edge=(449,524) cdtN=458 dtN=65535 constraint=False
+MISMATCH tri=474 slot=0 edge=(491,484) cdtN=-1 dtN=574 constraint=True
+MISMATCH tri=474 slot=2 edge=(767,491) cdtN=574 dtN=65535 constraint=False
+MISMATCH tri=475 slot=0 edge=(195,560) cdtN=168 dtN=65535 constraint=False
+MISMATCH tri=475 slot=2 edge=(190,195) cdtN=43 dtN=168 constraint=True
+MISMATCH tri=476 slot=0 edge=(199,561) cdtN=160 dtN=65535 constraint=False
+MISMATCH tri=476 slot=2 edge=(194,199) cdtN=180 dtN=160 constraint=True
+MISMATCH tri=477 slot=0 edge=(502,669) cdtN=839 dtN=65535 constraint=False
+MISMATCH tri=477 slot=2 edge=(501,502) cdtN=-1 dtN=839 constraint=True
+MISMATCH tri=478 slot=0 edge=(249,1085) cdtN=-1 dtN=231 constraint=True
+MISMATCH tri=478 slot=2 edge=(88,249) cdtN=231 dtN=65535 constraint=False
+MISMATCH tri=479 slot=0 edge=(500,501) cdtN=-1 dtN=880 constraint=True
+MISMATCH tri=479 slot=2 edge=(690,500) cdtN=880 dtN=65535 constraint=False
+MISMATCH tri=480 slot=0 edge=(222,227) cdtN=1519 dtN=642 constraint=True
+MISMATCH tri=480 slot=2 edge=(568,222) cdtN=642 dtN=65535 constraint=False
+MISMATCH tri=481 slot=0 edge=(465,466) cdtN=-1 dtN=534 constraint=True
+MISMATCH tri=481 slot=2 edge=(501,465) cdtN=534 dtN=65535 constraint=False
+MISMATCH tri=484 slot=0 edge=(468,469) cdtN=-1 dtN=380 constraint=True
+MISMATCH tri=484 slot=2 edge=(392,468) cdtN=380 dtN=65535 constraint=False
+MISMATCH tri=489 slot=0 edge=(471,472) cdtN=-1 dtN=1218 constraint=True
+MISMATCH tri=489 slot=2 edge=(880,471) cdtN=1218 dtN=65535 constraint=False
+MISMATCH tri=491 slot=0 edge=(370,842) cdtN=355 dtN=65535 constraint=False
+MISMATCH tri=491 slot=2 edge=(369,370) cdtN=-1 dtN=355 constraint=True
+MISMATCH tri=494 slot=0 edge=(468,393) cdtN=380 dtN=65535 constraint=False
+MISMATCH tri=494 slot=2 edge=(475,468) cdtN=-1 dtN=380 constraint=True
+MISMATCH tri=495 slot=0 edge=(386,387) cdtN=-1 dtN=1160 constraint=True
+MISMATCH tri=495 slot=2 edge=(830,386) cdtN=1160 dtN=65535 constraint=False
+MISMATCH tri=504 slot=0 edge=(479,480) cdtN=-1 dtN=1198 constraint=True
+MISMATCH tri=504 slot=2 edge=(849,479) cdtN=1198 dtN=65535 constraint=False
+MISMATCH tri=505 slot=0 edge=(481,850) cdtN=136 dtN=65535 constraint=False
+MISMATCH tri=505 slot=2 edge=(480,481) cdtN=-1 dtN=136 constraint=True
+MISMATCH tri=507 slot=0 edge=(342,343) cdtN=-1 dtN=1034 constraint=True
+MISMATCH tri=507 slot=2 edge=(767,342) cdtN=1034 dtN=65535 constraint=False
+MISMATCH tri=510 slot=0 edge=(456,457) cdtN=-1 dtN=995 constraint=True
+MISMATCH tri=510 slot=2 edge=(748,456) cdtN=995 dtN=65535 constraint=False
+MISMATCH tri=511 slot=0 edge=(523,764) cdtN=1027 dtN=65535 constraint=False
+MISMATCH tri=511 slot=2 edge=(522,523) cdtN=-1 dtN=1027 constraint=True
+MISMATCH tri=515 slot=0 edge=(521,749) cdtN=565 dtN=65535 constraint=False
+MISMATCH tri=515 slot=2 edge=(520,521) cdtN=-1 dtN=565 constraint=True
+MISMATCH tri=518 slot=0 edge=(489,490) cdtN=-1 dtN=1002 constraint=True
+MISMATCH tri=518 slot=2 edge=(751,489) cdtN=1002 dtN=65535 constraint=False
+MISMATCH tri=520 slot=0 edge=(367,368) cdtN=-1 dtN=522 constraint=True
+MISMATCH tri=520 slot=2 edge=(493,367) cdtN=522 dtN=65535 constraint=False
+MISMATCH tri=521 slot=0 edge=(492,493) cdtN=-1 dtN=354 constraint=True
+MISMATCH tri=521 slot=2 edge=(368,492) cdtN=354 dtN=65535 constraint=False
+MISMATCH tri=526 slot=0 edge=(451,444) cdtN=-1 dtN=352 constraint=True
+MISMATCH tri=526 slot=2 edge=(823,451) cdtN=352 dtN=65535 constraint=False
+MISMATCH tri=527 slot=0 edge=(427,420) cdtN=-1 dtN=1150 constraint=True
+MISMATCH tri=527 slot=2 edge=(825,427) cdtN=1150 dtN=65535 constraint=False
+MISMATCH tri=528 slot=0 edge=(496,823) cdtN=1145 dtN=65535 constraint=False
+MISMATCH tri=528 slot=2 edge=(495,496) cdtN=-1 dtN=1145 constraint=True
+MISMATCH tri=530 slot=0 edge=(498,842) cdtN=531 dtN=65535 constraint=False
+MISMATCH tri=530 slot=2 edge=(497,498) cdtN=-1 dtN=531 constraint=True
+MISMATCH tri=531 slot=0 edge=(498,499) cdtN=-1 dtN=530 constraint=True
+MISMATCH tri=531 slot=2 edge=(842,498) cdtN=530 dtN=65535 constraint=False
+MISMATCH tri=532 slot=0 edge=(464,465) cdtN=-1 dtN=838 constraint=True
+MISMATCH tri=532 slot=2 edge=(669,464) cdtN=838 dtN=65535 constraint=False
+MISMATCH tri=538 slot=0 edge=(218,223) cdtN=186 dtN=640 constraint=True
+MISMATCH tri=538 slot=2 edge=(567,218) cdtN=640 dtN=65535 constraint=False
+MISMATCH tri=543 slot=0 edge=(506,670) cdtN=610 dtN=65535 constraint=False
+MISMATCH tri=543 slot=2 edge=(505,506) cdtN=-1 dtN=610 constraint=True
+MISMATCH tri=544 slot=0 edge=(402,403) cdtN=-1 dtN=934 constraint=True
+MISMATCH tri=544 slot=2 edge=(717,402) cdtN=934 dtN=65535 constraint=False
+MISMATCH tri=547 slot=0 edge=(400,401) cdtN=-1 dtN=892 constraint=True
+MISMATCH tri=547 slot=2 edge=(696,400) cdtN=892 dtN=65535 constraint=False
+MISMATCH tri=548 slot=0 edge=(429,697) cdtN=850 dtN=65535 constraint=False
+MISMATCH tri=548 slot=2 edge=(428,429) cdtN=-1 dtN=850 constraint=True
+MISMATCH tri=549 slot=0 edge=(511,696) cdtN=894 dtN=65535 constraint=False
+MISMATCH tri=549 slot=2 edge=(510,511) cdtN=-1 dtN=894 constraint=True
+MISMATCH tri=551 slot=0 edge=(511,512) cdtN=-1 dtN=894 constraint=True
+MISMATCH tri=551 slot=2 edge=(697,511) cdtN=894 dtN=65535 constraint=False
+MISMATCH tri=558 slot=0 edge=(517,518) cdtN=-1 dtN=461 constraint=True
+MISMATCH tri=558 slot=2 edge=(457,517) cdtN=461 dtN=65535 constraint=False
+MISMATCH tri=562 slot=0 edge=(522,750) cdtN=566 dtN=65535 constraint=False
+MISMATCH tri=562 slot=2 edge=(521,522) cdtN=-1 dtN=566 constraint=True
+MISMATCH tri=564 slot=0 edge=(485,766) cdtN=999 dtN=65535 constraint=False
+MISMATCH tri=564 slot=2 edge=(484,485) cdtN=-1 dtN=999 constraint=True
+MISMATCH tri=567 slot=0 edge=(448,449) cdtN=-1 dtN=569 constraint=True
+MISMATCH tri=567 slot=2 edge=(525,448) cdtN=569 dtN=65535 constraint=False
+MISMATCH tri=568 slot=0 edge=(340,787) cdtN=575 dtN=65535 constraint=False
+MISMATCH tri=568 slot=2 edge=(347,340) cdtN=-1 dtN=575 constraint=True
+MISMATCH tri=574 slot=0 edge=(491,767) cdtN=474 dtN=65535 constraint=False
+MISMATCH tri=574 slot=2 edge=(490,491) cdtN=-1 dtN=474 constraint=True
+MISMATCH tri=575 slot=0 edge=(340,341) cdtN=-1 dtN=568 constraint=True
+MISMATCH tri=575 slot=2 edge=(787,340) cdtN=568 dtN=65535 constraint=False
+MISMATCH tri=578 slot=0 edge=(530,531) cdtN=-1 dtN=1071 constraint=True
+MISMATCH tri=578 slot=2 edge=(786,530) cdtN=1071 dtN=65535 constraint=False
+MISMATCH tri=580 slot=0 edge=(459,452) cdtN=-1 dtN=1065 constraint=True
+MISMATCH tri=580 slot=2 edge=(782,459) cdtN=1065 dtN=65535 constraint=False
+MISMATCH tri=582 slot=0 edge=(533,534) cdtN=-1 dtN=439 constraint=True
+MISMATCH tri=582 slot=2 edge=(443,533) cdtN=439 dtN=65535 constraint=False
+MISMATCH tri=583 slot=0 edge=(534,535) cdtN=-1 dtN=351 constraint=True
+MISMATCH tri=583 slot=2 edge=(442,534) cdtN=351 dtN=65535 constraint=False
+MISMATCH tri=584 slot=0 edge=(536,537) cdtN=-1 dtN=793 constraint=True
+MISMATCH tri=584 slot=2 edge=(455,536) cdtN=793 dtN=65535 constraint=False
+MISMATCH tri=586 slot=0 edge=(33,30) cdtN=46 dtN=70 constraint=True
+MISMATCH tri=586 slot=2 edge=(682,33) cdtN=70 dtN=65535 constraint=False
+MISMATCH tri=587 slot=0 edge=(453,454) cdtN=-1 dtN=589 constraint=True
+MISMATCH tri=587 slot=2 edge=(538,453) cdtN=589 dtN=65535 constraint=False
+MISMATCH tri=588 slot=0 edge=(537,538) cdtN=-1 dtN=468 constraint=True
+MISMATCH tri=588 slot=2 edge=(454,537) cdtN=468 dtN=65535 constraint=False
+MISMATCH tri=590 slot=0 edge=(374,375) cdtN=-1 dtN=358 constraint=True
+MISMATCH tri=590 slot=2 edge=(768,374) cdtN=358 dtN=65535 constraint=False
+MISMATCH tri=591 slot=0 edge=(541,542) cdtN=-1 dtN=1035 constraint=True
+MISMATCH tri=591 slot=2 edge=(768,541) cdtN=1035 dtN=65535 constraint=False
+MISMATCH tri=593 slot=0 edge=(363,356) cdtN=-1 dtN=597 constraint=True
+MISMATCH tri=593 slot=2 edge=(543,363) cdtN=597 dtN=65535 constraint=False
+MISMATCH tri=594 slot=0 edge=(356,357) cdtN=-1 dtN=326 constraint=True
+MISMATCH tri=594 slot=2 edge=(542,356) cdtN=326 dtN=65535 constraint=False
+MISMATCH tri=595 slot=0 edge=(411,404) cdtN=-1 dtN=599 constraint=True
+MISMATCH tri=595 slot=2 edge=(753,411) cdtN=599 dtN=65535 constraint=False
+MISMATCH tri=597 slot=0 edge=(543,544) cdtN=-1 dtN=593 constraint=True
+MISMATCH tri=597 slot=2 edge=(363,543) cdtN=593 dtN=65535 constraint=False
+MISMATCH tri=599 slot=0 edge=(411,753) cdtN=595 dtN=65535 constraint=False
+MISMATCH tri=599 slot=2 edge=(410,411) cdtN=-1 dtN=595 constraint=True
+MISMATCH tri=602 slot=0 edge=(540,376) cdtN=362 dtN=65535 constraint=False
+MISMATCH tri=602 slot=2 edge=(547,540) cdtN=-1 dtN=362 constraint=True
+MISMATCH tri=605 slot=0 edge=(548,549) cdtN=-1 dtN=604 constraint=True
+MISMATCH tri=605 slot=2 edge=(751,548) cdtN=604 dtN=65535 constraint=False
+MISMATCH tri=606 slot=0 edge=(467,460) cdtN=-1 dtN=608 constraint=True
+MISMATCH tri=606 slot=2 edge=(690,467) cdtN=608 dtN=65535 constraint=False
+MISMATCH tri=607 slot=0 edge=(507,500) cdtN=-1 dtN=882 constraint=True
+MISMATCH tri=607 slot=2 edge=(691,507) cdtN=882 dtN=65535 constraint=False
+MISMATCH tri=608 slot=0 edge=(467,690) cdtN=606 dtN=65535 constraint=False
+MISMATCH tri=608 slot=2 edge=(466,467) cdtN=-1 dtN=606 constraint=True
+MISMATCH tri=609 slot=0 edge=(551,552) cdtN=-1 dtN=924 constraint=True
+MISMATCH tri=609 slot=2 edge=(712,551) cdtN=924 dtN=65535 constraint=False
+MISMATCH tri=610 slot=0 edge=(506,507) cdtN=-1 dtN=543 constraint=True
+MISMATCH tri=610 slot=2 edge=(670,506) cdtN=543 dtN=65535 constraint=False
+MISMATCH tri=612 slot=0 edge=(553,713) cdtN=615 dtN=65535 constraint=False
+MISMATCH tri=612 slot=2 edge=(552,553) cdtN=-1 dtN=615 constraint=True
+MISMATCH tri=616 slot=0 edge=(554,555) cdtN=-1 dtN=965 constraint=True
+MISMATCH tri=616 slot=2 edge=(733,554) cdtN=965 dtN=65535 constraint=False
+MISMATCH tri=618 slot=0 edge=(12,962) cdtN=1422 dtN=65535 constraint=False
+MISMATCH tri=618 slot=2 edge=(7,12) cdtN=-1 dtN=1422 constraint=True
+MISMATCH tri=621 slot=0 edge=(182,187) cdtN=163 dtN=16 constraint=True
+MISMATCH tri=621 slot=2 edge=(559,182) cdtN=16 dtN=65535 constraint=False
+MISMATCH tri=623 slot=0 edge=(186,191) cdtN=164 dtN=168 constraint=True
+MISMATCH tri=623 slot=2 edge=(560,186) cdtN=168 dtN=65535 constraint=False
+MISMATCH tri=651 slot=0 edge=(251,242) cdtN=-1 dtN=653 constraint=True
+MISMATCH tri=651 slot=2 edge=(574,251) cdtN=653 dtN=65535 constraint=False
+MISMATCH tri=653 slot=0 edge=(251,574) cdtN=651 dtN=65535 constraint=False
+MISMATCH tri=653 slot=2 edge=(246,251) cdtN=1535 dtN=651 constraint=True
+MISMATCH tri=655 slot=0 edge=(255,575) cdtN=207 dtN=65535 constraint=False
+MISMATCH tri=655 slot=2 edge=(250,255) cdtN=181 dtN=207 constraint=True
+MISMATCH tri=659 slot=0 edge=(6,577) cdtN=55 dtN=65535 constraint=False
+MISMATCH tri=659 slot=2 edge=(9,6) cdtN=87 dtN=55 constraint=True
+MISMATCH tri=697 slot=0 edge=(95,96) cdtN=123 dtN=738 constraint=True
+MISMATCH tri=697 slot=2 edge=(617,95) cdtN=738 dtN=65535 constraint=False
+MISMATCH tri=700 slot=0 edge=(10,598) cdtN=56 dtN=65535 constraint=False
+MISMATCH tri=700 slot=2 edge=(13,10) cdtN=82 dtN=56 constraint=True
+MISMATCH tri=704 slot=0 edge=(25,22) cdtN=39 dtN=65 constraint=True
+MISMATCH tri=704 slot=2 edge=(640,25) cdtN=65 dtN=65535 constraint=False
+MISMATCH tri=737 slot=0 edge=(99,100) cdtN=120 dtN=780 constraint=True
+MISMATCH tri=737 slot=2 edge=(638,99) cdtN=780 dtN=65535 constraint=False
+MISMATCH tri=740 slot=0 edge=(14,619) cdtN=54 dtN=65535 constraint=False
+MISMATCH tri=740 slot=2 edge=(17,14) cdtN=53 dtN=54 constraint=True
+MISMATCH tri=741 slot=0 edge=(32,972) cdtN=1432 dtN=65535 constraint=False
+MISMATCH tri=741 slot=2 edge=(27,32) cdtN=-1 dtN=1432 constraint=True
+MISMATCH tri=756 slot=0 edge=(503,504) cdtN=-1 dtN=839 constraint=True
+MISMATCH tri=756 slot=2 edge=(669,503) cdtN=839 dtN=65535 constraint=False
+MISMATCH tri=774 slot=0 edge=(108,103) cdtN=-1 dtN=822 constraint=True
+MISMATCH tri=774 slot=2 edge=(660,108) cdtN=822 dtN=65535 constraint=False
+MISMATCH tri=779 slot=0 edge=(103,104) cdtN=115 dtN=821 constraint=True
+MISMATCH tri=779 slot=2 edge=(659,103) cdtN=821 dtN=65535 constraint=False
+MISMATCH tri=782 slot=0 edge=(18,640) cdtN=65 dtN=65535 constraint=False
+MISMATCH tri=782 slot=2 edge=(21,18) cdtN=51 dtN=65 constraint=True
+MISMATCH tri=783 slot=0 edge=(80,996) cdtN=1454 dtN=65535 constraint=False
+MISMATCH tri=783 slot=2 edge=(75,80) cdtN=-1 dtN=1454 constraint=True
+MISMATCH tri=796 slot=0 edge=(463,464) cdtN=-1 dtN=837 constraint=True
+MISMATCH tri=796 slot=2 edge=(668,463) cdtN=837 dtN=65535 constraint=False
+MISMATCH tri=803 slot=0 edge=(505,670) cdtN=543 dtN=65535 constraint=False
+MISMATCH tri=803 slot=2 edge=(504,505) cdtN=-1 dtN=543 constraint=True
+MISMATCH tri=812 slot=0 edge=(431,432) cdtN=-1 dtN=853 constraint=True
+MISMATCH tri=812 slot=2 edge=(676,431) cdtN=853 dtN=65535 constraint=False
+MISMATCH tri=820 slot=0 edge=(108,659) cdtN=822 dtN=65535 constraint=False
+MISMATCH tri=820 slot=2 edge=(107,108) cdtN=111 dtN=822 constraint=True
+MISMATCH tri=833 slot=0 edge=(460,461) cdtN=-1 dtN=878 constraint=True
+MISMATCH tri=833 slot=2 edge=(689,460) cdtN=878 dtN=65535 constraint=False
+MISMATCH tri=835 slot=0 edge=(461,462) cdtN=-1 dtN=833 constraint=True
+MISMATCH tri=835 slot=2 edge=(689,461) cdtN=833 dtN=65535 constraint=False
+MISMATCH tri=837 slot=0 edge=(463,668) cdtN=796 dtN=65535 constraint=False
+MISMATCH tri=837 slot=2 edge=(462,463) cdtN=-1 dtN=796 constraint=True
+MISMATCH tri=839 slot=0 edge=(503,669) cdtN=756 dtN=65535 constraint=False
+MISMATCH tri=839 slot=2 edge=(502,503) cdtN=-1 dtN=756 constraint=True
+MISMATCH tri=848 slot=0 edge=(399,400) cdtN=-1 dtN=887 constraint=True
+MISMATCH tri=848 slot=2 edge=(695,399) cdtN=887 dtN=65535 constraint=False
+MISMATCH tri=850 slot=0 edge=(429,430) cdtN=-1 dtN=548 constraint=True
+MISMATCH tri=850 slot=2 edge=(697,429) cdtN=548 dtN=65535 constraint=False
+MISMATCH tri=853 slot=0 edge=(431,676) cdtN=812 dtN=65535 constraint=False
+MISMATCH tri=853 slot=2 edge=(430,431) cdtN=-1 dtN=812 constraint=True
+MISMATCH tri=861 slot=0 edge=(112,680) cdtN=863 dtN=65535 constraint=False
+MISMATCH tri=861 slot=2 edge=(111,112) cdtN=106 dtN=863 constraint=True
+MISMATCH tri=877 slot=0 edge=(520,749) cdtN=515 dtN=65535 constraint=False
+MISMATCH tri=877 slot=2 edge=(519,520) cdtN=-1 dtN=515 constraint=True
+MISMATCH tri=879 slot=0 edge=(550,732) cdtN=921 dtN=65535 constraint=False
+MISMATCH tri=879 slot=2 edge=(549,550) cdtN=-1 dtN=921 constraint=True
+MISMATCH tri=886 slot=0 edge=(407,408) cdtN=-1 dtN=968 constraint=True
+MISMATCH tri=886 slot=2 edge=(734,407) cdtN=968 dtN=65535 constraint=False
+MISMATCH tri=890 slot=0 edge=(398,399) cdtN=-1 dtN=932 constraint=True
+MISMATCH tri=890 slot=2 edge=(716,398) cdtN=932 dtN=65535 constraint=False
+MISMATCH tri=896 slot=0 edge=(514,698) cdtN=555 dtN=65535 constraint=False
+MISMATCH tri=896 slot=2 edge=(513,514) cdtN=-1 dtN=555 constraint=True
+MISMATCH tri=899 slot=0 edge=(124,119) cdtN=-1 dtN=983 constraint=True
+MISMATCH tri=899 slot=2 edge=(742,124) cdtN=983 dtN=65535 constraint=False
+MISMATCH tri=902 slot=0 edge=(116,701) cdtN=904 dtN=65535 constraint=False
+MISMATCH tri=902 slot=2 edge=(115,116) cdtN=91 dtN=904 constraint=True
+MISMATCH tri=906 slot=0 edge=(40,976) cdtN=1436 dtN=65535 constraint=False
+MISMATCH tri=906 slot=2 edge=(35,40) cdtN=-1 dtN=1436 constraint=True
+MISMATCH tri=924 slot=0 edge=(551,712) cdtN=609 dtN=65535 constraint=False
+MISMATCH tri=924 slot=2 edge=(550,551) cdtN=-1 dtN=609 constraint=True
+MISMATCH tri=930 slot=0 edge=(396,397) cdtN=-1 dtN=372 constraint=True
+MISMATCH tri=930 slot=2 edge=(736,396) cdtN=372 dtN=65535 constraint=False
+MISMATCH tri=932 slot=0 edge=(398,716) cdtN=890 dtN=65535 constraint=False
+MISMATCH tri=932 slot=2 edge=(397,398) cdtN=-1 dtN=890 constraint=True
+MISMATCH tri=933 slot=0 edge=(508,509) cdtN=-1 dtN=377 constraint=True
+MISMATCH tri=933 slot=2 edge=(718,508) cdtN=377 dtN=65535 constraint=False
+MISMATCH tri=934 slot=0 edge=(402,717) cdtN=544 dtN=65535 constraint=False
+MISMATCH tri=934 slot=2 edge=(401,402) cdtN=-1 dtN=544 constraint=True
+MISMATCH tri=941 slot=0 edge=(128,123) cdtN=-1 dtN=1019 constraint=True
+MISMATCH tri=941 slot=2 edge=(760,128) cdtN=1019 dtN=65535 constraint=False
+MISMATCH tri=943 slot=0 edge=(120,722) cdtN=946 dtN=65535 constraint=False
+MISMATCH tri=943 slot=2 edge=(119,120) cdtN=1457 dtN=946 constraint=True
+MISMATCH tri=961 slot=0 edge=(486,487) cdtN=-1 dtN=1030 constraint=True
+MISMATCH tri=961 slot=2 edge=(750,486) cdtN=1030 dtN=65535 constraint=False
+MISMATCH tri=963 slot=0 edge=(488,732) cdtN=169 dtN=65535 constraint=False
+MISMATCH tri=963 slot=2 edge=(487,488) cdtN=-1 dtN=169 constraint=True
+MISMATCH tri=965 slot=0 edge=(554,733) cdtN=616 dtN=65535 constraint=False
+MISMATCH tri=965 slot=2 edge=(553,554) cdtN=-1 dtN=616 constraint=True
+MISMATCH tri=966 slot=0 edge=(359,733) cdtN=807 dtN=65535 constraint=False
+MISMATCH tri=966 slot=2 edge=(358,359) cdtN=-1 dtN=807 constraint=True
+MISMATCH tri=967 slot=0 edge=(360,734) cdtN=343 dtN=65535 constraint=False
+MISMATCH tri=967 slot=2 edge=(359,360) cdtN=-1 dtN=343 constraint=True
+MISMATCH tri=968 slot=0 edge=(407,734) cdtN=886 dtN=65535 constraint=False
+MISMATCH tri=968 slot=2 edge=(406,407) cdtN=-1 dtN=886 constraint=True
+MISMATCH tri=970 slot=0 edge=(409,735) cdtN=406 dtN=65535 constraint=False
+MISMATCH tri=970 slot=2 edge=(408,409) cdtN=-1 dtN=406 constraint=True
+MISMATCH tri=972 slot=0 edge=(403,396) cdtN=-1 dtN=336 constraint=True
+MISMATCH tri=972 slot=2 edge=(737,403) cdtN=336 dtN=65535 constraint=False
+MISMATCH tri=981 slot=0 edge=(132,127) cdtN=-1 dtN=1051 constraint=True
+MISMATCH tri=981 slot=2 edge=(776,132) cdtN=1051 dtN=65535 constraint=False
+MISMATCH tri=983 slot=0 edge=(124,742) cdtN=899 dtN=65535 constraint=False
+MISMATCH tri=983 slot=2 edge=(123,124) cdtN=89 dtN=899 constraint=True
+MISMATCH tri=989 slot=0 edge=(438,439) cdtN=-1 dtN=1026 constraint=True
+MISMATCH tri=989 slot=2 edge=(763,438) cdtN=1026 dtN=65535 constraint=False
+MISMATCH tri=991 slot=0 edge=(440,746) cdtN=448 dtN=65535 constraint=False
+MISMATCH tri=991 slot=2 edge=(439,440) cdtN=-1 dtN=448 constraint=True
+MISMATCH tri=993 slot=0 edge=(536,747) cdtN=793 dtN=65535 constraint=False
+MISMATCH tri=993 slot=2 edge=(535,536) cdtN=-1 dtN=793 constraint=True
+MISMATCH tri=995 slot=0 edge=(456,748) cdtN=510 dtN=65535 constraint=False
+MISMATCH tri=995 slot=2 edge=(455,456) cdtN=-1 dtN=510 constraint=True
+MISMATCH tri=996 slot=0 edge=(519,748) cdtN=917 dtN=65535 constraint=False
+MISMATCH tri=996 slot=2 edge=(518,519) cdtN=-1 dtN=917 constraint=True
+MISMATCH tri=999 slot=0 edge=(485,486) cdtN=-1 dtN=564 constraint=True
+MISMATCH tri=999 slot=2 edge=(766,485) cdtN=564 dtN=65535 constraint=False
+MISMATCH tri=1001 slot=0 edge=(555,548) cdtN=-1 dtN=516 constraint=True
+MISMATCH tri=1001 slot=2 edge=(752,555) cdtN=516 dtN=65535 constraint=False
+MISMATCH tri=1002 slot=0 edge=(489,751) cdtN=518 dtN=65535 constraint=False
+MISMATCH tri=1002 slot=2 edge=(488,489) cdtN=-1 dtN=518 constraint=True
+MISMATCH tri=1003 slot=0 edge=(344,752) cdtN=331 dtN=65535 constraint=False
+MISMATCH tri=1003 slot=2 edge=(343,344) cdtN=-1 dtN=331 constraint=True
+MISMATCH tri=1004 slot=0 edge=(358,752) cdtN=613 dtN=65535 constraint=False
+MISMATCH tri=1004 slot=2 edge=(357,358) cdtN=-1 dtN=613 constraint=True
+MISMATCH tri=1005 slot=0 edge=(546,753) cdtN=601 dtN=65535 constraint=False
+MISMATCH tri=1005 slot=2 edge=(545,546) cdtN=-1 dtN=601 constraint=True
+MISMATCH tri=1006 slot=0 edge=(352,753) cdtN=971 dtN=65535 constraint=False
+MISMATCH tri=1006 slot=2 edge=(351,352) cdtN=-1 dtN=971 constraint=True
+MISMATCH tri=1009 slot=0 edge=(353,770) cdtN=1039 dtN=65535 constraint=False
+MISMATCH tri=1009 slot=2 edge=(352,353) cdtN=-1 dtN=1039 constraint=True
+MISMATCH tri=1017 slot=0 edge=(136,131) cdtN=-1 dtN=1089 constraint=True
+MISMATCH tri=1017 slot=2 edge=(795,136) cdtN=1089 dtN=65535 constraint=False
+MISMATCH tri=1019 slot=0 edge=(128,760) cdtN=941 dtN=65535 constraint=False
+MISMATCH tri=1019 slot=2 edge=(127,128) cdtN=1465 dtN=941 constraint=True
+MISMATCH tri=1023 slot=0 edge=(436,437) cdtN=-1 dtN=1058 constraint=True
+MISMATCH tri=1023 slot=2 edge=(780,436) cdtN=1058 dtN=65535 constraint=False
+MISMATCH tri=1026 slot=0 edge=(438,763) cdtN=989 dtN=65535 constraint=False
+MISMATCH tri=1026 slot=2 edge=(437,438) cdtN=-1 dtN=989 constraint=True
+MISMATCH tri=1027 slot=0 edge=(516,764) cdtN=447 dtN=65535 constraint=False
+MISMATCH tri=1027 slot=2 edge=(523,516) cdtN=-1 dtN=447 constraint=True
+MISMATCH tri=1028 slot=0 edge=(459,764) cdtN=460 dtN=65535 constraint=False
+MISMATCH tri=1028 slot=2 edge=(458,459) cdtN=-1 dtN=460 constraint=True
+MISMATCH tri=1032 slot=0 edge=(526,527) cdtN=-1 dtN=1070 constraint=True
+MISMATCH tri=1032 slot=2 edge=(785,526) cdtN=1070 dtN=65535 constraint=False
+MISMATCH tri=1033 slot=0 edge=(529,767) cdtN=577 dtN=65535 constraint=False
+MISMATCH tri=1033 slot=2 edge=(528,529) cdtN=-1 dtN=577 constraint=True
+MISMATCH tri=1034 slot=0 edge=(342,767) cdtN=507 dtN=65535 constraint=False
+MISMATCH tri=1034 slot=2 edge=(341,342) cdtN=-1 dtN=507 constraint=True
+MISMATCH tri=1035 slot=0 edge=(541,768) cdtN=591 dtN=65535 constraint=False
+MISMATCH tri=1035 slot=2 edge=(540,541) cdtN=-1 dtN=591 constraint=True
+MISMATCH tri=1036 slot=0 edge=(346,768) cdtN=117 dtN=65535 constraint=False
+MISMATCH tri=1036 slot=2 edge=(345,346) cdtN=-1 dtN=117 constraint=True
+MISMATCH tri=1037 slot=0 edge=(377,769) cdtN=365 dtN=65535 constraint=False
+MISMATCH tri=1037 slot=2 edge=(376,377) cdtN=-1 dtN=365 constraint=True
+MISMATCH tri=1038 slot=0 edge=(351,769) cdtN=598 dtN=65535 constraint=False
+MISMATCH tri=1038 slot=2 edge=(350,351) cdtN=-1 dtN=598 constraint=True
+MISMATCH tri=1039 slot=0 edge=(354,770) cdtN=296 dtN=65535 constraint=False
+MISMATCH tri=1039 slot=2 edge=(353,354) cdtN=-1 dtN=296 constraint=True
+MISMATCH tri=1046 slot=0 edge=(384,385) cdtN=-1 dtN=1119 constraint=True
+MISMATCH tri=1046 slot=2 edge=(810,384) cdtN=1119 dtN=65535 constraint=False
+MISMATCH tri=1049 slot=0 edge=(140,135) cdtN=-1 dtN=1127 constraint=True
+MISMATCH tri=1049 slot=2 edge=(814,140) cdtN=1127 dtN=65535 constraint=False
+MISMATCH tri=1051 slot=0 edge=(132,776) cdtN=981 dtN=65535 constraint=False
+MISMATCH tri=1051 slot=2 edge=(131,132) cdtN=96 dtN=981 constraint=True
+MISMATCH tri=1058 slot=0 edge=(436,780) cdtN=1023 dtN=65535 constraint=False
+MISMATCH tri=1058 slot=2 edge=(443,436) cdtN=-1 dtN=1023 constraint=True
+MISMATCH tri=1060 slot=0 edge=(532,781) cdtN=452 dtN=65535 constraint=False
+MISMATCH tri=1060 slot=2 edge=(539,532) cdtN=-1 dtN=452 constraint=True
+MISMATCH tri=1067 slot=0 edge=(446,447) cdtN=-1 dtN=1106 constraint=True
+MISMATCH tri=1067 slot=2 edge=(803,446) cdtN=1106 dtN=65535 constraint=False
+MISMATCH tri=1069 slot=0 edge=(448,785) cdtN=569 dtN=65535 constraint=False
+MISMATCH tri=1069 slot=2 edge=(447,448) cdtN=-1 dtN=569 constraint=True
+MISMATCH tri=1070 slot=0 edge=(526,785) cdtN=1032 dtN=65535 constraint=False
+MISMATCH tri=1070 slot=2 edge=(525,526) cdtN=-1 dtN=1032 constraint=True
+MISMATCH tri=1071 slot=0 edge=(530,786) cdtN=578 dtN=65535 constraint=False
+MISMATCH tri=1071 slot=2 edge=(529,530) cdtN=-1 dtN=578 constraint=True
+MISMATCH tri=1072 slot=0 edge=(423,424) cdtN=-1 dtN=1108 constraint=True
+MISMATCH tri=1072 slot=2 edge=(804,423) cdtN=1108 dtN=65535 constraint=False
+MISMATCH tri=1074 slot=0 edge=(413,414) cdtN=-1 dtN=423 constraint=True
+MISMATCH tri=1074 slot=2 edge=(805,413) cdtN=423 dtN=65535 constraint=False
+MISMATCH tri=1075 slot=0 edge=(418,788) cdtN=418 dtN=65535 constraint=False
+MISMATCH tri=1075 slot=2 edge=(417,418) cdtN=-1 dtN=418 constraint=True
+MISMATCH tri=1087 slot=0 edge=(144,139) cdtN=-1 dtN=1165 constraint=True
+MISMATCH tri=1087 slot=2 edge=(833,144) cdtN=1165 dtN=65535 constraint=False
+MISMATCH tri=1089 slot=0 edge=(136,795) cdtN=1017 dtN=65535 constraint=False
+MISMATCH tri=1089 slot=2 edge=(135,136) cdtN=1471 dtN=1017 constraint=True
+MISMATCH tri=1094 slot=0 edge=(61,58) cdtN=30 dtN=1130 constraint=True
+MISMATCH tri=1094 slot=2 edge=(815,61) cdtN=1130 dtN=65535 constraint=False
+MISMATCH tri=1103 slot=0 edge=(444,445) cdtN=-1 dtN=526 constraint=True
+MISMATCH tri=1103 slot=2 edge=(823,444) cdtN=526 dtN=65535 constraint=False
+MISMATCH tri=1106 slot=0 edge=(446,803) cdtN=1067 dtN=65535 constraint=False
+MISMATCH tri=1106 slot=2 edge=(445,446) cdtN=-1 dtN=1067 constraint=True
+MISMATCH tri=1107 slot=0 edge=(450,804) cdtN=459 dtN=65535 constraint=False
+MISMATCH tri=1107 slot=2 edge=(449,450) cdtN=-1 dtN=459 constraint=True
+MISMATCH tri=1108 slot=0 edge=(423,804) cdtN=1072 dtN=65535 constraint=False
+MISMATCH tri=1108 slot=2 edge=(422,423) cdtN=-1 dtN=1072 constraint=True
+MISMATCH tri=1110 slot=0 edge=(425,805) cdtN=425 dtN=65535 constraint=False
+MISMATCH tri=1110 slot=2 edge=(424,425) cdtN=-1 dtN=425 constraint=True
+MISMATCH tri=1116 slot=0 edge=(381,382) cdtN=-1 dtN=1192 constraint=True
+MISMATCH tri=1116 slot=2 edge=(829,381) cdtN=1192 dtN=65535 constraint=False
+MISMATCH tri=1117 slot=0 edge=(382,383) cdtN=-1 dtN=1116 constraint=True
+MISMATCH tri=1117 slot=2 edge=(829,382) cdtN=1116 dtN=65535 constraint=False
+MISMATCH tri=1119 slot=0 edge=(384,810) cdtN=1046 dtN=65535 constraint=False
+MISMATCH tri=1119 slot=2 edge=(383,384) cdtN=-1 dtN=1046 constraint=True
+MISMATCH tri=1125 slot=0 edge=(148,143) cdtN=-1 dtN=1203 constraint=True
+MISMATCH tri=1125 slot=2 edge=(852,148) cdtN=1203 dtN=65535 constraint=False
+MISMATCH tri=1127 slot=0 edge=(140,814) cdtN=1049 dtN=65535 constraint=False
+MISMATCH tri=1127 slot=2 edge=(139,140) cdtN=694 dtN=1049 constraint=True
+MISMATCH tri=1130 slot=0 edge=(54,61) cdtN=-1 dtN=1093 constraint=True
+MISMATCH tri=1130 slot=2 edge=(815,54) cdtN=1093 dtN=65535 constraint=False
+MISMATCH tri=1132 slot=0 edge=(65,62) cdtN=986 dtN=1168 constraint=True
+MISMATCH tri=1132 slot=2 edge=(834,65) cdtN=1168 dtN=65535 constraint=False
+MISMATCH tri=1144 slot=0 edge=(494,495) cdtN=-1 dtN=1182 constraint=True
+MISMATCH tri=1144 slot=2 edge=(841,494) cdtN=1182 dtN=65535 constraint=False
+MISMATCH tri=1145 slot=0 edge=(497,823) cdtN=420 dtN=65535 constraint=False
+MISMATCH tri=1145 slot=2 edge=(496,497) cdtN=-1 dtN=420 constraint=True
+MISMATCH tri=1147 slot=0 edge=(421,824) cdtN=440 dtN=65535 constraint=False
+MISMATCH tri=1147 slot=2 edge=(420,421) cdtN=-1 dtN=440 constraint=True
+MISMATCH tri=1150 slot=0 edge=(427,825) cdtN=527 dtN=65535 constraint=False
+MISMATCH tri=1150 slot=2 edge=(426,427) cdtN=-1 dtN=527 constraint=True
+MISMATCH tri=1154 slot=0 edge=(380,381) cdtN=-1 dtN=1196 constraint=True
+MISMATCH tri=1154 slot=2 edge=(848,380) cdtN=1196 dtN=65535 constraint=False
+MISMATCH tri=1160 slot=0 edge=(386,830) cdtN=495 dtN=65535 constraint=False
+MISMATCH tri=1160 slot=2 edge=(385,386) cdtN=-1 dtN=495 constraint=True
+MISMATCH tri=1163 slot=0 edge=(152,147) cdtN=-1 dtN=1243 constraint=True
+MISMATCH tri=1163 slot=2 edge=(872,152) cdtN=1243 dtN=65535 constraint=False
+MISMATCH tri=1165 slot=0 edge=(144,833) cdtN=1087 dtN=65535 constraint=False
+MISMATCH tri=1165 slot=2 edge=(143,144) cdtN=1478 dtN=1087 constraint=True
+MISMATCH tri=1168 slot=0 edge=(58,65) cdtN=-1 dtN=1131 constraint=True
+MISMATCH tri=1168 slot=2 edge=(834,58) cdtN=1131 dtN=65535 constraint=False
+MISMATCH tri=1169 slot=0 edge=(62,69) cdtN=-1 dtN=1096 constraint=True
+MISMATCH tri=1169 slot=2 edge=(853,62) cdtN=1096 dtN=65535 constraint=False
+MISMATCH tri=1178 slot=0 edge=(365,860) cdtN=1180 dtN=65535 constraint=False
+MISMATCH tri=1178 slot=2 edge=(364,365) cdtN=-1 dtN=1180 constraint=True
+MISMATCH tri=1180 slot=0 edge=(365,366) cdtN=-1 dtN=1178 constraint=True
+MISMATCH tri=1180 slot=2 edge=(860,365) cdtN=1178 dtN=65535 constraint=False
+MISMATCH tri=1181 slot=0 edge=(366,367) cdtN=-1 dtN=1180 constraint=True
+MISMATCH tri=1181 slot=2 edge=(860,366) cdtN=1180 dtN=65535 constraint=False
+MISMATCH tri=1182 slot=0 edge=(494,841) cdtN=1144 dtN=65535 constraint=False
+MISMATCH tri=1182 slot=2 edge=(493,494) cdtN=-1 dtN=1144 constraint=True
+MISMATCH tri=1196 slot=0 edge=(380,848) cdtN=1154 dtN=65535 constraint=False
+MISMATCH tri=1196 slot=2 edge=(387,380) cdtN=-1 dtN=1154 constraint=True
+MISMATCH tri=1198 slot=0 edge=(479,849) cdtN=504 dtN=65535 constraint=False
+MISMATCH tri=1198 slot=2 edge=(478,479) cdtN=-1 dtN=504 constraint=True
+MISMATCH tri=1201 slot=0 edge=(156,151) cdtN=-1 dtN=1283 constraint=True
+MISMATCH tri=1201 slot=2 edge=(892,156) cdtN=1283 dtN=65535 constraint=False
+MISMATCH tri=1203 slot=0 edge=(148,852) cdtN=1125 dtN=65535 constraint=False
+MISMATCH tri=1203 slot=2 edge=(147,148) cdtN=95 dtN=1125 constraint=True
+MISMATCH tri=1206 slot=0 edge=(66,853) cdtN=1170 dtN=65535 constraint=False
+MISMATCH tri=1206 slot=2 edge=(69,66) cdtN=38 dtN=1170 constraint=True
+MISMATCH tri=1208 slot=0 edge=(73,873) cdtN=1246 dtN=65535 constraint=False
+MISMATCH tri=1208 slot=2 edge=(66,73) cdtN=-1 dtN=1246 constraint=True
+MISMATCH tri=1221 slot=0 edge=(371,861) cdtN=385 dtN=65535 constraint=False
+MISMATCH tri=1221 slot=2 edge=(370,371) cdtN=-1 dtN=385 constraint=True
+MISMATCH tri=1222 slot=0 edge=(473,881) cdtN=1224 dtN=65535 constraint=False
+MISMATCH tri=1222 slot=2 edge=(472,473) cdtN=-1 dtN=1224 constraint=True
+MISMATCH tri=1234 slot=0 edge=(476,477) cdtN=-1 dtN=1276 constraint=True
+MISMATCH tri=1234 slot=2 edge=(869,476) cdtN=1276 dtN=65535 constraint=False
+MISMATCH tri=1238 slot=0 edge=(483,476) cdtN=-1 dtN=1240 constraint=True
+MISMATCH tri=1238 slot=2 edge=(870,483) cdtN=1240 dtN=65535 constraint=False
+MISMATCH tri=1240 slot=0 edge=(483,870) cdtN=1238 dtN=65535 constraint=False
+MISMATCH tri=1240 slot=2 edge=(482,483) cdtN=-1 dtN=1238 constraint=True
+MISMATCH tri=1241 slot=0 edge=(160,155) cdtN=-1 dtN=1323 constraint=True
+MISMATCH tri=1241 slot=2 edge=(912,160) cdtN=1323 dtN=65535 constraint=False
+MISMATCH tri=1243 slot=0 edge=(152,872) cdtN=1163 dtN=65535 constraint=False
+MISMATCH tri=1243 slot=2 edge=(151,152) cdtN=1484 dtN=1163 constraint=True
+MISMATCH tri=1246 slot=0 edge=(70,873) cdtN=150 dtN=65535 constraint=False
+MISMATCH tri=1246 slot=2 edge=(73,70) cdtN=36 dtN=150 constraint=True
+MISMATCH tri=1247 slot=0 edge=(77,893) cdtN=1286 dtN=65535 constraint=False
+MISMATCH tri=1247 slot=2 edge=(70,77) cdtN=-1 dtN=1286 constraint=True
+MISMATCH tri=1258 slot=0 edge=(469,470) cdtN=-1 dtN=486 constraint=True
+MISMATCH tri=1258 slot=2 edge=(900,469) cdtN=486 dtN=65535 constraint=False
+MISMATCH tri=1260 slot=0 edge=(470,471) cdtN=-1 dtN=1258 constraint=True
+MISMATCH tri=1260 slot=2 edge=(900,470) cdtN=1258 dtN=65535 constraint=False
+MISMATCH tri=1281 slot=0 edge=(164,159) cdtN=-1 dtN=1363 constraint=True
+MISMATCH tri=1281 slot=2 edge=(932,164) cdtN=1363 dtN=65535 constraint=False
+MISMATCH tri=1283 slot=0 edge=(156,892) cdtN=1201 dtN=65535 constraint=False
+MISMATCH tri=1283 slot=2 edge=(155,156) cdtN=103 dtN=1201 constraint=True
+MISMATCH tri=1286 slot=0 edge=(74,893) cdtN=85 dtN=65535 constraint=False
+MISMATCH tri=1286 slot=2 edge=(77,74) cdtN=31 dtN=85 constraint=True
+MISMATCH tri=1294 slot=0 edge=(276,273) cdtN=1558 dtN=1373 constraint=True
+MISMATCH tri=1294 slot=2 edge=(937,276) cdtN=1373 dtN=65535 constraint=False
+MISMATCH tri=1298 slot=0 edge=(389,390) cdtN=-1 dtN=1340 constraint=True
+MISMATCH tri=1298 slot=2 edge=(920,389) cdtN=1340 dtN=65535 constraint=False
+MISMATCH tri=1300 slot=0 edge=(391,900) cdtN=387 dtN=65535 constraint=False
+MISMATCH tri=1300 slot=2 edge=(390,391) cdtN=-1 dtN=387 constraint=True
+MISMATCH tri=1301 slot=0 edge=(474,901) cdtN=285 dtN=65535 constraint=False
+MISMATCH tri=1301 slot=2 edge=(473,474) cdtN=-1 dtN=285 constraint=True
+MISMATCH tri=1302 slot=0 edge=(394,901) cdtN=389 dtN=65535 constraint=False
+MISMATCH tri=1302 slot=2 edge=(393,394) cdtN=-1 dtN=389 constraint=True
+MISMATCH tri=1321 slot=0 edge=(168,163) cdtN=-1 dtN=1403 constraint=True
+MISMATCH tri=1321 slot=2 edge=(952,168) cdtN=1403 dtN=65535 constraint=False
+MISMATCH tri=1323 slot=0 edge=(160,912) cdtN=1241 dtN=65535 constraint=False
+MISMATCH tri=1323 slot=2 edge=(159,160) cdtN=1491 dtN=1241 constraint=True
+MISMATCH tri=1326 slot=0 edge=(78,913) cdtN=2 dtN=65535 constraint=False
+MISMATCH tri=1326 slot=2 edge=(81,78) cdtN=27 dtN=2 constraint=True
+MISMATCH tri=1329 slot=0 edge=(261,935) cdtN=1409 dtN=65535 constraint=False
+MISMATCH tri=1329 slot=2 edge=(264,261) cdtN=1551 dtN=1409 constraint=True
+MISMATCH tri=1331 slot=0 edge=(265,936) cdtN=1410 dtN=65535 constraint=False
+MISMATCH tri=1331 slot=2 edge=(268,265) cdtN=1554 dtN=1410 constraint=True
+MISMATCH tri=1333 slot=0 edge=(269,937) cdtN=1412 dtN=65535 constraint=False
+MISMATCH tri=1333 slot=2 edge=(272,269) cdtN=1556 dtN=1412 constraint=True
+MISMATCH tri=1335 slot=0 edge=(280,277) cdtN=1560 dtN=1375 constraint=True
+MISMATCH tri=1335 slot=2 edge=(938,280) cdtN=1375 dtN=65535 constraint=False
+MISMATCH tri=1340 slot=0 edge=(389,920) cdtN=1298 dtN=65535 constraint=False
+MISMATCH tri=1340 slot=2 edge=(388,389) cdtN=-1 dtN=1298 constraint=True
+MISMATCH tri=1342 slot=0 edge=(395,921) cdtN=280 dtN=65535 constraint=False
+MISMATCH tri=1342 slot=2 edge=(394,395) cdtN=-1 dtN=280 constraint=True
+MISMATCH tri=1343 slot=0 edge=(296,293) cdtN=1569 dtN=1383 constraint=True
+MISMATCH tri=1343 slot=2 edge=(942,296) cdtN=1383 dtN=65535 constraint=False
+MISMATCH tri=1345 slot=0 edge=(300,297) cdtN=1571 dtN=1385 constraint=True
+MISMATCH tri=1345 slot=2 edge=(943,300) cdtN=1385 dtN=65535 constraint=False
+MISMATCH tri=1347 slot=0 edge=(304,301) cdtN=1573 dtN=1387 constraint=True
+MISMATCH tri=1347 slot=2 edge=(944,304) cdtN=1387 dtN=65535 constraint=False
+MISMATCH tri=1349 slot=0 edge=(308,305) cdtN=1576 dtN=1389 constraint=True
+MISMATCH tri=1349 slot=2 edge=(945,308) cdtN=1389 dtN=65535 constraint=False
+MISMATCH tri=1351 slot=0 edge=(312,309) cdtN=1577 dtN=1391 constraint=True
+MISMATCH tri=1351 slot=2 edge=(946,312) cdtN=1391 dtN=65535 constraint=False
+MISMATCH tri=1353 slot=0 edge=(316,313) cdtN=1580 dtN=1393 constraint=True
+MISMATCH tri=1353 slot=2 edge=(947,316) cdtN=1393 dtN=65535 constraint=False
+MISMATCH tri=1355 slot=0 edge=(320,317) cdtN=1582 dtN=1395 constraint=True
+MISMATCH tri=1355 slot=2 edge=(948,320) cdtN=1395 dtN=65535 constraint=False
+MISMATCH tri=1357 slot=0 edge=(324,321) cdtN=1584 dtN=1397 constraint=True
+MISMATCH tri=1357 slot=2 edge=(949,324) cdtN=1397 dtN=65535 constraint=False
+MISMATCH tri=1359 slot=0 edge=(328,325) cdtN=1586 dtN=1399 constraint=True
+MISMATCH tri=1359 slot=2 edge=(950,328) cdtN=1399 dtN=65535 constraint=False
+MISMATCH tri=1361 slot=0 edge=(332,329) cdtN=1589 dtN=1401 constraint=True
+MISMATCH tri=1361 slot=2 edge=(951,332) cdtN=1401 dtN=65535 constraint=False
+MISMATCH tri=1363 slot=0 edge=(164,932) cdtN=1281 dtN=65535 constraint=False
+MISMATCH tri=1363 slot=2 edge=(163,164) cdtN=102 dtN=1281 constraint=True
+MISMATCH tri=1365 slot=0 edge=(85,933) cdtN=240 dtN=65535 constraint=False
+MISMATCH tri=1365 slot=2 edge=(78,85) cdtN=-1 dtN=240 constraint=True
+MISMATCH tri=1367 slot=0 edge=(257,934) cdtN=1408 dtN=65535 constraint=False
+MISMATCH tri=1367 slot=2 edge=(260,257) cdtN=1550 dtN=1408 constraint=True
+MISMATCH tri=1368 slot=0 edge=(271,1095) cdtN=251 dtN=65535 constraint=False
+MISMATCH tri=1368 slot=2 edge=(262,271) cdtN=-1 dtN=251 constraint=True
+MISMATCH tri=1381 slot=0 edge=(292,941) cdtN=57 dtN=65535 constraint=False
+MISMATCH tri=1381 slot=2 edge=(285,292) cdtN=-1 dtN=57 constraint=True
+MISMATCH tri=1383 slot=0 edge=(296,942) cdtN=1343 dtN=65535 constraint=False
+MISMATCH tri=1383 slot=2 edge=(289,296) cdtN=-1 dtN=1343 constraint=True
+MISMATCH tri=1385 slot=0 edge=(300,943) cdtN=1345 dtN=65535 constraint=False
+MISMATCH tri=1385 slot=2 edge=(293,300) cdtN=-1 dtN=1345 constraint=True
+MISMATCH tri=1387 slot=0 edge=(304,944) cdtN=1347 dtN=65535 constraint=False
+MISMATCH tri=1387 slot=2 edge=(297,304) cdtN=-1 dtN=1347 constraint=True
+MISMATCH tri=1389 slot=0 edge=(308,945) cdtN=1349 dtN=65535 constraint=False
+MISMATCH tri=1389 slot=2 edge=(301,308) cdtN=-1 dtN=1349 constraint=True
+MISMATCH tri=1391 slot=0 edge=(312,946) cdtN=1351 dtN=65535 constraint=False
+MISMATCH tri=1391 slot=2 edge=(305,312) cdtN=-1 dtN=1351 constraint=True
+MISMATCH tri=1393 slot=0 edge=(316,947) cdtN=1353 dtN=65535 constraint=False
+MISMATCH tri=1393 slot=2 edge=(309,316) cdtN=-1 dtN=1353 constraint=True
+MISMATCH tri=1395 slot=0 edge=(320,948) cdtN=1355 dtN=65535 constraint=False
+MISMATCH tri=1395 slot=2 edge=(313,320) cdtN=-1 dtN=1355 constraint=True
+MISMATCH tri=1397 slot=0 edge=(324,949) cdtN=1357 dtN=65535 constraint=False
+MISMATCH tri=1397 slot=2 edge=(317,324) cdtN=-1 dtN=1357 constraint=True
+MISMATCH tri=1399 slot=0 edge=(328,950) cdtN=1359 dtN=65535 constraint=False
+MISMATCH tri=1399 slot=2 edge=(321,328) cdtN=-1 dtN=1359 constraint=True
+MISMATCH tri=1401 slot=0 edge=(332,951) cdtN=1361 dtN=65535 constraint=False
+MISMATCH tri=1401 slot=2 edge=(325,332) cdtN=-1 dtN=1361 constraint=True
+MISMATCH tri=1403 slot=0 edge=(168,952) cdtN=1321 dtN=65535 constraint=False
+MISMATCH tri=1403 slot=2 edge=(167,168) cdtN=1497 dtN=1321 constraint=True
+MISMATCH tri=1405 slot=0 edge=(263,1096) cdtN=-1 dtN=1 constraint=True
+MISMATCH tri=1405 slot=2 edge=(86,263) cdtN=1 dtN=65535 constraint=False
+MISMATCH tri=1418 slot=0 edge=(299,1109) cdtN=1553 dtN=65535 constraint=False
+MISMATCH tri=1418 slot=2 edge=(290,299) cdtN=-1 dtN=1553 constraint=True
+MISMATCH tri=1424 slot=0 edge=(44,978) cdtN=1437 dtN=65535 constraint=False
+MISMATCH tri=1424 slot=2 edge=(39,44) cdtN=-1 dtN=1437 constraint=True
+MISMATCH tri=1429 slot=0 edge=(52,982) cdtN=1441 dtN=65535 constraint=False
+MISMATCH tri=1429 slot=2 edge=(47,52) cdtN=-1 dtN=1441 constraint=True
+MISMATCH tri=1435 slot=0 edge=(60,986) cdtN=1444 dtN=65535 constraint=False
+MISMATCH tri=1435 slot=2 edge=(55,60) cdtN=-1 dtN=1444 constraint=True
+MISMATCH tri=1440 slot=0 edge=(68,990) cdtN=1448 dtN=65535 constraint=False
+MISMATCH tri=1440 slot=2 edge=(63,68) cdtN=-1 dtN=1448 constraint=True
+MISMATCH tri=1446 slot=0 edge=(76,994) cdtN=1452 dtN=65535 constraint=False
+MISMATCH tri=1446 slot=2 edge=(71,76) cdtN=-1 dtN=1452 constraint=True
+MISMATCH tri=1451 slot=0 edge=(84,998) cdtN=1455 dtN=65535 constraint=False
+MISMATCH tri=1451 slot=2 edge=(79,84) cdtN=-1 dtN=1455 constraint=True
+MISMATCH tri=1456 slot=0 edge=(291,1105) cdtN=1546 dtN=65535 constraint=False
+MISMATCH tri=1456 slot=2 edge=(282,291) cdtN=-1 dtN=1546 constraint=True
+MISMATCH tri=1459 slot=0 edge=(1089,576) cdtN=1541 dtN=65535 constraint=False
+MISMATCH tri=1459 slot=2 edge=(92,1089) cdtN=-1 dtN=1541 constraint=True
+MISMATCH tri=1460 slot=0 edge=(137,130) cdtN=-1 dtN=1483 constraint=True
+MISMATCH tri=1460 slot=2 edge=(1024,137) cdtN=1483 dtN=65535 constraint=False
+MISMATCH tri=1464 slot=0 edge=(141,134) cdtN=-1 dtN=1485 constraint=True
+MISMATCH tri=1464 slot=2 edge=(1026,141) cdtN=1485 dtN=65535 constraint=False
+MISMATCH tri=1469 slot=0 edge=(145,138) cdtN=-1 dtN=1488 constraint=True
+MISMATCH tri=1469 slot=2 edge=(1028,145) cdtN=1488 dtN=65535 constraint=False
+MISMATCH tri=1473 slot=0 edge=(149,142) cdtN=-1 dtN=1489 constraint=True
+MISMATCH tri=1473 slot=2 edge=(1030,149) cdtN=1489 dtN=65535 constraint=False
+MISMATCH tri=1477 slot=0 edge=(153,146) cdtN=-1 dtN=1492 constraint=True
+MISMATCH tri=1477 slot=2 edge=(1032,153) cdtN=1492 dtN=65535 constraint=False
+MISMATCH tri=1482 slot=0 edge=(157,150) cdtN=-1 dtN=1494 constraint=True
+MISMATCH tri=1482 slot=2 edge=(1034,157) cdtN=1494 dtN=65535 constraint=False
+MISMATCH tri=1486 slot=0 edge=(161,154) cdtN=-1 dtN=1496 constraint=True
+MISMATCH tri=1486 slot=2 edge=(1036,161) cdtN=1496 dtN=65535 constraint=False
+MISMATCH tri=1490 slot=0 edge=(165,158) cdtN=-1 dtN=1498 constraint=True
+MISMATCH tri=1490 slot=2 edge=(1038,165) cdtN=1498 dtN=65535 constraint=False
+MISMATCH tri=1495 slot=0 edge=(169,162) cdtN=-1 dtN=1501 constraint=True
+MISMATCH tri=1495 slot=2 edge=(1040,169) cdtN=1501 dtN=65535 constraint=False
+MISMATCH tri=1499 slot=0 edge=(166,1042) cdtN=-1 dtN=319 constraint=True
+MISMATCH tri=1499 slot=2 edge=(337,166) cdtN=319 dtN=65535 constraint=False
+MISMATCH tri=1504 slot=0 edge=(1047,9) cdtN=-1 dtN=45 constraint=True
+MISMATCH tri=1504 slot=2 edge=(556,1047) cdtN=45 dtN=65535 constraint=False
+MISMATCH tri=1507 slot=0 edge=(220,213) cdtN=-1 dtN=198 constraint=True
+MISMATCH tri=1507 slot=2 edge=(1067,220) cdtN=198 dtN=65535 constraint=False
+MISMATCH tri=1511 slot=0 edge=(224,217) cdtN=-1 dtN=203 constraint=True
+MISMATCH tri=1511 slot=2 edge=(1069,224) cdtN=203 dtN=65535 constraint=False
+MISMATCH tri=1515 slot=0 edge=(228,221) cdtN=-1 dtN=210 constraint=True
+MISMATCH tri=1515 slot=2 edge=(1071,228) cdtN=210 dtN=65535 constraint=False
+MISMATCH tri=1518 slot=0 edge=(232,225) cdtN=-1 dtN=206 constraint=True
+MISMATCH tri=1518 slot=2 edge=(1073,232) cdtN=206 dtN=65535 constraint=False
+MISMATCH tri=1522 slot=0 edge=(236,229) cdtN=-1 dtN=537 constraint=True
+MISMATCH tri=1522 slot=2 edge=(1075,236) cdtN=537 dtN=65535 constraint=False
+MISMATCH tri=1526 slot=0 edge=(240,233) cdtN=-1 dtN=193 constraint=True
+MISMATCH tri=1526 slot=2 edge=(1077,240) cdtN=193 dtN=65535 constraint=False
+MISMATCH tri=1529 slot=0 edge=(244,237) cdtN=-1 dtN=199 constraint=True
+MISMATCH tri=1529 slot=2 edge=(1079,244) cdtN=199 dtN=65535 constraint=False
+MISMATCH tri=1533 slot=0 edge=(248,241) cdtN=-1 dtN=205 constraint=True
+MISMATCH tri=1533 slot=2 edge=(1081,248) cdtN=205 dtN=65535 constraint=False
+MISMATCH tri=1549 slot=0 edge=(295,1107) cdtN=278 dtN=65535 constraint=False
+MISMATCH tri=1549 slot=2 edge=(286,295) cdtN=-1 dtN=278 constraint=True
+MISMATCH tri=1555 slot=0 edge=(303,1111) cdtN=269 dtN=65535 constraint=False
+MISMATCH tri=1555 slot=2 edge=(294,303) cdtN=-1 dtN=269 constraint=True
+MISMATCH tri=1562 slot=0 edge=(311,1115) cdtN=1416 dtN=65535 constraint=False
+MISMATCH tri=1562 slot=2 edge=(302,311) cdtN=-1 dtN=1416 constraint=True
+MISMATCH tri=1568 slot=0 edge=(319,1119) cdtN=267 dtN=65535 constraint=False
+MISMATCH tri=1568 slot=2 edge=(310,319) cdtN=-1 dtN=267 constraint=True
+MISMATCH tri=1575 slot=0 edge=(327,1123) cdtN=264 dtN=65535 constraint=False
+MISMATCH tri=1575 slot=2 edge=(318,327) cdtN=-1 dtN=264 constraint=True
+MISMATCH tri=1581 slot=0 edge=(335,1127) cdtN=265 dtN=65535 constraint=False
+MISMATCH tri=1581 slot=2 edge=(326,335) cdtN=-1 dtN=265 constraint=True
+MISMATCH tri=1592 slot=0 edge=(337,1135) cdtN=-1 dtN=319 constraint=True
+MISMATCH tri=1592 slot=2 edge=(170,337) cdtN=319 dtN=65535 constraint=False
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Rollback] Rolling back from 1 to 0 (Input at 0)
+[AddPlayerAction] Processing for User 8420cdcf-d595-ef65-66e7-dff9f98764da on Tick 0. NextEntityId: 92
+[AddPlayerAction] Created Player Entity 92 for User 8420cdcf-d595-ef65-66e7-dff9f98764da at (-13, 4). NextEntityId After: 94
+MISMATCH tri=0 slot=0 edge=(175,1048) cdtN=-1 dtN=161 constraint=True
+MISMATCH tri=0 slot=2 edge=(4,175) cdtN=161 dtN=65535 constraint=False
+MISMATCH tri=1 slot=0 edge=(263,86) cdtN=1405 dtN=65535 constraint=False
+MISMATCH tri=1 slot=2 edge=(259,263) cdtN=-1 dtN=1405 constraint=True
+MISMATCH tri=4 slot=0 edge=(20,966) cdtN=1426 dtN=65535 constraint=False
+MISMATCH tri=4 slot=2 edge=(15,20) cdtN=-1 dtN=1426 constraint=True
+MISMATCH tri=5 slot=0 edge=(87,1094) cdtN=-1 dtN=239 constraint=True
+MISMATCH tri=5 slot=2 edge=(256,87) cdtN=239 dtN=65535 constraint=False
+MISMATCH tri=6 slot=0 edge=(183,174) cdtN=-1 dtN=20 constraint=True
+MISMATCH tri=6 slot=2 edge=(557,183) cdtN=20 dtN=65535 constraint=False
+MISMATCH tri=8 slot=0 edge=(16,964) cdtN=1425 dtN=65535 constraint=False
+MISMATCH tri=8 slot=2 edge=(11,16) cdtN=-1 dtN=1425 constraint=True
+MISMATCH tri=11 slot=0 edge=(28,970) cdtN=1430 dtN=65535 constraint=False
+MISMATCH tri=11 slot=2 edge=(23,28) cdtN=-1 dtN=1430 constraint=True
+MISMATCH tri=12 slot=0 edge=(24,968) cdtN=1428 dtN=65535 constraint=False
+MISMATCH tri=12 slot=2 edge=(19,24) cdtN=-1 dtN=1428 constraint=True
+MISMATCH tri=13 slot=0 edge=(242,247) cdtN=94 dtN=201 constraint=True
+MISMATCH tri=13 slot=2 edge=(573,242) cdtN=201 dtN=65535 constraint=False
+MISMATCH tri=15 slot=0 edge=(83,256) cdtN=239 dtN=65535 constraint=False
+MISMATCH tri=15 slot=2 edge=(1000,83) cdtN=-1 dtN=239 constraint=True
+MISMATCH tri=16 slot=0 edge=(191,182) cdtN=-1 dtN=624 constraint=True
+MISMATCH tri=16 slot=2 edge=(559,191) cdtN=624 dtN=65535 constraint=False
+MISMATCH tri=18 slot=0 edge=(64,988) cdtN=1447 dtN=65535 constraint=False
+MISMATCH tri=18 slot=2 edge=(59,64) cdtN=-1 dtN=1447 constraint=True
+MISMATCH tri=19 slot=0 edge=(178,183) cdtN=22 dtN=88 constraint=True
+MISMATCH tri=19 slot=2 edge=(558,178) cdtN=88 dtN=65535 constraint=False
+MISMATCH tri=21 slot=0 edge=(72,992) cdtN=1450 dtN=65535 constraint=False
+MISMATCH tri=21 slot=2 edge=(67,72) cdtN=-1 dtN=1450 constraint=True
+MISMATCH tri=24 slot=0 edge=(48,980) cdtN=1439 dtN=65535 constraint=False
+MISMATCH tri=24 slot=2 edge=(43,48) cdtN=-1 dtN=1439 constraint=True
+MISMATCH tri=25 slot=0 edge=(56,984) cdtN=1443 dtN=65535 constraint=False
+MISMATCH tri=25 slot=2 edge=(51,56) cdtN=-1 dtN=1443 constraint=True
+MISMATCH tri=32 slot=0 edge=(1092,953) cdtN=288 dtN=65535 constraint=False
+MISMATCH tri=32 slot=2 edge=(82,1092) cdtN=-1 dtN=288 constraint=True
+MISMATCH tri=34 slot=0 edge=(207,198) cdtN=-1 dtN=179 constraint=True
+MISMATCH tri=34 slot=2 edge=(563,207) cdtN=179 dtN=65535 constraint=False
+MISMATCH tri=45 slot=0 edge=(179,1047) cdtN=-1 dtN=9 constraint=True
+MISMATCH tri=45 slot=2 edge=(556,179) cdtN=9 dtN=65535 constraint=False
+MISMATCH tri=47 slot=0 edge=(46,53) cdtN=-1 dtN=324 constraint=True
+MISMATCH tri=47 slot=2 edge=(777,46) cdtN=324 dtN=65535 constraint=False
+MISMATCH tri=48 slot=0 edge=(50,57) cdtN=-1 dtN=1056 constraint=True
+MISMATCH tri=48 slot=2 edge=(796,50) cdtN=1056 dtN=65535 constraint=False
+MISMATCH tri=54 slot=0 edge=(14,21) cdtN=-1 dtN=740 constraint=True
+MISMATCH tri=54 slot=2 edge=(619,14) cdtN=740 dtN=65535 constraint=False
+MISMATCH tri=55 slot=0 edge=(6,13) cdtN=-1 dtN=659 constraint=True
+MISMATCH tri=55 slot=2 edge=(577,6) cdtN=659 dtN=65535 constraint=False
+MISMATCH tri=56 slot=0 edge=(10,17) cdtN=-1 dtN=700 constraint=True
+MISMATCH tri=56 slot=2 edge=(598,10) cdtN=700 dtN=65535 constraint=False
+MISMATCH tri=57 slot=0 edge=(292,289) cdtN=1567 dtN=1381 constraint=True
+MISMATCH tri=57 slot=2 edge=(941,292) cdtN=1381 dtN=65535 constraint=False
+MISMATCH tri=65 slot=0 edge=(18,25) cdtN=-1 dtN=782 constraint=True
+MISMATCH tri=65 slot=2 edge=(640,18) cdtN=782 dtN=65535 constraint=False
+MISMATCH tri=68 slot=0 edge=(30,37) cdtN=-1 dtN=905 constraint=True
+MISMATCH tri=68 slot=2 edge=(703,30) cdtN=905 dtN=65535 constraint=False
+MISMATCH tri=69 slot=0 edge=(22,29) cdtN=-1 dtN=823 constraint=True
+MISMATCH tri=69 slot=2 edge=(661,22) cdtN=823 dtN=65535 constraint=False
+MISMATCH tri=70 slot=0 edge=(26,33) cdtN=-1 dtN=864 constraint=True
+MISMATCH tri=70 slot=2 edge=(682,26) cdtN=864 dtN=65535 constraint=False
+MISMATCH tri=79 slot=0 edge=(34,41) cdtN=-1 dtN=947 constraint=True
+MISMATCH tri=79 slot=2 edge=(724,34) cdtN=947 dtN=65535 constraint=False
+MISMATCH tri=83 slot=0 edge=(38,45) cdtN=-1 dtN=985 constraint=True
+MISMATCH tri=83 slot=2 edge=(743,38) cdtN=985 dtN=65535 constraint=False
+MISMATCH tri=84 slot=0 edge=(42,49) cdtN=-1 dtN=325 constraint=True
+MISMATCH tri=84 slot=2 edge=(761,42) cdtN=325 dtN=65535 constraint=False
+MISMATCH tri=88 slot=0 edge=(187,178) cdtN=-1 dtN=28 constraint=True
+MISMATCH tri=88 slot=2 edge=(558,187) cdtN=28 dtN=65535 constraint=False
+MISMATCH tri=92 slot=0 edge=(120,115) cdtN=-1 dtN=946 constraint=True
+MISMATCH tri=92 slot=2 edge=(723,120) cdtN=946 dtN=65535 constraint=False
+MISMATCH tri=93 slot=0 edge=(93,89) cdtN=-1 dtN=227 constraint=True
+MISMATCH tri=93 slot=2 edge=(254,93) cdtN=227 dtN=65535 constraint=False
+MISMATCH tri=97 slot=0 edge=(29,26) cdtN=1054 dtN=69 constraint=True
+MISMATCH tri=97 slot=2 edge=(661,29) cdtN=69 dtN=65535 constraint=False
+MISMATCH tri=101 slot=0 edge=(116,111) cdtN=-1 dtN=904 constraint=True
+MISMATCH tri=101 slot=2 edge=(702,116) cdtN=904 dtN=65535 constraint=False
+MISMATCH tri=107 slot=0 edge=(247,238) cdtN=-1 dtN=13 constraint=True
+MISMATCH tri=107 slot=2 edge=(573,247) cdtN=13 dtN=65535 constraint=False
+MISMATCH tri=110 slot=0 edge=(112,107) cdtN=-1 dtN=863 constraint=True
+MISMATCH tri=110 slot=2 edge=(681,112) cdtN=863 dtN=65535 constraint=False
+MISMATCH tri=113 slot=0 edge=(104,99) cdtN=-1 dtN=781 constraint=True
+MISMATCH tri=113 slot=2 edge=(639,104) cdtN=781 dtN=65535 constraint=False
+MISMATCH tri=117 slot=0 edge=(346,347) cdtN=-1 dtN=1036 constraint=True
+MISMATCH tri=117 slot=2 edge=(768,346) cdtN=1036 dtN=65535 constraint=False
+MISMATCH tri=118 slot=0 edge=(100,95) cdtN=-1 dtN=739 constraint=True
+MISMATCH tri=118 slot=2 edge=(618,100) cdtN=739 dtN=65535 constraint=False
+MISMATCH tri=122 slot=0 edge=(96,91) cdtN=-1 dtN=699 constraint=True
+MISMATCH tri=122 slot=2 edge=(597,96) cdtN=699 dtN=65535 constraint=False
+MISMATCH tri=125 slot=0 edge=(57,54) cdtN=37 dtN=48 constraint=True
+MISMATCH tri=125 slot=2 edge=(796,57) cdtN=48 dtN=65535 constraint=False
+MISMATCH tri=131 slot=0 edge=(133,126) cdtN=-1 dtN=1481 constraint=True
+MISMATCH tri=131 slot=2 edge=(1022,133) cdtN=1481 dtN=65535 constraint=False
+MISMATCH tri=132 slot=0 edge=(230,235) cdtN=1524 dtN=646 constraint=True
+MISMATCH tri=132 slot=2 edge=(570,230) cdtN=646 dtN=65535 constraint=False
+MISMATCH tri=135 slot=0 edge=(125,118) cdtN=-1 dtN=1476 constraint=True
+MISMATCH tri=135 slot=2 edge=(1018,125) cdtN=1476 dtN=65535 constraint=False
+MISMATCH tri=136 slot=0 edge=(481,482) cdtN=-1 dtN=505 constraint=True
+MISMATCH tri=136 slot=2 edge=(850,481) cdtN=505 dtN=65535 constraint=False
+MISMATCH tri=137 slot=0 edge=(129,122) cdtN=-1 dtN=1479 constraint=True
+MISMATCH tri=137 slot=2 edge=(1020,129) cdtN=1479 dtN=65535 constraint=False
+MISMATCH tri=139 slot=0 edge=(117,110) cdtN=-1 dtN=1472 constraint=True
+MISMATCH tri=139 slot=2 edge=(1014,117) cdtN=1472 dtN=65535 constraint=False
+MISMATCH tri=141 slot=0 edge=(121,114) cdtN=-1 dtN=1475 constraint=True
+MISMATCH tri=141 slot=2 edge=(1016,121) cdtN=1475 dtN=65535 constraint=False
+MISMATCH tri=143 slot=0 edge=(109,102) cdtN=-1 dtN=1468 constraint=True
+MISMATCH tri=143 slot=2 edge=(1010,109) cdtN=1468 dtN=65535 constraint=False
+MISMATCH tri=145 slot=0 edge=(113,106) cdtN=-1 dtN=1470 constraint=True
+MISMATCH tri=145 slot=2 edge=(1012,113) cdtN=1470 dtN=65535 constraint=False
+MISMATCH tri=147 slot=0 edge=(101,94) cdtN=-1 dtN=1463 constraint=True
+MISMATCH tri=147 slot=2 edge=(1006,101) cdtN=1463 dtN=65535 constraint=False
+MISMATCH tri=149 slot=0 edge=(105,98) cdtN=-1 dtN=1466 constraint=True
+MISMATCH tri=149 slot=2 edge=(1008,105) cdtN=1466 dtN=65535 constraint=False
+MISMATCH tri=152 slot=0 edge=(97,90) cdtN=-1 dtN=1462 constraint=True
+MISMATCH tri=152 slot=2 edge=(1003,97) cdtN=1462 dtN=65535 constraint=False
+MISMATCH tri=153 slot=0 edge=(477,478) cdtN=-1 dtN=1234 constraint=True
+MISMATCH tri=153 slot=2 edge=(869,477) cdtN=1234 dtN=65535 constraint=False
+MISMATCH tri=156 slot=0 edge=(81,913) cdtN=1326 dtN=65535 constraint=False
+MISMATCH tri=156 slot=2 edge=(74,81) cdtN=-1 dtN=1326 constraint=True
+MISMATCH tri=160 slot=0 edge=(199,190) cdtN=-1 dtN=476 constraint=True
+MISMATCH tri=160 slot=2 edge=(561,199) cdtN=476 dtN=65535 constraint=False
+MISMATCH tri=161 slot=0 edge=(4,8) cdtN=-1 dtN=0 constraint=True
+MISMATCH tri=161 slot=2 edge=(175,4) cdtN=0 dtN=65535 constraint=False
+MISMATCH tri=162 slot=0 edge=(176,172) cdtN=-1 dtN=208 constraint=True
+MISMATCH tri=162 slot=2 edge=(5,176) cdtN=208 dtN=65535 constraint=False
+MISMATCH tri=165 slot=0 edge=(174,179) cdtN=10 dtN=6 constraint=True
+MISMATCH tri=165 slot=2 edge=(557,174) cdtN=6 dtN=65535 constraint=False
+MISMATCH tri=168 slot=0 edge=(195,186) cdtN=-1 dtN=475 constraint=True
+MISMATCH tri=168 slot=2 edge=(560,195) cdtN=475 dtN=65535 constraint=False
+MISMATCH tri=170 slot=0 edge=(219,210) cdtN=-1 dtN=339 constraint=True
+MISMATCH tri=170 slot=2 edge=(566,219) cdtN=339 dtN=65535 constraint=False
+MISMATCH tri=172 slot=0 edge=(203,194) cdtN=-1 dtN=464 constraint=True
+MISMATCH tri=172 slot=2 edge=(562,203) cdtN=464 dtN=65535 constraint=False
+MISMATCH tri=176 slot=0 edge=(215,206) cdtN=-1 dtN=467 constraint=True
+MISMATCH tri=176 slot=2 edge=(565,215) cdtN=467 dtN=65535 constraint=False
+MISMATCH tri=177 slot=0 edge=(211,202) cdtN=-1 dtN=443 constraint=True
+MISMATCH tri=177 slot=2 edge=(564,211) cdtN=443 dtN=65535 constraint=False
+MISMATCH tri=178 slot=0 edge=(434,677) cdtN=553 dtN=65535 constraint=False
+MISMATCH tri=178 slot=2 edge=(433,434) cdtN=-1 dtN=553 constraint=True
+MISMATCH tri=179 slot=0 edge=(207,563) cdtN=34 dtN=65535 constraint=False
+MISMATCH tri=179 slot=2 edge=(202,207) cdtN=196 dtN=34 constraint=True
+MISMATCH tri=184 slot=0 edge=(428,697) cdtN=548 dtN=65535 constraint=False
+MISMATCH tri=184 slot=2 edge=(435,428) cdtN=-1 dtN=548 constraint=True
+MISMATCH tri=185 slot=0 edge=(223,214) cdtN=-1 dtN=538 constraint=True
+MISMATCH tri=185 slot=2 edge=(567,223) cdtN=538 dtN=65535 constraint=False
+MISMATCH tri=191 slot=0 edge=(227,218) cdtN=-1 dtN=480 constraint=True
+MISMATCH tri=191 slot=2 edge=(568,227) cdtN=480 dtN=65535 constraint=False
+MISMATCH tri=194 slot=0 edge=(37,34) cdtN=41 dtN=68 constraint=True
+MISMATCH tri=194 slot=2 edge=(703,37) cdtN=68 dtN=65535 constraint=False
+MISMATCH tri=207 slot=0 edge=(255,246) cdtN=-1 dtN=655 constraint=True
+MISMATCH tri=207 slot=2 edge=(575,255) cdtN=655 dtN=65535 constraint=False
+MISMATCH tri=208 slot=0 edge=(176,5) cdtN=162 dtN=65535 constraint=False
+MISMATCH tri=208 slot=2 edge=(1050,176) cdtN=-1 dtN=162 constraint=True
+MISMATCH tri=213 slot=0 edge=(184,177) cdtN=-1 dtN=1458 constraint=True
+MISMATCH tri=213 slot=2 edge=(1049,184) cdtN=1458 dtN=65535 constraint=False
+MISMATCH tri=215 slot=0 edge=(515,719) cdtN=166 dtN=65535 constraint=False
+MISMATCH tri=215 slot=2 edge=(514,515) cdtN=-1 dtN=166 constraint=True
+MISMATCH tri=219 slot=0 edge=(192,185) cdtN=-1 dtN=214 constraint=True
+MISMATCH tri=219 slot=2 edge=(1053,192) cdtN=214 dtN=65535 constraint=False
+MISMATCH tri=222 slot=0 edge=(200,193) cdtN=-1 dtN=217 constraint=True
+MISMATCH tri=222 slot=2 edge=(1057,200) cdtN=217 dtN=65535 constraint=False
+MISMATCH tri=223 slot=0 edge=(180,173) cdtN=-1 dtN=1502 constraint=True
+MISMATCH tri=223 slot=2 edge=(1045,180) cdtN=1502 dtN=65535 constraint=False
+MISMATCH tri=224 slot=0 edge=(91,92) cdtN=129 dtN=698 constraint=True
+MISMATCH tri=224 slot=2 edge=(596,91) cdtN=698 dtN=65535 constraint=False
+MISMATCH tri=225 slot=0 edge=(208,201) cdtN=-1 dtN=209 constraint=True
+MISMATCH tri=225 slot=2 edge=(1061,208) cdtN=209 dtN=65535 constraint=False
+MISMATCH tri=226 slot=0 edge=(188,181) cdtN=-1 dtN=232 constraint=True
+MISMATCH tri=226 slot=2 edge=(1051,188) cdtN=232 dtN=65535 constraint=False
+MISMATCH tri=228 slot=0 edge=(216,209) cdtN=-1 dtN=211 constraint=True
+MISMATCH tri=228 slot=2 edge=(1065,216) cdtN=211 dtN=65535 constraint=False
+MISMATCH tri=230 slot=0 edge=(196,189) cdtN=-1 dtN=220 constraint=True
+MISMATCH tri=230 slot=2 edge=(1055,196) cdtN=220 dtN=65535 constraint=False
+MISMATCH tri=231 slot=0 edge=(249,88) cdtN=478 dtN=65535 constraint=False
+MISMATCH tri=231 slot=2 edge=(253,249) cdtN=-1 dtN=478 constraint=True
+MISMATCH tri=234 slot=0 edge=(204,197) cdtN=-1 dtN=202 constraint=True
+MISMATCH tri=234 slot=2 edge=(1059,204) cdtN=202 dtN=65535 constraint=False
+MISMATCH tri=238 slot=0 edge=(212,205) cdtN=-1 dtN=216 constraint=True
+MISMATCH tri=238 slot=2 edge=(1063,212) cdtN=216 dtN=65535 constraint=False
+MISMATCH tri=239 slot=0 edge=(83,87) cdtN=-1 dtN=15 constraint=True
+MISMATCH tri=239 slot=2 edge=(256,83) cdtN=15 dtN=65535 constraint=False
+MISMATCH tri=240 slot=0 edge=(85,82) cdtN=948 dtN=1365 constraint=True
+MISMATCH tri=240 slot=2 edge=(933,85) cdtN=1365 dtN=65535 constraint=False
+MISMATCH tri=241 slot=0 edge=(36,974) cdtN=1433 dtN=65535 constraint=False
+MISMATCH tri=241 slot=2 edge=(31,36) cdtN=-1 dtN=1433 constraint=True
+MISMATCH tri=243 slot=0 edge=(267,1093) cdtN=86 dtN=65535 constraint=False
+MISMATCH tri=243 slot=2 edge=(258,267) cdtN=-1 dtN=86 constraint=True
+MISMATCH tri=246 slot=0 edge=(275,1097) cdtN=250 dtN=65535 constraint=False
+MISMATCH tri=246 slot=2 edge=(266,275) cdtN=-1 dtN=250 constraint=True
+MISMATCH tri=255 slot=0 edge=(334,171) cdtN=321 dtN=65535 constraint=False
+MISMATCH tri=255 slot=2 edge=(1131,334) cdtN=-1 dtN=321 constraint=True
+MISMATCH tri=256 slot=0 edge=(283,1101) cdtN=1411 dtN=65535 constraint=False
+MISMATCH tri=256 slot=2 edge=(274,283) cdtN=-1 dtN=1411 constraint=True
+MISMATCH tri=257 slot=0 edge=(279,1099) cdtN=253 dtN=65535 constraint=False
+MISMATCH tri=257 slot=2 edge=(270,279) cdtN=-1 dtN=253 constraint=True
+MISMATCH tri=259 slot=0 edge=(287,1103) cdtN=275 dtN=65535 constraint=False
+MISMATCH tri=259 slot=2 edge=(278,287) cdtN=-1 dtN=275 constraint=True
+MISMATCH tri=261 slot=0 edge=(331,1125) cdtN=1579 dtN=65535 constraint=False
+MISMATCH tri=261 slot=2 edge=(322,331) cdtN=-1 dtN=1579 constraint=True
+MISMATCH tri=270 slot=0 edge=(315,1117) cdtN=1566 dtN=65535 constraint=False
+MISMATCH tri=270 slot=2 edge=(306,315) cdtN=-1 dtN=1566 constraint=True
+MISMATCH tri=271 slot=0 edge=(323,1121) cdtN=1572 dtN=65535 constraint=False
+MISMATCH tri=271 slot=2 edge=(314,323) cdtN=-1 dtN=1572 constraint=True
+MISMATCH tri=273 slot=0 edge=(307,1113) cdtN=1559 dtN=65535 constraint=False
+MISMATCH tri=273 slot=2 edge=(298,307) cdtN=-1 dtN=1559 constraint=True
+MISMATCH tri=277 slot=0 edge=(288,285) cdtN=1564 dtN=1379 constraint=True
+MISMATCH tri=277 slot=2 edge=(940,288) cdtN=1379 dtN=65535 constraint=False
+MISMATCH tri=280 slot=0 edge=(395,388) cdtN=-1 dtN=1342 constraint=True
+MISMATCH tri=280 slot=2 edge=(921,395) cdtN=1342 dtN=65535 constraint=False
+MISMATCH tri=285 slot=0 edge=(474,475) cdtN=-1 dtN=1301 constraint=True
+MISMATCH tri=285 slot=2 edge=(901,474) cdtN=1301 dtN=65535 constraint=False
+MISMATCH tri=288 slot=0 edge=(1092,260) cdtN=-1 dtN=32 constraint=True
+MISMATCH tri=288 slot=2 edge=(953,1092) cdtN=32 dtN=65535 constraint=False
+MISMATCH tri=290 slot=0 edge=(257,264) cdtN=-1 dtN=1408 constraint=True
+MISMATCH tri=290 slot=2 edge=(954,257) cdtN=1408 dtN=65535 constraint=False
+MISMATCH tri=296 slot=0 edge=(354,355) cdtN=-1 dtN=1039 constraint=True
+MISMATCH tri=296 slot=2 edge=(770,354) cdtN=1039 dtN=65535 constraint=False
+MISMATCH tri=297 slot=0 edge=(269,276) cdtN=-1 dtN=1412 constraint=True
+MISMATCH tri=297 slot=2 edge=(957,269) cdtN=1412 dtN=65535 constraint=False
+MISMATCH tri=298 slot=0 edge=(265,272) cdtN=-1 dtN=1410 constraint=True
+MISMATCH tri=298 slot=2 edge=(956,265) cdtN=1410 dtN=65535 constraint=False
+MISMATCH tri=299 slot=0 edge=(261,268) cdtN=-1 dtN=1409 constraint=True
+MISMATCH tri=299 slot=2 edge=(955,261) cdtN=1409 dtN=65535 constraint=False
+MISMATCH tri=304 slot=0 edge=(273,280) cdtN=-1 dtN=1414 constraint=True
+MISMATCH tri=304 slot=2 edge=(958,273) cdtN=1414 dtN=65535 constraint=False
+MISMATCH tri=311 slot=0 edge=(281,288) cdtN=-1 dtN=1417 constraint=True
+MISMATCH tri=311 slot=2 edge=(960,281) cdtN=1417 dtN=65535 constraint=False
+MISMATCH tri=312 slot=0 edge=(277,284) cdtN=-1 dtN=1415 constraint=True
+MISMATCH tri=312 slot=2 edge=(959,277) cdtN=1415 dtN=65535 constraint=False
+MISMATCH tri=317 slot=0 edge=(336,333) cdtN=1593 dtN=368 constraint=True
+MISMATCH tri=317 slot=2 edge=(952,336) cdtN=368 dtN=65535 constraint=False
+MISMATCH tri=319 slot=0 edge=(170,166) cdtN=-1 dtN=1592 constraint=True
+MISMATCH tri=319 slot=2 edge=(337,170) cdtN=1592 dtN=65535 constraint=False
+MISMATCH tri=320 slot=0 edge=(1091,1) cdtN=-1 dtN=1545 constraint=True
+MISMATCH tri=320 slot=2 edge=(1002,1091) cdtN=1545 dtN=65535 constraint=False
+MISMATCH tri=321 slot=0 edge=(334,338) cdtN=-1 dtN=255 constraint=True
+MISMATCH tri=321 slot=2 edge=(171,334) cdtN=255 dtN=65535 constraint=False
+MISMATCH tri=322 slot=0 edge=(239,230) cdtN=-1 dtN=337 constraint=True
+MISMATCH tri=322 slot=2 edge=(571,239) cdtN=337 dtN=65535 constraint=False
+MISMATCH tri=323 slot=0 edge=(45,42) cdtN=1022 dtN=83 constraint=True
+MISMATCH tri=323 slot=2 edge=(743,45) cdtN=83 dtN=65535 constraint=False
+MISMATCH tri=326 slot=0 edge=(542,543) cdtN=-1 dtN=594 constraint=True
+MISMATCH tri=326 slot=2 edge=(356,542) cdtN=594 dtN=65535 constraint=False
+MISMATCH tri=330 slot=0 edge=(238,243) cdtN=1530 dtN=192 constraint=True
+MISMATCH tri=330 slot=2 edge=(572,238) cdtN=192 dtN=65535 constraint=False
+MISMATCH tri=331 slot=0 edge=(344,345) cdtN=-1 dtN=1003 constraint=True
+MISMATCH tri=331 slot=2 edge=(752,344) cdtN=1003 dtN=65535 constraint=False
+MISMATCH tri=332 slot=0 edge=(348,349) cdtN=-1 dtN=1077 constraint=True
+MISMATCH tri=332 slot=2 edge=(788,348) cdtN=1077 dtN=65535 constraint=False
+MISMATCH tri=333 slot=0 edge=(243,234) cdtN=-1 dtN=330 constraint=True
+MISMATCH tri=333 slot=2 edge=(572,243) cdtN=330 dtN=65535 constraint=False
+MISMATCH tri=334 slot=0 edge=(546,547) cdtN=-1 dtN=601 constraint=True
+MISMATCH tri=334 slot=2 edge=(769,546) cdtN=601 dtN=65535 constraint=False
+MISMATCH tri=337 slot=0 edge=(234,239) cdtN=188 dtN=648 constraint=True
+MISMATCH tri=337 slot=2 edge=(571,234) cdtN=648 dtN=65535 constraint=False
+MISMATCH tri=339 slot=0 edge=(219,566) cdtN=170 dtN=65535 constraint=False
+MISMATCH tri=339 slot=2 edge=(214,219) cdtN=1513 dtN=170 constraint=True
+MISMATCH tri=341 slot=0 edge=(545,753) cdtN=1005 dtN=65535 constraint=False
+MISMATCH tri=341 slot=2 edge=(544,545) cdtN=-1 dtN=1005 constraint=True
+MISMATCH tri=343 slot=0 edge=(360,361) cdtN=-1 dtN=967 constraint=True
+MISMATCH tri=343 slot=2 edge=(734,360) cdtN=967 dtN=65535 constraint=False
+MISMATCH tri=344 slot=0 edge=(362,363) cdtN=-1 dtN=401 constraint=True
+MISMATCH tri=344 slot=2 edge=(405,362) cdtN=401 dtN=65535 constraint=False
+MISMATCH tri=346 slot=0 edge=(53,50) cdtN=40 dtN=47 constraint=True
+MISMATCH tri=346 slot=2 edge=(777,53) cdtN=47 dtN=65535 constraint=False
+MISMATCH tri=349 slot=0 edge=(49,46) cdtN=42 dtN=84 constraint=True
+MISMATCH tri=349 slot=2 edge=(761,49) cdtN=84 dtN=65535 constraint=False
+MISMATCH tri=351 slot=0 edge=(442,443) cdtN=-1 dtN=583 constraint=True
+MISMATCH tri=351 slot=2 edge=(534,442) cdtN=583 dtN=65535 constraint=False
+MISMATCH tri=354 slot=0 edge=(368,369) cdtN=-1 dtN=521 constraint=True
+MISMATCH tri=354 slot=2 edge=(492,368) cdtN=521 dtN=65535 constraint=False
+MISMATCH tri=356 slot=0 edge=(412,806) cdtN=421 dtN=65535 constraint=False
+MISMATCH tri=356 slot=2 edge=(419,412) cdtN=-1 dtN=421 constraint=True
+MISMATCH tri=357 slot=0 edge=(355,348) cdtN=-1 dtN=173 constraint=True
+MISMATCH tri=357 slot=2 edge=(789,355) cdtN=173 dtN=65535 constraint=False
+MISMATCH tri=358 slot=0 edge=(374,768) cdtN=590 dtN=65535 constraint=False
+MISMATCH tri=358 slot=2 edge=(373,374) cdtN=-1 dtN=590 constraint=True
+MISMATCH tri=362 slot=0 edge=(375,376) cdtN=-1 dtN=329 constraint=True
+MISMATCH tri=362 slot=2 edge=(540,375) cdtN=329 dtN=65535 constraint=False
+MISMATCH tri=364 slot=0 edge=(349,350) cdtN=-1 dtN=366 constraint=True
+MISMATCH tri=364 slot=2 edge=(378,349) cdtN=366 dtN=65535 constraint=False
+MISMATCH tri=365 slot=0 edge=(377,378) cdtN=-1 dtN=1037 constraint=True
+MISMATCH tri=365 slot=2 edge=(769,377) cdtN=1037 dtN=65535 constraint=False
+MISMATCH tri=368 slot=0 edge=(336,952) cdtN=317 dtN=65535 constraint=False
+MISMATCH tri=368 slot=2 edge=(329,336) cdtN=-1 dtN=317 constraint=True
+MISMATCH tri=370 slot=0 edge=(492,369) cdtN=354 dtN=65535 constraint=False
+MISMATCH tri=370 slot=2 edge=(499,492) cdtN=-1 dtN=354 constraint=True
+MISMATCH tri=377 slot=0 edge=(508,718) cdtN=933 dtN=65535 constraint=False
+MISMATCH tri=377 slot=2 edge=(515,508) cdtN=-1 dtN=933 constraint=True
+MISMATCH tri=380 slot=0 edge=(392,393) cdtN=-1 dtN=484 constraint=True
+MISMATCH tri=380 slot=2 edge=(468,392) cdtN=484 dtN=65535 constraint=False
+MISMATCH tri=381 slot=0 edge=(284,281) cdtN=1563 dtN=1377 constraint=True
+MISMATCH tri=381 slot=2 edge=(939,284) cdtN=1377 dtN=65535 constraint=False
+MISMATCH tri=385 slot=0 edge=(371,364) cdtN=-1 dtN=1221 constraint=True
+MISMATCH tri=385 slot=2 edge=(861,371) cdtN=1221 dtN=65535 constraint=False
+MISMATCH tri=387 slot=0 edge=(391,392) cdtN=-1 dtN=1300 constraint=True
+MISMATCH tri=387 slot=2 edge=(900,391) cdtN=1300 dtN=65535 constraint=False
+MISMATCH tri=390 slot=0 edge=(404,405) cdtN=-1 dtN=361 constraint=True
+MISMATCH tri=390 slot=2 edge=(544,404) cdtN=361 dtN=65535 constraint=False
+MISMATCH tri=398 slot=0 edge=(512,513) cdtN=-1 dtN=551 constraint=True
+MISMATCH tri=398 slot=2 edge=(697,512) cdtN=551 dtN=65535 constraint=False
+MISMATCH tri=400 slot=0 edge=(361,362) cdtN=-1 dtN=403 constraint=True
+MISMATCH tri=400 slot=2 edge=(406,361) cdtN=403 dtN=65535 constraint=False
+MISMATCH tri=401 slot=0 edge=(405,406) cdtN=-1 dtN=344 constraint=True
+MISMATCH tri=401 slot=2 edge=(362,405) cdtN=344 dtN=65535 constraint=False
+MISMATCH tri=406 slot=0 edge=(409,410) cdtN=-1 dtN=970 constraint=True
+MISMATCH tri=406 slot=2 edge=(735,409) cdtN=970 dtN=65535 constraint=False
+MISMATCH tri=408 slot=0 edge=(419,807) cdtN=1113 dtN=65535 constraint=False
+MISMATCH tri=408 slot=2 edge=(418,419) cdtN=-1 dtN=1113 constraint=True
+MISMATCH tri=411 slot=0 edge=(372,373) cdtN=-1 dtN=415 constraint=True
+MISMATCH tri=411 slot=2 edge=(788,372) cdtN=415 dtN=65535 constraint=False
+MISMATCH tri=412 slot=0 edge=(416,768) cdtN=414 dtN=65535 constraint=False
+MISMATCH tri=412 slot=2 edge=(415,416) cdtN=-1 dtN=414 constraint=True
+MISMATCH tri=413 slot=0 edge=(414,415) cdtN=-1 dtN=1109 constraint=True
+MISMATCH tri=413 slot=2 edge=(787,414) cdtN=1109 dtN=65535 constraint=False
+MISMATCH tri=415 slot=0 edge=(379,372) cdtN=-1 dtN=409 constraint=True
+MISMATCH tri=415 slot=2 edge=(788,379) cdtN=409 dtN=65535 constraint=False
+MISMATCH tri=416 slot=0 edge=(416,417) cdtN=-1 dtN=414 constraint=True
+MISMATCH tri=416 slot=2 edge=(373,416) cdtN=414 dtN=65535 constraint=False
+MISMATCH tri=421 slot=0 edge=(412,413) cdtN=-1 dtN=356 constraint=True
+MISMATCH tri=421 slot=2 edge=(806,412) cdtN=356 dtN=65535 constraint=False
+MISMATCH tri=425 slot=0 edge=(425,426) cdtN=-1 dtN=1110 constraint=True
+MISMATCH tri=425 slot=2 edge=(805,425) cdtN=1110 dtN=65535 constraint=False
+MISMATCH tri=427 slot=0 edge=(509,510) cdtN=-1 dtN=397 constraint=True
+MISMATCH tri=427 slot=2 edge=(717,509) cdtN=397 dtN=65535 constraint=False
+MISMATCH tri=429 slot=0 edge=(231,222) cdtN=-1 dtN=431 constraint=True
+MISMATCH tri=429 slot=2 edge=(569,231) cdtN=431 dtN=65535 constraint=False
+MISMATCH tri=430 slot=0 edge=(235,226) cdtN=-1 dtN=132 constraint=True
+MISMATCH tri=430 slot=2 edge=(570,235) cdtN=132 dtN=65535 constraint=False
+MISMATCH tri=431 slot=0 edge=(226,231) cdtN=535 dtN=644 constraint=True
+MISMATCH tri=431 slot=2 edge=(569,226) cdtN=644 dtN=65535 constraint=False
+MISMATCH tri=437 slot=0 edge=(432,433) cdtN=-1 dtN=812 constraint=True
+MISMATCH tri=437 slot=2 edge=(676,432) cdtN=812 dtN=65535 constraint=False
+MISMATCH tri=438 slot=0 edge=(435,698) cdtN=550 dtN=65535 constraint=False
+MISMATCH tri=438 slot=2 edge=(434,435) cdtN=-1 dtN=550 constraint=True
+MISMATCH tri=440 slot=0 edge=(421,422) cdtN=-1 dtN=1147 constraint=True
+MISMATCH tri=440 slot=2 edge=(824,421) cdtN=1147 dtN=65535 constraint=False
+MISMATCH tri=441 slot=0 edge=(41,38) cdtN=35 dtN=79 constraint=True
+MISMATCH tri=441 slot=2 edge=(724,41) cdtN=79 dtN=65535 constraint=False
+MISMATCH tri=443 slot=0 edge=(211,564) cdtN=177 dtN=65535 constraint=False
+MISMATCH tri=443 slot=2 edge=(206,211) cdtN=1508 dtN=177 constraint=True
+MISMATCH tri=444 slot=0 edge=(453,539) cdtN=589 dtN=65535 constraint=False
+MISMATCH tri=444 slot=2 edge=(452,453) cdtN=-1 dtN=589 constraint=True
+MISMATCH tri=447 slot=0 edge=(516,517) cdtN=-1 dtN=1027 constraint=True
+MISMATCH tri=447 slot=2 edge=(764,516) cdtN=1027 dtN=65535 constraint=False
+MISMATCH tri=448 slot=0 edge=(440,441) cdtN=-1 dtN=991 constraint=True
+MISMATCH tri=448 slot=2 edge=(746,440) cdtN=991 dtN=65535 constraint=False
+MISMATCH tri=451 slot=0 edge=(441,442) cdtN=-1 dtN=585 constraint=True
+MISMATCH tri=451 slot=2 edge=(535,441) cdtN=585 dtN=65535 constraint=False
+MISMATCH tri=452 slot=0 edge=(532,533) cdtN=-1 dtN=1060 constraint=True
+MISMATCH tri=452 slot=2 edge=(781,532) cdtN=1060 dtN=65535 constraint=False
+MISMATCH tri=455 slot=0 edge=(524,804) cdtN=458 dtN=65535 constraint=False
+MISMATCH tri=455 slot=2 edge=(531,524) cdtN=-1 dtN=458 constraint=True
+MISMATCH tri=459 slot=0 edge=(450,451) cdtN=-1 dtN=1107 constraint=True
+MISMATCH tri=459 slot=2 edge=(804,450) cdtN=1107 dtN=65535 constraint=False
+MISMATCH tri=461 slot=0 edge=(457,458) cdtN=-1 dtN=558 constraint=True
+MISMATCH tri=461 slot=2 edge=(517,457) cdtN=558 dtN=65535 constraint=False
+MISMATCH tri=464 slot=0 edge=(203,562) cdtN=172 dtN=65535 constraint=False
+MISMATCH tri=464 slot=2 edge=(198,203) cdtN=656 dtN=172 constraint=True
+MISMATCH tri=466 slot=0 edge=(527,528) cdtN=-1 dtN=1029 constraint=True
+MISMATCH tri=466 slot=2 edge=(766,527) cdtN=1029 dtN=65535 constraint=False
+MISMATCH tri=467 slot=0 edge=(215,565) cdtN=176 dtN=65535 constraint=False
+MISMATCH tri=467 slot=2 edge=(210,215) cdtN=195 dtN=176 constraint=True
+MISMATCH tri=468 slot=0 edge=(454,455) cdtN=-1 dtN=588 constraint=True
+MISMATCH tri=468 slot=2 edge=(537,454) cdtN=588 dtN=65535 constraint=False
+MISMATCH tri=470 slot=0 edge=(524,525) cdtN=-1 dtN=458 constraint=True
+MISMATCH tri=470 slot=2 edge=(449,524) cdtN=458 dtN=65535 constraint=False
+MISMATCH tri=474 slot=0 edge=(491,484) cdtN=-1 dtN=574 constraint=True
+MISMATCH tri=474 slot=2 edge=(767,491) cdtN=574 dtN=65535 constraint=False
+MISMATCH tri=475 slot=0 edge=(195,560) cdtN=168 dtN=65535 constraint=False
+MISMATCH tri=475 slot=2 edge=(190,195) cdtN=43 dtN=168 constraint=True
+MISMATCH tri=476 slot=0 edge=(199,561) cdtN=160 dtN=65535 constraint=False
+MISMATCH tri=476 slot=2 edge=(194,199) cdtN=180 dtN=160 constraint=True
+MISMATCH tri=477 slot=0 edge=(502,669) cdtN=839 dtN=65535 constraint=False
+MISMATCH tri=477 slot=2 edge=(501,502) cdtN=-1 dtN=839 constraint=True
+MISMATCH tri=478 slot=0 edge=(249,1085) cdtN=-1 dtN=231 constraint=True
+MISMATCH tri=478 slot=2 edge=(88,249) cdtN=231 dtN=65535 constraint=False
+MISMATCH tri=479 slot=0 edge=(500,501) cdtN=-1 dtN=880 constraint=True
+MISMATCH tri=479 slot=2 edge=(690,500) cdtN=880 dtN=65535 constraint=False
+MISMATCH tri=480 slot=0 edge=(222,227) cdtN=1519 dtN=642 constraint=True
+MISMATCH tri=480 slot=2 edge=(568,222) cdtN=642 dtN=65535 constraint=False
+MISMATCH tri=481 slot=0 edge=(465,466) cdtN=-1 dtN=534 constraint=True
+MISMATCH tri=481 slot=2 edge=(501,465) cdtN=534 dtN=65535 constraint=False
+MISMATCH tri=484 slot=0 edge=(468,469) cdtN=-1 dtN=380 constraint=True
+MISMATCH tri=484 slot=2 edge=(392,468) cdtN=380 dtN=65535 constraint=False
+MISMATCH tri=489 slot=0 edge=(471,472) cdtN=-1 dtN=1218 constraint=True
+MISMATCH tri=489 slot=2 edge=(880,471) cdtN=1218 dtN=65535 constraint=False
+MISMATCH tri=491 slot=0 edge=(370,842) cdtN=355 dtN=65535 constraint=False
+MISMATCH tri=491 slot=2 edge=(369,370) cdtN=-1 dtN=355 constraint=True
+MISMATCH tri=494 slot=0 edge=(468,393) cdtN=380 dtN=65535 constraint=False
+MISMATCH tri=494 slot=2 edge=(475,468) cdtN=-1 dtN=380 constraint=True
+MISMATCH tri=495 slot=0 edge=(386,387) cdtN=-1 dtN=1160 constraint=True
+MISMATCH tri=495 slot=2 edge=(830,386) cdtN=1160 dtN=65535 constraint=False
+MISMATCH tri=504 slot=0 edge=(479,480) cdtN=-1 dtN=1198 constraint=True
+MISMATCH tri=504 slot=2 edge=(849,479) cdtN=1198 dtN=65535 constraint=False
+MISMATCH tri=505 slot=0 edge=(481,850) cdtN=136 dtN=65535 constraint=False
+MISMATCH tri=505 slot=2 edge=(480,481) cdtN=-1 dtN=136 constraint=True
+MISMATCH tri=507 slot=0 edge=(342,343) cdtN=-1 dtN=1034 constraint=True
+MISMATCH tri=507 slot=2 edge=(767,342) cdtN=1034 dtN=65535 constraint=False
+MISMATCH tri=510 slot=0 edge=(456,457) cdtN=-1 dtN=995 constraint=True
+MISMATCH tri=510 slot=2 edge=(748,456) cdtN=995 dtN=65535 constraint=False
+MISMATCH tri=511 slot=0 edge=(523,764) cdtN=1027 dtN=65535 constraint=False
+MISMATCH tri=511 slot=2 edge=(522,523) cdtN=-1 dtN=1027 constraint=True
+MISMATCH tri=515 slot=0 edge=(521,749) cdtN=565 dtN=65535 constraint=False
+MISMATCH tri=515 slot=2 edge=(520,521) cdtN=-1 dtN=565 constraint=True
+MISMATCH tri=518 slot=0 edge=(489,490) cdtN=-1 dtN=1002 constraint=True
+MISMATCH tri=518 slot=2 edge=(751,489) cdtN=1002 dtN=65535 constraint=False
+MISMATCH tri=520 slot=0 edge=(367,368) cdtN=-1 dtN=522 constraint=True
+MISMATCH tri=520 slot=2 edge=(493,367) cdtN=522 dtN=65535 constraint=False
+MISMATCH tri=521 slot=0 edge=(492,493) cdtN=-1 dtN=354 constraint=True
+MISMATCH tri=521 slot=2 edge=(368,492) cdtN=354 dtN=65535 constraint=False
+MISMATCH tri=526 slot=0 edge=(451,444) cdtN=-1 dtN=352 constraint=True
+MISMATCH tri=526 slot=2 edge=(823,451) cdtN=352 dtN=65535 constraint=False
+MISMATCH tri=527 slot=0 edge=(427,420) cdtN=-1 dtN=1150 constraint=True
+MISMATCH tri=527 slot=2 edge=(825,427) cdtN=1150 dtN=65535 constraint=False
+MISMATCH tri=528 slot=0 edge=(496,823) cdtN=1145 dtN=65535 constraint=False
+MISMATCH tri=528 slot=2 edge=(495,496) cdtN=-1 dtN=1145 constraint=True
+MISMATCH tri=530 slot=0 edge=(498,842) cdtN=531 dtN=65535 constraint=False
+MISMATCH tri=530 slot=2 edge=(497,498) cdtN=-1 dtN=531 constraint=True
+MISMATCH tri=531 slot=0 edge=(498,499) cdtN=-1 dtN=530 constraint=True
+MISMATCH tri=531 slot=2 edge=(842,498) cdtN=530 dtN=65535 constraint=False
+MISMATCH tri=532 slot=0 edge=(464,465) cdtN=-1 dtN=838 constraint=True
+MISMATCH tri=532 slot=2 edge=(669,464) cdtN=838 dtN=65535 constraint=False
+MISMATCH tri=538 slot=0 edge=(218,223) cdtN=186 dtN=640 constraint=True
+MISMATCH tri=538 slot=2 edge=(567,218) cdtN=640 dtN=65535 constraint=False
+MISMATCH tri=543 slot=0 edge=(506,670) cdtN=610 dtN=65535 constraint=False
+MISMATCH tri=543 slot=2 edge=(505,506) cdtN=-1 dtN=610 constraint=True
+MISMATCH tri=544 slot=0 edge=(402,403) cdtN=-1 dtN=934 constraint=True
+MISMATCH tri=544 slot=2 edge=(717,402) cdtN=934 dtN=65535 constraint=False
+MISMATCH tri=547 slot=0 edge=(400,401) cdtN=-1 dtN=892 constraint=True
+MISMATCH tri=547 slot=2 edge=(696,400) cdtN=892 dtN=65535 constraint=False
+MISMATCH tri=548 slot=0 edge=(429,697) cdtN=850 dtN=65535 constraint=False
+MISMATCH tri=548 slot=2 edge=(428,429) cdtN=-1 dtN=850 constraint=True
+MISMATCH tri=549 slot=0 edge=(511,696) cdtN=894 dtN=65535 constraint=False
+MISMATCH tri=549 slot=2 edge=(510,511) cdtN=-1 dtN=894 constraint=True
+MISMATCH tri=551 slot=0 edge=(511,512) cdtN=-1 dtN=894 constraint=True
+MISMATCH tri=551 slot=2 edge=(697,511) cdtN=894 dtN=65535 constraint=False
+MISMATCH tri=558 slot=0 edge=(517,518) cdtN=-1 dtN=461 constraint=True
+MISMATCH tri=558 slot=2 edge=(457,517) cdtN=461 dtN=65535 constraint=False
+MISMATCH tri=562 slot=0 edge=(522,750) cdtN=566 dtN=65535 constraint=False
+MISMATCH tri=562 slot=2 edge=(521,522) cdtN=-1 dtN=566 constraint=True
+MISMATCH tri=564 slot=0 edge=(485,766) cdtN=999 dtN=65535 constraint=False
+MISMATCH tri=564 slot=2 edge=(484,485) cdtN=-1 dtN=999 constraint=True
+MISMATCH tri=567 slot=0 edge=(448,449) cdtN=-1 dtN=569 constraint=True
+MISMATCH tri=567 slot=2 edge=(525,448) cdtN=569 dtN=65535 constraint=False
+MISMATCH tri=568 slot=0 edge=(340,787) cdtN=575 dtN=65535 constraint=False
+MISMATCH tri=568 slot=2 edge=(347,340) cdtN=-1 dtN=575 constraint=True
+MISMATCH tri=574 slot=0 edge=(491,767) cdtN=474 dtN=65535 constraint=False
+MISMATCH tri=574 slot=2 edge=(490,491) cdtN=-1 dtN=474 constraint=True
+MISMATCH tri=575 slot=0 edge=(340,341) cdtN=-1 dtN=568 constraint=True
+MISMATCH tri=575 slot=2 edge=(787,340) cdtN=568 dtN=65535 constraint=False
+MISMATCH tri=578 slot=0 edge=(530,531) cdtN=-1 dtN=1071 constraint=True
+MISMATCH tri=578 slot=2 edge=(786,530) cdtN=1071 dtN=65535 constraint=False
+MISMATCH tri=580 slot=0 edge=(459,452) cdtN=-1 dtN=1065 constraint=True
+MISMATCH tri=580 slot=2 edge=(782,459) cdtN=1065 dtN=65535 constraint=False
+MISMATCH tri=582 slot=0 edge=(533,534) cdtN=-1 dtN=439 constraint=True
+MISMATCH tri=582 slot=2 edge=(443,533) cdtN=439 dtN=65535 constraint=False
+MISMATCH tri=583 slot=0 edge=(534,535) cdtN=-1 dtN=351 constraint=True
+MISMATCH tri=583 slot=2 edge=(442,534) cdtN=351 dtN=65535 constraint=False
+MISMATCH tri=584 slot=0 edge=(536,537) cdtN=-1 dtN=793 constraint=True
+MISMATCH tri=584 slot=2 edge=(455,536) cdtN=793 dtN=65535 constraint=False
+MISMATCH tri=586 slot=0 edge=(33,30) cdtN=46 dtN=70 constraint=True
+MISMATCH tri=586 slot=2 edge=(682,33) cdtN=70 dtN=65535 constraint=False
+MISMATCH tri=587 slot=0 edge=(453,454) cdtN=-1 dtN=589 constraint=True
+MISMATCH tri=587 slot=2 edge=(538,453) cdtN=589 dtN=65535 constraint=False
+MISMATCH tri=588 slot=0 edge=(537,538) cdtN=-1 dtN=468 constraint=True
+MISMATCH tri=588 slot=2 edge=(454,537) cdtN=468 dtN=65535 constraint=False
+MISMATCH tri=590 slot=0 edge=(374,375) cdtN=-1 dtN=358 constraint=True
+MISMATCH tri=590 slot=2 edge=(768,374) cdtN=358 dtN=65535 constraint=False
+MISMATCH tri=591 slot=0 edge=(541,542) cdtN=-1 dtN=1035 constraint=True
+MISMATCH tri=591 slot=2 edge=(768,541) cdtN=1035 dtN=65535 constraint=False
+MISMATCH tri=593 slot=0 edge=(363,356) cdtN=-1 dtN=597 constraint=True
+MISMATCH tri=593 slot=2 edge=(543,363) cdtN=597 dtN=65535 constraint=False
+MISMATCH tri=594 slot=0 edge=(356,357) cdtN=-1 dtN=326 constraint=True
+MISMATCH tri=594 slot=2 edge=(542,356) cdtN=326 dtN=65535 constraint=False
+MISMATCH tri=595 slot=0 edge=(411,404) cdtN=-1 dtN=599 constraint=True
+MISMATCH tri=595 slot=2 edge=(753,411) cdtN=599 dtN=65535 constraint=False
+MISMATCH tri=597 slot=0 edge=(543,544) cdtN=-1 dtN=593 constraint=True
+MISMATCH tri=597 slot=2 edge=(363,543) cdtN=593 dtN=65535 constraint=False
+MISMATCH tri=599 slot=0 edge=(411,753) cdtN=595 dtN=65535 constraint=False
+MISMATCH tri=599 slot=2 edge=(410,411) cdtN=-1 dtN=595 constraint=True
+MISMATCH tri=602 slot=0 edge=(540,376) cdtN=362 dtN=65535 constraint=False
+MISMATCH tri=602 slot=2 edge=(547,540) cdtN=-1 dtN=362 constraint=True
+MISMATCH tri=605 slot=0 edge=(548,549) cdtN=-1 dtN=604 constraint=True
+MISMATCH tri=605 slot=2 edge=(751,548) cdtN=604 dtN=65535 constraint=False
+MISMATCH tri=606 slot=0 edge=(467,460) cdtN=-1 dtN=608 constraint=True
+MISMATCH tri=606 slot=2 edge=(690,467) cdtN=608 dtN=65535 constraint=False
+MISMATCH tri=607 slot=0 edge=(507,500) cdtN=-1 dtN=882 constraint=True
+MISMATCH tri=607 slot=2 edge=(691,507) cdtN=882 dtN=65535 constraint=False
+MISMATCH tri=608 slot=0 edge=(467,690) cdtN=606 dtN=65535 constraint=False
+MISMATCH tri=608 slot=2 edge=(466,467) cdtN=-1 dtN=606 constraint=True
+MISMATCH tri=609 slot=0 edge=(551,552) cdtN=-1 dtN=924 constraint=True
+MISMATCH tri=609 slot=2 edge=(712,551) cdtN=924 dtN=65535 constraint=False
+MISMATCH tri=610 slot=0 edge=(506,507) cdtN=-1 dtN=543 constraint=True
+MISMATCH tri=610 slot=2 edge=(670,506) cdtN=543 dtN=65535 constraint=False
+MISMATCH tri=612 slot=0 edge=(553,713) cdtN=615 dtN=65535 constraint=False
+MISMATCH tri=612 slot=2 edge=(552,553) cdtN=-1 dtN=615 constraint=True
+MISMATCH tri=616 slot=0 edge=(554,555) cdtN=-1 dtN=965 constraint=True
+MISMATCH tri=616 slot=2 edge=(733,554) cdtN=965 dtN=65535 constraint=False
+MISMATCH tri=618 slot=0 edge=(12,962) cdtN=1422 dtN=65535 constraint=False
+MISMATCH tri=618 slot=2 edge=(7,12) cdtN=-1 dtN=1422 constraint=True
+MISMATCH tri=621 slot=0 edge=(182,187) cdtN=163 dtN=16 constraint=True
+MISMATCH tri=621 slot=2 edge=(559,182) cdtN=16 dtN=65535 constraint=False
+MISMATCH tri=623 slot=0 edge=(186,191) cdtN=164 dtN=168 constraint=True
+MISMATCH tri=623 slot=2 edge=(560,186) cdtN=168 dtN=65535 constraint=False
+MISMATCH tri=651 slot=0 edge=(251,242) cdtN=-1 dtN=653 constraint=True
+MISMATCH tri=651 slot=2 edge=(574,251) cdtN=653 dtN=65535 constraint=False
+MISMATCH tri=653 slot=0 edge=(251,574) cdtN=651 dtN=65535 constraint=False
+MISMATCH tri=653 slot=2 edge=(246,251) cdtN=1535 dtN=651 constraint=True
+MISMATCH tri=655 slot=0 edge=(255,575) cdtN=207 dtN=65535 constraint=False
+MISMATCH tri=655 slot=2 edge=(250,255) cdtN=181 dtN=207 constraint=True
+MISMATCH tri=659 slot=0 edge=(6,577) cdtN=55 dtN=65535 constraint=False
+MISMATCH tri=659 slot=2 edge=(9,6) cdtN=87 dtN=55 constraint=True
+MISMATCH tri=697 slot=0 edge=(95,96) cdtN=123 dtN=738 constraint=True
+MISMATCH tri=697 slot=2 edge=(617,95) cdtN=738 dtN=65535 constraint=False
+MISMATCH tri=700 slot=0 edge=(10,598) cdtN=56 dtN=65535 constraint=False
+MISMATCH tri=700 slot=2 edge=(13,10) cdtN=82 dtN=56 constraint=True
+MISMATCH tri=704 slot=0 edge=(25,22) cdtN=39 dtN=65 constraint=True
+MISMATCH tri=704 slot=2 edge=(640,25) cdtN=65 dtN=65535 constraint=False
+MISMATCH tri=737 slot=0 edge=(99,100) cdtN=120 dtN=780 constraint=True
+MISMATCH tri=737 slot=2 edge=(638,99) cdtN=780 dtN=65535 constraint=False
+MISMATCH tri=740 slot=0 edge=(14,619) cdtN=54 dtN=65535 constraint=False
+MISMATCH tri=740 slot=2 edge=(17,14) cdtN=53 dtN=54 constraint=True
+MISMATCH tri=741 slot=0 edge=(32,972) cdtN=1432 dtN=65535 constraint=False
+MISMATCH tri=741 slot=2 edge=(27,32) cdtN=-1 dtN=1432 constraint=True
+MISMATCH tri=756 slot=0 edge=(503,504) cdtN=-1 dtN=839 constraint=True
+MISMATCH tri=756 slot=2 edge=(669,503) cdtN=839 dtN=65535 constraint=False
+MISMATCH tri=774 slot=0 edge=(108,103) cdtN=-1 dtN=822 constraint=True
+MISMATCH tri=774 slot=2 edge=(660,108) cdtN=822 dtN=65535 constraint=False
+MISMATCH tri=779 slot=0 edge=(103,104) cdtN=115 dtN=821 constraint=True
+MISMATCH tri=779 slot=2 edge=(659,103) cdtN=821 dtN=65535 constraint=False
+MISMATCH tri=782 slot=0 edge=(18,640) cdtN=65 dtN=65535 constraint=False
+MISMATCH tri=782 slot=2 edge=(21,18) cdtN=51 dtN=65 constraint=True
+MISMATCH tri=783 slot=0 edge=(80,996) cdtN=1454 dtN=65535 constraint=False
+MISMATCH tri=783 slot=2 edge=(75,80) cdtN=-1 dtN=1454 constraint=True
+MISMATCH tri=796 slot=0 edge=(463,464) cdtN=-1 dtN=837 constraint=True
+MISMATCH tri=796 slot=2 edge=(668,463) cdtN=837 dtN=65535 constraint=False
+MISMATCH tri=803 slot=0 edge=(505,670) cdtN=543 dtN=65535 constraint=False
+MISMATCH tri=803 slot=2 edge=(504,505) cdtN=-1 dtN=543 constraint=True
+MISMATCH tri=812 slot=0 edge=(431,432) cdtN=-1 dtN=853 constraint=True
+MISMATCH tri=812 slot=2 edge=(676,431) cdtN=853 dtN=65535 constraint=False
+MISMATCH tri=820 slot=0 edge=(108,659) cdtN=822 dtN=65535 constraint=False
+MISMATCH tri=820 slot=2 edge=(107,108) cdtN=111 dtN=822 constraint=True
+MISMATCH tri=833 slot=0 edge=(460,461) cdtN=-1 dtN=878 constraint=True
+MISMATCH tri=833 slot=2 edge=(689,460) cdtN=878 dtN=65535 constraint=False
+MISMATCH tri=835 slot=0 edge=(461,462) cdtN=-1 dtN=833 constraint=True
+MISMATCH tri=835 slot=2 edge=(689,461) cdtN=833 dtN=65535 constraint=False
+MISMATCH tri=837 slot=0 edge=(463,668) cdtN=796 dtN=65535 constraint=False
+MISMATCH tri=837 slot=2 edge=(462,463) cdtN=-1 dtN=796 constraint=True
+MISMATCH tri=839 slot=0 edge=(503,669) cdtN=756 dtN=65535 constraint=False
+MISMATCH tri=839 slot=2 edge=(502,503) cdtN=-1 dtN=756 constraint=True
+MISMATCH tri=848 slot=0 edge=(399,400) cdtN=-1 dtN=887 constraint=True
+MISMATCH tri=848 slot=2 edge=(695,399) cdtN=887 dtN=65535 constraint=False
+MISMATCH tri=850 slot=0 edge=(429,430) cdtN=-1 dtN=548 constraint=True
+MISMATCH tri=850 slot=2 edge=(697,429) cdtN=548 dtN=65535 constraint=False
+MISMATCH tri=853 slot=0 edge=(431,676) cdtN=812 dtN=65535 constraint=False
+MISMATCH tri=853 slot=2 edge=(430,431) cdtN=-1 dtN=812 constraint=True
+MISMATCH tri=861 slot=0 edge=(112,680) cdtN=863 dtN=65535 constraint=False
+MISMATCH tri=861 slot=2 edge=(111,112) cdtN=106 dtN=863 constraint=True
+MISMATCH tri=877 slot=0 edge=(520,749) cdtN=515 dtN=65535 constraint=False
+MISMATCH tri=877 slot=2 edge=(519,520) cdtN=-1 dtN=515 constraint=True
+MISMATCH tri=879 slot=0 edge=(550,732) cdtN=921 dtN=65535 constraint=False
+MISMATCH tri=879 slot=2 edge=(549,550) cdtN=-1 dtN=921 constraint=True
+MISMATCH tri=886 slot=0 edge=(407,408) cdtN=-1 dtN=968 constraint=True
+MISMATCH tri=886 slot=2 edge=(734,407) cdtN=968 dtN=65535 constraint=False
+MISMATCH tri=890 slot=0 edge=(398,399) cdtN=-1 dtN=932 constraint=True
+MISMATCH tri=890 slot=2 edge=(716,398) cdtN=932 dtN=65535 constraint=False
+MISMATCH tri=896 slot=0 edge=(514,698) cdtN=555 dtN=65535 constraint=False
+MISMATCH tri=896 slot=2 edge=(513,514) cdtN=-1 dtN=555 constraint=True
+MISMATCH tri=899 slot=0 edge=(124,119) cdtN=-1 dtN=983 constraint=True
+MISMATCH tri=899 slot=2 edge=(742,124) cdtN=983 dtN=65535 constraint=False
+MISMATCH tri=902 slot=0 edge=(116,701) cdtN=904 dtN=65535 constraint=False
+MISMATCH tri=902 slot=2 edge=(115,116) cdtN=91 dtN=904 constraint=True
+MISMATCH tri=906 slot=0 edge=(40,976) cdtN=1436 dtN=65535 constraint=False
+MISMATCH tri=906 slot=2 edge=(35,40) cdtN=-1 dtN=1436 constraint=True
+MISMATCH tri=924 slot=0 edge=(551,712) cdtN=609 dtN=65535 constraint=False
+MISMATCH tri=924 slot=2 edge=(550,551) cdtN=-1 dtN=609 constraint=True
+MISMATCH tri=930 slot=0 edge=(396,397) cdtN=-1 dtN=372 constraint=True
+MISMATCH tri=930 slot=2 edge=(736,396) cdtN=372 dtN=65535 constraint=False
+MISMATCH tri=932 slot=0 edge=(398,716) cdtN=890 dtN=65535 constraint=False
+MISMATCH tri=932 slot=2 edge=(397,398) cdtN=-1 dtN=890 constraint=True
+MISMATCH tri=933 slot=0 edge=(508,509) cdtN=-1 dtN=377 constraint=True
+MISMATCH tri=933 slot=2 edge=(718,508) cdtN=377 dtN=65535 constraint=False
+MISMATCH tri=934 slot=0 edge=(402,717) cdtN=544 dtN=65535 constraint=False
+MISMATCH tri=934 slot=2 edge=(401,402) cdtN=-1 dtN=544 constraint=True
+MISMATCH tri=941 slot=0 edge=(128,123) cdtN=-1 dtN=1019 constraint=True
+MISMATCH tri=941 slot=2 edge=(760,128) cdtN=1019 dtN=65535 constraint=False
+MISMATCH tri=943 slot=0 edge=(120,722) cdtN=946 dtN=65535 constraint=False
+MISMATCH tri=943 slot=2 edge=(119,120) cdtN=1457 dtN=946 constraint=True
+MISMATCH tri=961 slot=0 edge=(486,487) cdtN=-1 dtN=1030 constraint=True
+MISMATCH tri=961 slot=2 edge=(750,486) cdtN=1030 dtN=65535 constraint=False
+MISMATCH tri=963 slot=0 edge=(488,732) cdtN=169 dtN=65535 constraint=False
+MISMATCH tri=963 slot=2 edge=(487,488) cdtN=-1 dtN=169 constraint=True
+MISMATCH tri=965 slot=0 edge=(554,733) cdtN=616 dtN=65535 constraint=False
+MISMATCH tri=965 slot=2 edge=(553,554) cdtN=-1 dtN=616 constraint=True
+MISMATCH tri=966 slot=0 edge=(359,733) cdtN=807 dtN=65535 constraint=False
+MISMATCH tri=966 slot=2 edge=(358,359) cdtN=-1 dtN=807 constraint=True
+MISMATCH tri=967 slot=0 edge=(360,734) cdtN=343 dtN=65535 constraint=False
+MISMATCH tri=967 slot=2 edge=(359,360) cdtN=-1 dtN=343 constraint=True
+MISMATCH tri=968 slot=0 edge=(407,734) cdtN=886 dtN=65535 constraint=False
+MISMATCH tri=968 slot=2 edge=(406,407) cdtN=-1 dtN=886 constraint=True
+MISMATCH tri=970 slot=0 edge=(409,735) cdtN=406 dtN=65535 constraint=False
+MISMATCH tri=970 slot=2 edge=(408,409) cdtN=-1 dtN=406 constraint=True
+MISMATCH tri=972 slot=0 edge=(403,396) cdtN=-1 dtN=336 constraint=True
+MISMATCH tri=972 slot=2 edge=(737,403) cdtN=336 dtN=65535 constraint=False
+MISMATCH tri=981 slot=0 edge=(132,127) cdtN=-1 dtN=1051 constraint=True
+MISMATCH tri=981 slot=2 edge=(776,132) cdtN=1051 dtN=65535 constraint=False
+MISMATCH tri=983 slot=0 edge=(124,742) cdtN=899 dtN=65535 constraint=False
+MISMATCH tri=983 slot=2 edge=(123,124) cdtN=89 dtN=899 constraint=True
+MISMATCH tri=989 slot=0 edge=(438,439) cdtN=-1 dtN=1026 constraint=True
+MISMATCH tri=989 slot=2 edge=(763,438) cdtN=1026 dtN=65535 constraint=False
+MISMATCH tri=991 slot=0 edge=(440,746) cdtN=448 dtN=65535 constraint=False
+MISMATCH tri=991 slot=2 edge=(439,440) cdtN=-1 dtN=448 constraint=True
+MISMATCH tri=993 slot=0 edge=(536,747) cdtN=793 dtN=65535 constraint=False
+MISMATCH tri=993 slot=2 edge=(535,536) cdtN=-1 dtN=793 constraint=True
+MISMATCH tri=995 slot=0 edge=(456,748) cdtN=510 dtN=65535 constraint=False
+MISMATCH tri=995 slot=2 edge=(455,456) cdtN=-1 dtN=510 constraint=True
+MISMATCH tri=996 slot=0 edge=(519,748) cdtN=917 dtN=65535 constraint=False
+MISMATCH tri=996 slot=2 edge=(518,519) cdtN=-1 dtN=917 constraint=True
+MISMATCH tri=999 slot=0 edge=(485,486) cdtN=-1 dtN=564 constraint=True
+MISMATCH tri=999 slot=2 edge=(766,485) cdtN=564 dtN=65535 constraint=False
+MISMATCH tri=1001 slot=0 edge=(555,548) cdtN=-1 dtN=516 constraint=True
+MISMATCH tri=1001 slot=2 edge=(752,555) cdtN=516 dtN=65535 constraint=False
+MISMATCH tri=1002 slot=0 edge=(489,751) cdtN=518 dtN=65535 constraint=False
+MISMATCH tri=1002 slot=2 edge=(488,489) cdtN=-1 dtN=518 constraint=True
+MISMATCH tri=1003 slot=0 edge=(344,752) cdtN=331 dtN=65535 constraint=False
+MISMATCH tri=1003 slot=2 edge=(343,344) cdtN=-1 dtN=331 constraint=True
+MISMATCH tri=1004 slot=0 edge=(358,752) cdtN=613 dtN=65535 constraint=False
+MISMATCH tri=1004 slot=2 edge=(357,358) cdtN=-1 dtN=613 constraint=True
+MISMATCH tri=1005 slot=0 edge=(546,753) cdtN=601 dtN=65535 constraint=False
+MISMATCH tri=1005 slot=2 edge=(545,546) cdtN=-1 dtN=601 constraint=True
+MISMATCH tri=1006 slot=0 edge=(352,753) cdtN=971 dtN=65535 constraint=False
+MISMATCH tri=1006 slot=2 edge=(351,352) cdtN=-1 dtN=971 constraint=True
+MISMATCH tri=1009 slot=0 edge=(353,770) cdtN=1039 dtN=65535 constraint=False
+MISMATCH tri=1009 slot=2 edge=(352,353) cdtN=-1 dtN=1039 constraint=True
+MISMATCH tri=1017 slot=0 edge=(136,131) cdtN=-1 dtN=1089 constraint=True
+MISMATCH tri=1017 slot=2 edge=(795,136) cdtN=1089 dtN=65535 constraint=False
+MISMATCH tri=1019 slot=0 edge=(128,760) cdtN=941 dtN=65535 constraint=False
+MISMATCH tri=1019 slot=2 edge=(127,128) cdtN=1465 dtN=941 constraint=True
+MISMATCH tri=1023 slot=0 edge=(436,437) cdtN=-1 dtN=1058 constraint=True
+MISMATCH tri=1023 slot=2 edge=(780,436) cdtN=1058 dtN=65535 constraint=False
+MISMATCH tri=1026 slot=0 edge=(438,763) cdtN=989 dtN=65535 constraint=False
+MISMATCH tri=1026 slot=2 edge=(437,438) cdtN=-1 dtN=989 constraint=True
+MISMATCH tri=1027 slot=0 edge=(516,764) cdtN=447 dtN=65535 constraint=False
+MISMATCH tri=1027 slot=2 edge=(523,516) cdtN=-1 dtN=447 constraint=True
+MISMATCH tri=1028 slot=0 edge=(459,764) cdtN=460 dtN=65535 constraint=False
+MISMATCH tri=1028 slot=2 edge=(458,459) cdtN=-1 dtN=460 constraint=True
+MISMATCH tri=1032 slot=0 edge=(526,527) cdtN=-1 dtN=1070 constraint=True
+MISMATCH tri=1032 slot=2 edge=(785,526) cdtN=1070 dtN=65535 constraint=False
+MISMATCH tri=1033 slot=0 edge=(529,767) cdtN=577 dtN=65535 constraint=False
+MISMATCH tri=1033 slot=2 edge=(528,529) cdtN=-1 dtN=577 constraint=True
+MISMATCH tri=1034 slot=0 edge=(342,767) cdtN=507 dtN=65535 constraint=False
+MISMATCH tri=1034 slot=2 edge=(341,342) cdtN=-1 dtN=507 constraint=True
+MISMATCH tri=1035 slot=0 edge=(541,768) cdtN=591 dtN=65535 constraint=False
+MISMATCH tri=1035 slot=2 edge=(540,541) cdtN=-1 dtN=591 constraint=True
+MISMATCH tri=1036 slot=0 edge=(346,768) cdtN=117 dtN=65535 constraint=False
+MISMATCH tri=1036 slot=2 edge=(345,346) cdtN=-1 dtN=117 constraint=True
+MISMATCH tri=1037 slot=0 edge=(377,769) cdtN=365 dtN=65535 constraint=False
+MISMATCH tri=1037 slot=2 edge=(376,377) cdtN=-1 dtN=365 constraint=True
+MISMATCH tri=1038 slot=0 edge=(351,769) cdtN=598 dtN=65535 constraint=False
+MISMATCH tri=1038 slot=2 edge=(350,351) cdtN=-1 dtN=598 constraint=True
+MISMATCH tri=1039 slot=0 edge=(354,770) cdtN=296 dtN=65535 constraint=False
+MISMATCH tri=1039 slot=2 edge=(353,354) cdtN=-1 dtN=296 constraint=True
+MISMATCH tri=1046 slot=0 edge=(384,385) cdtN=-1 dtN=1119 constraint=True
+MISMATCH tri=1046 slot=2 edge=(810,384) cdtN=1119 dtN=65535 constraint=False
+MISMATCH tri=1049 slot=0 edge=(140,135) cdtN=-1 dtN=1127 constraint=True
+MISMATCH tri=1049 slot=2 edge=(814,140) cdtN=1127 dtN=65535 constraint=False
+MISMATCH tri=1051 slot=0 edge=(132,776) cdtN=981 dtN=65535 constraint=False
+MISMATCH tri=1051 slot=2 edge=(131,132) cdtN=96 dtN=981 constraint=True
+MISMATCH tri=1058 slot=0 edge=(436,780) cdtN=1023 dtN=65535 constraint=False
+MISMATCH tri=1058 slot=2 edge=(443,436) cdtN=-1 dtN=1023 constraint=True
+MISMATCH tri=1060 slot=0 edge=(532,781) cdtN=452 dtN=65535 constraint=False
+MISMATCH tri=1060 slot=2 edge=(539,532) cdtN=-1 dtN=452 constraint=True
+MISMATCH tri=1067 slot=0 edge=(446,447) cdtN=-1 dtN=1106 constraint=True
+MISMATCH tri=1067 slot=2 edge=(803,446) cdtN=1106 dtN=65535 constraint=False
+MISMATCH tri=1069 slot=0 edge=(448,785) cdtN=569 dtN=65535 constraint=False
+MISMATCH tri=1069 slot=2 edge=(447,448) cdtN=-1 dtN=569 constraint=True
+MISMATCH tri=1070 slot=0 edge=(526,785) cdtN=1032 dtN=65535 constraint=False
+MISMATCH tri=1070 slot=2 edge=(525,526) cdtN=-1 dtN=1032 constraint=True
+MISMATCH tri=1071 slot=0 edge=(530,786) cdtN=578 dtN=65535 constraint=False
+MISMATCH tri=1071 slot=2 edge=(529,530) cdtN=-1 dtN=578 constraint=True
+MISMATCH tri=1072 slot=0 edge=(423,424) cdtN=-1 dtN=1108 constraint=True
+MISMATCH tri=1072 slot=2 edge=(804,423) cdtN=1108 dtN=65535 constraint=False
+MISMATCH tri=1074 slot=0 edge=(413,414) cdtN=-1 dtN=423 constraint=True
+MISMATCH tri=1074 slot=2 edge=(805,413) cdtN=423 dtN=65535 constraint=False
+MISMATCH tri=1075 slot=0 edge=(418,788) cdtN=418 dtN=65535 constraint=False
+MISMATCH tri=1075 slot=2 edge=(417,418) cdtN=-1 dtN=418 constraint=True
+MISMATCH tri=1087 slot=0 edge=(144,139) cdtN=-1 dtN=1165 constraint=True
+MISMATCH tri=1087 slot=2 edge=(833,144) cdtN=1165 dtN=65535 constraint=False
+MISMATCH tri=1089 slot=0 edge=(136,795) cdtN=1017 dtN=65535 constraint=False
+MISMATCH tri=1089 slot=2 edge=(135,136) cdtN=1471 dtN=1017 constraint=True
+MISMATCH tri=1094 slot=0 edge=(61,58) cdtN=30 dtN=1130 constraint=True
+MISMATCH tri=1094 slot=2 edge=(815,61) cdtN=1130 dtN=65535 constraint=False
+MISMATCH tri=1103 slot=0 edge=(444,445) cdtN=-1 dtN=526 constraint=True
+MISMATCH tri=1103 slot=2 edge=(823,444) cdtN=526 dtN=65535 constraint=False
+MISMATCH tri=1106 slot=0 edge=(446,803) cdtN=1067 dtN=65535 constraint=False
+MISMATCH tri=1106 slot=2 edge=(445,446) cdtN=-1 dtN=1067 constraint=True
+MISMATCH tri=1107 slot=0 edge=(450,804) cdtN=459 dtN=65535 constraint=False
+MISMATCH tri=1107 slot=2 edge=(449,450) cdtN=-1 dtN=459 constraint=True
+MISMATCH tri=1108 slot=0 edge=(423,804) cdtN=1072 dtN=65535 constraint=False
+MISMATCH tri=1108 slot=2 edge=(422,423) cdtN=-1 dtN=1072 constraint=True
+MISMATCH tri=1110 slot=0 edge=(425,805) cdtN=425 dtN=65535 constraint=False
+MISMATCH tri=1110 slot=2 edge=(424,425) cdtN=-1 dtN=425 constraint=True
+MISMATCH tri=1116 slot=0 edge=(381,382) cdtN=-1 dtN=1192 constraint=True
+MISMATCH tri=1116 slot=2 edge=(829,381) cdtN=1192 dtN=65535 constraint=False
+MISMATCH tri=1117 slot=0 edge=(382,383) cdtN=-1 dtN=1116 constraint=True
+MISMATCH tri=1117 slot=2 edge=(829,382) cdtN=1116 dtN=65535 constraint=False
+MISMATCH tri=1119 slot=0 edge=(384,810) cdtN=1046 dtN=65535 constraint=False
+MISMATCH tri=1119 slot=2 edge=(383,384) cdtN=-1 dtN=1046 constraint=True
+MISMATCH tri=1125 slot=0 edge=(148,143) cdtN=-1 dtN=1203 constraint=True
+MISMATCH tri=1125 slot=2 edge=(852,148) cdtN=1203 dtN=65535 constraint=False
+MISMATCH tri=1127 slot=0 edge=(140,814) cdtN=1049 dtN=65535 constraint=False
+MISMATCH tri=1127 slot=2 edge=(139,140) cdtN=694 dtN=1049 constraint=True
+MISMATCH tri=1130 slot=0 edge=(54,61) cdtN=-1 dtN=1093 constraint=True
+MISMATCH tri=1130 slot=2 edge=(815,54) cdtN=1093 dtN=65535 constraint=False
+MISMATCH tri=1132 slot=0 edge=(65,62) cdtN=986 dtN=1168 constraint=True
+MISMATCH tri=1132 slot=2 edge=(834,65) cdtN=1168 dtN=65535 constraint=False
+MISMATCH tri=1144 slot=0 edge=(494,495) cdtN=-1 dtN=1182 constraint=True
+MISMATCH tri=1144 slot=2 edge=(841,494) cdtN=1182 dtN=65535 constraint=False
+MISMATCH tri=1145 slot=0 edge=(497,823) cdtN=420 dtN=65535 constraint=False
+MISMATCH tri=1145 slot=2 edge=(496,497) cdtN=-1 dtN=420 constraint=True
+MISMATCH tri=1147 slot=0 edge=(421,824) cdtN=440 dtN=65535 constraint=False
+MISMATCH tri=1147 slot=2 edge=(420,421) cdtN=-1 dtN=440 constraint=True
+MISMATCH tri=1150 slot=0 edge=(427,825) cdtN=527 dtN=65535 constraint=False
+MISMATCH tri=1150 slot=2 edge=(426,427) cdtN=-1 dtN=527 constraint=True
+MISMATCH tri=1154 slot=0 edge=(380,381) cdtN=-1 dtN=1196 constraint=True
+MISMATCH tri=1154 slot=2 edge=(848,380) cdtN=1196 dtN=65535 constraint=False
+MISMATCH tri=1160 slot=0 edge=(386,830) cdtN=495 dtN=65535 constraint=False
+MISMATCH tri=1160 slot=2 edge=(385,386) cdtN=-1 dtN=495 constraint=True
+MISMATCH tri=1163 slot=0 edge=(152,147) cdtN=-1 dtN=1243 constraint=True
+MISMATCH tri=1163 slot=2 edge=(872,152) cdtN=1243 dtN=65535 constraint=False
+MISMATCH tri=1165 slot=0 edge=(144,833) cdtN=1087 dtN=65535 constraint=False
+MISMATCH tri=1165 slot=2 edge=(143,144) cdtN=1478 dtN=1087 constraint=True
+MISMATCH tri=1168 slot=0 edge=(58,65) cdtN=-1 dtN=1131 constraint=True
+MISMATCH tri=1168 slot=2 edge=(834,58) cdtN=1131 dtN=65535 constraint=False
+MISMATCH tri=1169 slot=0 edge=(62,69) cdtN=-1 dtN=1096 constraint=True
+MISMATCH tri=1169 slot=2 edge=(853,62) cdtN=1096 dtN=65535 constraint=False
+MISMATCH tri=1178 slot=0 edge=(365,860) cdtN=1180 dtN=65535 constraint=False
+MISMATCH tri=1178 slot=2 edge=(364,365) cdtN=-1 dtN=1180 constraint=True
+MISMATCH tri=1180 slot=0 edge=(365,366) cdtN=-1 dtN=1178 constraint=True
+MISMATCH tri=1180 slot=2 edge=(860,365) cdtN=1178 dtN=65535 constraint=False
+MISMATCH tri=1181 slot=0 edge=(366,367) cdtN=-1 dtN=1180 constraint=True
+MISMATCH tri=1181 slot=2 edge=(860,366) cdtN=1180 dtN=65535 constraint=False
+MISMATCH tri=1182 slot=0 edge=(494,841) cdtN=1144 dtN=65535 constraint=False
+MISMATCH tri=1182 slot=2 edge=(493,494) cdtN=-1 dtN=1144 constraint=True
+MISMATCH tri=1196 slot=0 edge=(380,848) cdtN=1154 dtN=65535 constraint=False
+MISMATCH tri=1196 slot=2 edge=(387,380) cdtN=-1 dtN=1154 constraint=True
+MISMATCH tri=1198 slot=0 edge=(479,849) cdtN=504 dtN=65535 constraint=False
+MISMATCH tri=1198 slot=2 edge=(478,479) cdtN=-1 dtN=504 constraint=True
+MISMATCH tri=1201 slot=0 edge=(156,151) cdtN=-1 dtN=1283 constraint=True
+MISMATCH tri=1201 slot=2 edge=(892,156) cdtN=1283 dtN=65535 constraint=False
+MISMATCH tri=1203 slot=0 edge=(148,852) cdtN=1125 dtN=65535 constraint=False
+MISMATCH tri=1203 slot=2 edge=(147,148) cdtN=95 dtN=1125 constraint=True
+MISMATCH tri=1206 slot=0 edge=(66,853) cdtN=1170 dtN=65535 constraint=False
+MISMATCH tri=1206 slot=2 edge=(69,66) cdtN=38 dtN=1170 constraint=True
+MISMATCH tri=1208 slot=0 edge=(73,873) cdtN=1246 dtN=65535 constraint=False
+MISMATCH tri=1208 slot=2 edge=(66,73) cdtN=-1 dtN=1246 constraint=True
+MISMATCH tri=1221 slot=0 edge=(371,861) cdtN=385 dtN=65535 constraint=False
+MISMATCH tri=1221 slot=2 edge=(370,371) cdtN=-1 dtN=385 constraint=True
+MISMATCH tri=1222 slot=0 edge=(473,881) cdtN=1224 dtN=65535 constraint=False
+MISMATCH tri=1222 slot=2 edge=(472,473) cdtN=-1 dtN=1224 constraint=True
+MISMATCH tri=1234 slot=0 edge=(476,477) cdtN=-1 dtN=1276 constraint=True
+MISMATCH tri=1234 slot=2 edge=(869,476) cdtN=1276 dtN=65535 constraint=False
+MISMATCH tri=1238 slot=0 edge=(483,476) cdtN=-1 dtN=1240 constraint=True
+MISMATCH tri=1238 slot=2 edge=(870,483) cdtN=1240 dtN=65535 constraint=False
+MISMATCH tri=1240 slot=0 edge=(483,870) cdtN=1238 dtN=65535 constraint=False
+MISMATCH tri=1240 slot=2 edge=(482,483) cdtN=-1 dtN=1238 constraint=True
+MISMATCH tri=1241 slot=0 edge=(160,155) cdtN=-1 dtN=1323 constraint=True
+MISMATCH tri=1241 slot=2 edge=(912,160) cdtN=1323 dtN=65535 constraint=False
+MISMATCH tri=1243 slot=0 edge=(152,872) cdtN=1163 dtN=65535 constraint=False
+MISMATCH tri=1243 slot=2 edge=(151,152) cdtN=1484 dtN=1163 constraint=True
+MISMATCH tri=1246 slot=0 edge=(70,873) cdtN=150 dtN=65535 constraint=False
+MISMATCH tri=1246 slot=2 edge=(73,70) cdtN=36 dtN=150 constraint=True
+MISMATCH tri=1247 slot=0 edge=(77,893) cdtN=1286 dtN=65535 constraint=False
+MISMATCH tri=1247 slot=2 edge=(70,77) cdtN=-1 dtN=1286 constraint=True
+MISMATCH tri=1258 slot=0 edge=(469,470) cdtN=-1 dtN=486 constraint=True
+MISMATCH tri=1258 slot=2 edge=(900,469) cdtN=486 dtN=65535 constraint=False
+MISMATCH tri=1260 slot=0 edge=(470,471) cdtN=-1 dtN=1258 constraint=True
+MISMATCH tri=1260 slot=2 edge=(900,470) cdtN=1258 dtN=65535 constraint=False
+MISMATCH tri=1281 slot=0 edge=(164,159) cdtN=-1 dtN=1363 constraint=True
+MISMATCH tri=1281 slot=2 edge=(932,164) cdtN=1363 dtN=65535 constraint=False
+MISMATCH tri=1283 slot=0 edge=(156,892) cdtN=1201 dtN=65535 constraint=False
+MISMATCH tri=1283 slot=2 edge=(155,156) cdtN=103 dtN=1201 constraint=True
+MISMATCH tri=1286 slot=0 edge=(74,893) cdtN=85 dtN=65535 constraint=False
+MISMATCH tri=1286 slot=2 edge=(77,74) cdtN=31 dtN=85 constraint=True
+MISMATCH tri=1294 slot=0 edge=(276,273) cdtN=1558 dtN=1373 constraint=True
+MISMATCH tri=1294 slot=2 edge=(937,276) cdtN=1373 dtN=65535 constraint=False
+MISMATCH tri=1298 slot=0 edge=(389,390) cdtN=-1 dtN=1340 constraint=True
+MISMATCH tri=1298 slot=2 edge=(920,389) cdtN=1340 dtN=65535 constraint=False
+MISMATCH tri=1300 slot=0 edge=(391,900) cdtN=387 dtN=65535 constraint=False
+MISMATCH tri=1300 slot=2 edge=(390,391) cdtN=-1 dtN=387 constraint=True
+MISMATCH tri=1301 slot=0 edge=(474,901) cdtN=285 dtN=65535 constraint=False
+MISMATCH tri=1301 slot=2 edge=(473,474) cdtN=-1 dtN=285 constraint=True
+MISMATCH tri=1302 slot=0 edge=(394,901) cdtN=389 dtN=65535 constraint=False
+MISMATCH tri=1302 slot=2 edge=(393,394) cdtN=-1 dtN=389 constraint=True
+MISMATCH tri=1321 slot=0 edge=(168,163) cdtN=-1 dtN=1403 constraint=True
+MISMATCH tri=1321 slot=2 edge=(952,168) cdtN=1403 dtN=65535 constraint=False
+MISMATCH tri=1323 slot=0 edge=(160,912) cdtN=1241 dtN=65535 constraint=False
+MISMATCH tri=1323 slot=2 edge=(159,160) cdtN=1491 dtN=1241 constraint=True
+MISMATCH tri=1326 slot=0 edge=(78,913) cdtN=2 dtN=65535 constraint=False
+MISMATCH tri=1326 slot=2 edge=(81,78) cdtN=27 dtN=2 constraint=True
+MISMATCH tri=1329 slot=0 edge=(261,935) cdtN=1409 dtN=65535 constraint=False
+MISMATCH tri=1329 slot=2 edge=(264,261) cdtN=1551 dtN=1409 constraint=True
+MISMATCH tri=1331 slot=0 edge=(265,936) cdtN=1410 dtN=65535 constraint=False
+MISMATCH tri=1331 slot=2 edge=(268,265) cdtN=1554 dtN=1410 constraint=True
+MISMATCH tri=1333 slot=0 edge=(269,937) cdtN=1412 dtN=65535 constraint=False
+MISMATCH tri=1333 slot=2 edge=(272,269) cdtN=1556 dtN=1412 constraint=True
+MISMATCH tri=1335 slot=0 edge=(280,277) cdtN=1560 dtN=1375 constraint=True
+MISMATCH tri=1335 slot=2 edge=(938,280) cdtN=1375 dtN=65535 constraint=False
+MISMATCH tri=1340 slot=0 edge=(389,920) cdtN=1298 dtN=65535 constraint=False
+MISMATCH tri=1340 slot=2 edge=(388,389) cdtN=-1 dtN=1298 constraint=True
+MISMATCH tri=1342 slot=0 edge=(395,921) cdtN=280 dtN=65535 constraint=False
+MISMATCH tri=1342 slot=2 edge=(394,395) cdtN=-1 dtN=280 constraint=True
+MISMATCH tri=1343 slot=0 edge=(296,293) cdtN=1569 dtN=1383 constraint=True
+MISMATCH tri=1343 slot=2 edge=(942,296) cdtN=1383 dtN=65535 constraint=False
+MISMATCH tri=1345 slot=0 edge=(300,297) cdtN=1571 dtN=1385 constraint=True
+MISMATCH tri=1345 slot=2 edge=(943,300) cdtN=1385 dtN=65535 constraint=False
+MISMATCH tri=1347 slot=0 edge=(304,301) cdtN=1573 dtN=1387 constraint=True
+MISMATCH tri=1347 slot=2 edge=(944,304) cdtN=1387 dtN=65535 constraint=False
+MISMATCH tri=1349 slot=0 edge=(308,305) cdtN=1576 dtN=1389 constraint=True
+MISMATCH tri=1349 slot=2 edge=(945,308) cdtN=1389 dtN=65535 constraint=False
+MISMATCH tri=1351 slot=0 edge=(312,309) cdtN=1577 dtN=1391 constraint=True
+MISMATCH tri=1351 slot=2 edge=(946,312) cdtN=1391 dtN=65535 constraint=False
+MISMATCH tri=1353 slot=0 edge=(316,313) cdtN=1580 dtN=1393 constraint=True
+MISMATCH tri=1353 slot=2 edge=(947,316) cdtN=1393 dtN=65535 constraint=False
+MISMATCH tri=1355 slot=0 edge=(320,317) cdtN=1582 dtN=1395 constraint=True
+MISMATCH tri=1355 slot=2 edge=(948,320) cdtN=1395 dtN=65535 constraint=False
+MISMATCH tri=1357 slot=0 edge=(324,321) cdtN=1584 dtN=1397 constraint=True
+MISMATCH tri=1357 slot=2 edge=(949,324) cdtN=1397 dtN=65535 constraint=False
+MISMATCH tri=1359 slot=0 edge=(328,325) cdtN=1586 dtN=1399 constraint=True
+MISMATCH tri=1359 slot=2 edge=(950,328) cdtN=1399 dtN=65535 constraint=False
+MISMATCH tri=1361 slot=0 edge=(332,329) cdtN=1589 dtN=1401 constraint=True
+MISMATCH tri=1361 slot=2 edge=(951,332) cdtN=1401 dtN=65535 constraint=False
+MISMATCH tri=1363 slot=0 edge=(164,932) cdtN=1281 dtN=65535 constraint=False
+MISMATCH tri=1363 slot=2 edge=(163,164) cdtN=102 dtN=1281 constraint=True
+MISMATCH tri=1365 slot=0 edge=(85,933) cdtN=240 dtN=65535 constraint=False
+MISMATCH tri=1365 slot=2 edge=(78,85) cdtN=-1 dtN=240 constraint=True
+MISMATCH tri=1367 slot=0 edge=(257,934) cdtN=1408 dtN=65535 constraint=False
+MISMATCH tri=1367 slot=2 edge=(260,257) cdtN=1550 dtN=1408 constraint=True
+MISMATCH tri=1368 slot=0 edge=(271,1095) cdtN=251 dtN=65535 constraint=False
+MISMATCH tri=1368 slot=2 edge=(262,271) cdtN=-1 dtN=251 constraint=True
+MISMATCH tri=1381 slot=0 edge=(292,941) cdtN=57 dtN=65535 constraint=False
+MISMATCH tri=1381 slot=2 edge=(285,292) cdtN=-1 dtN=57 constraint=True
+MISMATCH tri=1383 slot=0 edge=(296,942) cdtN=1343 dtN=65535 constraint=False
+MISMATCH tri=1383 slot=2 edge=(289,296) cdtN=-1 dtN=1343 constraint=True
+MISMATCH tri=1385 slot=0 edge=(300,943) cdtN=1345 dtN=65535 constraint=False
+MISMATCH tri=1385 slot=2 edge=(293,300) cdtN=-1 dtN=1345 constraint=True
+MISMATCH tri=1387 slot=0 edge=(304,944) cdtN=1347 dtN=65535 constraint=False
+MISMATCH tri=1387 slot=2 edge=(297,304) cdtN=-1 dtN=1347 constraint=True
+MISMATCH tri=1389 slot=0 edge=(308,945) cdtN=1349 dtN=65535 constraint=False
+MISMATCH tri=1389 slot=2 edge=(301,308) cdtN=-1 dtN=1349 constraint=True
+MISMATCH tri=1391 slot=0 edge=(312,946) cdtN=1351 dtN=65535 constraint=False
+MISMATCH tri=1391 slot=2 edge=(305,312) cdtN=-1 dtN=1351 constraint=True
+MISMATCH tri=1393 slot=0 edge=(316,947) cdtN=1353 dtN=65535 constraint=False
+MISMATCH tri=1393 slot=2 edge=(309,316) cdtN=-1 dtN=1353 constraint=True
+MISMATCH tri=1395 slot=0 edge=(320,948) cdtN=1355 dtN=65535 constraint=False
+MISMATCH tri=1395 slot=2 edge=(313,320) cdtN=-1 dtN=1355 constraint=True
+MISMATCH tri=1397 slot=0 edge=(324,949) cdtN=1357 dtN=65535 constraint=False
+MISMATCH tri=1397 slot=2 edge=(317,324) cdtN=-1 dtN=1357 constraint=True
+MISMATCH tri=1399 slot=0 edge=(328,950) cdtN=1359 dtN=65535 constraint=False
+MISMATCH tri=1399 slot=2 edge=(321,328) cdtN=-1 dtN=1359 constraint=True
+MISMATCH tri=1401 slot=0 edge=(332,951) cdtN=1361 dtN=65535 constraint=False
+MISMATCH tri=1401 slot=2 edge=(325,332) cdtN=-1 dtN=1361 constraint=True
+MISMATCH tri=1403 slot=0 edge=(168,952) cdtN=1321 dtN=65535 constraint=False
+MISMATCH tri=1403 slot=2 edge=(167,168) cdtN=1497 dtN=1321 constraint=True
+MISMATCH tri=1405 slot=0 edge=(263,1096) cdtN=-1 dtN=1 constraint=True
+MISMATCH tri=1405 slot=2 edge=(86,263) cdtN=1 dtN=65535 constraint=False
+MISMATCH tri=1418 slot=0 edge=(299,1109) cdtN=1553 dtN=65535 constraint=False
+MISMATCH tri=1418 slot=2 edge=(290,299) cdtN=-1 dtN=1553 constraint=True
+MISMATCH tri=1424 slot=0 edge=(44,978) cdtN=1437 dtN=65535 constraint=False
+MISMATCH tri=1424 slot=2 edge=(39,44) cdtN=-1 dtN=1437 constraint=True
+MISMATCH tri=1429 slot=0 edge=(52,982) cdtN=1441 dtN=65535 constraint=False
+MISMATCH tri=1429 slot=2 edge=(47,52) cdtN=-1 dtN=1441 constraint=True
+MISMATCH tri=1435 slot=0 edge=(60,986) cdtN=1444 dtN=65535 constraint=False
+MISMATCH tri=1435 slot=2 edge=(55,60) cdtN=-1 dtN=1444 constraint=True
+MISMATCH tri=1440 slot=0 edge=(68,990) cdtN=1448 dtN=65535 constraint=False
+MISMATCH tri=1440 slot=2 edge=(63,68) cdtN=-1 dtN=1448 constraint=True
+MISMATCH tri=1446 slot=0 edge=(76,994) cdtN=1452 dtN=65535 constraint=False
+MISMATCH tri=1446 slot=2 edge=(71,76) cdtN=-1 dtN=1452 constraint=True
+MISMATCH tri=1451 slot=0 edge=(84,998) cdtN=1455 dtN=65535 constraint=False
+MISMATCH tri=1451 slot=2 edge=(79,84) cdtN=-1 dtN=1455 constraint=True
+MISMATCH tri=1456 slot=0 edge=(291,1105) cdtN=1546 dtN=65535 constraint=False
+MISMATCH tri=1456 slot=2 edge=(282,291) cdtN=-1 dtN=1546 constraint=True
+MISMATCH tri=1459 slot=0 edge=(1089,576) cdtN=1541 dtN=65535 constraint=False
+MISMATCH tri=1459 slot=2 edge=(92,1089) cdtN=-1 dtN=1541 constraint=True
+MISMATCH tri=1460 slot=0 edge=(137,130) cdtN=-1 dtN=1483 constraint=True
+MISMATCH tri=1460 slot=2 edge=(1024,137) cdtN=1483 dtN=65535 constraint=False
+MISMATCH tri=1464 slot=0 edge=(141,134) cdtN=-1 dtN=1485 constraint=True
+MISMATCH tri=1464 slot=2 edge=(1026,141) cdtN=1485 dtN=65535 constraint=False
+MISMATCH tri=1469 slot=0 edge=(145,138) cdtN=-1 dtN=1488 constraint=True
+MISMATCH tri=1469 slot=2 edge=(1028,145) cdtN=1488 dtN=65535 constraint=False
+MISMATCH tri=1473 slot=0 edge=(149,142) cdtN=-1 dtN=1489 constraint=True
+MISMATCH tri=1473 slot=2 edge=(1030,149) cdtN=1489 dtN=65535 constraint=False
+MISMATCH tri=1477 slot=0 edge=(153,146) cdtN=-1 dtN=1492 constraint=True
+MISMATCH tri=1477 slot=2 edge=(1032,153) cdtN=1492 dtN=65535 constraint=False
+MISMATCH tri=1482 slot=0 edge=(157,150) cdtN=-1 dtN=1494 constraint=True
+MISMATCH tri=1482 slot=2 edge=(1034,157) cdtN=1494 dtN=65535 constraint=False
+MISMATCH tri=1486 slot=0 edge=(161,154) cdtN=-1 dtN=1496 constraint=True
+MISMATCH tri=1486 slot=2 edge=(1036,161) cdtN=1496 dtN=65535 constraint=False
+MISMATCH tri=1490 slot=0 edge=(165,158) cdtN=-1 dtN=1498 constraint=True
+MISMATCH tri=1490 slot=2 edge=(1038,165) cdtN=1498 dtN=65535 constraint=False
+MISMATCH tri=1495 slot=0 edge=(169,162) cdtN=-1 dtN=1501 constraint=True
+MISMATCH tri=1495 slot=2 edge=(1040,169) cdtN=1501 dtN=65535 constraint=False
+MISMATCH tri=1499 slot=0 edge=(166,1042) cdtN=-1 dtN=319 constraint=True
+MISMATCH tri=1499 slot=2 edge=(337,166) cdtN=319 dtN=65535 constraint=False
+MISMATCH tri=1504 slot=0 edge=(1047,9) cdtN=-1 dtN=45 constraint=True
+MISMATCH tri=1504 slot=2 edge=(556,1047) cdtN=45 dtN=65535 constraint=False
+MISMATCH tri=1507 slot=0 edge=(220,213) cdtN=-1 dtN=198 constraint=True
+MISMATCH tri=1507 slot=2 edge=(1067,220) cdtN=198 dtN=65535 constraint=False
+MISMATCH tri=1511 slot=0 edge=(224,217) cdtN=-1 dtN=203 constraint=True
+MISMATCH tri=1511 slot=2 edge=(1069,224) cdtN=203 dtN=65535 constraint=False
+MISMATCH tri=1515 slot=0 edge=(228,221) cdtN=-1 dtN=210 constraint=True
+MISMATCH tri=1515 slot=2 edge=(1071,228) cdtN=210 dtN=65535 constraint=False
+MISMATCH tri=1518 slot=0 edge=(232,225) cdtN=-1 dtN=206 constraint=True
+MISMATCH tri=1518 slot=2 edge=(1073,232) cdtN=206 dtN=65535 constraint=False
+MISMATCH tri=1522 slot=0 edge=(236,229) cdtN=-1 dtN=537 constraint=True
+MISMATCH tri=1522 slot=2 edge=(1075,236) cdtN=537 dtN=65535 constraint=False
+MISMATCH tri=1526 slot=0 edge=(240,233) cdtN=-1 dtN=193 constraint=True
+MISMATCH tri=1526 slot=2 edge=(1077,240) cdtN=193 dtN=65535 constraint=False
+MISMATCH tri=1529 slot=0 edge=(244,237) cdtN=-1 dtN=199 constraint=True
+MISMATCH tri=1529 slot=2 edge=(1079,244) cdtN=199 dtN=65535 constraint=False
+MISMATCH tri=1533 slot=0 edge=(248,241) cdtN=-1 dtN=205 constraint=True
+MISMATCH tri=1533 slot=2 edge=(1081,248) cdtN=205 dtN=65535 constraint=False
+MISMATCH tri=1549 slot=0 edge=(295,1107) cdtN=278 dtN=65535 constraint=False
+MISMATCH tri=1549 slot=2 edge=(286,295) cdtN=-1 dtN=278 constraint=True
+MISMATCH tri=1555 slot=0 edge=(303,1111) cdtN=269 dtN=65535 constraint=False
+MISMATCH tri=1555 slot=2 edge=(294,303) cdtN=-1 dtN=269 constraint=True
+MISMATCH tri=1562 slot=0 edge=(311,1115) cdtN=1416 dtN=65535 constraint=False
+MISMATCH tri=1562 slot=2 edge=(302,311) cdtN=-1 dtN=1416 constraint=True
+MISMATCH tri=1568 slot=0 edge=(319,1119) cdtN=267 dtN=65535 constraint=False
+MISMATCH tri=1568 slot=2 edge=(310,319) cdtN=-1 dtN=267 constraint=True
+MISMATCH tri=1575 slot=0 edge=(327,1123) cdtN=264 dtN=65535 constraint=False
+MISMATCH tri=1575 slot=2 edge=(318,327) cdtN=-1 dtN=264 constraint=True
+MISMATCH tri=1581 slot=0 edge=(335,1127) cdtN=265 dtN=65535 constraint=False
+MISMATCH tri=1581 slot=2 edge=(326,335) cdtN=-1 dtN=265 constraint=True
+MISMATCH tri=1592 slot=0 edge=(337,1135) cdtN=-1 dtN=319 constraint=True
+MISMATCH tri=1592 slot=2 edge=(170,337) cdtN=319 dtN=65535 constraint=False
+FUNNEL_COLLAPSE: tris=1594 triPath=8 start=(2,2) end=(-13,4)
+[Server] Action: SetMoveDirectionAction target=209 execTick=19 result=Success (serverTick=33)
+[Rollback] Rolling back from 33 to 19 (Input at 19)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=371 result=Success (serverTick=404)
+[Rollback] Rolling back from 404 to 371 (Input at 371)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=374 result=Success (serverTick=408)
+[Rollback] Rolling back from 408 to 374 (Input at 374)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=464 result=Success (serverTick=481)
+[Rollback] Rolling back from 481 to 464 (Input at 464)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=466 result=Success (serverTick=483)
+[Rollback] Rolling back from 483 to 466 (Input at 466)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=476 result=Success (serverTick=492)
+[Rollback] Rolling back from 492 to 476 (Input at 476)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=487 result=Success (serverTick=504)
+[Rollback] Rolling back from 504 to 487 (Input at 487)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=506 result=Success (serverTick=523)
+[Rollback] Rolling back from 523 to 506 (Input at 506)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=511 result=Success (serverTick=528)
+[Rollback] Rolling back from 528 to 511 (Input at 511)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=525 result=Success (serverTick=542)
+[Rollback] Rolling back from 542 to 525 (Input at 525)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=534 result=Success (serverTick=551)
+[Rollback] Rolling back from 551 to 534 (Input at 534)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=542 result=Success (serverTick=559)
+[Rollback] Rolling back from 559 to 542 (Input at 542)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=578 result=Success (serverTick=595)
+[Rollback] Rolling back from 595 to 578 (Input at 578)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=583 result=Success (serverTick=600)
+[Rollback] Rolling back from 600 to 583 (Input at 583)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=600 result=Success (serverTick=617)
+[Rollback] Rolling back from 617 to 600 (Input at 600)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=609 result=Success (serverTick=626)
+[Rollback] Rolling back from 626 to 609 (Input at 609)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=625 result=Success (serverTick=641)
+[Rollback] Rolling back from 641 to 625 (Input at 625)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=629 result=Success (serverTick=646)
+[Rollback] Rolling back from 646 to 629 (Input at 629)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=652 result=Success (serverTick=669)
+[Rollback] Rolling back from 669 to 652 (Input at 652)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=657 result=Success (serverTick=674)
+[Rollback] Rolling back from 674 to 657 (Input at 657)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=705 result=Success (serverTick=721)
+[Rollback] Rolling back from 721 to 705 (Input at 705)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=715 result=Success (serverTick=731)
+[Rollback] Rolling back from 731 to 715 (Input at 715)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=769 result=Success (serverTick=785)
+[Rollback] Rolling back from 785 to 769 (Input at 769)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=771 result=Success (serverTick=788)
+[Rollback] Rolling back from 788 to 771 (Input at 771)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=857 result=Success (serverTick=873)
+[Rollback] Rolling back from 873 to 857 (Input at 857)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=877 result=Success (serverTick=894)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Rollback] Rolling back from 894 to 877 (Input at 877)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=893 result=Success (serverTick=910)
+[Rollback] Rolling back from 910 to 893 (Input at 893)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=897 result=Success (serverTick=914)
+[Rollback] Rolling back from 914 to 897 (Input at 897)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=904 result=Success (serverTick=920)
+[Rollback] Rolling back from 920 to 904 (Input at 904)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=910 result=Success (serverTick=927)
+[Rollback] Rolling back from 927 to 910 (Input at 910)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=920 result=Success (serverTick=937)
+[Rollback] Rolling back from 937 to 920 (Input at 920)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=923 result=Success (serverTick=940)
+[Rollback] Rolling back from 940 to 923 (Input at 923)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=929 result=Success (serverTick=946)
+[Rollback] Rolling back from 946 to 929 (Input at 929)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=935 result=Success (serverTick=952)
+[Rollback] Rolling back from 952 to 935 (Input at 935)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=951 result=Success (serverTick=968)
+[Rollback] Rolling back from 968 to 951 (Input at 951)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=957 result=Success (serverTick=974)
+[Rollback] Rolling back from 974 to 957 (Input at 957)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=963 result=Success (serverTick=979)
+[Rollback] Rolling back from 979 to 963 (Input at 963)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1002 result=Success (serverTick=1018)
+[Rollback] Rolling back from 1018 to 1002 (Input at 1002)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1014 result=Success (serverTick=1031)
+[Rollback] Rolling back from 1031 to 1014 (Input at 1014)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1018 result=Success (serverTick=1035)
+[Rollback] Rolling back from 1035 to 1018 (Input at 1018)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1031 result=Success (serverTick=1047)
+[Rollback] Rolling back from 1047 to 1031 (Input at 1031)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1039 result=Success (serverTick=1056)
+[Rollback] Rolling back from 1056 to 1039 (Input at 1039)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1053 result=Success (serverTick=1069)
+[Rollback] Rolling back from 1069 to 1053 (Input at 1053)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1062 result=Success (serverTick=1078)
+[Rollback] Rolling back from 1078 to 1062 (Input at 1062)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1067 result=Success (serverTick=1082)
+[Rollback] Rolling back from 1082 to 1067 (Input at 1067)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1073 result=Success (serverTick=1088)
+[Rollback] Rolling back from 1088 to 1073 (Input at 1073)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1088 result=Success (serverTick=1104)
+[Rollback] Rolling back from 1104 to 1088 (Input at 1088)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1092 result=Success (serverTick=1108)
+[Rollback] Rolling back from 1108 to 1092 (Input at 1092)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1102 result=Success (serverTick=1118)
+[Rollback] Rolling back from 1118 to 1102 (Input at 1102)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1106 result=Success (serverTick=1121)
+[Rollback] Rolling back from 1121 to 1106 (Input at 1106)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1117 result=Success (serverTick=1133)
+[Rollback] Rolling back from 1133 to 1117 (Input at 1117)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1121 result=Success (serverTick=1137)
+[Rollback] Rolling back from 1137 to 1121 (Input at 1121)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1126 result=Success (serverTick=1141)
+[Rollback] Rolling back from 1141 to 1126 (Input at 1126)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1133 result=Success (serverTick=1149)
+[Rollback] Rolling back from 1149 to 1133 (Input at 1133)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1154 result=Success (serverTick=1170)
+[Rollback] Rolling back from 1170 to 1154 (Input at 1154)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1239 result=Success (serverTick=1254)
+[Rollback] Rolling back from 1254 to 1239 (Input at 1239)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1249 result=Success (serverTick=1265)
+[Rollback] Rolling back from 1265 to 1249 (Input at 1249)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1252 result=Success (serverTick=1268)
+[Rollback] Rolling back from 1268 to 1252 (Input at 1252)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1263 result=Success (serverTick=1279)
+[Rollback] Rolling back from 1279 to 1263 (Input at 1263)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1275 result=Success (serverTick=1291)
+[Rollback] Rolling back from 1291 to 1275 (Input at 1275)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1297 result=Success (serverTick=1312)
+[Rollback] Rolling back from 1312 to 1297 (Input at 1297)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1300 result=Success (serverTick=1316)
+[Rollback] Rolling back from 1316 to 1300 (Input at 1300)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1308 result=Success (serverTick=1324)
+[Rollback] Rolling back from 1324 to 1308 (Input at 1308)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1336 result=Success (serverTick=1352)
+[Rollback] Rolling back from 1352 to 1336 (Input at 1336)
+[Server] Action: SetMoveDirectionAction target=92 execTick=1338 result=Success (serverTick=1341)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1350 result=Success (serverTick=1366)
+[Rollback] Rolling back from 1366 to 1350 (Input at 1350)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1357 result=Success (serverTick=1373)
+[Rollback] Rolling back from 1373 to 1357 (Input at 1357)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1403 result=Success (serverTick=1419)
+[Rollback] Rolling back from 1419 to 1403 (Input at 1403)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1410 result=Success (serverTick=1426)
+[Rollback] Rolling back from 1426 to 1410 (Input at 1410)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1429 result=Success (serverTick=1445)
+[Rollback] Rolling back from 1445 to 1429 (Input at 1429)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1440 result=Success (serverTick=1456)
+[Rollback] Rolling back from 1456 to 1440 (Input at 1440)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1450 result=Success (serverTick=1466)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Rollback] Rolling back from 1466 to 1450 (Input at 1450)
+[Server] Action: SetMoveDirectionAction target=92 execTick=1452 result=Success (serverTick=1468)
+[Rollback] Rolling back from 1468 to 1452 (Input at 1452)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1453 result=Success (serverTick=1469)
+[Rollback] Rolling back from 1469 to 1453 (Input at 1453)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1513 result=Success (serverTick=1528)
+[Rollback] Rolling back from 1528 to 1513 (Input at 1513)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] Action: SetMoveDirectionAction target=92 execTick=1770 result=Success (serverTick=1800)
+[Rollback] Rolling back from 1800 to 1770 (Input at 1770)
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[Server] BroadcastToGroup e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, peers=1
+[PacketRouter] Player 8420cdcf-d595-ef65-66e7-dff9f98764da disconnected from match e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d. Players remaining: 0
+[PacketRouter] All players left match e270fadc-ae33-4c0c-b1ce-6fa608e8fb0d, removing match.
+
+

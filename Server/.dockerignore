@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/node_modules/
+*.user
+*.suo
+.git
+BenchmarkDotNet.Artifacts

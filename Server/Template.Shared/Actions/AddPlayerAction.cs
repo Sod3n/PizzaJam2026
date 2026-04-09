@@ -99,8 +99,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
     private Vector2 FindValidSpawnPosition(Context ctx, ref Deterministic.GameFramework.Types.DeterministicRandom random)
     {
         const int MaxAttempts = 10;
-        const float MinDistance = 5f; // Radius is 2, so 4 is touching. 5 is safe.
-        const float MinDistanceSq = MinDistance * MinDistance;
+        Float MinDistanceSq = (Float)25; // 5^2 — Radius is 2, so 4 is touching. 5 is safe.
 
         for (int i = 0; i < MaxAttempts; i++)
         {
@@ -119,7 +118,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
         return new Vector2(random.NextInt(-20, 20), random.NextInt(-20, 20));
     }
 
-    private bool IsPositionOccupied(Context ctx, Vector2 position, float minDistanceSq)
+    private bool IsPositionOccupied(Context ctx, Vector2 position, Float minDistanceSq)
     {
         foreach (var entity in ctx.State.Filter<PlayerEntity>())
         {

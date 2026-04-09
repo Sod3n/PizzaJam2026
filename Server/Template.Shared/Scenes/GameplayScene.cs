@@ -20,6 +20,8 @@ public class GameplayScene : IScene
     // Use CDT navigation instead of grid-based — filter out the old NavigationSystem
     public IEnumerable<ISystem> RegisterSystems(GameSimulation loop)
     {
+        // DIAGNOSTIC: disable ALL systems to isolate desync to action/prediction layer
+        yield break;
         foreach (var system in ServiceLocator.GetAll<ISystem>())
         {
             if (system is NavigationSystem)
@@ -35,9 +37,9 @@ public class GameplayScene : IScene
 
         var state = loop.State;
 
-        float center = 0f;
-        float halfSize = StarGrid.OuterRadius + StarGrid.GridStep; // Ensure bounds cover farthest grid position
-        float wallThickness = 1f;
+        Float center = (Float)0;
+        Float halfSize = (Float)(StarGrid.OuterRadius + StarGrid.GridStep); // Ensure bounds cover farthest grid position
+        Float wallThickness = (Float)1;
 
         // Top Wall (Horizontal)
         // Position: (X = CenterX, Y = CenterY - HalfSize)
@@ -106,7 +108,7 @@ public class GameplayScene : IScene
         Float length = isHorizontal ? size.X : size.Y;
         Float thickness = isHorizontal ? size.Y : size.X;
 
-        int chunkCount = (int)Math.Ceiling((float)length / (float)chunkSize);
+        int chunkCount = (int)Float.Ceil(length / chunkSize);
         Float actualChunkLength = length / chunkCount;
 
         // Start position (left/top edge of the wall)

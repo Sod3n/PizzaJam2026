@@ -18,4 +18,5 @@ public partial class NavigationWorld2DNode : Node
     [Export] public int LastObstacleHash;
     [Export] public int LastStaticBodyCount;
     [Export] public long DirtyTick;
+    [Export] public int MapHash;
 }

@@ -80,7 +80,7 @@ public class DeterminismRegressionTests : IDisposable
     /// </summary>
     private Guid ReplayRecording(string recordingPath, out long totalTicks)
     {
-        var (ticks, actions, _) = InputRecording.Load(recordingPath);
+        var (ticks, actions, _, _, _, _) = InputRecording.Load(recordingPath);
         totalTicks = ticks;
 
         var game = CreateGame();
@@ -142,7 +142,7 @@ public class DeterminismRegressionTests : IDisposable
         hash1.Should().Be(hash2, $"replaying {recordingFile} twice should produce identical state");
 
         // Also check against the recorded hash (from original session)
-        var (_, _, recordedHash) = InputRecording.Load(path);
+        var (_, _, recordedHash, _, _, _) = InputRecording.Load(path);
         _output.WriteLine($"Recorded hash: {recordedHash}");
         _output.WriteLine($"Match with recorded: {hash1 == recordedHash}");
 

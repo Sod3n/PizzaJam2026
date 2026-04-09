@@ -29,8 +29,11 @@ public partial class GameManager : Node
 
     [Export] public string ServerIp = "127.0.0.1";
     [Export] public int ServerPort = 9050;
+    [Export] public string RemoteServerIp = "pizzajam-server.swedencentral.azurecontainer.io";
+    [Export] public int RemoteServerPort = 9050;
     [Export] public bool OfflineMode = false;
     [Export] public bool RecordInputs = false;
+    [Export] public int SimulatedLatencyMs = 0;
 
     private InputRecorder _inputRecorder;
     public bool IsLoadedFromSave { get; private set; }
@@ -93,13 +96,25 @@ public partial class GameManager : Node
         Game = TemplateGameFactory.CreateGame(tickRate: 60, gameDataJson: gameDataJson);
 
         // 2. Setup Network
-        var serverUrl = $"{ServerIp}:{ServerPort}";
         var networkClient = new LiteNetLibNetworkClient();
-
-        GameClient = new GameClient(networkClient, serverUrl, Game);
+        GameClient = new GameClient(networkClient, $"{ServerIp}:{ServerPort}", Game);
         GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
+        if (SimulatedLatencyMs > 0)
+        {
+            GameClient.SimulatedLatencyMs = SimulatedLatencyMs;
+            GD.Print($"[GameManager] Simulated latency: {SimulatedLatencyMs}ms");
+        }
+        OnGameStarted += () => GameClient.ActivateSimulatedLatency();
 
         // Wait for UI to call StartOffline(), CreateLobby(), or JoinLobby()
+    }
+
+    public void SetUseRemoteServer(bool useRemote)
+    {
+        if (useRemote)
+            GameClient.SetConnectionString($"{RemoteServerIp}:{RemoteServerPort}");
+        else
+            GameClient.SetConnectionString($"{ServerIp}:{ServerPort}");
     }
 
     public void StartOffline()
@@ -169,6 +184,7 @@ public partial class GameManager : Node
         }
 
         StartMetricsExport();
+        StartInputRecording();
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
@@ -219,8 +235,15 @@ public partial class GameManager : Node
             await GameClient.StartLobbyMatchAsync(CurrentLobbyId, _pendingLoadState);
             _pendingLoadState = null;
 
+            // Start recording BEFORE sync so we capture all actions from TickSnapshots
+            // that arrive during WaitForSyncAsync. Initial state is captured after sync.
+            StartInputRecording();
+
             OnStatusChanged?.Invoke("Waiting for sync...");
             await GameClient.WaitForSyncAsync();
+
+            // Re-capture initial state now that we have the server's authoritative state
+            _inputRecorder?.CaptureInitialState();
 
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
@@ -248,8 +271,14 @@ public partial class GameManager : Node
             CurrentLobbyId = lobbyId;
             await GameClient.JoinLobbyAsync(lobbyId);
 
+            // Start recording BEFORE sync
+            StartInputRecording();
+
             OnStatusChanged?.Invoke("Waiting for host to start...");
             await GameClient.WaitForSyncAsync();
+
+            // Re-capture initial state after sync
+            _inputRecorder?.CaptureInitialState();
 
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
@@ -342,8 +371,23 @@ public partial class GameManager : Node
     {
         if (!RecordInputs) return;
         _inputRecorder = new InputRecorder(Game);
+        _inputRecorder.CaptureStateAtCheckpoints = true;
         _inputRecorder.Start();
         GD.Print("[GameManager] Input recording STARTED");
+
+        // Auto-save recording every 10 seconds in case of unclean exit
+        Game.Loop.OnTick += () =>
+        {
+            if (_inputRecorder != null && Game.Loop.CurrentTick % 600 == 0 && Game.Loop.CurrentTick > 0)
+            {
+                var dir = System.IO.Path.Combine(
+                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+                    "PizzaJam_Recordings");
+                System.IO.Directory.CreateDirectory(dir);
+                var path = System.IO.Path.Combine(dir, "recording_latest.bin");
+                _inputRecorder.Save(path);
+            }
+        };
     }
 
     /// <summary>

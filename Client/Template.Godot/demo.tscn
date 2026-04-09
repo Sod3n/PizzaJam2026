@@ -103,6 +103,7 @@ buffer = PackedFloat32Array(-1.07601, 0, -1.20455, 2.39808, 0, 1.61516, 0, 0, 1.
 [node name="Main" type="Node" parent="." unique_id=2048933969]
 script = ExtResource("1_884kg")
 RecordInputs = true
+SimulatedLatencyMs = 300
 
 [node name="InputManager" type="Node" parent="Main" unique_id=366168345]
 script = ExtResource("2_d4o4o")
