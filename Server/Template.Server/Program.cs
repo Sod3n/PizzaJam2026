@@ -2,6 +2,8 @@ using Deterministic.GameFramework.Network.Server;
 using Deterministic.GameFramework.ServerV2;
 using Template.Server;
 
+new Deterministic.GameFramework.Utils.Logging.ConsoleLogger();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

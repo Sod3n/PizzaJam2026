@@ -20,11 +20,11 @@ public class GameplayScene : IScene
     // Use CDT navigation instead of grid-based — filter out the old NavigationSystem
     public IEnumerable<ISystem> RegisterSystems(GameSimulation loop)
     {
-        // DIAGNOSTIC: disable ALL systems to isolate desync to action/prediction layer
-        yield break;
         foreach (var system in ServiceLocator.GetAll<ISystem>())
         {
             if (system is NavigationSystem)
+                continue;
+            if (system is Template.Shared.Systems.DebugObstacleSpawnSystem)
                 continue;
             yield return system;
         }
@@ -60,9 +60,6 @@ public class GameplayScene : IScene
         // Spawn some coins
         var context = new Context(state, Entity.Null, null!);
 
-        // DEBUG: Spawn all skins in a line
-        // SkinDebugSpawner.SpawnAllSkinsInLine(context, new Vector2(0, -5), 2);
-
         // Navigation world - auto-bakes nav mesh from physics obstacles
         var navWorld = state.CreateEntity();
         var navWorldComp = NavigationWorld2D.Default;
@@ -71,13 +68,12 @@ public class GameplayScene : IScene
         navWorldComp.CellSize = 2.0f;
         navWorldComp.AgentRadius = 0.5f;
         navWorldComp.ChunkSize = 20f;
-        
         navWorldComp.ObstacleMask = (uint)CollisionLayer.Physics;
         state.AddComponent(navWorld, navWorldComp);
 
         // Initialize Global Resources
         var globalRes = state.CreateEntity();
-        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 50, HelpersEnabled = 1 }); // Start with some coins to buy land
+        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 50, HelpersEnabled = 1 });
 
         // Initialize Metrics tracking
         var metricsEntity = state.CreateEntity();
@@ -87,11 +83,10 @@ public class GameplayScene : IScene
         var skinSpawnEntity = state.CreateEntity();
         state.AddComponent(skinSpawnEntity, new SkinSpawnCountsComponent());
 
-        // Single starting land plot at center — builds into a sell point
-        // Buying it spawns 4 neighbors, which spawn their neighbors, etc.
+        // Single starting land plot at center
         StarGrid.TrySpawnLand(context, 0, 0);
 
-        // Spawn 2 initial cows: both Grass (must breed up to unlock higher tiers)
+        // Spawn 2 initial cows
         var cow1 = CowDefinition.Create(context, new Vector2(2, 2));
         state.GetComponent<CowComponent>(cow1).PreferredFood = FoodType.Grass;
 

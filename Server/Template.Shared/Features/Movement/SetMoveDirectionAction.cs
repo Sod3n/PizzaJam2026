@@ -27,8 +27,26 @@ public class SetMoveDirectionActionService : ActionService<SetMoveDirectionActio
 {
     protected override void ExecuteProcess(SetMoveDirectionAction directionAction, ref CharacterBody2D body, Context ctx)
     {
-        // DIAGNOSTIC: absolute minimum — just move position by direction, no math
+        // Block movement while in any active state (milking, etc.)
+        if (ctx.State.HasComponent<StateComponent>(ctx.Entity))
+        {
+            ref var sc = ref ctx.State.GetComponent<StateComponent>(ctx.Entity);
+            if (sc.IsEnabled)
+            {
+                body.Velocity = Vector2.Zero;
+                return;
+            }
+        }
+
+        body.Velocity = new Vector2(directionAction.Direction.X * directionAction.Speed * 0.5f, directionAction.Direction.Y * directionAction.Speed);
+
+        // Update Rotation to face direction (only if moving)
+        if (directionAction.Speed <= new Float(0.01f) ||
+            directionAction.Direction.SqrMagnitude <= new Float(0.01f)) return;
+
+        var angle = directionAction.Direction.ToAngle();
         ref var transform = ref ctx.State.GetComponent<Transform2D>(ctx.Entity);
-        transform.Position += directionAction.Direction;
+
+        transform.Rotation = angle;
     }
 }
