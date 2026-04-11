@@ -1,3 +1,4 @@
+#if TOOLS
 using Godot;
 using Ntreev.Library.Psd;
 using System;
@@ -354,3 +355,4 @@ namespace Template.Godot.Editor
         }
     }
 }
+#endif
