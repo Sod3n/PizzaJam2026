@@ -36,6 +36,11 @@ public static class TemplateGameFactory
         // 1. Create Game (encapsulates State, Loop, Dispatcher, Scheduler, SceneManager)
         var game = new Game(tickRate: tickRate);
 
+        // Pre-allocate entity capacity to avoid store resizes during gameplay.
+        // Each resize invalidates all outstanding ref T from GetComponent().
+        // 512 covers: ~90 scene entities + player + buildings + cows + bred cows.
+        game.State.ReserveEntityCapacity(512);
+
         // 2. Register physics system (stateless sensor queries — fully deterministic, no rollback issues)
         game.Loop.Simulation.SystemRunner.EnableSystem(new SensorQuerySystem());
 

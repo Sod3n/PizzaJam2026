@@ -58,12 +58,15 @@ public class CowSystem : ISystem
             }
         }
 
-        // Handle state completions on players
+        // Handle state completions on players.
+        // Only process Age==0 (the tick Complete() fired). Age>0 means AnimationsSystem
+        // already aged it and will remove it next tick — processing again would double-fire.
         foreach (var playerEntity in state.Filter<ExitStateComponent>())
         {
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
 
             var exit = state.GetComponent<ExitStateComponent>(playerEntity);
+            if (exit.Age > 0) continue;
             ref var sc = ref state.GetComponent<StateComponent>(playerEntity);
             ref var playerState = ref state.GetComponent<PlayerStateComponent>(playerEntity);
 
@@ -339,6 +342,9 @@ public class CowSystem : ISystem
             && state.HasComponent<SkinComponent>(targetCow) && state.HasComponent<SkinComponent>(followingCow))
         {
             SpawnCrossbredCow(state, playerEntity, followingCow, targetCow);
+            // Re-obtain refs — entity creation may have resized component stores
+            playerState = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+            sc = ref state.GetComponent<StateComponent>(playerEntity);
         }
 
         playerState.InteractionTarget = Entity.Null;
@@ -558,6 +564,11 @@ public class CowSystem : ISystem
                 }
             }
         }
+
+        // Re-obtain refs — entity creation (SpawnCrossbredCow, helper spawn) may have
+        // resized component stores, invalidating any ref obtained before the spawn.
+        playerState = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+        sc = ref state.GetComponent<StateComponent>(playerEntity);
 
         // Baby cow follows the player
         if (babyCow != Entity.Null && state.HasComponent<CowComponent>(babyCow))

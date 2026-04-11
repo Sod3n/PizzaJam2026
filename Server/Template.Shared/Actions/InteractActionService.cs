@@ -1,3 +1,4 @@
+using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.TwoD;
@@ -207,6 +208,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
         loveHouse.BreedProgress++;
+
+        var _gt = ctx.State.GetCustomData<IGameTime>();
+        bool _resim = _gt is GameSimulation _sim && _sim.IsResimulating;
+        ILogger.Log($"[BreedClick] Tick={_gt?.CurrentTick} Progress={loveHouse.BreedProgress}/{loveHouse.BreedCost} Resim={_resim}");
 
         // Compute breed luck for visual heart feedback
         int heartPercent = 50;

@@ -9,6 +9,7 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 using Template.Shared.Factories;
 using Template.Shared.Features.Movement;
 using Template.Shared.Recording;
@@ -245,6 +246,425 @@ public class LongRunDesyncTests : IDisposable
         desyncCount.Should().Be(0,
             $"[{label}] after {totalTicks} ticks with {networkDelay}-tick network delay, " +
             $"state should remain in sync (first desync at tick {firstDesyncTick})");
+    }
+
+    /// <summary>
+    /// Tests breeding at a love house with network latency.
+    /// Sets up breed state directly (2 cows in love house, player in breed state),
+    /// then spams breed click InteractActions with delayed delivery to the server.
+    /// This reproduces the FollowingCow + LoveHouseComponent off-by-1 desync.
+    /// </summary>
+    [Theory]
+    [InlineData(18, "breed_300ms")]
+    [InlineData(30, "breed_500ms")]
+    [InlineData(0, "breed_nolatency")]
+    public void Breed_WithLatency_ShouldNotDesync(int networkDelay, string label)
+    {
+        var server = CreateGame();
+        var client = CreateGame();
+
+        var userId = Guid.NewGuid();
+        var serverPlayer = AddPlayer(server, userId);
+        var clientPlayer = AddPlayer(client, userId);
+
+        // Run a few ticks to stabilize
+        for (int i = 0; i < 5; i++)
+        {
+            server.Loop.RunSingleTick();
+            client.Loop.RunSingleTick();
+        }
+
+        // Set up breed scenario on both games identically
+        SetupBreedState(server, serverPlayer, userId);
+        SetupBreedState(client, clientPlayer, userId);
+
+        // Verify sync before breeding
+        var sh = StateHasher.Hash(server.State);
+        var ch = StateHasher.Hash(client.State);
+        sh.Should().Be(ch, "should be in sync before breeding starts");
+
+        // Spam breed click InteractActions
+        int breedClicks = 30; // More than enough to complete any breed
+        int clickInterval = 3; // Every 3 ticks
+        var pendingActions = new Queue<(int deliveryTick, long execTick, InteractAction action)>();
+        int desyncCount = 0;
+        long firstDesyncTick = -1;
+        int totalTicks = breedClicks * clickInterval + 300; // Extra ticks for completion + cooldown
+
+        // Track rollbacks
+        int serverRollbacks = 0;
+        long serverDirtyBefore = long.MaxValue;
+        int serverDuplicates = 0;
+
+        for (int tick = 0; tick < totalTicks; tick++)
+        {
+            // Schedule breed clicks
+            if (tick % clickInterval == 0 && tick < breedClicks * clickInterval)
+            {
+                long execTick = client.Loop.CurrentTick + 5;
+                var action = new InteractAction { UserId = userId };
+
+                client.Loop.ScheduleOnTick(execTick, action, clientPlayer);
+
+                if (networkDelay > 0)
+                    pendingActions.Enqueue((tick + networkDelay, execTick, action));
+                else
+                    server.Loop.ScheduleOnTick(execTick, action, serverPlayer);
+            }
+
+            // Deliver delayed actions to server
+            while (pendingActions.Count > 0 && pendingActions.Peek().deliveryTick <= tick)
+            {
+                var d = pendingActions.Dequeue();
+                long dirtyBefore = server.Scheduler.EarliestDirtyTick;
+                server.Loop.ScheduleOnTick(d.execTick, d.action, serverPlayer);
+                long dirtyAfter = server.Scheduler.EarliestDirtyTick;
+                bool willRollback = dirtyAfter < server.Loop.CurrentTick;
+                bool wasDuplicate = dirtyBefore == dirtyAfter && dirtyAfter == long.MaxValue;
+                _output.WriteLine($"  DELIVER execTick={d.execTick} serverTick={server.Loop.CurrentTick} dirty={dirtyAfter} rollback={willRollback} dup={wasDuplicate}");
+            }
+
+            server.Loop.RunSingleTick();
+            client.Loop.RunSingleTick();
+
+            // Track breed completion on both sides
+            foreach (var lh in server.State.Filter<LoveHouseComponent>())
+            {
+                var slh = server.State.GetComponent<LoveHouseComponent>(lh);
+                if (slh.CooldownTicksRemaining == LoveHouseComponent.BreedCooldownTicks)
+                {
+                    _output.WriteLine($"  SERVER breed complete at serverTick={server.Loop.CurrentTick} testTick={tick}");
+                    // Only log once
+                    server.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining--;
+                    server.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining++;
+                }
+            }
+            foreach (var lh in client.State.Filter<LoveHouseComponent>())
+            {
+                var clh = client.State.GetComponent<LoveHouseComponent>(lh);
+                if (clh.CooldownTicksRemaining == LoveHouseComponent.BreedCooldownTicks)
+                {
+                    _output.WriteLine($"  CLIENT breed complete at clientTick={client.Loop.CurrentTick} testTick={tick}");
+                    client.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining--;
+                    client.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining++;
+                }
+            }
+
+            // Check hash every 10 ticks for fine-grained detection
+            if (tick > 0 && tick % 10 == 0)
+            {
+                long checkTick = server.Loop.CurrentTick - System.Math.Max(networkDelay + 10, 30);
+                if (checkTick <= 0) continue;
+
+                try
+                {
+                    var sHash = HashAtTick(server, checkTick);
+                    var cHash = HashAtTick(client, checkTick);
+
+                    if (sHash != cHash)
+                    {
+                        desyncCount++;
+                        if (firstDesyncTick < 0) firstDesyncTick = checkTick;
+                        _output.WriteLine($"  DESYNC at tick {tick}, confirmed tick {checkTick}");
+
+                        if (desyncCount <= 3)
+                        {
+                            server.Loop.Simulation.History.TryGetSnapshotData(checkTick, out byte[]? sd);
+                            client.Loop.Simulation.History.TryGetSnapshotData(checkTick, out byte[]? cd);
+                            if (sd != null && cd != null)
+                                StateDumper.LogStateDiff($"Breed_{label}_{checkTick}", checkTick, cd, sd);
+                        }
+                    }
+                }
+                catch { /* Tick not in history */ }
+            }
+        }
+
+        _output.WriteLine($"[{label}] {totalTicks} ticks, {desyncCount} desyncs" +
+            (firstDesyncTick >= 0 ? $" (first at tick {firstDesyncTick})" : ""));
+
+        // Log breed progress on both sides at the divergence point
+        if (firstDesyncTick >= 0)
+        {
+            foreach (var lh in server.State.Filter<LoveHouseComponent>())
+            {
+                var slh = server.State.GetComponent<LoveHouseComponent>(lh);
+                _output.WriteLine($"  Server LoveHouse {lh.Id}: Progress={slh.BreedProgress}/{slh.BreedCost} Cooldown={slh.CooldownTicksRemaining}");
+            }
+            foreach (var lh in client.State.Filter<LoveHouseComponent>())
+            {
+                var clh = client.State.GetComponent<LoveHouseComponent>(lh);
+                _output.WriteLine($"  Client LoveHouse {lh.Id}: Progress={clh.BreedProgress}/{clh.BreedCost} Cooldown={clh.CooldownTicksRemaining}");
+            }
+        }
+
+        desyncCount.Should().Be(0,
+            $"[{label}] breeding with {networkDelay}-tick delay should not desync (first at tick {firstDesyncTick})");
+    }
+
+    /// <summary>
+    /// Sets up a love house with 2 cows assigned and the player in breed state.
+    /// Must be called identically on both server and client.
+    /// </summary>
+    private void SetupBreedState(Game game, Entity playerEntity, Guid userId)
+    {
+        var state = game.State;
+        var ctx = new Context(state, playerEntity, null!);
+
+        // Create a love house near origin
+        var loveHouse = LoveHouseDefinition.Create(ctx, new Vector2(5, 0));
+
+        // Create 2 extra houses so cowCount < houseCount check passes
+        HouseDefinition.Create(ctx, new Vector2(10, 0));
+        HouseDefinition.Create(ctx, new Vector2(10, 5));
+        HouseDefinition.Create(ctx, new Vector2(10, -5));
+
+        // Create 2 cows and assign them to the love house
+        var cow1 = CowDefinition.Create(ctx, new Vector2(4, 0));
+        state.GetComponent<CowComponent>(cow1).PreferredFood = FoodType.Grass;
+
+        var cow2 = CowDefinition.Create(ctx, new Vector2(6, 0));
+        state.GetComponent<CowComponent>(cow2).PreferredFood = FoodType.Grass;
+
+        ref var lh = ref state.GetComponent<LoveHouseComponent>(loveHouse);
+        lh.CowId1 = cow1;
+        lh.CowId2 = cow2;
+
+        // Move player near love house so sensor picks it up
+        ref var playerTransform = ref state.GetComponent<Transform2D>(playerEntity);
+        playerTransform.Position = new Vector2(5, 1);
+
+        // Set up player in breed state
+        ref var sc = ref state.GetComponent<StateComponent>(playerEntity);
+        StateDefinitions.Begin(ref sc, StateKeys.Breed);
+
+        ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+        ps.InteractionTarget = loveHouse;
+        ps.ReturnPosition = playerTransform.Position;
+
+        state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Breed, Phase = sc.Phase, Age = 0 });
+
+        // Set breed cost
+        lh = ref state.GetComponent<LoveHouseComponent>(loveHouse);
+        lh.BreedCost = 10;
+        lh.BreedProgress = 0;
+        lh.HeartPercent = 70;
+
+        // Note: in real game, player + cows are hidden during breed.
+        // Skipping here — doesn't affect determinism.
+    }
+
+    /// <summary>
+    /// Pinpoints the exact system that causes breed desync.
+    /// Enables per-system hashing around the divergence tick to find which system
+    /// produces different state after rollback.
+    /// </summary>
+    [Fact]
+    public void Breed_PinpointDivergence()
+    {
+        var server = CreateGame();
+        var client = CreateGame();
+
+        var userId = Guid.NewGuid();
+        var serverPlayer = AddPlayer(server, userId);
+        var clientPlayer = AddPlayer(client, userId);
+
+        for (int i = 0; i < 5; i++)
+        {
+            server.Loop.RunSingleTick();
+            client.Loop.RunSingleTick();
+        }
+
+        SetupBreedState(server, serverPlayer, userId);
+        SetupBreedState(client, clientPlayer, userId);
+
+        int networkDelay = 18;
+        int breedClicks = 30;
+        int clickInterval = 3;
+        var pendingActions = new Queue<(int deliveryTick, long execTick, InteractAction action)>();
+        int totalTicks = breedClicks * clickInterval + 300;
+        long firstDesyncTick = -1;
+
+        // Enable per-system diagnostics — output goes to console, captured by xunit
+        server.Loop.Simulation.SystemRunner.DiagnosticHashPerSystem = true;
+        client.Loop.Simulation.SystemRunner.DiagnosticHashPerSystem = true;
+        // Only enable around expected divergence area (tick 90-100 based on previous test)
+        server.Loop.Simulation.SystemRunner.DiagnosticTickMin = 85;
+        server.Loop.Simulation.SystemRunner.DiagnosticTickMax = 105;
+        client.Loop.Simulation.SystemRunner.DiagnosticTickMin = 85;
+        client.Loop.Simulation.SystemRunner.DiagnosticTickMax = 105;
+
+        var serverHashes = new Dictionary<long, Guid>();
+        var clientHashes = new Dictionary<long, Guid>();
+
+        for (int tick = 0; tick < totalTicks; tick++)
+        {
+            if (tick % clickInterval == 0 && tick < breedClicks * clickInterval)
+            {
+                long execTick = client.Loop.CurrentTick + 5;
+                var action = new InteractAction { UserId = userId };
+                client.Loop.ScheduleOnTick(execTick, action, clientPlayer);
+                pendingActions.Enqueue((tick + networkDelay, execTick, action));
+            }
+
+            while (pendingActions.Count > 0 && pendingActions.Peek().deliveryTick <= tick)
+            {
+                var d = pendingActions.Dequeue();
+                server.Loop.ScheduleOnTick(d.execTick, d.action, serverPlayer);
+            }
+
+            server.Loop.RunSingleTick();
+            client.Loop.RunSingleTick();
+
+            // Store hashes for every tick
+            long st = server.Loop.CurrentTick;
+            serverHashes[st] = StateHasher.Hash(server.State);
+            clientHashes[st] = StateHasher.Hash(client.State);
+
+            // Stop after finding divergence
+            if (firstDesyncTick < 0 && serverHashes[st] != clientHashes[st])
+            {
+                firstDesyncTick = st;
+                _output.WriteLine($"=== FIRST LIVE DIVERGENCE at tick {st} ===");
+                _output.WriteLine($"  Server: {serverHashes[st]}");
+                _output.WriteLine($"  Client: {clientHashes[st]}");
+
+                // Dump state diff
+                byte[] sd = StateSerializer.Serialize(server.State);
+                byte[] cd = StateSerializer.Serialize(client.State);
+                StateDumper.LogStateDiff($"Breed_Pinpoint_{st}", st, cd, sd);
+
+                // Also check the previous tick from history
+                if (server.Loop.Simulation.History.TryGetSnapshotData(st - 1, out byte[]? prevSd) &&
+                    client.Loop.Simulation.History.TryGetSnapshotData(st - 1, out byte[]? prevCd))
+                {
+                    var prevSh = StateHasher.Hash(prevSd!);
+                    var prevCh = StateHasher.Hash(prevCd!);
+                    _output.WriteLine($"  Previous tick {st - 1}: server={prevSh} client={prevCh} {(prevSh == prevCh ? "MATCH" : "DIVERGE")}");
+                    if (prevSh != prevCh)
+                        StateDumper.LogStateDiff($"Breed_Pinpoint_{st - 1}", st - 1, prevCd!, prevSd!);
+                }
+
+                // Run a few more ticks for context then stop
+                for (int extra = 0; extra < 5; extra++)
+                {
+                    while (pendingActions.Count > 0 && pendingActions.Peek().deliveryTick <= tick + extra + 1)
+                    {
+                        var d = pendingActions.Dequeue();
+                        server.Loop.ScheduleOnTick(d.execTick, d.action, serverPlayer);
+                    }
+                    server.Loop.RunSingleTick();
+                    client.Loop.RunSingleTick();
+                }
+                break;
+            }
+        }
+
+        firstDesyncTick.Should().Be(-1, $"should not diverge (first at tick {firstDesyncTick})");
+    }
+
+    /// <summary>
+    /// Tests if rollback+replay produces identical state to forward simulation.
+    /// One game runs forward. Another runs forward, then rolls back 10 ticks, replays.
+    /// Hashes must match — if not, something in the rollback/replay path is lossy.
+    /// </summary>
+    [Fact]
+    public void Rollback_Replay_ShouldMatchForward()
+    {
+        var forward = CreateGame();
+        var rollback = CreateGame();
+
+        var userId = Guid.NewGuid();
+        var fwdPlayer = AddPlayer(forward, userId);
+        var rbkPlayer = AddPlayer(rollback, userId);
+
+        // Schedule some actions on both identically
+        for (int i = 0; i < 30; i++)
+        {
+            long execTick = forward.Loop.CurrentTick + 5;
+            var move = new SetMoveDirectionAction(new Vector2(1, 0).Normalized, (Float)15);
+            forward.Loop.ScheduleOnTick(execTick, move, fwdPlayer);
+            rollback.Loop.ScheduleOnTick(execTick, move, rbkPlayer);
+
+            if (i % 3 == 0)
+            {
+                var interact = new InteractAction { UserId = userId };
+                forward.Loop.ScheduleOnTick(execTick, interact, fwdPlayer);
+                rollback.Loop.ScheduleOnTick(execTick, interact, rbkPlayer);
+            }
+
+            forward.Loop.RunSingleTick();
+            rollback.Loop.RunSingleTick();
+        }
+
+        // Verify they're in sync
+        var h1 = StateHasher.Hash(forward.State);
+        var h2 = StateHasher.Hash(rollback.State);
+        h1.Should().Be(h2, "should be in sync before rollback");
+
+        // Now force a rollback on the "rollback" game by scheduling a late action
+        // Simulate: action for 10 ticks ago arrives now
+        long pastTick = rollback.Loop.CurrentTick - 10;
+        var lateAction = new SetMoveDirectionAction(new Vector2(0, 1).Normalized, (Float)15);
+        rollback.Loop.ScheduleOnTick(pastTick, lateAction, rbkPlayer);
+        // Also schedule on forward at the same tick (it's already past, but forward never rolled back)
+        forward.Loop.ScheduleOnTick(pastTick, lateAction, fwdPlayer);
+
+        // Run both forward for more ticks
+        for (int i = 0; i < 30; i++)
+        {
+            forward.Loop.RunSingleTick();
+            rollback.Loop.RunSingleTick();
+        }
+
+        // Compare: rollback game should match forward game
+        // (rollback replayed with the late action from pastTick,
+        //  forward also has it but applied it "retroactively")
+        var fHash = StateHasher.Hash(forward.State);
+        var rHash = StateHasher.Hash(rollback.State);
+
+        _output.WriteLine($"Forward:  {fHash}");
+        _output.WriteLine($"Rollback: {rHash}");
+
+        if (fHash != rHash)
+        {
+            byte[] fd = StateSerializer.Serialize(forward.State);
+            byte[] rd = StateSerializer.Serialize(rollback.State);
+            StateDumper.LogStateDiff("Rollback_vs_Forward", forward.Loop.CurrentTick, fd, rd);
+        }
+
+        rHash.Should().Be(fHash, "rollback+replay must produce identical state to forward simulation");
+    }
+
+    /// <summary>
+    /// Tests if serialization roundtrip is lossless.
+    /// If this fails, rollback (which serializes+deserializes state) corrupts state.
+    /// </summary>
+    [Fact]
+    public void Serialization_Roundtrip_ShouldBeLossless()
+    {
+        var game = CreateGame();
+        var userId = Guid.NewGuid();
+        AddPlayer(game, userId);
+
+        // Run some ticks to build up state
+        for (int i = 0; i < 60; i++)
+            game.Loop.RunSingleTick();
+
+        // Hash before
+        var hashBefore = StateHasher.Hash(game.State);
+
+        // Serialize → deserialize (same as rollback)
+        byte[] serialized = StateSerializer.Serialize(game.State);
+        StateSerializer.Deserialize(game.State, serialized, serialized.Length, syncComponentIds: false);
+
+        // Hash after
+        var hashAfter = StateHasher.Hash(game.State);
+
+        _output.WriteLine($"Before: {hashBefore}");
+        _output.WriteLine($"After:  {hashAfter}");
+
+        hashAfter.Should().Be(hashBefore, "serialization roundtrip must be lossless");
     }
 
     /// <summary>
