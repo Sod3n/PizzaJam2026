@@ -47,6 +47,10 @@ public static class TemplateGameFactory
         // 3. Load Initial Scene
         game.SceneManager.LoadScene(new GameplayScene());
 
+        // Re-reserve after scene load — component stores created during LoadScene
+        // start at default capacity, not the 512 we reserved above.
+        game.State.ReserveEntityCapacity(512);
+
         return game;
     }
 }
