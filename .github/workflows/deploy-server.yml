@@ -5,31 +5,35 @@ on:
   push:
     branches: [server]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/pizzajam-server
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Build Docker image
-        run: docker build -t pizzajam-server:latest ./Server
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Transfer image to VPS
+      - name: Build and push Docker image
         run: |
-          sudo apt-get install -y sshpass
-          docker save pizzajam-server:latest | gzip > /tmp/image.tar.gz
-          sshpass -p "${{ secrets.VPS_PASSWORD }}" \
-            scp -o StrictHostKeyChecking=no \
-            /tmp/image.tar.gz ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/tmp/image.tar.gz
+          docker build -t ghcr.io/${{ env.IMAGE_NAME }}:latest ./Server
+          docker push ghcr.io/${{ env.IMAGE_NAME }}:latest
 
       - name: Deploy on VPS
         run: |
+          sudo apt-get install -y sshpass
           sshpass -p "${{ secrets.VPS_PASSWORD }}" \
             ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} bash -s <<'EOF'
-          docker load < /tmp/image.tar.gz
-          rm -f /tmp/image.tar.gz
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker pull ghcr.io/${{ env.IMAGE_NAME }}:latest
 
           docker stop pizzajam-server 2>/dev/null || true
           docker rm pizzajam-server 2>/dev/null || true
@@ -39,7 +43,7 @@ jobs:
             --restart unless-stopped \
             -p 8080:8080 \
             -p 9050:9050/udp \
-            pizzajam-server:latest
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
 
           docker image prune -f > /dev/null 2>&1 || true
           EOF
