@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/pizzajam-server
+  IMAGE_NAME: sod3n/pizzajam-server
 
 jobs:
   deploy:
