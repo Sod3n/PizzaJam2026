@@ -16,10 +16,7 @@ jobs:
 
       - name: Transfer image to VPS
         run: |
-          # Install sshpass for password auth
           sudo apt-get install -y sshpass
-
-          # Save & transfer image
           docker save pizzajam-server:latest | gzip > /tmp/image.tar.gz
           sshpass -p "${{ secrets.VPS_PASSWORD }}" \
             scp -o StrictHostKeyChecking=no \
@@ -32,11 +29,9 @@ jobs:
           docker load < /tmp/image.tar.gz
           rm -f /tmp/image.tar.gz
 
-          # Stop old container
           docker stop pizzajam-server 2>/dev/null || true
           docker rm pizzajam-server 2>/dev/null || true
 
-          # Start new container
           docker run -d \
             --name pizzajam-server \
             --restart unless-stopped \
@@ -44,6 +39,5 @@ jobs:
             -p 9050:9050/udp \
             pizzajam-server:latest
 
-          # Cleanup old images
           docker image prune -f > /dev/null 2>&1 || true
           EOF

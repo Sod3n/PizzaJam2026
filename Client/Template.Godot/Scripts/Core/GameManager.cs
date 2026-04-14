@@ -104,13 +104,20 @@ public partial class GameManager : Node
             GameClient.SimulatedLatencyMs = SimulatedLatencyMs;
             GD.Print($"[GameManager] Simulated latency: {SimulatedLatencyMs}ms");
         }
-        OnGameStarted += () => GameClient.ActivateSimulatedLatency();
+        OnGameStarted += () =>
+        {
+            if (!_useRemoteServer)
+                GameClient.ActivateSimulatedLatency();
+        };
 
         // Wait for UI to call StartOffline(), CreateLobby(), or JoinLobby()
     }
 
+    private bool _useRemoteServer;
+
     public void SetUseRemoteServer(bool useRemote)
     {
+        _useRemoteServer = useRemote;
         if (useRemote)
             GameClient.SetConnectionString($"{RemoteServerIp}:{RemoteServerPort}");
         else

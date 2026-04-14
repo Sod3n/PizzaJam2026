@@ -1,6 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
+WORKDIR /src
+
+# Copy everything and publish
+COPY . .
+RUN dotnet publish Template.Server/Template.Server.csproj \
+    -c Release \
+    -r linux-x64 \
+    --self-contained false \
+    -o /app/publish
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-amd64 AS runtime
 WORKDIR /app
-COPY publish/ .
+COPY --from=build /app/publish .
 
 # HTTP (SignalR/controllers)
 EXPOSE 8080
