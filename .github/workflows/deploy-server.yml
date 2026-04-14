@@ -3,9 +3,7 @@ name: Deploy Server to VPS
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-    paths:
-      - 'Server/**'
+    branches: [server]
 
 jobs:
   deploy:
