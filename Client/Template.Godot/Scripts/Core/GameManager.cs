@@ -29,7 +29,7 @@ public partial class GameManager : Node
 
     [Export] public string ServerIp = "127.0.0.1";
     [Export] public int ServerPort = 9050;
-    [Export] public string RemoteServerIp = "pizzajam-server.swedencentral.azurecontainer.io";
+    [Export] public string RemoteServerIp = "193.168.49.169";
     [Export] public int RemoteServerPort = 9050;
     [Export] public bool OfflineMode = false;
     [Export] public bool RecordInputs = false;
