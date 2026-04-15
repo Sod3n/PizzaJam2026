@@ -127,7 +127,10 @@
       "Bash(curl -s \"https://raw.githubusercontent.com/artem-ogre/CDT/master/README.md\")",
       "Bash(curl -s \"https://api.github.com/repos/artem-ogre/CDT\")",
       "Bash(grep -v \"^$\")",
-      "Bash(python3 *)"
+      "Bash(python3 *)",
+      "Bash(awk '{print $1}')",
+      "Bash(ls -lh ~/PizzaJam_DesyncLogs/*.jsonl)",
+      "Bash(awk '{print $5, $6, $7, $8, $9}')"
     ]
   }
 }

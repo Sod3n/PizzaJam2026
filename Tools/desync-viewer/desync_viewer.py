@@ -11,6 +11,7 @@ Usage:
     desync-viewer list
     desync-viewer summary <session|latest|latest-desync>
     desync-viewer desyncs <session|latest|latest-desync>
+    desync-viewer resyncs <session|latest|latest-desync>
     desync-viewer tick <session> <tick> [--context N]
     desync-viewer actions <session> --tick-range N-M
 """
@@ -332,6 +333,8 @@ Commands:
                                         One-screen overview of a session
   desyncs <session|latest|latest-desync>
                                         List all desync ticks with details
+  resyncs <session|latest|latest-desync>
+                                        Detect full state resyncs (rollback jumps in client log)
   tick <session> <tick> [--context N]   Full detail for one tick (or range)
   diff <session> <tick>                 Per-entity component diff at a tick (needs snapshots)
   actions <session> --tick-range N-M    Action log for tick range, both sides aligned
@@ -689,6 +692,124 @@ def cmd_rejected(args):
         print(f"{exec_tick:<12} {min_allowed:<14} {late_by:<10} {side:<8} {action:<28} {target:<8} {data}")
 
 
+# ── Full State Resync Detection ───────────────────────────────────────────────
+
+def _scan_client_raw(filepath):
+    """Sequential scan of client log preserving file order.
+    Returns (resyncs, first_entries) where:
+      resyncs = [(was_at_tick, rolled_back_to_tick), ...]
+      first_entries[tick] = first JSON record seen for that tick (before resync overwrites)
+    """
+    resyncs = []
+    first_entries = {}
+    prev_tick = -1
+
+    with open(filepath) as f:
+        f.readline()  # skip header
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if obj.get("rejected"):
+                continue
+            tick = obj.get("tick")
+            if tick is None:
+                continue
+
+            if tick not in first_entries:
+                first_entries[tick] = obj
+
+            if tick < prev_tick:
+                resyncs.append((prev_tick, tick))
+            prev_tick = tick
+
+    return resyncs, first_entries
+
+
+def cmd_resyncs(args):
+    cfg = load_config()
+    sessions = discover_sessions(cfg["local_log_dir"])
+    session = resolve_session(sessions, args.session)
+
+    if not session["client"]:
+        print("No client log for this session.", file=sys.stderr)
+        sys.exit(1)
+
+    resyncs, client_first = _scan_client_raw(session["client"])
+
+    if not resyncs:
+        print("No full state resyncs detected in client log.")
+        return
+
+    # Load server data for comparison
+    server_ticks = {}
+    if session["server"]:
+        _, server_ticks = parse_jsonl(session["server"])
+
+    print(f"Full state resyncs detected: {len(resyncs)}\n")
+
+    for i, (was_at, rolled_back_to) in enumerate(resyncs):
+        rollback = was_at - rolled_back_to
+
+        # Find desync start: scan backwards from rolled_back_to to find last tick
+        # where client first-write hash matched the server hash
+        desync_start = None
+        trigger_tick = None
+        for t in range(rolled_back_to - 1, -1, -1):
+            s_rec = server_ticks.get(t)
+            c_rec = client_first.get(t)
+            if s_rec and c_rec and s_rec.get("hash") == c_rec.get("hash"):
+                desync_start = t + 1
+                trigger_tick = t
+                break
+
+        if desync_start is None:
+            desync_start = 1  # desynced from the start
+
+        actual_duration = was_at - desync_start + 1
+
+        print(f"Resync #{i + 1}")
+        print(f"  Desync started:     tick {desync_start}")
+        print(f"  Resync received:    tick {was_at} ({was_at / 60:.1f}s)")
+        print(f"  Rolled back to:     tick {rolled_back_to}")
+        print(f"  Actual desync:      {actual_duration} ticks ({actual_duration / 60:.1f}s)")
+        print(f"  Rollback window:    {rollback} ticks ({rollback / 60:.1f}s)")
+
+        # Find trigger: client-only actions on the tick before divergence
+        if trigger_tick is not None:
+            c_rec = client_first.get(trigger_tick)
+            s_rec = server_ticks.get(trigger_tick)
+            if c_rec and s_rec:
+                c_acts = c_rec.get("actions", [])
+                s_acts = s_rec.get("actions", [])
+                s_sigs = {(a.get("t"), a.get("e"), a.get("d")) for a in s_acts}
+                client_only = [a for a in c_acts
+                               if (a.get("t"), a.get("e"), a.get("d")) not in s_sigs]
+                if client_only:
+                    parts = [f"{a.get('t','?')} target={a.get('e','?')} data={a.get('d','?')}"
+                             for a in client_only]
+                    print(f"  Trigger:            tick {trigger_tick} client-only action: {', '.join(parts)}")
+
+        # Show EID at desync start vs server
+        c_ds = client_first.get(desync_start)
+        s_ds = server_ticks.get(desync_start)
+        if c_ds and s_ds:
+            c_eid = c_ds.get("eid", "?")
+            s_eid = s_ds.get("eid", "?")
+            eid_status = "MATCH" if c_eid == s_eid else f"DRIFT (server={s_eid} client={c_eid})"
+            print(f"  EID at divergence:  {eid_status}")
+
+        # Show resim info
+        if s_ds and s_ds.get("resim"):
+            print(f"  Server resim:       yes (tick {desync_start})")
+
+        print()
+
+
 # ── Snapshot Diff ─────────────────────────────────────────────────────────────
 
 def parse_snapshot(raw_bytes):
@@ -1006,6 +1127,9 @@ def main():
     p_desyncs = sub.add_parser("desyncs")
     p_desyncs.add_argument("session")
 
+    p_resyncs = sub.add_parser("resyncs")
+    p_resyncs.add_argument("session")
+
     p_tick = sub.add_parser("tick")
     p_tick.add_argument("session")
     p_tick.add_argument("tick")
@@ -1039,6 +1163,8 @@ def main():
         cmd_summary(args)
     elif args.command == "desyncs":
         cmd_desyncs(args)
+    elif args.command == "resyncs":
+        cmd_resyncs(args)
     elif args.command == "tick":
         cmd_tick(args)
     elif args.command == "actions":
