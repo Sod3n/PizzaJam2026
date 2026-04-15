@@ -9,7 +9,7 @@ public static class TemplateGameFactory
 {
     private static bool _appInitialized = false;
 
-    public static Game CreateGame(int tickRate = 60, string? gameDataPath = null, System.Collections.Generic.Dictionary<string, string>? gameDataJson = null)
+    public static Game CreateGame(int tickRate = 60, bool disableRollback = false, string? gameDataPath = null, System.Collections.Generic.Dictionary<string, string>? gameDataJson = null)
     {
         if (!_appInitialized)
         {
@@ -36,7 +36,7 @@ public static class TemplateGameFactory
         // 1. Create Game with pre-allocated entity capacity to avoid store resizes.
         // Capacity is set before the World entity is created in EntityWorld constructor,
         // so every component store starts at 512 from the beginning.
-        var game = new Game(tickRate: tickRate, reserveEntityCapacity: 512);
+        var game = new Game(tickRate: tickRate, reserveEntityCapacity: 512, disableRollback: disableRollback);
 
         // 2. Register physics system (stateless sensor queries — fully deterministic, no rollback issues)
         game.Loop.Simulation.SystemRunner.EnableSystem(new SensorQuerySystem());
