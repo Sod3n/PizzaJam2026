@@ -193,6 +193,7 @@ Commands:
   desyncs <session|latest|latest-desync>
                                         List all desync ticks with details
   tick <session> <tick> [--context N]   Full detail for one tick (or range)
+  diff <session> <tick>                 Per-entity component diff at a tick (needs snapshots)
   actions <session> --tick-range N-M    Action log for tick range, both sides aligned
 
 Session can be:
@@ -412,6 +413,208 @@ def cmd_actions(args):
             print(f"{t:<8} {'client':<8} {a.get('t','?'):<24} {a.get('e','?'):<8} {a.get('d','?'):<10} {resim}")
 
 
+# ── Snapshot Diff ─────────────────────────────────────────────────────────────
+
+def parse_snapshot(raw_bytes):
+    """Minimal parse of the ECS serialized state.
+    Returns (nextEntityId, entityCapacity, entities) where entities is a dict
+    of {entityIndex: {typeLocalId: component_bytes}}."""
+    import struct
+    import io
+    buf = io.BytesIO(raw_bytes)
+
+    def r_int(): return struct.unpack('<i', buf.read(4))[0]
+    def r_bytes(n): return buf.read(n)
+
+    next_eid = r_int()
+    entity_cap = r_int()
+
+    # External state
+    ext_count = r_int()
+    for _ in range(ext_count):
+        key_len = 0
+        # BinaryReader.ReadString: 7-bit encoded length prefix
+        shift = 0
+        while True:
+            b = buf.read(1)[0]
+            key_len |= (b & 0x7F) << shift
+            shift += 7
+            if (b & 0x80) == 0:
+                break
+        buf.read(key_len)  # key string
+        val_len = r_int()
+        buf.read(val_len)  # value bytes
+
+    # Component ID mappings
+    map_count = r_int()
+    id_to_name = {}
+    for _ in range(map_count):
+        guid_bytes = r_bytes(16)
+        local_id = r_int()
+        # We don't have the type registry, store guid hex as name
+        guid_hex = guid_bytes.hex()
+        id_to_name[local_id] = guid_hex
+
+    # Entity masks
+    mask_data_len = r_int()
+    mask_data = r_bytes(mask_data_len)
+    mask_elem_size = 16  # BitMask128 = 2 ulongs
+    masks = []
+    for i in range(entity_cap):
+        offset = i * mask_elem_size
+        if offset + mask_elem_size <= len(mask_data):
+            masks.append(mask_data[offset:offset + mask_elem_size])
+        else:
+            masks.append(b'\x00' * mask_elem_size)
+
+    # Components
+    comp_count = r_int()
+    components = {}  # local_id -> (elem_size, packed_data, elem_count)
+    for _ in range(comp_count):
+        local_id = r_int()
+        data_len = r_int()
+        data = r_bytes(data_len)
+        elem_count = r_int()
+        if elem_count > 0 and len(data) > 0:
+            elem_size = len(data) // elem_count
+            components[local_id] = (elem_size, data, elem_count)
+
+    # Build per-entity component map
+    entities = {}
+    for eidx in range(entity_cap):
+        mask = masks[eidx]
+        if mask == b'\x00' * 16:
+            continue
+        ent_comps = {}
+        for local_id, (elem_size, data, elem_count) in components.items():
+            # Check if bit is set in mask
+            byte_idx = local_id // 8
+            bit_idx = local_id % 8
+            if byte_idx < len(mask) and (mask[byte_idx] & (1 << bit_idx)):
+                offset = eidx * elem_size
+                if offset + elem_size <= len(data):
+                    ent_comps[local_id] = data[offset:offset + elem_size]
+        if ent_comps:
+            entities[eidx] = ent_comps
+
+    return next_eid, entity_cap, entities, id_to_name
+
+
+def diff_snapshots(server_snap_b64, client_snap_b64):
+    """Diff two base64-encoded snapshots. Returns a list of diff entries."""
+    import base64
+    s_bytes = base64.b64decode(server_snap_b64)
+    c_bytes = base64.b64decode(client_snap_b64)
+
+    s_eid, _, s_ents, s_names = parse_snapshot(s_bytes)
+    c_eid, _, c_ents, c_names = parse_snapshot(c_bytes)
+
+    # Merge name maps (prefer server names)
+    names = {**c_names, **s_names}
+
+    diffs = []
+    all_entity_ids = sorted(set(s_ents.keys()) | set(c_ents.keys()))
+
+    for eidx in all_entity_ids:
+        s_has = eidx in s_ents
+        c_has = eidx in c_ents
+
+        if s_has and not c_has:
+            comp_names = [names.get(lid, f"TypeId({lid})") for lid in s_ents[eidx]]
+            diffs.append(f"  Entity {eidx}: SERVER ONLY  components: [{', '.join(comp_names)}]")
+            continue
+        if c_has and not s_has:
+            comp_names = [names.get(lid, f"TypeId({lid})") for lid in c_ents[eidx]]
+            diffs.append(f"  Entity {eidx}: CLIENT ONLY  components: [{', '.join(comp_names)}]")
+            continue
+
+        # Both have entity -- compare components
+        s_comps = s_ents[eidx]
+        c_comps = c_ents[eidx]
+        all_lids = sorted(set(s_comps.keys()) | set(c_comps.keys()))
+
+        for lid in all_lids:
+            type_name = names.get(lid, f"TypeId({lid})")
+            # Use short name: last 8 chars of guid for readability
+            short_name = type_name[-8:] if len(type_name) > 8 else type_name
+
+            s_data = s_comps.get(lid)
+            c_data = c_comps.get(lid)
+
+            if s_data is None:
+                diffs.append(f"  Entity {eidx}.{short_name}: SERVER MISSING")
+                continue
+            if c_data is None:
+                diffs.append(f"  Entity {eidx}.{short_name}: CLIENT MISSING")
+                continue
+
+            if s_data != c_data:
+                byte_diffs = []
+                for b in range(min(len(s_data), len(c_data))):
+                    if s_data[b] != c_data[b]:
+                        byte_diffs.append(f"byte[{b}]:S=0x{s_data[b]:02X}/C=0x{c_data[b]:02X}")
+                diff_count = len(byte_diffs)
+                shown = byte_diffs[:8]
+                trailer = f" ...+{diff_count - 8} more" if diff_count > 8 else ""
+                diffs.append(f"  Entity {eidx}.{short_name}: {diff_count} byte(s) differ  {' '.join(shown)}{trailer}")
+
+    return s_eid, c_eid, diffs
+
+
+def cmd_diff(args):
+    cfg = load_config()
+    sessions = discover_sessions(cfg["local_log_dir"])
+    session = resolve_session(sessions, args.session)
+    analysis = analyze_session(session)
+
+    tick = int(args.tick)
+
+    s = analysis["server_ticks"].get(tick)
+    c = analysis["client_ticks"].get(tick)
+
+    if not s or not c:
+        print(f"Tick {tick} not found on both sides.", file=sys.stderr)
+        sys.exit(1)
+
+    s_snap = s.get("snap")
+    c_snap = c.get("snap")
+
+    if not s_snap and not c_snap:
+        # Try nearby ticks that have snapshots
+        for dt in range(-5, 6):
+            t2 = tick + dt
+            s2 = analysis["server_ticks"].get(t2, {})
+            c2 = analysis["client_ticks"].get(t2, {})
+            if s2.get("snap") or c2.get("snap"):
+                if not s_snap and s2.get("snap"):
+                    s_snap = s2["snap"]
+                    print(f"(using server snapshot from tick {t2})")
+                if not c_snap and c2.get("snap"):
+                    c_snap = c2["snap"]
+                    print(f"(using client snapshot from tick {t2})")
+
+    if not s_snap or not c_snap:
+        print(f"No snapshot data available for tick {tick} (snapshots are only recorded when hash changes).", file=sys.stderr)
+        print(f"Server has snap: {'yes' if s_snap else 'no'}, Client has snap: {'yes' if c_snap else 'no'}")
+        sys.exit(1)
+
+    print(f"--- State diff at tick {tick} ---")
+    print(f"Server hash: {s.get('hash')}  eid: {s.get('eid')}")
+    print(f"Client hash: {c.get('hash')}  eid: {c.get('eid')}")
+    print()
+
+    try:
+        s_eid, c_eid, diffs = diff_snapshots(s_snap, c_snap)
+        print(f"NextEntityId: server={s_eid} client={c_eid}")
+        print(f"Differences: {len(diffs)}")
+        print()
+        for d in diffs:
+            print(d)
+    except Exception as e:
+        print(f"Failed to parse snapshots: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -437,6 +640,10 @@ def main():
     p_actions.add_argument("session")
     p_actions.add_argument("--tick-range", required=True)
 
+    p_diff = sub.add_parser("diff")
+    p_diff.add_argument("session")
+    p_diff.add_argument("tick")
+
     args = parser.parse_args()
 
     if args.command is None or args.command == "help":
@@ -453,6 +660,8 @@ def main():
         cmd_tick(args)
     elif args.command == "actions":
         cmd_actions(args)
+    elif args.command == "diff":
+        cmd_diff(args)
     else:
         cmd_help(args)
 
