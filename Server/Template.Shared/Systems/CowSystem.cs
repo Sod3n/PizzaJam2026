@@ -497,7 +497,9 @@ public class CowSystem : ISystem
             }
             else
             {
+                ILogger.Log($"[CowSystem] PRE-SPAWN NextEntityId={state.NextEntityId} tick={gameTime?.CurrentTick}");
                 babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, guaranteedUpgrade, breedCount);
+                ILogger.Log($"[CowSystem] POST-SPAWN babyCow={babyCow.Id} NextEntityId={state.NextEntityId}");
 
                 // Twins: 5% chance for same-pref breeds (no house limit — twin follows player until dismissed)
                 if (sameTier && babyCow != Entity.Null)

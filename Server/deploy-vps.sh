@@ -66,6 +66,9 @@ ssh_cmd bash -s <<'REMOTE'
         --restart unless-stopped \
         -p 8080:8080 \
         -p 9050:9050/udp \
+        -v pizzajam-desync-logs:/app/desync-logs \
+        -e DESYNC_RECORDING=true \
+        -e DESYNC_LOG_DIR=/app/desync-logs \
         "$IMAGE_NAME"
 
     # Prune old dangling images

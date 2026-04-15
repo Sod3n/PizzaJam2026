@@ -254,6 +254,7 @@ public partial class GameManager : Node
 
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
+            StartDesyncRecording();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             GameProfiler.Enable(Game);
@@ -289,6 +290,7 @@ public partial class GameManager : Node
 
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
+            StartDesyncRecording();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             GameProfiler.Enable(Game);
@@ -415,6 +417,22 @@ public partial class GameManager : Node
         var path = System.IO.Path.Combine(dir, $"recording_{timestamp}.bin");
         _inputRecorder.Save(path);
         GD.Print($"[GameManager] Recording saved: {path} ({_inputRecorder.ActionCount} actions)");
+    }
+
+    private void StartDesyncRecording()
+    {
+        var dir = System.IO.Path.Combine(
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+            "PizzaJam_DesyncLogs");
+        var sessionId = GameClient.CurrentMatchId.ToString();
+        var recorder = new DesyncRecorder(Game.Loop.Simulation);
+        recorder.Start(
+            System.IO.Path.Combine(dir, $"client_{sessionId}.jsonl"),
+            "client",
+            sessionId,
+            Game.Loop.TickRate);
+        Game.Loop.Simulation.Recorder = recorder;
+        GD.Print($"[GameManager] Desync recording started: client_{sessionId}.jsonl");
     }
 
     private void StartMetricsExport()

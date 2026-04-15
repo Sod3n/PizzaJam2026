@@ -43,6 +43,9 @@ jobs:
             --restart unless-stopped \
             -p 8080:8080 \
             -p 9050:9050/udp \
+            -v pizzajam-desync-logs:/app/desync-logs \
+            -e DESYNC_RECORDING=true \
+            -e DESYNC_LOG_DIR=/app/desync-logs \
             ghcr.io/${{ env.IMAGE_NAME }}:latest
 
           docker image prune -f > /dev/null 2>&1 || true
