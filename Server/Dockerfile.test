@@ -1,0 +1,29 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy
+WORKDIR /src
+COPY . .
+
+# Copy ARM64 native library (the csproj only includes x86_64)
+RUN cp Framework/2D/Deterministic.GameFramework.TwoD.Physics/external/librapier_uniffi_ARM64.so \
+       Framework/2D/Deterministic.GameFramework.TwoD.Physics/external/librapier_uniffi.so
+
+RUN dotnet build Framework/Tests/Deterministic.GameFramework.Navigation.Tests/ -f net8.0 -v q 2>&1 | tail -5
+
+# Create glibc symlinks the native .so expects + copy ARM64 native lib
+RUN ln -sf /lib/aarch64-linux-gnu/libdl.so.2 /lib/aarch64-linux-gnu/libdl.so 2>/dev/null; \
+    ln -sf /lib/aarch64-linux-gnu/libm.so.6 /lib/aarch64-linux-gnu/libm.so 2>/dev/null; \
+    ln -sf /lib/aarch64-linux-gnu/libc.so.6 /lib/aarch64-linux-gnu/libc.so 2>/dev/null; \
+    ln -sf /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so 2>/dev/null; \
+    ln -sf /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/libm.so 2>/dev/null; \
+    ln -sf /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/libc.so 2>/dev/null; \
+    true
+
+# Ensure the .so lands in the test output dir
+RUN cp Framework/2D/Deterministic.GameFramework.TwoD.Physics/external/librapier_uniffi.so \
+       Framework/Tests/Deterministic.GameFramework.Navigation.Tests/bin/Debug/net8.0/ && \
+    ln -sf librapier_uniffi.so \
+       Framework/Tests/Deterministic.GameFramework.Navigation.Tests/bin/Debug/net8.0/rapier_uniffi.so
+
+ENTRYPOINT ["dotnet", "test", "Framework/Tests/Deterministic.GameFramework.Navigation.Tests/", \
+    "--filter", "CDTNavigationDeterminismTests", \
+    "-f", "net8.0", "--no-build", \
+    "-v", "n", "--logger", "console;verbosity=detailed"]
