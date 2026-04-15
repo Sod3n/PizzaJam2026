@@ -68,8 +68,8 @@ jobs:
         run: |
           # Autoloads use UIDs that may not resolve in CI (submodule UID mismatch).
           # Replace with file paths which always work.
-          sed -i 's|Global="\*uid://c6aa26vlcpjcm"|Global="*res://global.gd"|' project.godot
-          sed -i 's|DebugVisualizer="\*uid://d01xjuy2b0bpt"|DebugVisualizer="*res://addons/framework_tools/DebugVisualizer.cs"|' project.godot
+          sed -i 's|Global="\*uid://[^"]*"|Global="*res://Scripts/GDScript/global.gd"|' project.godot
+          sed -i 's|DebugVisualizer="\*uid://[^"]*"|DebugVisualizer="*res://addons/framework_tools/DebugVisualizer.cs"|' project.godot
 
       - name: Disable macOS code signing for CI
         if: matrix.name == 'macOS'
@@ -172,6 +172,9 @@ jobs:
             exit 1
           fi
           echo "Export successful: $(ls -lh build/${{ matrix.output }})"
+          # Godot places .NET runtime + assemblies in a data_* folder next to the exe
+          echo "Data folders:"
+          ls -d build/data_* 2>/dev/null || echo "(none found)"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
