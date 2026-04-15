@@ -16,6 +16,8 @@ Usage:
 """
 
 import argparse
+import base64
+import gzip
 import json
 import os
 import subprocess
@@ -165,7 +167,7 @@ def load_snap_at_offset(filepath, offset):
             return None
 
 
-def load_snaps_for_tick(filepath, target_tick, search_range=5):
+def load_snaps_for_tick(filepath, target_tick, search_range=65):
     """Load snap data for a tick (and nearby) using the cached offset index.
     Falls back to full scan if no index exists."""
     idx = _load_snap_index(filepath)
@@ -866,11 +868,18 @@ def guid_to_name(guid_hex):
     return clean[-8:]
 
 
+def decode_snap(b64_str):
+    """Decode a base64 snap string, auto-detecting gzip compression."""
+    raw = base64.b64decode(b64_str)
+    if len(raw) >= 2 and raw[0] == 0x1f and raw[1] == 0x8b:
+        return gzip.decompress(raw)
+    return raw
+
+
 def diff_snapshots(server_snap_b64, client_snap_b64):
     """Diff two base64-encoded snapshots. Returns a list of diff entries."""
-    import base64
-    s_bytes = base64.b64decode(server_snap_b64)
-    c_bytes = base64.b64decode(client_snap_b64)
+    s_bytes = decode_snap(server_snap_b64)
+    c_bytes = decode_snap(client_snap_b64)
 
     s_eid, _, s_ents, s_names = parse_snapshot(s_bytes)
     c_eid, _, c_ents, c_names = parse_snapshot(c_bytes)
@@ -947,15 +956,17 @@ def cmd_diff(args):
     c_snap = c_snaps.get(tick)
 
     if not s_snap and not c_snap:
-        # Try nearby ticks that have snapshots
-        for dt in range(-5, 6):
+        # Try nearby ticks that have snapshots (wider range for interval-based snaps)
+        for dt in range(-65, 66):
             t2 = tick + dt
             if not s_snap and t2 in s_snaps:
                 s_snap = s_snaps[t2]
-                print(f"(using server snapshot from tick {t2})")
+                if t2 != tick:
+                    print(f"(using server snapshot from tick {t2}, delta={t2-tick})")
             if not c_snap and t2 in c_snaps:
                 c_snap = c_snaps[t2]
-                print(f"(using client snapshot from tick {t2})")
+                if t2 != tick:
+                    print(f"(using client snapshot from tick {t2}, delta={t2-tick})")
 
     if not s_snap or not c_snap:
         print(f"No snapshot data available for tick {tick} (snapshots are only recorded when hash changes).", file=sys.stderr)
