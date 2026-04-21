@@ -136,7 +136,7 @@ public class InputRecorder : IDisposable
         }
     }
 
-    private void OnAction(DenseComponentId id, ReadOnlySpan<byte> data, int targetEntityId, long executeTick, long originalExecuteTick)
+    private void OnAction(DenseComponentId id, ReadOnlySpan<byte> data, int targetEntityId, long executeTick, long originalExecuteTick, long predictionId)
     {
         if (!_recording) return;
 

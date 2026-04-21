@@ -13,19 +13,17 @@ public static class ViewHelpers
     private static readonly Texture2D BrokenHeartTexture = GD.Load<Texture2D>("res://sprites/broken-heart.png");
     private static readonly System.Random HeartRng = new();
 
+    /// <summary>
+    /// Register an entity's Transform2D position for view-layer smoothing.
+    /// Frame-rate-independent exponential smoothing via <see cref="ViewSmoother"/>:
+    /// reads ECS state each render frame, writes only to the Godot node.
+    /// Views are spawned after <c>GameManager.OnGameStarted</c>, by which point
+    /// <see cref="ViewSmoothingManager.Smoother"/> is always attached.
+    /// </summary>
     public static void SetupPositionTween(EntityViewModel vm, Node3D visualNode)
     {
-        Tween currentTween = null;
-        vm.Transform.Position.Subscribe(p =>
-        {
-            Callable.From(() =>
-            {
-                if (!Node.IsInstanceValid(visualNode)) return;
-                currentTween?.Kill();
-                currentTween = visualNode.CreateTween();
-                currentTween.TweenProperty(visualNode, "position", new GVector3((float)p.X, 0f, (float)p.Y), 0.1f);
-            }).CallDeferred();
-        }).AddTo(vm.Disposables);
+        vm.Disposables.Add(
+            ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode, tau: 0.08f));
     }
 
     public static void SetupInteractAnimation(EntityViewModel vm, Node3D visualNode, Node3D animateNode = null)

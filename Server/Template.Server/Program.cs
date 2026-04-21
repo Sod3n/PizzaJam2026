@@ -14,10 +14,11 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<IAuthService, BasicAuthService>();
 builder.Services.AddSingleton<TemplateMatchFactory>();
 builder.Services.AddSingleton<IMatchFactory>(sp => sp.GetRequiredService<TemplateMatchFactory>());
-builder.Services.AddDeterministicGameServer(options => 
+builder.Services.AddDeterministicGameServer(options =>
 {
     options.MinPlayersPerMatch = 2;
     options.MaxPlayersPerMatch = 2;
+    options.SyncMode = Deterministic.GameFramework.Common.SyncMode.DeltaSync;
 }); // This adds MatchManager, MatchBroadcaster, IMatchmakingService
 
 // 2. Network Layer

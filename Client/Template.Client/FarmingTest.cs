@@ -31,7 +31,7 @@ public class FarmingTest
         
         // 2. Setup Mock/Loopback Client
         var networkClient = new LiteNetLibNetworkClient();
-        _client = new GameClient(networkClient, "127.0.0.1:9050", _game);
+        _client = new GameClient(networkClient, "127.0.0.1:9050", _game, SyncMode.DeltaSync);
         
         // 3. Connect & Join Default Match
         var defaultMatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");

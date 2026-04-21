@@ -18,6 +18,7 @@ using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Systems;
 using Template.Godot.Framework.Editor;
 using Template.Godot.Twitch;
+using Template.Godot.Visuals;
 using Template.Shared.Recording;
 using FileAccess = Godot.FileAccess;
 
@@ -67,6 +68,16 @@ public partial class GameManager : Node
         FrameworkDebugBridge.IsRunning = () => _isRunning;
         GD.Print("=== Initializing Godot Client ===");
 
+        // Phase 4: view-layer smoothing. The manager ticks a ViewSmoother every
+        // render frame, so entity visuals lerp toward the authoritative ECS value
+        // instead of snapping when the server delta arrives. The manager is a
+        // sibling Node; it looks up GameManager.Instance on its own.
+        if (ViewSmoothingManager.Instance == null)
+        {
+            var smoothingManager = new ViewSmoothingManager { Name = "ViewSmoothingManager" };
+            AddChild(smoothingManager);
+        }
+
         // Initialize Twitch integration when the game starts
         OnGameStarted += TwitchIntegration.Initialize;
 
@@ -97,7 +108,7 @@ public partial class GameManager : Node
 
         // 2. Setup Network
         var networkClient = new LiteNetLibNetworkClient();
-        GameClient = new GameClient(networkClient, $"{ServerIp}:{ServerPort}", Game);
+        GameClient = new GameClient(networkClient, $"{ServerIp}:{ServerPort}", Game, SyncMode.DeltaSync);
         GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
         if (SimulatedLatencyMs > 0)
         {
@@ -255,6 +266,7 @@ public partial class GameManager : Node
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
             StartDesyncRecording();
+            ArmWarmUpResync();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             GameProfiler.Enable(Game);
@@ -291,6 +303,7 @@ public partial class GameManager : Node
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
             StartDesyncRecording();
+            ArmWarmUpResync();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             GameProfiler.Enable(Game);
@@ -302,6 +315,78 @@ public partial class GameManager : Node
             GD.PrintErr($"Join lobby failed: {e}");
             OnError?.Invoke(e.Message);
         }
+    }
+
+    /// <summary>
+    /// HACK — the server's first N ticks are non-deterministic (scene load, navmesh bake,
+    /// physics settle). Instead of blocking startup, let the client run from tick 0 like
+    /// normal; once <see cref="Game.Loop.CurrentTick"/> crosses <see cref="WarmUpTicks"/>,
+    /// we fire off a single <c>RequestFullState</c> so the authoritative post-warm-up state
+    /// replaces whatever we built up locally. <see cref="GameClient.ApplyFullState"/> handles
+    /// the arriving snapshot on the loop thread. No framework changes.
+    /// </summary>
+    private const long WarmUpTicks = 500;
+    private bool _warmUpResyncRequested;
+    private long _lastSeenLoopTick = -1;
+
+    private void ArmWarmUpResync()
+    {
+        if (GameClient.Mode != Deterministic.GameFramework.Common.SyncMode.DeltaSync) return;
+        _warmUpResyncRequested = false;
+        _lastSeenLoopTick = -1;
+        Game.Loop.OnTick += WarmUpResyncTick;
+        Game.Loop.OnTick += RescanObserversOnTickJump;
+    }
+
+    /// <summary>
+    /// Fires <c>RequestFullState</c> exactly once when the client first crosses the warm-up
+    /// threshold, then unsubscribes itself. Server's response is handled by the general
+    /// tick-jump rescan below.
+    /// </summary>
+    private void WarmUpResyncTick()
+    {
+        if (_warmUpResyncRequested) return;
+        if (Game.Loop.CurrentTick < WarmUpTicks) return;
+
+        _warmUpResyncRequested = true;
+        GD.Print($"[WarmUp] Client at tick {Game.Loop.CurrentTick} — requesting post-warm-up FullState.");
+        _ = GameClient.RequestFullState();
+        Game.Loop.OnTick -= WarmUpResyncTick;
+    }
+
+    /// <summary>
+    /// Detects <c>Loop.ForceSetTick</c> jumps (always caused by <c>ApplyFullState</c>) and
+    /// forces a full observer re-scan. Needed because <c>Deserialize</c> wipes
+    /// <c>_dirtyEntitySet</c>, so <c>ArchetypeObserver</c>'s dirty-scan optimization misses
+    /// the FullState-imported entities — subscriptions like <c>SetupLocalPlayerDiscovery</c>
+    /// never see <c>onAdd</c> for the server-authoritative player. Running on every tick
+    /// lets this fire for the warm-up resync AND for any subsequent baseline-gap resyncs.
+    /// </summary>
+    private void RescanObserversOnTickJump()
+    {
+        long cur = Game.Loop.CurrentTick;
+        if (_lastSeenLoopTick >= 0 && cur != _lastSeenLoopTick + 1)
+        {
+            int playerEntityCount = 0;
+            int totalEntities = Game.State.NextEntityId;
+            foreach (var _ in Game.State.Filter<PlayerEntity>()) playerEntityCount++;
+
+            GD.Print($"[StateSync] Tick jump {_lastSeenLoopTick}→{cur}. " +
+                     $"State has {totalEntities} entities, {playerEntityCount} PlayerEntity, " +
+                     $"LocalPlayerId={LocalPlayerId}, GameClient.PlayerId={GameClient.PlayerId}");
+
+            foreach (var entity in Game.State.Filter<PlayerEntity>())
+            {
+                ref var p = ref Game.State.GetComponent<PlayerEntity>(entity);
+                GD.Print($"[StateSync]   PlayerEntity id={entity.Id} UserId={p.UserId}");
+            }
+
+            Game.State.MarkAllDirty();
+            GameClient.Reactive.Reset();
+
+            GD.Print($"[StateSync] After rescan: LocalPlayerId={LocalPlayerId}");
+        }
+        _lastSeenLoopTick = cur;
     }
 
     private void SetupLocalPlayerDiscovery()

@@ -34,7 +34,7 @@ public class Program
         // Option B: LiteNetLib (UDP) - REQUIRED by user
         networkClient = new LiteNetLibNetworkClient();
         
-        await using var client = new GameClient(networkClient, serverUrl, game);
+        await using var client = new GameClient(networkClient, serverUrl, game, SyncMode.DeltaSync);
         
         // Setup MVVM Visualizer
         using var visualizer = new ConsoleVisualizer(client);
