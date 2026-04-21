@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>StressBot</RootNamespace>
+    <AssemblyName>StressBot</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Framework\Networking\Deterministic.GameFramework.Network\Deterministic.GameFramework.Network.csproj" />
+    <ProjectReference Include="..\..\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
+    <ProjectReference Include="..\..\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
+    <ProjectReference Include="..\..\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
+    <ProjectReference Include="..\..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
+    <ProjectReference Include="..\..\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
+    <ProjectReference Include="..\..\Template.Shared\Template.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -106,3 +106,6 @@ Client/Template.Godot/lib/
 
 # Stale project files
 *.csproj.old
+
+# StressBot run artifacts (per-bot logs + summary CSVs)
+Server/Tools/StressBot/runs/
