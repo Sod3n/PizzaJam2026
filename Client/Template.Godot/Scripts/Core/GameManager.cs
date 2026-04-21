@@ -325,7 +325,7 @@ public partial class GameManager : Node
     /// replaces whatever we built up locally. <see cref="GameClient.ApplyFullState"/> handles
     /// the arriving snapshot on the loop thread. No framework changes.
     /// </summary>
-    private const long WarmUpTicks = 500;
+    private const long WarmUpTicks = 0;
     private bool _warmUpResyncRequested;
     private long _lastSeenLoopTick = -1;
 
