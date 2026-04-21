@@ -8,7 +8,8 @@ SERVER_PORT="9050"
 LOBBIES=1
 PLAYERS_PER_LOBBY=2
 DURATION=60
-STAGGER_MS=100
+STAGGER_MS=500
+CREATE_GAP_MS=300
 LATENCY_MS=0
 LOBBY_WAIT_SECONDS=5
 
@@ -20,10 +21,11 @@ while [[ $# -gt 0 ]]; do
     --players-per-lobby) PLAYERS_PER_LOBBY="$2"; shift 2;;
     --duration) DURATION="$2"; shift 2;;
     --stagger-ms) STAGGER_MS="$2"; shift 2;;
+    --create-gap-ms) CREATE_GAP_MS="$2"; shift 2;;
     --latency-ms) LATENCY_MS="$2"; shift 2;;
     --lobby-wait-seconds) LOBBY_WAIT_SECONDS="$2"; shift 2;;
     -h|--help)
-      echo "Usage: $0 --server-ip IP --lobbies N --players-per-lobby M --duration SEC [--stagger-ms MS] [--latency-ms MS] [--lobby-wait-seconds SEC]"
+      echo "Usage: $0 --server-ip IP --lobbies N --players-per-lobby M --duration SEC [--stagger-ms MS] [--create-gap-ms MS] [--latency-ms MS] [--lobby-wait-seconds SEC]"
       exit 0;;
     *) echo "Unknown arg: $1" >&2; exit 2;;
   esac
@@ -47,6 +49,7 @@ BOT_IDS=()
 CSVS=()
 
 STAGGER_SLEEP=$(awk "BEGIN { printf \"%f\", ${STAGGER_MS}/1000 }")
+CREATE_GAP_SLEEP=$(awk "BEGIN { printf \"%f\", ${CREATE_GAP_MS}/1000 }")
 
 for ((L=1; L<=LOBBIES; L++)); do
   CREATOR_ID="L${L}-c"
@@ -109,7 +112,10 @@ for ((L=1; L<=LOBBIES; L++)); do
     CSVS+=("$J_CSV")
     sleep "$STAGGER_SLEEP"
   done
-  sleep "$STAGGER_SLEEP"
+  # Extra pause before the next creator to avoid hammering the server's CreateLobby
+  # endpoint — at ~15+ active matches, the main-thread HTTP dispatcher competes with
+  # per-match sim ticks and can time out new creates.
+  sleep "$CREATE_GAP_SLEEP"
 done
 
 echo "[run] ${#PIDS[@]} bots running. waiting up to $((DURATION + 30))s..."
