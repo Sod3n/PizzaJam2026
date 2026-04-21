@@ -27,10 +27,48 @@ OUT_DIR="${SCRIPT_DIR}/profile/$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$OUT_DIR"
 echo "[capture] output: $OUT_DIR"
 
-# Pick ssh wrapper
+# Pick ssh wrapper. sshpass on Linux, expect on macOS (both handle non-interactive
+# password auth). Falls back to plain ssh if VPS_PASSWORD is unset (assumes key auth).
 if [[ -n "${VPS_PASSWORD:-}" ]]; then
-  SSH() { sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$@"; }
-  SCP() { sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no "$@"; }
+  if command -v sshpass >/dev/null 2>&1; then
+    SSH() { sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$@"; }
+    SCP() { sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no "$@"; }
+  elif command -v expect >/dev/null 2>&1; then
+    # expect wrapper — reads stdin for SSH so we pass the remote script via -c
+    SSH() {
+      local host="$1"; shift
+      local cmd="${1:-}"
+      VPS_PWD="$VPS_PASSWORD" expect <<EXP
+        set timeout -1
+        log_user 1
+        spawn -noecho ssh -o StrictHostKeyChecking=no -o PreferredAuthentications=password $host $cmd
+        expect {
+          -re {[Pp]assword:} { send "\$env(VPS_PWD)\r"; exp_continue }
+          eof
+        }
+        catch wait result
+        exit [lindex \$result 3]
+EXP
+    }
+    SCP() {
+      local src="$1" dst="$2"
+      VPS_PWD="$VPS_PASSWORD" expect <<EXP
+        set timeout -1
+        log_user 1
+        spawn -noecho scp -o StrictHostKeyChecking=no -o PreferredAuthentications=password $src $dst
+        expect {
+          -re {[Pp]assword:} { send "\$env(VPS_PWD)\r"; exp_continue }
+          eof
+        }
+        catch wait result
+        exit [lindex \$result 3]
+EXP
+    }
+  else
+    echo "ERROR: VPS_PASSWORD is set but neither 'sshpass' nor 'expect' is installed." >&2
+    echo "On macOS: brew install hudochenkov/sshpass/sshpass   (or) install 'expect' via brew" >&2
+    exit 1
+  fi
 else
   SSH() { ssh "$@"; }
   SCP() { scp "$@"; }
@@ -49,25 +87,36 @@ echo "[capture] warmup ${TRACE_DELAY}s..."
 sleep "$TRACE_DELAY"
 
 echo "[capture] capturing ${TRACE_LEN}s trace on VPS..."
-SSH "$VPS_USER@$VPS_HOST" bash <<REMOTE
-  set -u
-  PID=\$(docker exec $CONTAINER bash -c 'dotnet-trace ps | grep Template.Server | head -1 | awk "{print \\\$1}"')
-  if [[ -z "\$PID" ]]; then echo "server PID not found in container"; exit 1; fi
-  echo "[vps] server PID: \$PID"
 
-  # Run trace + counters in parallel (fire-and-forget via & and wait)
-  docker exec -d $CONTAINER bash -c "dotnet-trace collect --process-id \$PID --profile dotnet-sampled-thread-time --providers 'Microsoft-Windows-DotNETRuntime:0x1:4' --duration 00:00:${TRACE_LEN} --output /tmp/vps-cpu.nettrace > /tmp/vps-trace.log 2>&1"
-  docker exec -d $CONTAINER bash -c "dotnet-counters collect --process-id \$PID --counters System.Runtime --refresh-interval 1 --format csv --output /tmp/vps-gc.csv > /tmp/vps-counters.log 2>&1 & sleep $((TRACE_LEN+2)); pkill -f dotnet-counters || true"
+# Build the remote script in a local temp file, then scp + exec it. This avoids the
+# heredoc-via-stdin pattern which doesn't play nicely with our expect wrapper.
+REMOTE_SCRIPT="$(mktemp -t capture-remote.XXXXXX.sh)"
+trap 'rm -f "$REMOTE_SCRIPT"' EXIT
 
-  # Wait for trace to finish (dotnet-trace returns when duration expires)
-  sleep $((TRACE_LEN + 5))
-  echo "[vps] trace complete"
-  docker exec $CONTAINER ls -lh /tmp/vps-cpu.nettrace /tmp/vps-gc.csv 2>&1 || true
+cat > "$REMOTE_SCRIPT" <<REMOTE
+#!/bin/bash
+set -u
+CONTAINER=$CONTAINER
+TRACE_LEN=$TRACE_LEN
+PID=\$(docker exec \$CONTAINER bash -c 'dotnet-trace ps | grep Template.Server | head -1 | awk "{print \\\$1}"')
+if [[ -z "\$PID" ]]; then echo "server PID not found in container"; exit 1; fi
+echo "[vps] server PID: \$PID"
 
-  # Copy files out of container to VPS host tmp
-  docker cp $CONTAINER:/tmp/vps-cpu.nettrace /tmp/vps-cpu.nettrace
-  docker cp $CONTAINER:/tmp/vps-gc.csv /tmp/vps-gc.csv
+# Start CPU + GC traces in parallel inside container, fire-and-forget; dotnet-trace
+# respects --duration and exits cleanly.
+docker exec -d \$CONTAINER bash -c "dotnet-trace collect --process-id \$PID --profile dotnet-sampled-thread-time --providers 'Microsoft-Windows-DotNETRuntime:0x1:4' --duration 00:00:\$TRACE_LEN --output /tmp/vps-cpu.nettrace > /tmp/vps-trace.log 2>&1"
+docker exec -d \$CONTAINER bash -c "dotnet-counters collect --process-id \$PID --counters System.Runtime --refresh-interval 1 --format csv --output /tmp/vps-gc.csv > /tmp/vps-counters.log 2>&1 & sleep \$((TRACE_LEN+2)); pkill -f dotnet-counters || true"
+
+sleep \$((TRACE_LEN + 5))
+echo "[vps] trace complete"
+docker exec \$CONTAINER ls -lh /tmp/vps-cpu.nettrace /tmp/vps-gc.csv 2>&1 || true
+
+docker cp \$CONTAINER:/tmp/vps-cpu.nettrace /tmp/vps-cpu.nettrace
+docker cp \$CONTAINER:/tmp/vps-gc.csv /tmp/vps-gc.csv
 REMOTE
+
+SCP "$REMOTE_SCRIPT" "$VPS_USER@$VPS_HOST:/tmp/capture-remote.sh"
+SSH "$VPS_USER@$VPS_HOST" "bash /tmp/capture-remote.sh && rm /tmp/capture-remote.sh"
 
 # 3. Pull files back to local
 echo "[capture] copying traces back to $OUT_DIR"

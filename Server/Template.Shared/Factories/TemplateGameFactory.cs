@@ -36,7 +36,11 @@ public static class TemplateGameFactory
         // 1. Create Game with pre-allocated entity capacity to avoid store resizes.
         // Capacity is set before the World entity is created in EntityWorld constructor,
         // so every component store starts at 512 from the beginning.
-        var game = new Game(tickRate: tickRate, reserveEntityCapacity: 512, disableRollback: disableRollback);
+        // Pre-reserve aggressive entity capacity so component stores don't trigger Resize()
+        // in steady-state ticks. Per-match memory cost: ~2 MB across all component stores
+        // at 2048 entities. Was 512; measured VPS steady-state had frequent Resize() calls
+        // on Skin / NavigationAgent / Transform2D stores, each a full byte[] reallocation.
+        var game = new Game(tickRate: tickRate, reserveEntityCapacity: 2048, disableRollback: disableRollback);
 
         // 2. Register physics system (stateless sensor queries — fully deterministic, no rollback issues)
         game.Loop.Simulation.SystemRunner.EnableSystem(new SensorQuerySystem());
