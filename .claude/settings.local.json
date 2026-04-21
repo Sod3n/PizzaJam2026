@@ -130,7 +130,21 @@
       "Bash(python3 *)",
       "Bash(awk '{print $1}')",
       "Bash(ls -lh ~/PizzaJam_DesyncLogs/*.jsonl)",
-      "Bash(awk '{print $5, $6, $7, $8, $9}')"
+      "Bash(awk '{print $5, $6, $7, $8, $9}')",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts -type f -name *.gd)",
+      "Bash(ls -lhS /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/sprites/*.png)",
+      "Bash(grep \".png$\")",
+      "Bash(find /Users/a1/Documents/GitHub/PizzaJam2026-copy -name *MetricsComponentModel* -type f)",
+      "Bash(xargs ls:*)",
+      "Bash(sort -k5 -hr)",
+      "Bash(grep -E \"\\\\.\\(cs|csx\\)$\")",
+      "Bash(wc -l /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts/Visuals/*.cs)",
+      "Bash(grep -r GPUParticles /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot --include=*.tscn)",
+      "Bash(/tmp/analyze_grass.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(ls /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts/Visuals/*.g.cs)",
+      "Bash(ls /Users/a1/Documents/GitHub/PizzaJam2026-copy/Client/Template.Godot/Scripts/Visuals/*Model*.cs)",
+      "Bash(grep -r \"regenerate\\\\|generate\" /Users/a1/Documents/GitHub/PizzaJam2026-copy/*.sh)"
     ]
   }
 }

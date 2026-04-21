@@ -87,6 +87,7 @@ public partial class HouseView : Node3D
                 }
             }
         }
+        vm.Dispose();
     }
 
     private void OnReset()
@@ -115,6 +116,7 @@ public partial class HouseView : Node3D
     public override void _ExitTree()
     {
         _disposables.Dispose();
+        foreach (var vm in _spawnedEntities.Keys) vm.Dispose();
         _spawnedEntities.Clear();
     }
 }
