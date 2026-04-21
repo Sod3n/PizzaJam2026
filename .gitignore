@@ -109,3 +109,4 @@ Client/Template.Godot/lib/
 
 # StressBot run artifacts (per-bot logs + summary CSVs)
 Server/Tools/StressBot/runs/
+Server/Tools/StressBot/profile/
