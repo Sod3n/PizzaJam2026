@@ -9,6 +9,26 @@ new Deterministic.GameFramework.Utils.Logging.ConsoleLogger();
 Deterministic.GameFramework.Utils.Logging.ILogger.ReadLevelFromEnvironment();
 Console.WriteLine($"[Startup] LogLevel = {Deterministic.GameFramework.Utils.Logging.ILogger.MinLevel}");
 
+// Periodic non-blocking Gen 2 + LOH compaction. Server-mode GC collects fine during stress
+// but leaves committed OS pages at the watermark even after matches dispose (VPS Working Set
+// stayed at ~800 MB after stress ended). A background compact every 2 min returns pages to
+// the OS without stopping game-loop threads — the concurrent GC runs on its own cores.
+_ = Task.Run(async () =>
+{
+    var interval = TimeSpan.FromMinutes(2);
+    while (true)
+    {
+        await Task.Delay(interval);
+        try
+        {
+            System.Runtime.GCSettings.LargeObjectHeapCompactionMode =
+                System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect(2, GCCollectionMode.Default, blocking: false, compacting: true);
+        }
+        catch { /* never let a GC hint crash the host */ }
+    }
+});
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
