@@ -44,7 +44,7 @@ jobs:
             -p 8080:8080 \
             -p 9050:9050/udp \
             -v pizzajam-desync-logs:/app/desync-logs \
-            -e DESYNC_RECORDING=true \
+            -e DESYNC_RECORDING=false \
             -e DESYNC_LOG_DIR=/app/desync-logs \
             -e LOG_LEVEL=Error \
             ghcr.io/${{ env.IMAGE_NAME }}:latest
