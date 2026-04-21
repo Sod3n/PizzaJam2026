@@ -46,6 +46,7 @@ jobs:
             -v pizzajam-desync-logs:/app/desync-logs \
             -e DESYNC_RECORDING=true \
             -e DESYNC_LOG_DIR=/app/desync-logs \
+            -e LOG_LEVEL=Error \
             ghcr.io/${{ env.IMAGE_NAME }}:latest
 
           docker image prune -f > /dev/null 2>&1 || true

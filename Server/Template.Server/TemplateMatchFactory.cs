@@ -5,6 +5,7 @@ using Deterministic.GameFramework.Profiler;
 using Template.Shared.Factories;
 using Template.Shared.Features.Player;
 using Guid = System.Guid;
+using ILogger = Deterministic.GameFramework.Utils.Logging.ILogger;
 
 namespace Template.Server;
 
@@ -26,7 +27,7 @@ public class TemplateMatchFactory : IMatchFactory
             StateSerializer.Deserialize(game.State, stateData);
             game.Loop.ForceSetTick(savedTick);
 
-            Console.WriteLine($"[MatchFactory] Restored saved state at tick {savedTick} ({stateData.Length} bytes)");
+            ILogger.Log($"[MatchFactory] Restored saved state at tick {savedTick} ({stateData.Length} bytes)");
         }
 
         var match = new Match(matchId, game);

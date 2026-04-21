@@ -6,6 +6,7 @@ using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Physics2D.Systems;
+using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Definitions;
 using Template.Shared.Debugging;
@@ -33,7 +34,7 @@ public class GameplayScene : IScene
     public IEnumerable<IReactionService> RegisterReactionServices(GameSimulation loop) => ServiceLocator.GetAll<IReactionService>();
     public void OnEnter(GameSimulation loop)
     {
-        Console.WriteLine("[GameplayScene] Entering scene...");
+        ILogger.Log("[GameplayScene] Entering scene...");
 
         var state = loop.State;
 
@@ -130,6 +131,6 @@ public class GameplayScene : IScene
 
     public void OnExit(GameSimulation loop)
     {
-        Console.WriteLine("[GameplayScene] Exiting scene...");
+        ILogger.Log("[GameplayScene] Exiting scene...");
     }
 }

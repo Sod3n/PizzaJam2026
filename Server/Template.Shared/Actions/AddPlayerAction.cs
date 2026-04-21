@@ -3,6 +3,7 @@ using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
+using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using System;
@@ -26,7 +27,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
 {
     protected override void ExecuteProcess(AddPlayerAction action, ref World entity, Context ctx)
     {
-        System.Console.WriteLine($"[AddPlayerAction] Processing for User {action.UserId} on Tick {ctx.State.GetCustomData<IGameTime>()?.CurrentTick}. NextEntityId: {ctx.State.NextEntityId}");
+        ILogger.Log($"[AddPlayerAction] Processing for User {action.UserId} on Tick {ctx.State.GetCustomData<IGameTime>()?.CurrentTick}. NextEntityId: {ctx.State.NextEntityId}");
 
         // Check if player already exists
         foreach (var existingPlayer in ctx.State.Filter<PlayerEntity>())
@@ -34,7 +35,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
             ref var playerComp = ref ctx.State.GetComponent<PlayerEntity>(existingPlayer);
             if (playerComp.UserId == action.UserId)
             {
-                System.Console.WriteLine($"[AddPlayerAction] Player {action.UserId} already exists (Entity {existingPlayer.Id})! Skipping.");
+                ILogger.LogWarning($"[AddPlayerAction] Player {action.UserId} already exists (Entity {existingPlayer.Id})! Skipping.");
                 return; // Player already exists
             }
         }
@@ -51,7 +52,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
         // Use PlayerDefinition to ensure consistent setup
         var playerEntity = PlayerDefinition.Create(ctx, action.UserId, position, 0);
 
-        System.Console.WriteLine($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position}. NextEntityId After: {ctx.State.NextEntityId}");
+        ILogger.Log($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position}. NextEntityId After: {ctx.State.NextEntityId}");
 
         // Add Score Component (not in definition yet, specific to gameplay)
         ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });

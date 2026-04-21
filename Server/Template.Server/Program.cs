@@ -3,6 +3,11 @@ using Deterministic.GameFramework.ServerV2;
 using Template.Server;
 
 new Deterministic.GameFramework.Utils.Logging.ConsoleLogger();
+// Respect LOG_LEVEL env var (Debug/Info/Warning/Error/None). Default Info. On VPS set
+// `LOG_LEVEL=None` (or `Warning`) to silence per-tick logs — stdout's SyncTextWriter lock
+// dominated ~33 % of per-tick CPU in profiling at 15 lobbies.
+Deterministic.GameFramework.Utils.Logging.ILogger.ReadLevelFromEnvironment();
+Console.WriteLine($"[Startup] LogLevel = {Deterministic.GameFramework.Utils.Logging.ILogger.MinLevel}");
 
 var builder = WebApplication.CreateBuilder(args);
 
