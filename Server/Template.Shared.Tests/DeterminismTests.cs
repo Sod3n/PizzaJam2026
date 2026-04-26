@@ -68,7 +68,9 @@ public class DeterminismTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -101,10 +103,10 @@ public class DeterminismTests : IDisposable
         _output.WriteLine($"Correct hash at tick {targetTick}: {correctHash}");
 
         // Rollback to tick 80 (checkpoint), resimulate 10 ticks
-        bool restored = game.Loop.Simulation.History.Retrieve(checkpointTick, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(checkpointTick, game.State);
         restored.Should().BeTrue();
 
-        game.Loop.Simulation.History.DiscardFuture(checkpointTick);
+        game.Loop.Simulation.GetHistory().DiscardFuture(checkpointTick);
         game.Loop.ForceSetTick(checkpointTick);
 
         for (int i = 0; i < 10; i++)
@@ -171,10 +173,10 @@ public class DeterminismTests : IDisposable
 
         // Rollback to BEFORE the grass spawn tick (590), resimulate through it
         long rollbackTarget = 590;
-        bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
         restored.Should().BeTrue();
 
-        game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         game.Loop.ForceSetTick(rollbackTarget);
 
         while (game.Loop.CurrentTick < targetTick)
@@ -238,9 +240,9 @@ public class DeterminismTests : IDisposable
                 var correctHash = HashGame(game);
                 long rollbackTarget = gameTick - 10;
 
-                if (game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State))
+                if (game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State))
                 {
-                    game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+                    game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
                     game.Loop.ForceSetTick(rollbackTarget);
 
                     for (int r = 0; r < 10; r++)

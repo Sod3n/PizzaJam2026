@@ -1,6 +1,10 @@
+using Deterministic.GameFramework.Common;
+using Deterministic.GameFramework.DeltaSync;
 using Deterministic.GameFramework.Network.Server;
 using Deterministic.GameFramework.ServerV2;
 using Template.Server;
+
+SyncModePluginRegistry.Register(SyncMode.DeltaSync, new DeltaSyncPlugin());
 
 new Deterministic.GameFramework.Utils.Logging.ConsoleLogger();
 // Respect LOG_LEVEL env var (Debug/Info/Warning/Error/None). Default Info. On VPS set

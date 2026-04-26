@@ -1,6 +1,7 @@
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Physics2D.Systems;
+using Deterministic.GameFramework.Scenes;
 using Template.Shared.Scenes;
 
 namespace Template.Shared.Factories;
@@ -9,7 +10,7 @@ public static class TemplateGameFactory
 {
     private static bool _appInitialized = false;
 
-    public static Game CreateGame(int tickRate = 60, bool disableRollback = false, string? gameDataPath = null, System.Collections.Generic.Dictionary<string, string>? gameDataJson = null)
+    public static Game CreateGame(int tickRate = 60, string? gameDataPath = null, System.Collections.Generic.Dictionary<string, string>? gameDataJson = null)
     {
         if (!_appInitialized)
         {
@@ -40,13 +41,14 @@ public static class TemplateGameFactory
         // in steady-state ticks. Per-match memory cost: ~2 MB across all component stores
         // at 2048 entities. Was 512; measured VPS steady-state had frequent Resize() calls
         // on Skin / NavigationAgent / Transform2D stores, each a full byte[] reallocation.
-        var game = new Game(tickRate: tickRate, reserveEntityCapacity: 2048, disableRollback: disableRollback);
+        var game = new Game(tickRate: tickRate, reserveEntityCapacity: 2048);
 
         // 2. Register physics system (stateless sensor queries — fully deterministic, no rollback issues)
         game.Loop.Simulation.SystemRunner.EnableSystem(new SensorQuerySystem());
 
         // 3. Load Initial Scene
-        game.SceneManager.LoadScene(new GameplayScene());
+        var sceneManager = new SceneManager(game.Simulation);
+        sceneManager.LoadScene(new GameplayScene());
 
         return game;
     }

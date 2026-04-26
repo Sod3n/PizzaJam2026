@@ -26,7 +26,9 @@
     <ProjectReference Include="..\Template.Shared\Template.Shared.csproj" />
     <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
     <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
+    <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Debugging\Deterministic.GameFramework.Debugging.csproj" />
     <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.DAR\Deterministic.GameFramework.DAR.csproj" />
+    <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.GGPO\Deterministic.GameFramework.GGPO.csproj" />
     <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
   </ItemGroup>
 

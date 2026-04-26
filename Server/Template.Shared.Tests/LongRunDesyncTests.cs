@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.DAR;
+using Deterministic.GameFramework.Debugging;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.TwoD;
@@ -71,7 +72,9 @@ public class LongRunDesyncTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -95,7 +98,7 @@ public class LongRunDesyncTests : IDisposable
 
     private static Guid HashAtTick(Game game, long tick)
     {
-        if (game.Loop.Simulation.History.TryGetSnapshotData(tick, out byte[]? data))
+        if (game.Loop.Simulation.GetHistory().TryGetSnapshotData(tick, out byte[]? data))
             return StateHasher.Hash(data!);
         throw new Exception($"Tick {tick} not in history (current={game.Loop.CurrentTick})");
     }
@@ -226,8 +229,8 @@ public class LongRunDesyncTests : IDisposable
                         // Log diff for first 2 desyncs
                         if (desyncCount <= 2)
                         {
-                            server.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? sd);
-                            client.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? cd);
+                            server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? sd);
+                            client.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? cd);
                             if (sd != null && cd != null)
                                 StateDumper.LogStateDiff($"LongRun_{label}_{confirmTick}", confirmTick, cd, sd);
                         }
@@ -369,8 +372,8 @@ public class LongRunDesyncTests : IDisposable
 
                         if (desyncCount <= 3)
                         {
-                            server.Loop.Simulation.History.TryGetSnapshotData(checkTick, out byte[]? sd);
-                            client.Loop.Simulation.History.TryGetSnapshotData(checkTick, out byte[]? cd);
+                            server.Loop.Simulation.GetHistory().TryGetSnapshotData(checkTick, out byte[]? sd);
+                            client.Loop.Simulation.GetHistory().TryGetSnapshotData(checkTick, out byte[]? cd);
                             if (sd != null && cd != null)
                                 StateDumper.LogStateDiff($"Breed_{label}_{checkTick}", checkTick, cd, sd);
                         }
@@ -485,14 +488,10 @@ public class LongRunDesyncTests : IDisposable
         int totalTicks = breedClicks * clickInterval + 300;
         long firstDesyncTick = -1;
 
-        // Enable per-system diagnostics — output goes to console, captured by xunit
-        server.Loop.Simulation.SystemRunner.DiagnosticHashPerSystem = true;
-        client.Loop.Simulation.SystemRunner.DiagnosticHashPerSystem = true;
-        // Only enable around expected divergence area (tick 90-100 based on previous test)
-        server.Loop.Simulation.SystemRunner.DiagnosticTickMin = 85;
-        server.Loop.Simulation.SystemRunner.DiagnosticTickMax = 105;
-        client.Loop.Simulation.SystemRunner.DiagnosticTickMin = 85;
-        client.Loop.Simulation.SystemRunner.DiagnosticTickMax = 105;
+        var serverDiag = new DiagnosticHashHook { TickMin = 85, TickMax = 105 };
+        serverDiag.Attach(server.Loop.Simulation);
+        var clientDiag = new DiagnosticHashHook { TickMin = 85, TickMax = 105 };
+        clientDiag.Attach(client.Loop.Simulation);
 
         var serverHashes = new Dictionary<long, Guid>();
         var clientHashes = new Dictionary<long, Guid>();
@@ -535,8 +534,8 @@ public class LongRunDesyncTests : IDisposable
                 StateDumper.LogStateDiff($"Breed_Pinpoint_{st}", st, cd, sd);
 
                 // Also check the previous tick from history
-                if (server.Loop.Simulation.History.TryGetSnapshotData(st - 1, out byte[]? prevSd) &&
-                    client.Loop.Simulation.History.TryGetSnapshotData(st - 1, out byte[]? prevCd))
+                if (server.Loop.Simulation.GetHistory().TryGetSnapshotData(st - 1, out byte[]? prevSd) &&
+                    client.Loop.Simulation.GetHistory().TryGetSnapshotData(st - 1, out byte[]? prevCd))
                 {
                     var prevSh = StateHasher.Hash(prevSd!);
                     var prevCh = StateHasher.Hash(prevCd!);
@@ -1003,7 +1002,7 @@ public class LongRunDesyncTests : IDisposable
             StateSerializer.AdoptMappingsFrom(initialState);
             StateSerializer.Deserialize(game.State, initialState, syncComponentIds: false, fullInvalidate: true);
             game.Loop.ForceSetTick(startTick);
-            game.Loop.Simulation.History.Store(startTick, game.State);
+            game.Loop.Simulation.GetHistory().Store(startTick, game.State);
         }
 
         int actionIndex = 0;
@@ -1091,7 +1090,7 @@ public class LongRunDesyncTests : IDisposable
             StateSerializer.AdoptMappingsFrom(matchStateData);
             StateSerializer.Deserialize(game2.State, matchStateData, syncComponentIds: false, fullInvalidate: true);
             game2.Loop.ForceSetTick(lastMatchTick);
-            game2.Loop.Simulation.History.Store(lastMatchTick, game2.State);
+            game2.Loop.Simulation.GetHistory().Store(lastMatchTick, game2.State);
 
             // Verify starting point
             var startHash = StateHasher.Hash(matchStateData);
@@ -1183,9 +1182,9 @@ public class LongRunDesyncTests : IDisposable
         // Server continues running (client hasn't caught up yet)
         // Collect actions the server processes — these become TickSnapshot actions
         var serverActions = new List<(long tick, DenseComponentId id, byte[] data, int entityId)>();
-        server.Scheduler.OnActionScheduled += (id, data, entityId, tick, origTick) =>
+        server.Scheduler.OnActionScheduled += (id, data, entityId, tick, origTick, predictionId) =>
         {
-            if (tick >= serverTickAtSync) // Only capture actions after sync point
+            if (tick >= serverTickAtSync)
                 serverActions.Add((tick, id, data.ToArray(), entityId));
         };
 
@@ -1219,7 +1218,7 @@ public class LongRunDesyncTests : IDisposable
         client.Loop.ForceSetTick(serverTickAtSync);
 
         // Step 3: Store in history (GameClient.ApplyFullState line 373)
-        client.Loop.Simulation.History.Store(serverTickAtSync, client.State);
+        client.Loop.Simulation.GetHistory().Store(serverTickAtSync, client.State);
 
         // Step 4: PruneHistory (GameClient.ApplyFullState line 380)
         client.Scheduler.PruneHistory(serverTickAtSync);
@@ -1233,7 +1232,7 @@ public class LongRunDesyncTests : IDisposable
 
         // Step 6: InitializeLoop double-store (GameLoop.cs line 139)
         // This happens when Loop.Start() is called — simulate it
-        client.Loop.Simulation.History.Store(client.Loop.CurrentTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(client.Loop.CurrentTick, client.State);
 
         // Step 7: Verify starting state matches
         var serverHashAtSync = StateHasher.Hash(syncState);
@@ -1258,7 +1257,7 @@ public class LongRunDesyncTests : IDisposable
                 Guid sHash, cHash;
                 try
                 {
-                    if (!server.Loop.Simulation.History.TryGetSnapshotData(checkTick, out var sd))
+                    if (!server.Loop.Simulation.GetHistory().TryGetSnapshotData(checkTick, out var sd))
                         continue;
                     sHash = StateHasher.Hash(sd!);
                     cHash = StateHasher.Hash(client.State);
@@ -1274,7 +1273,7 @@ public class LongRunDesyncTests : IDisposable
                         _output.WriteLine($"[{label}] DESYNC at tick {checkTick}");
 
                         // Diff
-                        server.Loop.Simulation.History.TryGetSnapshotData(checkTick, out var sd2);
+                        server.Loop.Simulation.GetHistory().TryGetSnapshotData(checkTick, out var sd2);
                         byte[] cd = StateSerializer.Serialize(client.State);
                         StateDumper.LogStateDiff($"SyncFlow_{label}", checkTick, cd, sd2!);
                     }
@@ -1344,7 +1343,7 @@ public class LongRunDesyncTests : IDisposable
             StateSerializer.AdoptMappingsFrom(initialState);
             StateSerializer.Deserialize(game.State, initialState, syncComponentIds: false, fullInvalidate: true);
             game.Loop.ForceSetTick(startTick);
-            game.Loop.Simulation.History.Store(startTick, game.State);
+            game.Loop.Simulation.GetHistory().Store(startTick, game.State);
 
             // Verify initial state hash matches Godot's
             var initialHash = StateHasher.Hash(game.State);
@@ -1518,7 +1517,7 @@ public class LongRunDesyncTests : IDisposable
         StateSerializer.AdoptMappingsFrom(syncState);
         StateSerializer.Deserialize(client.State, syncState, syncComponentIds: false, fullInvalidate: true);
         client.Loop.ForceSetTick(syncTick);
-        client.Loop.Simulation.History.Store(syncTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(syncTick, client.State);
 
         // Find client's player entity (same entity ID as server)
         Entity clientPlayer = Entity.Null;
@@ -1600,8 +1599,8 @@ public class LongRunDesyncTests : IDisposable
 
                         if (desyncCount <= 2)
                         {
-                            server.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? sd);
-                            client.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? cd);
+                            server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? sd);
+                            client.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? cd);
                             if (sd != null && cd != null)
                                 StateDumper.LogStateDiff($"MidJoin_{label}_{confirmTick}", confirmTick, cd, sd);
                         }

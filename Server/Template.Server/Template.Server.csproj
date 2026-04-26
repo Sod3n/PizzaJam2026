@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Framework\Networking\Deterministic.GameFramework.Server\Deterministic.GameFramework.Server.csproj" />
+    <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.DeltaSync\Deterministic.GameFramework.DeltaSync.csproj" />
     <ProjectReference Include="..\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
     <ProjectReference Include="..\Template.Shared\Template.Shared.csproj" />
     <ProjectReference Include="..\Framework\Profiler\Deterministic.GameFramework.Profiler\Deterministic.GameFramework.Profiler.csproj" />

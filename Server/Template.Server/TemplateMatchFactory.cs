@@ -14,7 +14,7 @@ public class TemplateMatchFactory : IMatchFactory
     public Match CreateMatch(Guid matchId, byte[]? initialState = null)
     {
         // 1. Create Game using Shared Factory (ensures consistent setup)
-        var game = TemplateGameFactory.CreateGame(tickRate: 60, disableRollback: true);
+        var game = TemplateGameFactory.CreateGame(tickRate: 60);
         GameProfiler.Enable(game);
 
         // 2. If we have a saved state, restore it (overwrites entities from scene OnEnter)

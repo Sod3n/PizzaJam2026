@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Deterministic.GameFramework.Common;
+using Deterministic.GameFramework.DeltaSync;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Network.Client;
 using Deterministic.GameFramework.Types;
@@ -87,7 +88,7 @@ public sealed class Options
 public sealed class Bot
 {
     private readonly Options _opt;
-    private GameClient _client = null!;
+    private DeltaSyncGameClient _client = null!;
     private Game _game = null!;
 
     private long _actionsSent;
@@ -117,7 +118,7 @@ public sealed class Bot
 
         var net = new LiteNetLibNetworkClient();
         net.OnTickDeltaReceived += _ => Interlocked.Increment(ref _deltasReceived);
-        _client = new GameClient(net, $"{_opt.ServerIp}:{_opt.ServerPort}", _game, SyncMode.DeltaSync);
+        _client = new DeltaSyncGameClient(net, $"{_opt.ServerIp}:{_opt.ServerPort}", _game);
         _client.OnLog += m => Log(m);
         _client.OnConnected += () => { _connected = true; Log("Connected."); };
         _client.OnDisconnected += () => { _connected = false; if (!_shutdown.IsCancellationRequested) _unexpectedDisconnect = true; Log("Disconnected."); };

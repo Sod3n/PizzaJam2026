@@ -73,7 +73,9 @@ public class HighLatencyRollbackTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -163,7 +165,7 @@ public class HighLatencyRollbackTests : IDisposable
                 byte[] correctData = StateSerializer.Serialize(game.State);
 
                 // Rollback to past tick
-                bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+                bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
                 if (!restored)
                 {
                     _output.WriteLine($"  Tick {tick}: can't rollback to {rollbackTarget}, skipping");
@@ -173,7 +175,7 @@ public class HighLatencyRollbackTests : IDisposable
                     continue;
                 }
 
-                game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+                game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
                 game.Loop.ForceSetTick(rollbackTarget);
 
                 // Resimulate forward (same as server rollback path)
@@ -238,10 +240,10 @@ public class HighLatencyRollbackTests : IDisposable
                 var correctHash = HashGame(game);
                 byte[] correctData = StateSerializer.Serialize(game.State);
 
-                bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+                bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
                 if (!restored) continue;
 
-                game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+                game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
                 game.Loop.ForceSetTick(rollbackTarget);
 
                 for (int r = 0; r < rollbackTicks; r++)

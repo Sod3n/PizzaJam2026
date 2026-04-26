@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.DAR;
+using Deterministic.GameFramework.Scenes;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Physics2D.Components;
@@ -31,7 +32,6 @@ public class GameplayScene : IScene
         }
     }
     public IEnumerable<IActionService> RegisterActionServices(GameSimulation loop) => ServiceLocator.GetAll<IActionService>();
-    public IEnumerable<IReactionService> RegisterReactionServices(GameSimulation loop) => ServiceLocator.GetAll<IReactionService>();
     public void OnEnter(GameSimulation loop)
     {
         ILogger.Log("[GameplayScene] Entering scene...");

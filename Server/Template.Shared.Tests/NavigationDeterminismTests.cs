@@ -65,7 +65,9 @@ public class NavigationDeterminismTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -176,10 +178,10 @@ public class NavigationDeterminismTests : IDisposable
 
         // Rollback
         long rollbackTarget = targetTick - rollbackTicks;
-        bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
         restored.Should().BeTrue($"should be able to rollback {rollbackTicks} ticks");
 
-        game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         game.Loop.ForceSetTick(rollbackTarget);
 
         // Resimulate (cold — AgentPaths cleared by Invalidate)
@@ -256,9 +258,9 @@ public class NavigationDeterminismTests : IDisposable
         long targetTick = server.Loop.CurrentTick;
         long rollbackTarget = targetTick - rollbackTicks;
 
-        bool restored = server.Loop.Simulation.History.Retrieve(rollbackTarget, server.State);
+        bool restored = server.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, server.State);
         restored.Should().BeTrue();
-        server.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        server.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         server.Loop.ForceSetTick(rollbackTarget);
 
         for (int i = 0; i < rollbackTicks; i++)

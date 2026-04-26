@@ -66,7 +66,9 @@ public class PlayerDesyncTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -374,10 +376,10 @@ public class PlayerDesyncTests : IDisposable
         _output.WriteLine($"First run hash at tick {targetTick}: {firstRunHash}");
 
         // --- Rollback to checkpoint and replay ---
-        bool restored = game.Loop.Simulation.History.Retrieve(checkpointTick, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(checkpointTick, game.State);
         restored.Should().BeTrue("checkpoint should be available in history");
 
-        game.Loop.Simulation.History.DiscardFuture(checkpointTick);
+        game.Loop.Simulation.GetHistory().DiscardFuture(checkpointTick);
         game.Loop.ForceSetTick(checkpointTick);
 
         while (game.Loop.CurrentTick < targetTick)

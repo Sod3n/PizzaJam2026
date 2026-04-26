@@ -30,7 +30,9 @@ public class NavigationPerformanceTests
         ServiceLocator.Reset();
         var field = typeof(TemplateGameFactory).GetField("_appInitialized", BindingFlags.Static | BindingFlags.NonPublic);
         field?.SetValue(null, false);
-        return TemplateGameFactory.CreateGame(tickRate: 60);
+        var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
     }
 
     [Fact]
@@ -242,13 +244,13 @@ public class NavigationPerformanceTests
         long rollbackTarget = currentTick - 10;
 
         var rollbackSw = Stopwatch.StartNew();
-        bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
         rollbackSw.Stop();
         restored.Should().BeTrue("history should have state from 10 ticks ago");
         _output.WriteLine($"State restore (deserialize): {rollbackSw.Elapsed.TotalMilliseconds:F2}ms");
 
         // Resimulate 10 ticks (the rollback catch-up)
-        game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         game.Loop.ForceSetTick(rollbackTarget);
 
         var resimTimes = new List<double>();
@@ -299,7 +301,7 @@ public class NavigationPerformanceTests
         long rollbackTarget = currentTick - 10;
 
         var rollbackSw = Stopwatch.StartNew();
-        bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
         rollbackSw.Stop();
         restored.Should().BeTrue();
 
@@ -308,7 +310,7 @@ public class NavigationPerformanceTests
 
         _output.WriteLine($"State restore + clear: {rollbackSw.Elapsed.TotalMilliseconds:F2}ms");
 
-        game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         game.Loop.ForceSetTick(rollbackTarget);
 
         // Resimulate 10 ticks — first tick rebuilds nav + physics from scratch
@@ -373,7 +375,7 @@ public class NavigationPerformanceTests
         long rollbackTarget = currentTick - 10;
 
         var rollbackSw = Stopwatch.StartNew();
-        bool restored = game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
+        bool restored = game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
         rollbackSw.Stop();
         restored.Should().BeTrue();
 
@@ -389,7 +391,7 @@ public class NavigationPerformanceTests
 
         _output.WriteLine($"State restore + smart invalidate: {rollbackSw.Elapsed.TotalMilliseconds:F2}ms");
 
-        game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         game.Loop.ForceSetTick(rollbackTarget);
 
         // Resimulate 10 ticks — first tick rebuilds crowd (cheap) + Box2D (cheap)
@@ -454,8 +456,8 @@ public class NavigationPerformanceTests
 
         // Now rollback 10 ticks and resimulate WITHOUT clearing SystemData (current behavior)
         long rollbackTarget = targetTick - 10;
-        game.Loop.Simulation.History.Retrieve(rollbackTarget, game.State);
-        game.Loop.Simulation.History.DiscardFuture(rollbackTarget);
+        game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State);
+        game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
         game.Loop.ForceSetTick(rollbackTarget);
 
         for (int i = 0; i < 10; i++)

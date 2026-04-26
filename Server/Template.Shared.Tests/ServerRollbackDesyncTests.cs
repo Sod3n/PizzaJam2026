@@ -73,7 +73,9 @@ public class ServerRollbackDesyncTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -97,7 +99,7 @@ public class ServerRollbackDesyncTests : IDisposable
 
     private static Guid HashAtTick(Game game, long tick)
     {
-        if (game.Loop.Simulation.History.TryGetSnapshotData(tick, out byte[]? data))
+        if (game.Loop.Simulation.GetHistory().TryGetSnapshotData(tick, out byte[]? data))
             return StateHasher.Hash(data!);
         throw new Exception($"Tick {tick} not in history");
     }
@@ -173,8 +175,8 @@ public class ServerRollbackDesyncTests : IDisposable
         if (serverHash != clientHash)
         {
             // Dump diff
-            server.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? sd);
-            client.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? cd);
+            server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? sd);
+            client.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? cd);
             StateDumper.LogStateDiff($"ServerRollback_{label}", confirmTick, cd!, sd!);
         }
 
@@ -265,8 +267,8 @@ public class ServerRollbackDesyncTests : IDisposable
                         desyncCount++;
                         if (desyncCount <= 2)
                         {
-                            server.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? sd);
-                            client.Loop.Simulation.History.TryGetSnapshotData(confirmTick, out byte[]? cd);
+                            server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? sd);
+                            client.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmTick, out byte[]? cd);
                             StateDumper.LogStateDiff($"Repeated_{label}_{tick}", confirmTick, cd!, sd!);
                         }
                     }

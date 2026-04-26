@@ -65,7 +65,9 @@ public class FullStateSyncTests : IDisposable
         lock (_createLock)
         {
             EnsureServicesInitialized();
-            return TemplateGameFactory.CreateGame(tickRate: 60);
+            var game = TemplateGameFactory.CreateGame(tickRate: 60);
+            game.SetupGGPO();
+            return game;
         }
     }
 
@@ -94,7 +96,7 @@ public class FullStateSyncTests : IDisposable
 
     private static Guid HashAtTick(Game game, long tick)
     {
-        if (game.Loop.Simulation.History.TryGetSnapshotData(tick, out byte[]? data))
+        if (game.Loop.Simulation.GetHistory().TryGetSnapshotData(tick, out byte[]? data))
             return StateHasher.Hash(data!);
         throw new Exception($"Tick {tick} not in history");
     }
@@ -197,13 +199,13 @@ public class FullStateSyncTests : IDisposable
         _output.WriteLine($"[{label}] Confirmed tick: {confirmedTick}");
 
         // Get server's confirmed state from history
-        server.Loop.Simulation.History.TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
+        server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
             .Should().BeTrue($"server should have tick {confirmedTick} in history");
 
         // Client applies the confirmed state
         StateSerializer.Deserialize(client.State, confirmedState!, syncComponentIds: false);
         client.Loop.ForceSetTick(confirmedTick);
-        client.Loop.Simulation.History.Store(confirmedTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(confirmedTick, client.State);
 
         // Prune old actions
         client.Scheduler.PruneHistory(confirmedTick);
@@ -308,13 +310,13 @@ public class FullStateSyncTests : IDisposable
 
         // Now simulate full state sync
         long confirmedTick = server.Loop.CurrentTick - confirmationWindow;
-        server.Loop.Simulation.History.TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
+        server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
             .Should().BeTrue();
 
         // Apply confirmed state to client
         StateSerializer.Deserialize(client.State, confirmedState!, syncComponentIds: false);
         client.Loop.ForceSetTick(confirmedTick);
-        client.Loop.Simulation.History.Store(confirmedTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(confirmedTick, client.State);
         client.Scheduler.PruneHistory(confirmedTick);
 
         // Re-add predicted action only if it's at or after confirmed tick
@@ -442,7 +444,7 @@ public class FullStateSyncTests : IDisposable
 
         // Server sends confirmed state
         long confirmedTick = serverTickNow - confirmationWindow;
-        server.Loop.Simulation.History.TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
+        server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
             .Should().BeTrue($"server should have tick {confirmedTick} in history");
 
         // Simulate network delay: client keeps running while waiting for response
@@ -459,7 +461,7 @@ public class FullStateSyncTests : IDisposable
         // Client applies confirmed state
         StateSerializer.Deserialize(client.State, confirmedState!, syncComponentIds: false);
         client.Loop.ForceSetTick(confirmedTick);
-        client.Loop.Simulation.History.Store(confirmedTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(confirmedTick, client.State);
         client.Scheduler.PruneHistory(confirmedTick);
 
         // Re-add predicted actions >= confirmedTick
@@ -570,12 +572,12 @@ public class FullStateSyncTests : IDisposable
 
         // Simulate sync
         long confirmedTick = server.Loop.CurrentTick - confirmationWindow;
-        server.Loop.Simulation.History.TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
+        server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
             .Should().BeTrue();
 
         StateSerializer.Deserialize(client.State, confirmedState!, syncComponentIds: false);
         client.Loop.ForceSetTick(confirmedTick);
-        client.Loop.Simulation.History.Store(confirmedTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(confirmedTick, client.State);
         client.Scheduler.PruneHistory(confirmedTick);
 
         // Re-add predicted actions
@@ -661,7 +663,7 @@ public class FullStateSyncTests : IDisposable
         long confirmedTick = serverTickNow - confirmationWindow;
         _output.WriteLine($"Server at {serverTickNow}, confirmed tick={confirmedTick}");
 
-        server.Loop.Simulation.History.TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
+        server.Loop.Simulation.GetHistory().TryGetSnapshotData(confirmedTick, out byte[]? confirmedState)
             .Should().BeTrue($"server should have tick {confirmedTick} in history");
 
         // --- Step 1: TickSnapshot for tick 140 arrives FIRST (out of order) ---
@@ -683,7 +685,7 @@ public class FullStateSyncTests : IDisposable
         // --- Step 2: Full state for confirmed tick arrives ---
         StateSerializer.Deserialize(client.State, confirmedState!, syncComponentIds: false);
         client.Loop.ForceSetTick(confirmedTick);
-        client.Loop.Simulation.History.Store(confirmedTick, client.State);
+        client.Loop.Simulation.GetHistory().Store(confirmedTick, client.State);
         client.Scheduler.PruneHistory(confirmedTick);
 
         _output.WriteLine($"Applied full state at tick {confirmedTick}, client now at {client.Loop.CurrentTick}");

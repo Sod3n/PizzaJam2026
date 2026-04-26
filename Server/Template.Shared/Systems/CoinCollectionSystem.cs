@@ -40,3 +40,38 @@ public class CoinCollectionSystem : ISystem
         }
     }
 }
+
+
+
+ # love_house.gd
+  extends StaticBody2D
+
+  var cow1: Cow = null
+  var cow2: Cow = null
+
+  func try_breed() -> Cow:
+      if not cow1 or not cow2:
+          return null
+
+      var new_cow = preload("res://scenes/cow.tscn").instantiate() # it is ecs entity
+
+      # same tier: 25% upgrade, 1% downgrade
+      if cow1.tier == cow2.tier:
+          var roll = randf()
+          if roll < 0.25:
+              new_cow.tier = cow1.tier + 1
+          elif roll < 0.26:
+              new_cow.tier = max(0, cow1.tier - 1)
+          else:
+              new_cow.tier = cow1.tier
+      else:
+          # different tier: fail chance based on gap
+          var gap = abs(cow1.tier - cow2.tier)
+          if randf() < gap * 0.2:
+              new_cow.tier = min(cow1.tier, cow2.tier)
+          else:
+              new_cow.tier = max(cow1.tier, cow2.tier)
+
+      get_parent().add_child(new_cow)
+      new_cow.global_position = global_position
+      return new_cow

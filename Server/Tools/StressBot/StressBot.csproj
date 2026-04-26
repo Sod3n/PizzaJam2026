@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\Networking\Deterministic.GameFramework.Network\Deterministic.GameFramework.Network.csproj" />
+    <ProjectReference Include="..\..\Framework\Core\Deterministic.GameFramework.DeltaSync\Deterministic.GameFramework.DeltaSync.csproj" />
     <ProjectReference Include="..\..\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
     <ProjectReference Include="..\..\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
     <ProjectReference Include="..\..\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />

@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <PackageReference Include="System.Text.Json" Version="8.0.5" />
+      <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Scenes\Deterministic.GameFramework.Scenes.csproj" />
       <ProjectReference Include="..\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
       <ProjectReference Include="..\Framework\Deterministic.GameFramework.SourceGenerators\Deterministic.GameFramework.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
