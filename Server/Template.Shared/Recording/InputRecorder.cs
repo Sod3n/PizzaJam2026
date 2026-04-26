@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.Serialization;
 
 namespace Template.Shared.Recording;
 

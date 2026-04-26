@@ -1,5 +1,6 @@
 using System;
 using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.Serialization;
 using Deterministic.GameFramework.Network.Server;
 using Deterministic.GameFramework.Profiler;
 using Template.Shared.Factories;
