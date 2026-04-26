@@ -21,6 +21,7 @@ public static class TemplateGameFactory
             ServiceLocator.RegisterAssembly(typeof(Deterministic.GameFramework.TwoD.Transform2D).Assembly); // Deterministic.GameFramework.TwoD
             ServiceLocator.RegisterAssembly(typeof(RapierPhysicsSystem).Assembly); // Deterministic.GameFramework.TwoD.Physics
             ServiceLocator.RegisterAssembly(typeof(Deterministic.GameFramework.Navigation2D.Systems.NavigationSystem).Assembly); // Deterministic.GameFramework.TwoD.Navigation
+            ServiceLocator.RegisterAssembly(typeof(SceneManager).Assembly); // Deterministic.GameFramework.Scenes
             ServiceLocator.RegisterAssembly(typeof(TemplateGameFactory).Assembly); // Template.Shared
 
             // Initialize GameData
