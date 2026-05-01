@@ -72,7 +72,7 @@ public class MetricsExporter
         }
 
         int totalFood = grass + carrot + apple + mushroom;
-        int totalMilk = milk + carrotMilkshake + vitaminMix + purplePotion;
+        int totalMilk = milk;
 
         if (!_headerWritten)
         {

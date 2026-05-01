@@ -64,7 +64,7 @@ public struct HelperComponent : IComponent
     public bool IsBagFull() => GetBagTotal() >= BagCapacity;
 
     public int GetFoodTotal() => BagGrass + BagCarrot + BagApple + BagMushroom;
-    public int GetMilkTotal() => BagMilk + BagCarrotMilkshake + BagVitaminMix + BagPurplePotion;
+    public int GetMilkTotal() => BagMilk;
     public bool HasAnyResources() => GetBagTotal() > 0;
 
     /// <summary>Get the amount of a specific food type in the bag.</summary>
@@ -96,38 +96,20 @@ public struct HelperComponent : IComponent
     /// <summary>Get the amount of a specific milk product in the bag.</summary>
     public int GetBagMilkProduct(int milkProduct)
     {
-        return milkProduct switch
-        {
-            MilkProduct.Milk => BagMilk,
-            MilkProduct.CarrotMilkshake => BagCarrotMilkshake,
-            MilkProduct.VitaminMix => BagVitaminMix,
-            MilkProduct.PurplePotion => BagPurplePotion,
-            _ => 0
-        };
+        return milkProduct == MilkProduct.Milk ? BagMilk : 0;
     }
 
     /// <summary>Consume 1 unit of a specific milk product from the bag. Returns false if none available.</summary>
     public bool ConsumeBagMilkProduct(int milkProduct)
     {
-        switch (milkProduct)
-        {
-            case MilkProduct.Milk: if (BagMilk <= 0) return false; BagMilk--; return true;
-            case MilkProduct.CarrotMilkshake: if (BagCarrotMilkshake <= 0) return false; BagCarrotMilkshake--; return true;
-            case MilkProduct.VitaminMix: if (BagVitaminMix <= 0) return false; BagVitaminMix--; return true;
-            case MilkProduct.PurplePotion: if (BagPurplePotion <= 0) return false; BagPurplePotion--; return true;
-            default: return false;
-        }
+        if (milkProduct != MilkProduct.Milk || BagMilk <= 0) return false;
+        BagMilk--;
+        return true;
     }
 
     /// <summary>Add milk product to the bag.</summary>
     public void AddBagMilkProduct(int milkProduct, int amount)
     {
-        switch (milkProduct)
-        {
-            case MilkProduct.Milk: BagMilk += amount; break;
-            case MilkProduct.CarrotMilkshake: BagCarrotMilkshake += amount; break;
-            case MilkProduct.VitaminMix: BagVitaminMix += amount; break;
-            case MilkProduct.PurplePotion: BagPurplePotion += amount; break;
-        }
+        BagMilk += amount;
     }
 }

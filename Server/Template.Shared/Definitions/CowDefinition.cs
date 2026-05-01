@@ -31,8 +31,6 @@ public static partial class CowDefinition
                 totalExhaust += skinDef.Exhaust;
         }
         if (totalExhaust <= 0) totalExhaust = 10;
-        // Round up to nearest multiple of 4 so milking always completes cleanly
-        totalExhaust = ((totalExhaust + 3) / 4) * 4;
 
         // Weighted random: common cows prefer cheap food, rare cows prefer expensive food
         component.PreferredFood = FoodType.RandomPreferred(ref random);
@@ -44,6 +42,7 @@ public static partial class CowDefinition
 
         // Enable avoidance so cows steer around the player
         ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
+        navAgent.TargetDesiredDistance = 4f;
         navAgent.AvoidanceEnabled = true;
         navAgent.AvoidanceMask = 1u; // Detect player on collision layer 1
     }

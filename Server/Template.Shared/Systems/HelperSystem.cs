@@ -723,7 +723,7 @@ public class HelperSystem : ISystem
     {
         int cowMaxTier = FoodType.MaxTier(cowPreferredFood);
 
-        // Strict: only allow the house's selected food, no fallback
+        // Strict: only allow the selected supported food, no fallback.
         if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && helper.GetBagFood(houseSelectedFood) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
@@ -778,15 +778,7 @@ public class HelperSystem : ISystem
             var distSq = Vector2.DistanceSquared(myPos, housePos);
             if (distSq < 1f) distSq = 1f;
 
-            // Score: prefer higher-tier cows
-            int tierValue = cow.PreferredFood switch
-            {
-                FoodType.Mushroom => 200,
-                FoodType.Apple => 20,
-                FoodType.Carrot => 6,
-                _ => 1
-            };
-            Float score = (Float)tierValue / distSq;
+            Float score = (Float)(cow.MaxExhaust - cow.Exhaust) / distSq;
 
             if (score > bestScore)
             {
@@ -917,11 +909,8 @@ public class HelperSystem : ISystem
             int taken = 0;
             int capacity = helper.BagCapacity;
 
-            // Take milk products up to capacity
+            // Take general milk up to capacity
             while (taken < capacity && global.Milk > 0) { global.Milk--; helper.BagMilk++; taken++; }
-            while (taken < capacity && global.CarrotMilkshake > 0) { global.CarrotMilkshake--; helper.BagCarrotMilkshake++; taken++; }
-            while (taken < capacity && global.VitaminMix > 0) { global.VitaminMix--; helper.BagVitaminMix++; taken++; }
-            while (taken < capacity && global.PurplePotion > 0) { global.PurplePotion--; helper.BagPurplePotion++; taken++; }
 
             return taken > 0;
         }
@@ -930,16 +919,11 @@ public class HelperSystem : ISystem
 
     private bool HasMilkInBag(ref HelperComponent helper)
     {
-        return helper.BagMilk > 0 || helper.BagCarrotMilkshake > 0
-            || helper.BagVitaminMix > 0 || helper.BagPurplePotion > 0;
+        return helper.BagMilk > 0;
     }
 
     private bool SellOneItem(ref HelperComponent helper)
     {
-        // Sell most valuable first
-        if (helper.BagPurplePotion > 0) { helper.BagPurplePotion--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.PurplePotion); return true; }
-        if (helper.BagVitaminMix > 0) { helper.BagVitaminMix--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.VitaminMix); return true; }
-        if (helper.BagCarrotMilkshake > 0) { helper.BagCarrotMilkshake--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.CarrotMilkshake); return true; }
         if (helper.BagMilk > 0) { helper.BagMilk--; helper.BagCoins += MilkProduct.CoinValue(MilkProduct.Milk); return true; }
         return false;
     }
@@ -1038,7 +1022,7 @@ public class HelperSystem : ISystem
                 // Auto-load resources for sellers/builders/milkers without player interaction
                 if (helper.Type == HelperType.Seller)
                 {
-                    // Auto-load milk products from global
+                    // Auto-load general milk from global
                     foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
                     {
                         ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
@@ -1046,9 +1030,6 @@ public class HelperSystem : ISystem
                         int capacity = helper.BagCapacity - helper.GetBagTotal();
 
                         while (transferred < capacity && gr.Milk > 0) { gr.Milk--; helper.BagMilk++; transferred++; }
-                        while (transferred < capacity && gr.CarrotMilkshake > 0) { gr.CarrotMilkshake--; helper.BagCarrotMilkshake++; transferred++; }
-                        while (transferred < capacity && gr.VitaminMix > 0) { gr.VitaminMix--; helper.BagVitaminMix++; transferred++; }
-                        while (transferred < capacity && gr.PurplePotion > 0) { gr.PurplePotion--; helper.BagPurplePotion++; transferred++; }
 
                         if (transferred > 0)
                             helper.State = HelperState.SeekingTarget;
@@ -1121,11 +1102,7 @@ public class HelperSystem : ISystem
             helper.BagApple = 0;
             helper.BagMushroom = 0;
 
-            // Milk products
             gr.AddMilkProduct(MilkProduct.Milk, helper.BagMilk);
-            gr.AddMilkProduct(MilkProduct.CarrotMilkshake, helper.BagCarrotMilkshake);
-            gr.AddMilkProduct(MilkProduct.VitaminMix, helper.BagVitaminMix);
-            gr.AddMilkProduct(MilkProduct.PurplePotion, helper.BagPurplePotion);
             helper.BagMilk = 0;
             helper.BagCarrotMilkshake = 0;
             helper.BagVitaminMix = 0;

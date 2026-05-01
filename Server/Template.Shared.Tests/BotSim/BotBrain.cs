@@ -286,15 +286,8 @@ public class BotBrain
 
     private static ScoredOption Best(ScoredOption a, ScoredOption b) => b.Score > a.Score ? b : a;
 
-    /// <summary>Coin value per unit of milk product by cow tier.</summary>
-    private static float TierCoinValue(int preferredFood) => preferredFood switch
-    {
-        0 => 1f,    // Grass  → Milk
-        1 => 6f,    // Carrot → CarrotMilkshake
-        2 => 20f,   // Apple  → VitaminMix
-        3 => 200f,  // Mushroom → PurplePotion
-        _ => 1f,
-    };
+    /// <summary>All cows now produce general milk; food tier is only a feeding requirement.</summary>
+    private static float TierCoinValue(int preferredFood) => MilkProduct.CoinValue(MilkProduct.Milk);
 
     /// <summary>
     /// Breed value = expected milk income of the baby cow, computed from actual parent tiers.
@@ -391,7 +384,7 @@ public class BotBrain
         var playerPos = _game.State.HasComponent<Transform2D>(_player)
             ? _game.State.GetComponent<Transform2D>(_player).Position : Vector2.Zero;
         int totalFood = globalRes.Grass + globalRes.Carrot + globalRes.Apple + globalRes.Mushroom;
-        int totalMilk = globalRes.Milk + globalRes.CarrotMilkshake + globalRes.VitaminMix + globalRes.PurplePotion;
+        int totalMilk = globalRes.Milk;
 
         // ── Score each option: value / (travel_ticks + work_ticks) ──
         int assistMult = System.Math.Max(1, ps.ClickMultiplier);
@@ -431,9 +424,8 @@ public class BotBrain
                     int exhaustPerClick = assistMult;
                     int clicks = Math.Min(totalFood, (remaining + exhaustPerClick - 1) / exhaustPerClick); // ceil
                     int totalExhaust = Math.Min(remaining, clicks * exhaustPerClick);
-                    int milkPerExhaust = (house.SelectedFood == cow.PreferredFood) ? 5 : 1;
-                    int[] _milkCoinVal = { MilkProduct.CoinValue(0), MilkProduct.CoinValue(1), MilkProduct.CoinValue(2), MilkProduct.CoinValue(3) };
-                    int coinPerMilk = (house.SelectedFood >= 0 && house.SelectedFood < 4) ? _milkCoinVal[house.SelectedFood] : 1;
+                    int milkPerExhaust = 1;
+                    int coinPerMilk = MilkProduct.CoinValue(MilkProduct.Milk);
                     float milkValue = totalExhaust * milkPerExhaust * coinPerMilk;
                     best = Best(best, ScoreOption(milkable, milkValue * BotConfig.MilkValueMultiplier, playerPos, BotConfig.MilkSetupTicks + clicks, false, "milk"));
                 }
@@ -967,9 +959,6 @@ public class BotBrain
         Entity best = Entity.Null;
         float bestScore = -1f;
 
-        // Milk product coin values by type
-        int[] milkCoinValue = { MilkProduct.CoinValue(0), MilkProduct.CoinValue(1), MilkProduct.CoinValue(2), MilkProduct.CoinValue(3) };
-
         foreach (var e in _game.State.Filter<HouseComponent>())
         {
             if (checkClaimed && _coord.IsClaimed(e)) continue;
@@ -986,11 +975,9 @@ public class BotBrain
             int bestFood = globalRes.FindBestFoodForCow(cow.PreferredFood);
             if (bestFood < 0) continue;
 
-            // Score by total coin value: remaining exhaust × milkPerExhaust × coinValue
+            // Score by remaining general milk output.
             int remaining = cow.MaxExhaust - cow.Exhaust;
-            int milkPerExhaust = (bestFood == cow.PreferredFood) ? 5 : 1;
-            int coinValue = (bestFood >= 0 && bestFood < milkCoinValue.Length) ? milkCoinValue[bestFood] : 1;
-            float score = remaining * milkPerExhaust * coinValue;
+            float score = remaining * MilkProduct.CoinValue(MilkProduct.Milk);
 
             if (score > bestScore)
             {
@@ -1137,21 +1124,20 @@ public class BotBrain
                     score = score * 2 / (gridDist + 1);
             }
 
-            // Priority: farms once economy is running — higher-tier farms get stronger priority
-            // to push the bot toward mushroom caves (highest food value) faster
+            // Priority: farms unlock food requirements for later cows, but no longer multiply milk value.
             if (houseCount >= 3)
             {
                 if (land.Type == LandType.MushroomCave)
-                    score /= 10;       // PurplePotion = 18 coins — rush this
+                    score /= 3;
                 else if (land.Type == LandType.AppleOrchard)
-                    score /= 6;        // VitaminMix = 20 coins — on path to mushroom
+                    score /= 3;
                 else if (land.Type == LandType.CarrotFarm)
-                    score /= 4;        // CarrotMilkshake = 6 coins
+                    score /= 3;
             }
 
-            // Priority: Assistant building — doubles click output, very valuable
+            // Priority: helper/pet progression is now the main economy scaling.
             if (land.Type == LandType.HelperAssistant && houseCount >= 3)
-                score /= 5;
+                score /= 8;
 
             // Priority: path to FinalStructure — strongly prefer plots along (0, -y) axis
             // when FinalStructure hasn't been revealed yet (needs building through (0,-4))
@@ -1173,7 +1159,7 @@ public class BotBrain
                     _ => -1
                 };
                 if (upgradeType >= 0 && HasHelper(upgradeType) && !HasUpgradePetForType(upgradeType))
-                    score /= 4;
+                    score /= 7;
                 else
                     continue; // skip — helper not unlocked yet or already upgraded
             }

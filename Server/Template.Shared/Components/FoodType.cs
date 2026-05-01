@@ -7,28 +7,13 @@ public static class FoodType
     public const int Apple = 2;
     public const int Mushroom = 3;
 
-    /// <summary>
-    /// Get the milk product type produced by this food type (linear chain).
-    /// Grass → Milk, Carrot → CarrotMilkshake, Apple → VitaminMix, Mushroom → PurplePotion
-    /// </summary>
-    public static int ToMilkProduct(int foodType) => foodType; // Same mapping: 0→0, 1→1, 2→2, 3→3
+    /// <summary>All food types produce the same general milk product.</summary>
+    public static int ToMilkProduct(int foodType) => MilkProduct.Milk;
 
-    /// <summary>
-    /// Get the prerequisite milk product needed to produce the product for this food tier.
-    /// Grass needs nothing (-1), Carrot needs Milk, Apple needs CarrotMilkshake, Mushroom needs VitaminMix.
-    /// </summary>
-    public static int PrerequisiteProduct(int foodType) => foodType switch
-    {
-        Carrot => MilkProduct.Milk,
-        Apple => MilkProduct.CarrotMilkshake,
-        Mushroom => MilkProduct.VitaminMix,
-        _ => -1  // Grass has no prerequisite
-    };
+    /// <summary>Food tiers no longer require prior milk products.</summary>
+    public static int PrerequisiteProduct(int foodType) => -1;
 
-    /// <summary>
-    /// Get the maximum tier a cow can produce based on its PreferredFood.
-    /// A grass cow can only make Milk (tier 0). A mushroom cow can make up to PurplePotion (tier 3).
-    /// </summary>
+    /// <summary>Food preference is a requirement for satisfying the cow, not a milk tier.</summary>
     public static int MaxTier(int preferredFood) => preferredFood;
 
     /// <summary>
@@ -53,11 +38,5 @@ public static class MilkProduct
     public const int PurplePotion = 3;
 
     /// <summary>Coin value when selling a milk product.</summary>
-    public static int CoinValue(int milkProduct) => milkProduct switch
-    {
-        PurplePotion => 200,
-        VitaminMix => 20,
-        CarrotMilkshake => 6,
-        _ => 1
-    };
+    public static int CoinValue(int milkProduct) => 1;
 }

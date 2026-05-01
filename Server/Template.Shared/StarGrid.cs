@@ -91,17 +91,17 @@ public static class StarGrid
     {
         switch (landType)
         {
-            case LandType.FinalStructure: return 5;
-            case LandType.LoveHouse: return 3;
+            case LandType.FinalStructure: return 4;
+            case LandType.LoveHouse: return 2;
             case LandType.SellPoint: return 1;
             case LandType.CarrotFarm: return 1;
             case LandType.AppleOrchard: return 1;
             case LandType.MushroomCave: return 1;
-            case LandType.HelperAssistant: return 2;
-            case LandType.UpgradeGatherer: return 2;
-            case LandType.UpgradeBuilder: return 2;
-            case LandType.UpgradeSeller: return 2;
-            case LandType.UpgradeAssistant: return 2;
+            case LandType.HelperAssistant: return 1;
+            case LandType.UpgradeGatherer: return 1;
+            case LandType.UpgradeBuilder: return 1;
+            case LandType.UpgradeSeller: return 1;
+            case LandType.UpgradeAssistant: return 1;
             case LandType.Warehouse: return 2;
             case LandType.Decoration: return -1; // half cost (handled in GetThreshold)
             default: return 1; // House
@@ -109,17 +109,17 @@ public static class StarGrid
     }
 
     /// <summary>
-    /// Era pricing: each distance tier requires the corresponding cow tier's income.
-    /// Grass cows become obsolete in carrot era, carrot cows in apple era, etc.
-    /// Farms spawn 1 dist before their era gate so food is available before it's needed.
+    /// Era pricing for general-milk economy. Food tiers satisfy later cows rather than
+    /// multiplying milk value, so distance scaling stays modest and helper/pet unlocks
+    /// provide the main progression pressure.
     /// </summary>
     public static int GetEraMultiplier(int gridDist)
     {
-        if (gridDist >= 6) return 20;  // mushroom era
-        if (gridDist >= 5) return 10;  // late apple era
-        if (gridDist >= 4) return 5;   // apple era
-        if (gridDist >= 3) return 3;   // carrot era
-        return 1;                       // grass era
+        if (gridDist >= 6) return 6;
+        if (gridDist >= 5) return 4;
+        if (gridDist >= 4) return 3;
+        if (gridDist >= 3) return 2;
+        return 1;
     }
 
     // ─── Dynamic special buildings: spawn at player's expansion frontier ───

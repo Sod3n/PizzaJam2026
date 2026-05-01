@@ -54,11 +54,7 @@ public static class InteractionLogic
     }
 
     /// <summary>
-    /// Milk a cow using the LINEAR PROGRESSION chain.
-    /// The cow's PreferredFood determines its max tier. The hintFoodType (from the house food sign)
-    /// is used as the EXACT recipe — no fallback to lower tiers.
-    /// If the hint food or its prerequisite is missing, milking stops (cowDone = true).
-    /// Consumes food and prerequisite product, produces the tier's milk product.
+    /// Milk a cow with the selected food. All food types produce general milk.
     /// Returns true if milk was produced this click, false otherwise.
     /// </summary>
     public static bool MilkCow(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, out bool cowDone)
@@ -102,9 +98,6 @@ public static class InteractionLogic
         }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        int milkAmount = isPreferred ? 2 : 1;
-
-        // Non-preferred food: 50% chance to produce nothing (food still consumed)
         bool milkBlocked = false;
         if (!isPreferred)
         {
@@ -122,22 +115,14 @@ public static class InteractionLogic
             globalRes.ConsumeFood(foodToUse);
         cow.Exhaust += clicks;
 
-        // Only produce milk every 4th click (when exhaust reaches a multiple of 4)
-        bool producedMilk = false;
-        if (!milkBlocked && cow.Exhaust % 4 == 0)
+        bool producedMilk = clicks > 0 && !milkBlocked;
+        if (producedMilk)
         {
-            // Consume prerequisite product (if any)
-            if (prereqProduct >= 0)
-                globalRes.ConsumeMilkProduct(prereqProduct);
-
-            int milkProduct = FoodType.ToMilkProduct(foodToUse);
-            globalRes.AddMilkProduct(milkProduct, milkAmount * 4);
-            producedMilk = true;
+            globalRes.AddMilkProduct(MilkProduct.Milk, clicks);
         }
 
         // Check if we can continue with the SAME recipe (no fallback)
         cowDone = cow.Exhaust >= cow.MaxExhaust
-            || (cow.MaxExhaust - cow.Exhaust) < 4
             || globalRes.GetFood(foodToUse) <= 0
             || (prereqProduct >= 0 && globalRes.GetMilkProduct(prereqProduct) <= 0);
         return producedMilk;
@@ -214,7 +199,7 @@ public static class InteractionLogic
 
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // Strict: only allow the house's selected food, no fallback
+        // Strict: only allow the selected supported food, no fallback.
         if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && globalRes.GetFood(houseSelectedFood) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
@@ -273,9 +258,6 @@ public static class InteractionLogic
         }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        int milkAmount = isPreferred ? 2 : 1;
-
-        // Non-preferred food: 50% chance to produce nothing (food still consumed)
         bool milkBlocked = false;
         if (!isPreferred)
         {
@@ -293,23 +275,14 @@ public static class InteractionLogic
             globalRes.ConsumeFood(foodToUse);
         cow.Exhaust += clicks;
 
-        // Only produce milk every 4th click
-        bool producedMilk = false;
-        if (!milkBlocked && cow.Exhaust % 4 == 0)
+        bool producedMilk = clicks > 0 && !milkBlocked;
+        if (producedMilk)
         {
-            // Consume prerequisite product from global
-            if (prereqProduct >= 0)
-                globalRes.ConsumeMilkProduct(prereqProduct);
-
-            int milkProduct = FoodType.ToMilkProduct(foodToUse);
-            int totalMilk = milkAmount * 4;
-            helperBag.AddBagMilkProduct(milkProduct, totalMilk);
-            producedMilk = true;
+            helperBag.AddBagMilkProduct(MilkProduct.Milk, clicks);
         }
 
         // Check if we can continue with the SAME recipe (no fallback)
         cowDone = cow.Exhaust >= cow.MaxExhaust
-            || (cow.MaxExhaust - cow.Exhaust) < 4
             || globalRes.GetFood(foodToUse) <= 0
             || (prereqProduct >= 0 && globalRes.GetMilkProduct(prereqProduct) <= 0);
         return producedMilk;
@@ -359,9 +332,6 @@ public static class InteractionLogic
         }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        int milkAmount = isPreferred ? 2 : 1;
-
-        // Non-preferred food: 50% chance to produce nothing (food still consumed)
         bool milkBlocked = false;
         if (!isPreferred)
         {
@@ -379,23 +349,14 @@ public static class InteractionLogic
             helperBag.ConsumeBagFood(foodToUse);
         cow.Exhaust += clicks;
 
-        // Only produce milk every 4th click
-        bool producedMilk = false;
-        if (!milkBlocked && cow.Exhaust % 4 == 0)
+        bool producedMilk = clicks > 0 && !milkBlocked;
+        if (producedMilk)
         {
-            // Consume prerequisite product from bag
-            if (prereqProduct >= 0)
-                helperBag.ConsumeBagMilkProduct(prereqProduct);
-
-            int milkProduct = FoodType.ToMilkProduct(foodToUse);
-            int totalMilk = milkAmount * 4;
-            helperBag.AddBagMilkProduct(milkProduct, totalMilk);
-            producedMilk = true;
+            helperBag.AddBagMilkProduct(MilkProduct.Milk, clicks);
         }
 
         // Check if we can continue with the SAME recipe (no fallback)
         cowDone = cow.Exhaust >= cow.MaxExhaust
-            || (cow.MaxExhaust - cow.Exhaust) < 4
             || helperBag.GetBagFood(foodToUse) <= 0
             || (prereqProduct >= 0 && helperBag.GetBagMilkProduct(prereqProduct) <= 0);
         return producedMilk;

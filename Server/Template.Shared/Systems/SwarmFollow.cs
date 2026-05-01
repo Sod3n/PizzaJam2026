@@ -15,8 +15,8 @@ namespace Template.Shared.Systems;
 /// </summary>
 public static class SwarmFollow
 {
-    private static readonly Float StopDist = (Float)3;
-    private static readonly Float StartDist = (Float)5;
+    private static readonly Float StopDist = (Float)5;
+    private static readonly Float StartDist = (Float)7;
     private static readonly Float IdleRangeDist = (Float)10;
     private static readonly Float PlayerMovingThresholdSq = (Float)0.5f;
     private static readonly Float LerpFactor = (Float)0.2f;

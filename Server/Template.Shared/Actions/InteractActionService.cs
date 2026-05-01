@@ -351,7 +351,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         int selectedFood = house.SelectedFood;
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // Selected food must be within the cow's tier range
+        // Selected food must be within the cow's supported tier range. Lower-tier
+        // food can work, but milking logic may consume it without producing milk.
         if (selectedFood < 0 || selectedFood > cowMaxTier)
         {
             missingResource = FoodTypeToKey(selectedFood);
@@ -791,18 +792,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         // Priority 2: Give resources TO helper (seller gets milk, builder gets coins)
         if (helper.Type == HelperType.Seller && helper.State == HelperState.Idle)
         {
-            // Transfer milk products from global to seller's bag
+            // Transfer general milk from global to seller's bag
             int transferred = 0;
             int capacity = helper.BagCapacity - helper.GetBagTotal();
 
             while (transferred < capacity && globalRes.Milk > 0) { globalRes.Milk--; helper.BagMilk++; transferred++; }
-            while (transferred < capacity && globalRes.CarrotMilkshake > 0) { globalRes.CarrotMilkshake--; helper.BagCarrotMilkshake++; transferred++; }
-            while (transferred < capacity && globalRes.VitaminMix > 0) { globalRes.VitaminMix--; helper.BagVitaminMix++; transferred++; }
-            while (transferred < capacity && globalRes.PurplePotion > 0) { globalRes.PurplePotion--; helper.BagPurplePotion++; transferred++; }
 
             if (transferred > 0)
             {
-                ILogger.Log($"[InteractActionService] Loaded {transferred} milk products into Seller helper {helperEntity.Id}");
+                ILogger.Log($"[InteractActionService] Loaded {transferred} milk into Seller helper {helperEntity.Id}");
                 return true;
             }
         }
@@ -893,16 +891,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         {
             if (string.IsNullOrEmpty(gainedKey))
             {
-                gainedKey = helper.BagMilk > 0 ? StateKeys.Milk
-                    : helper.BagCarrotMilkshake > 0 ? StateKeys.CarrotMilkshake
-                    : helper.BagVitaminMix > 0 ? StateKeys.VitaminMix
-                    : helper.BagPurplePotion > 0 ? StateKeys.PurplePotion : "";
+                gainedKey = StateKeys.Milk;
             }
 
             globalRes.AddMilkProduct(MilkProduct.Milk, helper.BagMilk);
-            globalRes.AddMilkProduct(MilkProduct.CarrotMilkshake, helper.BagCarrotMilkshake);
-            globalRes.AddMilkProduct(MilkProduct.VitaminMix, helper.BagVitaminMix);
-            globalRes.AddMilkProduct(MilkProduct.PurplePotion, helper.BagPurplePotion);
             helper.BagMilk = 0;
             helper.BagCarrotMilkshake = 0;
             helper.BagVitaminMix = 0;

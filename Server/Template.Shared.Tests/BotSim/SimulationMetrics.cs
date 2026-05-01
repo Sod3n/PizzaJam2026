@@ -36,7 +36,7 @@ public class SimulationMetrics
         public int CumFood, CumMilk, CumCoins;
 
         public int TotalFood => Grass + Carrot + Apple + Mushroom;
-        public int TotalMilk => Milk + CarrotMilkshake + VitaminMix + PurplePotion;
+        public int TotalMilk => Milk;
         public int TotalBuildings => Houses + LoveHouses + SellPoints + FoodFarms;
     }
 

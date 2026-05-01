@@ -1,5 +1,6 @@
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.GGPO;
+using Deterministic.GameFramework.Serialization;
 
 namespace Template.Shared.Tests;
 
