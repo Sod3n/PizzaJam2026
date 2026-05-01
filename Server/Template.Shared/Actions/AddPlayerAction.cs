@@ -29,44 +29,55 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
     {
         ILogger.Log($"[AddPlayerAction] Processing for User {action.UserId} on Tick {ctx.State.GetCustomData<IGameTime>()?.CurrentTick}. NextEntityId: {ctx.State.NextEntityId}");
 
-        // Check if player already exists
+        int existingPlayerCount = 0;
         foreach (var existingPlayer in ctx.State.Filter<PlayerEntity>())
         {
             ref var playerComp = ref ctx.State.GetComponent<PlayerEntity>(existingPlayer);
             if (playerComp.UserId == action.UserId)
             {
                 ILogger.LogWarning($"[AddPlayerAction] Player {action.UserId} already exists (Entity {existingPlayer.Id})! Skipping.");
-                return; // Player already exists
+                return;
             }
+            existingPlayerCount++;
         }
 
-        // Create the Player Entity
+        bool isHelperPlayer = existingPlayerCount > 0;
+
         // Perfect overlaps can cause non-deterministic physics resolution
         // ERROR FIX: Guid.GetHashCode() is not stable across processes! Use bytes.
         int seed = BitConverter.ToInt32(action.UserId.ToByteArray(), 0);
         var random = new Deterministic.GameFramework.Types.DeterministicRandom((uint)seed);
 
-        // Find a valid spawn position that doesn't overlap with existing players
         var position = FindValidSpawnPosition(ctx, ref random);
-
-        // Use PlayerDefinition to ensure consistent setup
         var playerEntity = PlayerDefinition.Create(ctx, action.UserId, position, 0);
 
-        ILogger.Log($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position}. NextEntityId After: {ctx.State.NextEntityId}");
+        ILogger.Log($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position} (helperPlayer={isHelperPlayer}). NextEntityId After: {ctx.State.NextEntityId}");
 
-        // Add Score Component (not in definition yet, specific to gameplay)
         ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });
 
-        // Spawn all helper types for debugging
-        // var assistant = HelperDefinition.Create(ctx, position + new Vector2(1, -1), HelperType.Assistant, playerEntity);
-        // ref var ps2 = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-        // ps2.AssistantHelper = assistant;
+        if (isHelperPlayer)
+        {
+            int role = HelperType.Gatherer;
+            ctx.State.AddComponent(playerEntity, new HelperPlayerComponent
+            {
+                Type = role,
+                State = HelperState.Idle,
+                BagCapacity = HelperPlayerComponent.CapacityFor(role),
+                WantedFoodType = -1,
+            });
 
-        // HelperDefinition.Create(ctx, position + new Vector2(-1, -1), HelperType.Gatherer, playerEntity);
-        // HelperDefinition.Create(ctx, position + new Vector2(1, 1), HelperType.Seller, playerEntity);
-        // HelperDefinition.Create(ctx, position + new Vector2(-1, 1), HelperType.Builder, playerEntity);
+            // A helper-player replaces one auto-spawned breed helper from the unlock pool:
+            // bump HelpersSpawned now so the next breed unlock is skipped.
+            foreach (var ge in ctx.State.Filter<GlobalResourcesComponent>())
+            {
+                ref var gr = ref ctx.State.GetComponent<GlobalResourcesComponent>(ge);
+                gr.HelpersSpawned++;
+                ILogger.Log($"[AddPlayerAction] Helper-player joined; HelpersSpawned bumped to {gr.HelpersSpawned} (skips next breed-unlock).");
+                break;
+            }
+            return;
+        }
 
-        // Collect unowned cows first, then assign (avoid stale refs during iteration)
         var unownedCows = new System.Collections.Generic.List<Entity>();
         foreach (var cowEntity in ctx.State.Filter<CowComponent>())
         {
@@ -86,7 +97,7 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
             {
                 ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
                 ps.FollowingCow = cowEntity;
-                cow = ref ctx.State.GetComponent<CowComponent>(cowEntity); // re-get after touching other component
+                cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
                 cow.FollowTarget = playerEntity;
             }
             else

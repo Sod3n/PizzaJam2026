@@ -26,6 +26,10 @@ public static partial class HelperPetDefinition
         ref var component = ref ctx.GetComponent<HelperPetComponent>(entity);
         component.FollowTarget = Entity.Null;
         component.HelperType = 0;
+        component.AssignedTo = Entity.Null;
+        component.State = 0;
+        component.IdleSpawnX = 0;
+        component.IdleSpawnY = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

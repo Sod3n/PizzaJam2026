@@ -13,13 +13,14 @@ albedo_color = Color(1, 0.9372549, 0, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_eev1s"]
 material = SubResource("StandardMaterial3D_y8smx")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pa8po"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iidr8"]
 render_priority = 0
 shader = ExtResource("1_bh30n")
 shader_parameter/albedo_texture = ExtResource("3_ijeiq")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_652la"]
 animations = [{
@@ -53,8 +54,8 @@ visible = false
 mesh = SubResource("BoxMesh_eev1s")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=779030819]
-transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 0, 1.5189848, -0.65904385)
-material_override = SubResource("ShaderMaterial_pa8po")
+transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, 1.2060524, 1.5189848, -0.65904385)
+material_override = SubResource("ShaderMaterial_iidr8")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_652la")
 script = ExtResource("4_ijeiq")

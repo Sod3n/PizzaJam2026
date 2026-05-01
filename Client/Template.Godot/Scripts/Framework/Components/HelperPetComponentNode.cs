@@ -7,4 +7,7 @@ namespace Template.Godot.Framework;
 public partial class HelperPetComponentNode : Node
 {
     [Export] public int HelperType;
+    [Export] public int State;
+    [Export] public int IdleSpawnX;
+    [Export] public int IdleSpawnY;
 }

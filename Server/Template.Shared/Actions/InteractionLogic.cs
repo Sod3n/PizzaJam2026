@@ -1,5 +1,6 @@
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
+using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Types;
 using Template.Shared.Components;
 
@@ -57,6 +58,13 @@ public static class InteractionLogic
     /// Milk a cow with the selected food. All food types produce general milk.
     /// Returns true if milk was produced this click, false otherwise.
     /// </summary>
+    /// <summary>
+    /// Milk takes <see cref="ClicksPerMilk"/> clicks per unit produced.
+    /// Mid-cycle (counter > 0), additional clicks are allowed even at MaxExhaust so the cow
+    /// can finish the in-progress milk — this fixes the "kicked out with X clicks left" bug.
+    /// </summary>
+    public const int ClicksPerMilk = 4;
+
     public static bool MilkCow(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, out bool cowDone)
     {
         cowDone = false;
@@ -66,15 +74,18 @@ public static class InteractionLogic
         if (gre == Entity.Null) return false;
 
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
-        if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
 
+        // Cow done only when at max AND no mid-cycle progress to flush.
+        if (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0)
+        {
+            cowDone = true;
+            return false;
+        }
 
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // Strict: use ONLY the hint food type (house food sign selection). No fallback.
         int foodToUse;
         int prereqProduct;
-
         if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && globalRes.GetFood(hintFoodType) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(hintFoodType);
@@ -85,47 +96,53 @@ public static class InteractionLogic
             }
             else
             {
-                // Prerequisite product missing — do NOT fall back, stop milking
                 cowDone = true;
                 return false;
             }
         }
         else
         {
-            // Selected food not available or not supported by cow — stop milking
             cowDone = true;
             return false;
         }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        bool milkBlocked = false;
-        if (!isPreferred)
-        {
-            var gameTime = state.GetCustomData<IGameTime>();
-            uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
-            var milkRng = new DeterministicRandom(milkSeed);
-            milkBlocked = milkRng.NextInt(100) < 50;
-        }
+        var gameTime = state.GetCustomData<IGameTime>();
 
-        // Consume food and advance exhaust
-        int remaining = cow.MaxExhaust - cow.Exhaust;
+        // Allow clicks past MaxExhaust just enough to finish a mid-cycle milk.
+        int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
+        int clicksToFinishCycle = cow.MilkClickCounter > 0 ? (ClicksPerMilk - cow.MilkClickCounter) : 0;
+        int allowedByExhaust = System.Math.Max(exhaustHeadroom, clicksToFinishCycle);
         int availableFood = globalRes.GetFood(foodToUse);
-        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(remaining, availableFood));
+        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(allowedByExhaust, availableFood));
+        if (clicks <= 0) { cowDone = true; return false; }
+
+        int milksProduced = 0;
         for (int i = 0; i < clicks; i++)
-            globalRes.ConsumeFood(foodToUse);
-        cow.Exhaust += clicks;
-
-        bool producedMilk = clicks > 0 && !milkBlocked;
-        if (producedMilk)
         {
-            globalRes.AddMilkProduct(MilkProduct.Milk, clicks);
+            globalRes.ConsumeFood(foodToUse);
+            if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
+            cow.MilkClickCounter++;
+            if (cow.MilkClickCounter >= ClicksPerMilk)
+            {
+                cow.MilkClickCounter = 0;
+                bool blocked = false;
+                if (!isPreferred)
+                {
+                    uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
+                    var milkRng = new DeterministicRandom(milkSeed);
+                    blocked = milkRng.NextInt(100) < 50;
+                }
+                if (!blocked) milksProduced++;
+            }
         }
+        if (milksProduced > 0)
+            globalRes.AddMilkProduct(MilkProduct.Milk, milksProduced);
 
-        // Check if we can continue with the SAME recipe (no fallback)
-        cowDone = cow.Exhaust >= cow.MaxExhaust
+        cowDone = (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0)
             || globalRes.GetFood(foodToUse) <= 0
             || (prereqProduct >= 0 && globalRes.GetMilkProduct(prereqProduct) <= 0);
-        return producedMilk;
+        return milksProduced > 0;
     }
 
     /// <summary>
@@ -188,7 +205,7 @@ public static class InteractionLogic
     }
 
     /// <summary>
-    /// Resolve the exact food for a cow based on the house's selected food.
+    /// Resolve the exact food for a cow based on the cow's selected food.
     /// Strict: only allows the selected food type — no fallback to lower tiers.
     /// Returns -1 if the selected food or its prerequisite is unavailable.
     /// </summary>
@@ -226,66 +243,57 @@ public static class InteractionLogic
         if (gre == Entity.Null) return false;
 
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
-        if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
-
+        if (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0) { cowDone = true; return false; }
 
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // Strict: use ONLY the hint food type. No fallback.
         int foodToUse;
         int prereqProduct;
-
         if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && globalRes.GetFood(hintFoodType) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(hintFoodType);
             if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
-            {
-                foodToUse = hintFoodType;
-                prereqProduct = prereq;
-            }
-            else
-            {
-                // Prerequisite product missing — do NOT fall back, stop milking
-                cowDone = true;
-                return false;
-            }
+            { foodToUse = hintFoodType; prereqProduct = prereq; }
+            else { cowDone = true; return false; }
         }
-        else
-        {
-            // Selected food not available or not supported by cow — stop milking
-            cowDone = true;
-            return false;
-        }
+        else { cowDone = true; return false; }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        bool milkBlocked = false;
-        if (!isPreferred)
-        {
-            var gameTime = state.GetCustomData<IGameTime>();
-            uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
-            var milkRng = new DeterministicRandom(milkSeed);
-            milkBlocked = milkRng.NextInt(100) < 50;
-        }
+        var gameTime = state.GetCustomData<IGameTime>();
 
-        // Consume food from global and advance exhaust
-        int remaining = cow.MaxExhaust - cow.Exhaust;
+        int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
+        int clicksToFinishCycle = cow.MilkClickCounter > 0 ? (ClicksPerMilk - cow.MilkClickCounter) : 0;
+        int allowedByExhaust = System.Math.Max(exhaustHeadroom, clicksToFinishCycle);
         int availableFood = globalRes.GetFood(foodToUse);
-        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(remaining, availableFood));
+        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(allowedByExhaust, availableFood));
+        if (clicks <= 0) { cowDone = true; return false; }
+
+        int milksProduced = 0;
         for (int i = 0; i < clicks; i++)
-            globalRes.ConsumeFood(foodToUse);
-        cow.Exhaust += clicks;
-
-        bool producedMilk = clicks > 0 && !milkBlocked;
-        if (producedMilk)
         {
-            helperBag.AddBagMilkProduct(MilkProduct.Milk, clicks);
+            globalRes.ConsumeFood(foodToUse);
+            if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
+            cow.MilkClickCounter++;
+            if (cow.MilkClickCounter >= ClicksPerMilk)
+            {
+                cow.MilkClickCounter = 0;
+                bool blocked = false;
+                if (!isPreferred)
+                {
+                    uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
+                    var milkRng = new DeterministicRandom(milkSeed);
+                    blocked = milkRng.NextInt(100) < 50;
+                }
+                if (!blocked) milksProduced++;
+            }
         }
+        if (milksProduced > 0)
+            helperBag.AddBagMilkProduct(MilkProduct.Milk, milksProduced);
 
-        // Check if we can continue with the SAME recipe (no fallback)
-        cowDone = cow.Exhaust >= cow.MaxExhaust
+        cowDone = (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0)
             || globalRes.GetFood(foodToUse) <= 0
             || (prereqProduct >= 0 && globalRes.GetMilkProduct(prereqProduct) <= 0);
-        return producedMilk;
+        return milksProduced > 0;
     }
 
     /// <summary>
@@ -300,85 +308,119 @@ public static class InteractionLogic
         if (!state.HasComponent<CowComponent>(cowEntity)) return false;
 
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
-        if (cow.Exhaust >= cow.MaxExhaust) { cowDone = true; return false; }
-
+        if (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0) { cowDone = true; return false; }
 
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
-        // Strict: use ONLY the hint food type. No fallback.
         int foodToUse;
         int prereqProduct;
-
         if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && helperBag.GetBagFood(hintFoodType) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(hintFoodType);
             if (prereq < 0 || helperBag.GetBagMilkProduct(prereq) > 0)
-            {
-                foodToUse = hintFoodType;
-                prereqProduct = prereq;
-            }
-            else
-            {
-                // Prerequisite product missing — do NOT fall back, stop milking
-                cowDone = true;
-                return false;
-            }
+            { foodToUse = hintFoodType; prereqProduct = prereq; }
+            else { cowDone = true; return false; }
         }
-        else
-        {
-            // Selected food not available or not supported by cow — stop milking
-            cowDone = true;
-            return false;
-        }
+        else { cowDone = true; return false; }
 
         bool isPreferred = foodToUse == cow.PreferredFood;
-        bool milkBlocked = false;
-        if (!isPreferred)
-        {
-            var gameTime = state.GetCustomData<IGameTime>();
-            uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0));
-            var milkRng = new DeterministicRandom(milkSeed);
-            milkBlocked = milkRng.NextInt(100) < 50;
-        }
+        var gameTime = state.GetCustomData<IGameTime>();
 
-        // Consume food from bag and advance exhaust
-        int remaining = cow.MaxExhaust - cow.Exhaust;
+        int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
+        int clicksToFinishCycle = cow.MilkClickCounter > 0 ? (ClicksPerMilk - cow.MilkClickCounter) : 0;
+        int allowedByExhaust = System.Math.Max(exhaustHeadroom, clicksToFinishCycle);
         int availableFood = helperBag.GetBagFood(foodToUse);
-        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(remaining, availableFood));
+        int clicks = System.Math.Min(exhaustPerClick, System.Math.Min(allowedByExhaust, availableFood));
+        if (clicks <= 0) { cowDone = true; return false; }
+
+        int milksProduced = 0;
         for (int i = 0; i < clicks; i++)
-            helperBag.ConsumeBagFood(foodToUse);
-        cow.Exhaust += clicks;
-
-        bool producedMilk = clicks > 0 && !milkBlocked;
-        if (producedMilk)
         {
-            helperBag.AddBagMilkProduct(MilkProduct.Milk, clicks);
+            helperBag.ConsumeBagFood(foodToUse);
+            if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
+            cow.MilkClickCounter++;
+            if (cow.MilkClickCounter >= ClicksPerMilk)
+            {
+                cow.MilkClickCounter = 0;
+                bool blocked = false;
+                if (!isPreferred)
+                {
+                    uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
+                    var milkRng = new DeterministicRandom(milkSeed);
+                    blocked = milkRng.NextInt(100) < 50;
+                }
+                if (!blocked) milksProduced++;
+            }
         }
+        if (milksProduced > 0)
+            helperBag.AddBagMilkProduct(MilkProduct.Milk, milksProduced);
 
-        // Check if we can continue with the SAME recipe (no fallback)
-        cowDone = cow.Exhaust >= cow.MaxExhaust
+        cowDone = (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0)
             || helperBag.GetBagFood(foodToUse) <= 0
             || (prereqProduct >= 0 && helperBag.GetBagMilkProduct(prereqProduct) <= 0);
-        return producedMilk;
+        return milksProduced > 0;
     }
 
     /// <summary>
-    /// Returns true if the entity is a valid interact target (used by both the
-    /// highlight system and the interact action service so they agree on which
-    /// entities are interactable).
+    /// Find the nearest interactable inside the player's interaction zone.
+    /// Single source of truth — used by both <see cref="Systems.InteractHighlightSystem"/>
+    /// (to highlight the candidate target) and <see cref="InteractActionService"/>
+    /// (to dispatch the interact action). Behaviour stays in lockstep automatically;
+    /// just adding a new component to <see cref="IsInteractable"/> wires it up everywhere.
+    /// </summary>
+    public static Entity FindNearestInteractableInZone(EntityWorld state, Entity playerEntity, Entity zoneEntity)
+    {
+        if (zoneEntity == Entity.Null || !state.HasComponent<Area2D>(zoneEntity)) return Entity.Null;
+
+        ref var area = ref state.GetComponent<Area2D>(zoneEntity);
+        if (!area.HasOverlappingBodies) return Entity.Null;
+        if (!state.HasComponent<Transform2D>(playerEntity)) return Entity.Null;
+
+        var playerPos = state.GetComponent<Transform2D>(playerEntity).Position;
+        Entity nearest = Entity.Null;
+        Float minDistSq = (Float)999999f;
+
+        for (int i = 0; i < area.OverlappingEntities.Count; i++)
+        {
+            var entity = new Entity(area.OverlappingEntities[i]);
+            if (entity == playerEntity) continue;
+            if (entity == zoneEntity) continue;
+            if (!state.HasComponent<Transform2D>(entity)) continue;
+            if (!IsInteractable(state, entity)) continue;
+
+            var pos = state.GetComponent<Transform2D>(entity).Position;
+            var distSq = Vector2.DistanceSquared(playerPos, pos);
+            if (distSq < minDistSq) { minDistSq = distSq; nearest = entity; }
+        }
+
+        return nearest;
+    }
+
+    /// <summary>
+    /// Returns true if the entity is a valid interact target.
+    /// **Single registration point** — adding a new component here makes it
+    /// highlightable AND dispatchable simultaneously (the highlight system and
+    /// the interact action service both consume <see cref="FindNearestInteractableInZone"/>).
     /// </summary>
     public static bool IsInteractable(EntityWorld state, Entity entity)
     {
+        // Cows that have been sold are visible but non-interactable.
+        if (state.HasComponent<CowForSaleComponent>(entity)) return false;
         return state.HasComponent<GrassComponent>(entity)
             || state.HasComponent<CowComponent>(entity)
             || state.HasComponent<HouseComponent>(entity)
             || state.HasComponent<LoveHouseComponent>(entity)
             || state.HasComponent<FoodSignComponent>(entity)
+            || state.HasComponent<RoleSignComponent>(entity)
+            || state.HasComponent<LandSignComponent>(entity)
+            || state.HasComponent<LandPriceSignComponent>(entity)
             || state.HasComponent<WarehouseSignComponent>(entity)
             || state.HasComponent<SellPointComponent>(entity)
-            || state.HasComponent<LandComponent>(entity)
             || state.HasComponent<FinalStructureComponent>(entity)
             || state.HasComponent<HelperComponent>(entity)
+            || state.HasComponent<HelperPetComponent>(entity)
+            || state.HasComponent<HelperPlayerComponent>(entity)
+            || state.HasComponent<PlayerEntity>(entity)
             || state.HasComponent<CarrotFarmComponent>(entity)
             || state.HasComponent<AppleOrchardComponent>(entity)
             || state.HasComponent<MushroomCaveComponent>(entity)
@@ -388,7 +430,26 @@ public static class InteractionLogic
             || state.HasComponent<UpgradeSellerComponent>(entity)
             || state.HasComponent<UpgradeAssistantComponent>(entity)
             || state.HasComponent<DecorationComponent>(entity)
-            || state.HasComponent<WarehouseComponent>(entity);
+            || state.HasComponent<WarehouseComponent>(entity)
+            || state.HasComponent<LibraryComponent>(entity)
+            || state.HasComponent<PlayerHouseComponent>(entity);
+    }
+
+    /// <summary>Delete props inside a circle around the given position.</summary>
+    public static void DestroyNearbyProps(EntityWorld state, Vector2 position, Float radius)
+    {
+        Float radiusSq = radius * radius;
+        var toDelete = new System.Collections.Generic.List<Entity>();
+        foreach (var entity in state.Filter<PropComponent>())
+        {
+            if (!state.HasComponent<Transform2D>(entity)) continue;
+            var propPos = state.GetComponent<Transform2D>(entity).Position;
+            var diff = propPos - position;
+            if (diff.SqrMagnitude < radiusSq)
+                toDelete.Add(entity);
+        }
+        foreach (var entity in toDelete)
+            state.DeleteEntity(entity);
     }
 
     /// <summary>Fire visual feedback on an entity.</summary>

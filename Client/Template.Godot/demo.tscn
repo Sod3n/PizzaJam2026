@@ -39,6 +39,13 @@
 [ext_resource type="PackedScene" path="res://templates/environment/UpgradeSeller.tscn" id="tpl_upgradeseller"]
 [ext_resource type="PackedScene" path="res://templates/environment/Warehouse.tscn" id="tpl_warehouse"]
 [ext_resource type="PackedScene" path="res://templates/environment/WarehouseSign.tscn" id="tpl_warehousesign"]
+[ext_resource type="PackedScene" uid="uid://dwsrlkwr4ej6g" path="res://templates/environment/Library.tscn" id="tpl_library"]
+[ext_resource type="Script" path="res://Scripts/Visuals/LibraryView.cs" id="view_library"]
+[ext_resource type="PackedScene" uid="uid://dphk3r5p1plyh" path="res://templates/environment/PlayerHouse.tscn" id="tpl_playerhouse"]
+[ext_resource type="PackedScene" uid="uid://b8landsigntscn01" path="res://templates/environment/LandSign.tscn" id="tpl_landsign"]
+[ext_resource type="PackedScene" uid="uid://bpyx7deuqxtsc" path="res://templates/environment/LandPriceSign.tscn" id="tpl_landpricesign"]
+[ext_resource type="PackedScene" uid="uid://b8rolesigntscn01" path="res://templates/environment/RoleSign.tscn" id="tpl_rolesign"]
+[ext_resource type="PackedScene" uid="uid://dsellpointsignsv0" path="res://templates/environment/SellPointSign.tscn" id="tpl_sellpointsign"]
 [ext_resource type="Script" uid="uid://c0hln4wxe6hyd" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
 [ext_resource type="Script" uid="uid://o67l46k5a8dj" path="res://Scripts/Visuals/CarrotFarmView.cs" id="view_carrotfarm"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
@@ -64,6 +71,11 @@
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 [ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/WarehouseView.cs" id="view_warehouse"]
 [ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/WarehouseSignView.cs" id="view_warehousesign"]
+[ext_resource type="Script" uid="uid://dojw82wqc7syt" path="res://Scripts/Visuals/PlayerHouseView.cs" id="view_playerhouse"]
+[ext_resource type="Script" uid="uid://c8yvxqnq0hnc3" path="res://Scripts/Visuals/LandSignView.cs" id="view_landsign"]
+[ext_resource type="Script" uid="uid://yn3ecby06imi" path="res://Scripts/Visuals/LandPriceSignView.cs" id="view_landpricesign"]
+[ext_resource type="Script" path="res://Scripts/Visuals/RoleSignView.cs" id="view_rolesign"]
+[ext_resource type="Script" uid="uid://ch0pi2drlqo61" path="res://Scripts/Visuals/SellPointSignView.cs" id="view_sellpointsign"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -4335,9 +4347,33 @@ Prefab = ExtResource("tpl_foodsign")
 script = ExtResource("view_warehouse")
 Prefab = ExtResource("tpl_warehouse")
 
+[node name="LibraryView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1734920573]
+script = ExtResource("view_library")
+Prefab = ExtResource("tpl_library")
+
 [node name="WarehouseSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398632]
 script = ExtResource("view_warehousesign")
 Prefab = ExtResource("tpl_warehousesign")
+
+[node name="PlayerHouseView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398701]
+script = ExtResource("view_playerhouse")
+Prefab = ExtResource("tpl_playerhouse")
+
+[node name="LandSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398702]
+script = ExtResource("view_landsign")
+Prefab = ExtResource("tpl_landsign")
+
+[node name="LandPriceSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398703]
+script = ExtResource("view_landpricesign")
+Prefab = ExtResource("tpl_landpricesign")
+
+[node name="RoleSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398704]
+script = ExtResource("view_rolesign")
+Prefab = ExtResource("tpl_rolesign")
+
+[node name="SellPointSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398705]
+script = ExtResource("view_sellpointsign")
+Prefab = ExtResource("tpl_sellpointsign")
 
 [node name="PropView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2051443311]
 script = ExtResource("view_prop")

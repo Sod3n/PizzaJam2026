@@ -12,9 +12,7 @@ namespace Template.Shared.Definitions;
 
 [EntityDefinition(
     typeof(Transform2D),
-    typeof(LandComponent),
-    typeof(StaticBody2D),
-    typeof(CollisionShape2D))]
+    typeof(LandComponent))]
 public static partial class LandDefinition
 {
     public static Entity Create(Context ctx, Vector2 position)
@@ -30,13 +28,6 @@ public static partial class LandDefinition
         component.Locked = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
-
-        var entityBody = StaticBody2D.Default;
-        entityBody.CollisionLayer = 1u;
-        entityBody.CollisionMask = 1u;
-        ctx.AddComponent(entity, entityBody);
-
-        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(1.0860457f));
 
         var childEntities = new Dictionary<string, Entity>
         {

@@ -28,7 +28,8 @@ public static class StarGrid
     // Farms are spawned dynamically (see DynamicSpecials) so they scatter across the star.
     public static int? GetFixedType(int gx, int gy)
     {
-        if (gx == 0 && gy == 0) return LandType.SellPoint;
+        if (gx == 0 && gy == 0) return LandType.PlayerHouse; // Center: sleep to advance day
+        if (gx == 0 && gy == 1) return LandType.SellPoint;   // Shifted north — opposite the win direction
         if (gx == 1 && gy == 0) return LandType.LoveHouse;
         // Final structure — fixed at center-south, dist 7 forces expansion through all farm tiers
         if (gx == 0 && gy == -7) return LandType.FinalStructure;
@@ -103,7 +104,9 @@ public static class StarGrid
             case LandType.UpgradeSeller: return 1;
             case LandType.UpgradeAssistant: return 1;
             case LandType.Warehouse: return 2;
+            case LandType.PlayerHouse: return 1;
             case LandType.Decoration: return -1; // half cost (handled in GetThreshold)
+            case LandType.Library: return 1;
             default: return 1; // House
         }
     }
@@ -145,24 +148,21 @@ public static class StarGrid
     private static readonly (int type, int triggerDist, int bit, bool isFarm)[] DynamicSpecials =
     {
         // Farms — each appears 1 era BEFORE it's needed (affordable with current-era income)
-        (LandType.CarrotFarm,    2, 4, true),   // grass era — cheap to build (20 coins)
+        (LandType.CarrotFarm,    2, 4, true),
         (LandType.CarrotFarm,    3, 5, true),
-        (LandType.AppleOrchard,  4, 6, true),   // carrot era — affordable (90 coins)
+        (LandType.AppleOrchard,  4, 6, true),
         (LandType.AppleOrchard,  5, 7, true),
-        (LandType.MushroomCave,  6, 8, true),   // apple era — affordable (250 coins)
+        (LandType.MushroomCave,  6, 8, true),
         (LandType.MushroomCave,  7, 9, true),
-        // Non-farm specials — no angular constraint
+        // HelperAssistant is the unified pet building post-pet-refactor — old
+        // UpgradeGatherer/Builder/Seller/Assistant slots are removed; pet is generic.
         (LandType.HelperAssistant, 2, 0, false),
-        (LandType.HelperAssistant, 5, 14, false), // second player pet — first unlock at dist 5
-        (LandType.UpgradeGatherer, 4, 1, false),
-        (LandType.UpgradeBuilder,  5, 2, false),
-        (LandType.UpgradeSeller,   6, 3, false),
-        (LandType.UpgradeAssistant, 6, 10, false),  // late-game: x5 click speed (x10 total)
+        (LandType.HelperAssistant, 5, 14, false),
         // Warehouse — mid-early game, helpers auto-deposit resources
         (LandType.Warehouse,    3, 15, false),
         // Second sell point — mid game expansion
         (LandType.SellPoint,    5, 12, false),
-        // Love houses — first at dist 4, second at dist 3
+        // Love houses
         (LandType.LoveHouse,    4, 13, false),
         (LandType.LoveHouse,    3, 11, false),
     };
@@ -255,8 +255,9 @@ public static class StarGrid
         // Place specials ensuring minimum distance between them
         // Include fixed positions as already-placed specials
         var placed = new System.Collections.Generic.List<(int gx, int gy)>();
-        placed.Add((0, 0));   // SellPoint at center
-        placed.Add((1, 0));   // LoveHouse (neighbor of sell point)
+        placed.Add((0, 0));   // PlayerHouse at center
+        placed.Add((0, 1));   // SellPoint (shifted north)
+        placed.Add((1, 0));   // LoveHouse (neighbor of player house)
         placed.Add((0, -7));  // FinalStructure
 
         foreach (var (gx, gy, dist) in candidates)
@@ -364,13 +365,146 @@ public static class StarGrid
     }
 
     /// <summary>
-    /// Spawn land plots at the 4 cardinal neighbors of the given grid position.
+    /// Whole-ring gating: spawn the entire ring at <paramref name="ringDist"/> only when no
+    /// unbuilt LandComponent plots remain at <paramref name="ringDist"/>-1.
     /// </summary>
+    public static void SpawnRingIfPriorComplete(Context ctx, int ringDist)
+    {
+        if (ringDist <= 0) return;
+
+        int priorRing = ringDist - 1;
+        foreach (var entity in ctx.State.Filter<LandComponent>())
+        {
+            var lc = ctx.State.GetComponent<LandComponent>(entity);
+            int d = System.Math.Abs(lc.Arm) + System.Math.Abs(lc.Ring);
+            if (d == priorRing) return;
+        }
+
+        int maxCoord = ringDist;
+        for (int gx = -maxCoord; gx <= maxCoord; gx++)
+        {
+            int gy = ringDist - System.Math.Abs(gx);
+            TrySpawnLand(ctx, gx, gy);
+            if (gy != 0)
+                TrySpawnLand(ctx, gx, -gy);
+        }
+    }
+
+    /// <summary>Forwarding stub: when a plot at (gx,gy) completes, attempt to spawn the next ring.</summary>
     public static void SpawnNeighbors(Context ctx, int gx, int gy)
     {
-        TrySpawnLand(ctx, gx + 1, gy);
-        TrySpawnLand(ctx, gx - 1, gy);
-        TrySpawnLand(ctx, gx, gy + 1);
-        TrySpawnLand(ctx, gx, gy - 1);
+        int dist = System.Math.Abs(gx) + System.Math.Abs(gy);
+        SpawnRingIfPriorComplete(ctx, dist + 1);
+    }
+
+    // Global build-count limits. Selected types disappear from the cycle pool once
+    // their world-wide count reaches the limit (counts both built buildings and
+    // pending land plots already cycled to that type).
+    private static int CountWorldType(EntityWorld state, int landType, int excludeGx, int excludeGy)
+    {
+        int count = 0;
+        // Built buildings
+        switch (landType)
+        {
+            case LandType.CarrotFarm:
+                foreach (var _ in state.Filter<CarrotFarmComponent>()) count++;
+                break;
+            case LandType.AppleOrchard:
+                foreach (var _ in state.Filter<AppleOrchardComponent>()) count++;
+                break;
+            case LandType.MushroomCave:
+                foreach (var _ in state.Filter<MushroomCaveComponent>()) count++;
+                break;
+            case LandType.Warehouse:
+                foreach (var _ in state.Filter<WarehouseComponent>()) count++;
+                break;
+            case LandType.HelperAssistant:
+                foreach (var _ in state.Filter<HelperAssistantComponent>()) count++;
+                break;
+            case LandType.Library:
+                foreach (var _ in state.Filter<LibraryComponent>()) count++;
+                break;
+        }
+        // Plots already cycled to this type (excluding the plot doing the query).
+        foreach (var le in state.Filter<LandComponent>())
+        {
+            var lc = state.GetComponent<LandComponent>(le);
+            if (lc.Arm == excludeGx && lc.Ring == excludeGy) continue;
+            if (lc.Type == landType) count++;
+        }
+        return count;
+    }
+
+    private static int CountInRing(EntityWorld state, int landType, int ringDist, int excludeGx, int excludeGy)
+    {
+        int count = 0;
+        // Built buildings at this ring (only HelperAssistant matters for now)
+        if (landType == LandType.HelperAssistant)
+        {
+            foreach (var ha in state.Filter<HelperAssistantComponent>())
+            {
+                if (!state.HasComponent<Transform2D>(ha)) continue;
+                var pos = state.GetComponent<Transform2D>(ha).Position;
+                int gx = (int)System.Math.Round((float)pos.X / GridStep);
+                int gy = (int)System.Math.Round((float)pos.Y / GridStep);
+                if (System.Math.Abs(gx) + System.Math.Abs(gy) == ringDist) count++;
+            }
+        }
+        // Plots in this ring already cycled to this type
+        foreach (var le in state.Filter<LandComponent>())
+        {
+            var lc = state.GetComponent<LandComponent>(le);
+            if (lc.Arm == excludeGx && lc.Ring == excludeGy) continue;
+            if (System.Math.Abs(lc.Arm) + System.Math.Abs(lc.Ring) != ringDist) continue;
+            if (lc.Type == landType) count++;
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// Pool of LandTypes the player can cycle through on a sign at a given ring distance.
+    /// Filters by per-type limits:
+    ///   • CarrotFarm/AppleOrchard/MushroomCave — max 2 worldwide each
+    ///   • Warehouse — max 1 worldwide
+    ///   • HelperAssistant (generic pet sanctuary) — max 1 per ring, unlocked at ring 2
+    ///   • Library — unlocked at ring 3
+    ///   • UpgradeGatherer/Builder/Seller/Assistant — removed (HelperAssistant is the unified pet building)
+    ///   • Decoration — removed
+    /// </summary>
+    public static int[] GetCycleableTypesForRing(EntityWorld state, int ringDist, int gx, int gy)
+    {
+        var list = new System.Collections.Generic.List<int> { LandType.House };
+
+        // Library: ring 3+, max 1 worldwide
+        if (ringDist >= 3 && CountWorldType(state, LandType.Library, gx, gy) < 1)
+            list.Add(LandType.Library);
+
+        // LoveHouse: ring 3+ (unlimited)
+        if (ringDist >= 3) list.Add(LandType.LoveHouse);
+
+        // SellPoint: ring 5+ (unlimited)
+        if (ringDist >= 5) list.Add(LandType.SellPoint);
+
+        // CarrotFarm: ring 2+, max 2 worldwide
+        if (ringDist >= 2 && CountWorldType(state, LandType.CarrotFarm, gx, gy) < 2)
+            list.Add(LandType.CarrotFarm);
+
+        // AppleOrchard: ring 4+, max 2 worldwide
+        if (ringDist >= 4 && CountWorldType(state, LandType.AppleOrchard, gx, gy) < 2)
+            list.Add(LandType.AppleOrchard);
+
+        // MushroomCave: ring 6+, max 2 worldwide
+        if (ringDist >= 6 && CountWorldType(state, LandType.MushroomCave, gx, gy) < 2)
+            list.Add(LandType.MushroomCave);
+
+        // Warehouse: ring 3+, max 1 worldwide
+        if (ringDist >= 3 && CountWorldType(state, LandType.Warehouse, gx, gy) < 1)
+            list.Add(LandType.Warehouse);
+
+        // HelperAssistant — single unified pet building. Ring 2+, max 1 per ring.
+        if (ringDist >= 2 && CountInRing(state, LandType.HelperAssistant, ringDist, gx, gy) < 1)
+            list.Add(LandType.HelperAssistant);
+
+        return list.ToArray();
     }
 }

@@ -9,4 +9,15 @@ public struct HelperPetComponent : IComponent
 {
     public Entity FollowTarget;
     public int HelperType;
+    public Entity AssignedTo;
+    public int State;
+    public int IdleSpawnX;
+    public int IdleSpawnY;
+}
+
+public static class PetState
+{
+    public const int Idle = 0;
+    public const int Carried = 1;
+    public const int Assigned = 2;
 }

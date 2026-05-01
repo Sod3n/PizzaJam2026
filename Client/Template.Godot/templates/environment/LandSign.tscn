@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://b7vmdt6hkk18w"]
+
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_dpkjo"]
+[ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="5_3ec0u"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="6_nr4m1"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="7_5jc8c"]
+[ext_resource type="Texture2D" uid="uid://lmtb8dohmyt1" path="res://sprites/export/icons/Apply_/1.png" id="8_3ejbo"]
+[ext_resource type="Texture2D" uid="uid://cjqqbtokmfg6b" path="res://sprites/business-plan.png" id="9_selected"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://6oks7n50dd1k" path="res://Scripts/Framework/Components/LandSignComponentNode.cs" id="fw_landsign"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1ck7r"]
+render_priority = -1
+shader = ExtResource("4_dpkjo")
+shader_parameter/albedo_texture = ExtResource("5_3ec0u")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1f6sc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_3ec0u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_nr4m1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q2gur"]
+render_priority = -1
+shader = ExtResource("4_dpkjo")
+shader_parameter/albedo_texture = ExtResource("8_3ejbo")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hygnc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_3ejbo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_3ec0u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_nr4m1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="LandSign" type="Node3D" unique_id=292318127]
+
+[node name="Entity" type="Node3D" parent="." unique_id=-1743772608]
+script = ExtResource("fw_entity")
+EntityName = "LandSign"
+StableIdSeed = "landsign-entity-seed"
+
+[node name="LandSignComponent" type="Node" parent="Entity" unique_id=187465481]
+script = ExtResource("fw_landsign")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=878205374]
+script = ExtResource("fw_phys")
+ShapeRadius = 0.8
+CollisionLayer = 5
+CollisionMask = 8
+
+[node name="Sign" type="AnimatedSprite3D" parent="." unique_id=629436190]
+transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18816209, 2.9524488, -1.436373)
+material_override = SubResource("ShaderMaterial_1ck7r")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_1f6sc")
+script = ExtResource("7_5jc8c")
+
+[node name="TypeIcon" type="AnimatedSprite3D" parent="." unique_id=128478463]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.016919158, 0.92900264, -0.38808632)
+material_override = SubResource("ShaderMaterial_q2gur")
+modulate = Color(0.538588, 0.56305635, 0.56306595, 1)
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_hygnc")
+frame_progress = 0.0024409618
+script = ExtResource("7_5jc8c")
+
+[node name="SelectedBadge" type="Sprite3D" parent="." unique_id=128478464]
+transform = Transform3D(0.06918491, 0.010475525, 0.012689096, -0.0103976, 0.0636762, 0.17881538, 0.0023106106, -0.027122043, 0.42471758, 0.46212372, 1.0827757, -0.54568845)
+no_depth_test = true
+alpha_cut = 2
+render_priority = 4
+texture = ExtResource("9_selected")

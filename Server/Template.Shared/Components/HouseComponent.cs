@@ -11,5 +11,6 @@ namespace Template.Shared.Components;
 public struct HouseComponent : IComponent
 {
     public Entity CowId;
-    public int SelectedFood; // FoodType constant — set by the food sign
+    public Entity HelperId;
+    public int SelectedFood; // legacy cache — source of truth is now CowComponent.SelectedFood
 }

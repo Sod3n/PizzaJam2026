@@ -44,7 +44,17 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         // Find nearest interactable from interaction zone overlaps
         Entity nearestTarget = FindNearestFromZone(ctx, playerEntity, ref playerState);
-        if (nearestTarget == Entity.Null) return;
+
+        bool isHelperPlayer = ctx.State.HasComponent<HelperPlayerComponent>(playerEntity);
+
+        if (nearestTarget == Entity.Null)
+        {
+            if (isHelperPlayer)
+            {
+                CycleHelperPlayerRole(ctx, playerEntity);
+            }
+            return;
+        }
 
         Entity globalResEntity = GetGlobalResourcesEntity(ctx);
         if (globalResEntity == Entity.Null) return;
@@ -55,14 +65,62 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         string gainedResource = null;
         Entity interactedTarget = nearestTarget;
 
-        // Helper interaction → transfer resources to helper
-        if (ctx.State.HasComponent<HelperComponent>(nearestTarget))
+        // Carrying a pet → click target to assign (or click pet itself to drop)
+        if (playerState.CarriedPet != Entity.Null
+            && nearestTarget != playerState.CarriedPet
+            && IsValidPetAssignTarget(ctx, nearestTarget))
         {
+            if (HandlePetAssign(ctx, playerEntity, nearestTarget, ref playerState))
+            {
+                ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+                return;
+            }
+        }
+
+        if (ctx.State.HasComponent<HelperPetComponent>(nearestTarget))
+        {
+            success = HandlePetInteraction(ctx, playerEntity, nearestTarget, ref playerState);
+            if (success)
+            {
+                ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+                return;
+            }
+        }
+        // Helper interaction → resource exchange first; fall back to pickup into CarriedHelper
+        else if (ctx.State.HasComponent<HelperComponent>(nearestTarget))
+        {
+            // Drop the helper if clicking the one we're already carrying
+            if (playerState.CarriedHelper == nearestTarget)
+            {
+                DropCarriedHelperInPlace(ctx, ref playerState);
+                ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "drop", Age = 0 });
+                return;
+            }
+
+            // Try resource exchange (works for Seller/Builder/Milker idle + WaitingForPickup states)
             success = HandleHelperInteraction(ctx, nearestTarget, ref globalRes);
             if (success)
             {
                 ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
             }
+            else if (playerState.CarriedHelper == Entity.Null && !IsHelperAssignedToHouse(ctx, nearestTarget))
+            {
+                // No exchange happened → pick up the helper to carry/assign
+                success = HandleHelperPickup(ctx, playerEntity, nearestTarget, ref playerState);
+                if (success) return;
+            }
+        }
+        // Main player ↔ helper-player resource exchange (treat helper-player like a helper)
+        else if (ctx.State.HasComponent<HelperPlayerComponent>(nearestTarget) && !isHelperPlayer)
+        {
+            success = HandleHelperPlayerInteraction(ctx, nearestTarget, ref globalRes);
+            if (success)
+                ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+        }
+        // Helper-player walks up to main player → dump bag into global
+        else if (isHelperPlayer && ctx.State.HasComponent<PlayerEntity>(nearestTarget) && !ctx.State.HasComponent<HelperPlayerComponent>(nearestTarget))
+        {
+            success = DumpHelperPlayerBagToGlobal(ctx, playerEntity, ref globalRes, out gainedResource);
         }
         // Cow interaction → always tame (add to follow chain)
         else if (ctx.State.HasComponent<CowComponent>(nearestTarget))
@@ -81,11 +139,17 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             }
             else
             {
-                // No following cows → milk the cow in this house
                 ref var house = ref ctx.State.GetComponent<HouseComponent>(nearestTarget);
                 if (house.CowId != Entity.Null && ctx.State.HasComponent<CowComponent>(house.CowId))
                 {
+                    // No following cows → milk the cow in this house
                     success = HandleHouseMilk(ctx, playerEntity, nearestTarget, house.CowId, ref playerState, ref sc, ref globalRes, out missingResource);
+                    if (success) return;
+                }
+                // Empty house + carrying a helper → assign helper to house
+                else if (house.CowId == Entity.Null && house.HelperId == Entity.Null && playerState.CarriedHelper != Entity.Null)
+                {
+                    success = HandleHouseAssignCarriedHelper(ctx, playerEntity, nearestTarget, ref playerState);
                     if (success) return;
                 }
             }
@@ -94,6 +158,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         else if (ctx.State.HasComponent<LoveHouseComponent>(nearestTarget))
         {
             ref var lh = ref ctx.State.GetComponent<LoveHouseComponent>(nearestTarget);
+            // Cooldown is sleep-only — click does nothing while it's active.
+            if (lh.CooldownTicksRemaining > 0) return;
             bool bothFull = lh.CowId1 != Entity.Null && lh.CowId2 != Entity.Null;
             if (bothFull)
             {
@@ -112,6 +178,23 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         {
             success = HandleFoodSignInteraction(ctx, nearestTarget);
         }
+        else if (ctx.State.HasComponent<RoleSignComponent>(nearestTarget))
+        {
+            // agent-helpers-in-house: role sign cycles helper type
+            success = HandleRoleSignInteraction(ctx, nearestTarget);
+        }
+        else if (ctx.State.HasComponent<LandSignComponent>(nearestTarget))
+        {
+            success = HandleLandSignInteraction(ctx, nearestTarget);
+        }
+        else if (ctx.State.HasComponent<LandPriceSignComponent>(nearestTarget))
+        {
+            // Price sign deposits coins on the linked land plot.
+            // Keep interactedTarget = sign so the squish + outline animations fire on the sign visual.
+            var landId = ctx.State.GetComponent<LandPriceSignComponent>(nearestTarget).LandId;
+            if (landId != Entity.Null && ctx.State.HasComponent<LandComponent>(landId))
+                success = HandleLandInteraction(ctx, playerEntity, landId, ref globalRes, out missingResource);
+        }
         else if (ctx.State.HasComponent<WarehouseSignComponent>(nearestTarget))
         {
             success = HandleWarehouseSignInteraction(ctx, nearestTarget);
@@ -119,17 +202,21 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         else if (ctx.State.HasComponent<GrassComponent>(nearestTarget))
         {
             var foodType = ctx.State.GetComponent<GrassComponent>(nearestTarget).FoodType;
-            success = HandleFoodInteraction(ctx, nearestTarget, ref globalRes);
+            if (isHelperPlayer)
+                success = HandleFoodInteractionForHelperPlayer(ctx, playerEntity, nearestTarget);
+            else
+                success = HandleFoodInteraction(ctx, nearestTarget, ref globalRes);
             if (success) gainedResource = FoodTypeToKey(foodType);
+        }
+        else if (ctx.State.HasComponent<PlayerHouseComponent>(nearestTarget))
+        {
+            success = HandlePlayerHouseInteraction(ctx, nearestTarget);
+            if (!success) missingResource = null;
         }
         else if (ctx.State.HasComponent<SellPointComponent>(nearestTarget))
         {
-            success = HandleSellPointInteraction(ctx, ref globalRes, out missingResource);
+            success = HandleSellPointInteraction(ctx, playerEntity, nearestTarget, ref playerState, ref globalRes, out missingResource);
             if (success) gainedResource = StateKeys.Coins;
-        }
-        else if (ctx.State.HasComponent<LandComponent>(nearestTarget))
-        {
-            success = HandleLandInteraction(ctx, playerEntity, nearestTarget, ref globalRes, out missingResource);
         }
         else if (ctx.State.HasComponent<FinalStructureComponent>(nearestTarget))
         {
@@ -176,15 +263,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var globalRes = ref ctx.State.GetComponent<GlobalResourcesComponent>(globalResEntity);
         ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
 
-        // Determine which food to use from the house's food sign selection
-        int foodToUse = FoodType.Grass; // default
-        if (cow.HouseId != Entity.Null && ctx.State.HasComponent<HouseComponent>(cow.HouseId))
-        {
-            var house = ctx.State.GetComponent<HouseComponent>(cow.HouseId);
-            foodToUse = house.SelectedFood;
-        }
+        // agent-helpers-in-house: source of truth is cow.SelectedFood (travels with cow)
+        int foodToUse = cow.SelectedFood;
 
-        int exhaustPerClick = System.Math.Max(1, playerState.ClickMultiplier);
+        int exhaustPerClick = System.Math.Max(1, playerState.ClickMultiplier) * (1 + cow.PetCount);
         bool produced = InteractionLogic.MilkCow(ctx.State, cowEntity, foodToUse, exhaustPerClick, out bool cowDone);
 
         Entity target = cowEntity;
@@ -346,9 +428,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             return false;
         }
 
-        // Strict check: only allow the exact recipe for the house's selected food.
-        // No fallback to lower tiers.
-        int selectedFood = house.SelectedFood;
+        // agent-helpers-in-house: read selected food from cow (travels with cow between houses)
+        int selectedFood = cow.SelectedFood;
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
 
         // Selected food must be within the cow's supported tier range. Lower-tier
@@ -388,67 +469,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
-    private bool IsCowInChain(Context ctx, Entity firstCow, Entity target)
-    {
-        var current = firstCow;
-        int safety = 0;
-        while (current != Entity.Null && safety < 100)
-        {
-            if (current == target) return true;
-            if (!ctx.State.HasComponent<CowComponent>(current)) break;
-            // Walk the chain: find the next cow whose FollowTarget is this cow
-            Entity next = Entity.Null;
-            foreach (var cowEntity in ctx.State.Filter<CowComponent>())
-            {
-                ref var c = ref ctx.State.GetComponent<CowComponent>(cowEntity);
-                if (c.FollowTarget == current)
-                {
-                    next = cowEntity;
-                    break;
-                }
-            }
-            current = next;
-            safety++;
-        }
-        return false;
-    }
-
-    private Entity FindNearestFromZone(Context ctx, Entity playerEntity, ref PlayerStateComponent playerState)
-    {
-        var zoneEntity = playerState.InteractionZone;
-        if (zoneEntity == Entity.Null || !ctx.State.HasComponent<Area2D>(zoneEntity)) return Entity.Null;
-
-        ref var area = ref ctx.State.GetComponent<Area2D>(zoneEntity);
-        if (!area.HasOverlappingBodies) return Entity.Null;
-
-        var playerPos = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
-        Entity nearest = Entity.Null;
-        Float minDistSq = 999999f;
-
-        for (int i = 0; i < area.OverlappingEntities.Count; i++)
-        {
-            var entity = new Entity(area.OverlappingEntities[i]);
-            if (entity == playerEntity) continue;
-            if (entity == zoneEntity) continue;
-            if (!ctx.State.HasComponent<Transform2D>(entity)) continue;
-
-            // Only consider entities that are actually interactable — must match
-            // the same filter used by InteractHighlightSystem so the highlighted
-            // entity is always the one the interact action will target.
-            if (!InteractionLogic.IsInteractable(ctx.State, entity)) continue;
-
-            var pos = ctx.State.GetComponent<Transform2D>(entity).Position;
-            var distSq = Vector2.DistanceSquared(playerPos, pos);
-
-            if (distSq < minDistSq)
-            {
-                minDistSq = distSq;
-                nearest = entity;
-            }
-        }
-
-        return nearest;
-    }
+    private static Entity FindNearestFromZone(Context ctx, Entity playerEntity, ref PlayerStateComponent playerState)
+        => InteractionLogic.FindNearestInteractableInZone(ctx.State, playerEntity, playerState.InteractionZone);
 
     private bool HandleFoodSignInteraction(Context ctx, Entity signEntity)
     {
@@ -457,14 +479,186 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         // Cycle: Grass → Carrot → Apple → Mushroom → Grass
         sign.SelectedFood = (sign.SelectedFood + 1) % 4;
 
-        // Also update the linked house's SelectedFood
+        // agent-helpers-in-house: cow.SelectedFood is source of truth; update both house cache and cow.
         if (sign.HouseId != Entity.Null && ctx.State.HasComponent<HouseComponent>(sign.HouseId))
         {
             ref var house = ref ctx.State.GetComponent<HouseComponent>(sign.HouseId);
             house.SelectedFood = sign.SelectedFood;
+            var cowId = house.CowId;
+            if (cowId != Entity.Null && ctx.State.HasComponent<CowComponent>(cowId))
+            {
+                ref var cow = ref ctx.State.GetComponent<CowComponent>(cowId);
+                cow.SelectedFood = sign.SelectedFood;
+            }
         }
 
         ILogger.Log($"[InteractActionService] Food sign {signEntity.Id} cycled to food type {sign.SelectedFood}");
+        return true;
+    }
+
+    // agent-helpers-in-house: cycle helper role on a role sign
+    private bool HandleRoleSignInteraction(Context ctx, Entity signEntity)
+    {
+        ref var sign = ref ctx.State.GetComponent<RoleSignComponent>(signEntity);
+
+        int next = sign.Role switch
+        {
+            HelperType.Assistant => HelperType.Gatherer,
+            HelperType.Gatherer => HelperType.Seller,
+            HelperType.Seller => HelperType.Builder,
+            HelperType.Builder => HelperType.Milker,
+            HelperType.Milker => HelperType.Assistant,
+            _ => HelperType.Assistant,
+        };
+        sign.Role = next;
+
+        if (sign.HouseId != Entity.Null && ctx.State.HasComponent<HouseComponent>(sign.HouseId))
+        {
+            var house = ctx.State.GetComponent<HouseComponent>(sign.HouseId);
+            var helperId = house.HelperId;
+            if (helperId != Entity.Null && ctx.State.HasComponent<HelperComponent>(helperId))
+            {
+                ref var helper = ref ctx.State.GetComponent<HelperComponent>(helperId);
+                helper.Type = next;
+                helper.State = HelperState.Idle;
+                helper.WantedFoodType = -1;
+                helper.TargetEntity = Entity.Null;
+                helper.WorkTimer = 0;
+                helper.WorkDuration = 0;
+                var info = HelperConfig.GetByType(next);
+                helper.BagCapacity = info.BaseCapacity;
+                helper.BagGrass = 0;
+                helper.BagCarrot = 0;
+                helper.BagApple = 0;
+                helper.BagMushroom = 0;
+                helper.BagMilk = 0;
+                helper.BagCarrotMilkshake = 0;
+                helper.BagVitaminMix = 0;
+                helper.BagPurplePotion = 0;
+                helper.BagCoins = 0;
+            }
+        }
+
+        ILogger.Log($"[InteractActionService] Role sign {signEntity.Id} cycled to role {next}");
+        return true;
+    }
+
+    // agent-helpers-in-house: find existing food/role signs for a house
+    private static Entity FindFoodSignForHouse(Context ctx, Entity houseEntity)
+    {
+        foreach (var e in ctx.State.Filter<FoodSignComponent>())
+        {
+            if (ctx.State.GetComponent<FoodSignComponent>(e).HouseId == houseEntity) return e;
+        }
+        return Entity.Null;
+    }
+
+    private static Entity FindRoleSignForHouse(Context ctx, Entity houseEntity)
+    {
+        foreach (var e in ctx.State.Filter<RoleSignComponent>())
+        {
+            if (ctx.State.GetComponent<RoleSignComponent>(e).HouseId == houseEntity) return e;
+        }
+        return Entity.Null;
+    }
+
+    /// <summary>Spawn or update the food sign next to a house with a cow occupant. Despawns any role sign.</summary>
+    public static void EnsureFoodSignForHouse(Context ctx, Entity houseEntity, Entity cowEntity)
+    {
+        if (!ctx.State.HasComponent<HouseComponent>(houseEntity)) return;
+        if (!ctx.State.HasComponent<CowComponent>(cowEntity)) return;
+
+        var existingRoleSign = FindRoleSignForHouse(ctx, houseEntity);
+        if (existingRoleSign != Entity.Null) ctx.State.DeleteEntity(existingRoleSign);
+
+        int cowFood = ctx.State.GetComponent<CowComponent>(cowEntity).SelectedFood;
+        var existing = FindFoodSignForHouse(ctx, houseEntity);
+        if (existing != Entity.Null)
+        {
+            ref var s = ref ctx.State.GetComponent<FoodSignComponent>(existing);
+            s.SelectedFood = cowFood;
+        }
+        else
+        {
+            var housePos = ctx.State.GetComponent<Transform2D>(houseEntity).Position;
+            var sign = FoodSignDefinition.Create(ctx, housePos + new Vector2(-2, 0), houseEntity);
+            ref var s = ref ctx.State.GetComponent<FoodSignComponent>(sign);
+            s.SelectedFood = cowFood;
+        }
+
+        ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
+        house.SelectedFood = cowFood;
+    }
+
+    /// <summary>Spawn or update the role sign next to a house with a helper occupant. Despawns any food sign.</summary>
+    public static void EnsureRoleSignForHouse(Context ctx, Entity houseEntity, Entity helperEntity)
+    {
+        if (!ctx.State.HasComponent<HouseComponent>(houseEntity)) return;
+        if (!ctx.State.HasComponent<HelperComponent>(helperEntity)) return;
+
+        var existingFoodSign = FindFoodSignForHouse(ctx, houseEntity);
+        if (existingFoodSign != Entity.Null) ctx.State.DeleteEntity(existingFoodSign);
+
+        int role = ctx.State.GetComponent<HelperComponent>(helperEntity).Type;
+        var existing = FindRoleSignForHouse(ctx, houseEntity);
+        if (existing != Entity.Null)
+        {
+            ref var s = ref ctx.State.GetComponent<RoleSignComponent>(existing);
+            s.Role = role;
+        }
+        else
+        {
+            var housePos = ctx.State.GetComponent<Transform2D>(houseEntity).Position;
+            RoleSignDefinition.Create(ctx, housePos + new Vector2(-2, 0), houseEntity, role);
+        }
+    }
+
+    /// <summary>Despawn any food/role sign attached to a house (called when occupant leaves).</summary>
+    public static void DespawnSignsForHouse(Context ctx, Entity houseEntity)
+    {
+        var foodSign = FindFoodSignForHouse(ctx, houseEntity);
+        if (foodSign != Entity.Null) ctx.State.DeleteEntity(foodSign);
+        var roleSign = FindRoleSignForHouse(ctx, houseEntity);
+        if (roleSign != Entity.Null) ctx.State.DeleteEntity(roleSign);
+    }
+
+    private bool HandleLandSignInteraction(Context ctx, Entity signEntity)
+    {
+        ref var sign = ref ctx.State.GetComponent<LandSignComponent>(signEntity);
+        if (sign.LandId == Entity.Null || !ctx.State.HasComponent<LandComponent>(sign.LandId))
+            return false;
+
+        ref var land = ref ctx.State.GetComponent<LandComponent>(sign.LandId);
+
+        // Fixed positions (PlayerHouse at center, shifted SellPoint, FinalStructure)
+        // display the type sign for clarity but their type is locked — no cycling.
+        if (StarGrid.GetFixedType(land.Arm, land.Ring).HasValue) return false;
+
+        // Locked once the player has started depositing — cycling resets when the plot completes.
+        if (land.CurrentCoins > 0) return false;
+
+        int ringDist = System.Math.Abs(land.Arm) + System.Math.Abs(land.Ring);
+        var pool = StarGrid.GetCycleableTypesForRing(ctx.State, ringDist, land.Arm, land.Ring);
+        if (pool.Length == 0) return false;
+
+        int idx = 0;
+        for (int i = 0; i < pool.Length; i++)
+        {
+            if (pool[i] == sign.SelectedType) { idx = i; break; }
+        }
+        int next = pool[(idx + 1) % pool.Length];
+
+        sign.SelectedType = next;
+        land.Type = next;
+        int pm = StarGrid.GetPriceMultiplier(next);
+        int gridDist = System.Math.Max(1, ringDist);
+        land.Threshold = pm < 0
+            ? gridDist * StarGrid.GetEraMultiplier(gridDist) * 10 / 4
+            : gridDist * StarGrid.GetEraMultiplier(gridDist) * pm * 10;
+
+        ctx.State.AddComponent(sign.LandId, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+
+        ILogger.Log($"[InteractActionService] Land sign {signEntity.Id} cycled to type {next} (ring {ringDist})");
         return true;
     }
 
@@ -509,6 +703,72 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         ILogger.Log($"[InteractActionService] Player {playerEntity.Id} assigning cow {playerState.FollowingCow.Id} to house {houseEntity.Id}");
         return true;
+    }
+
+    private bool HandleHelperPickup(Context ctx, Entity playerEntity, Entity helperEntity, ref PlayerStateComponent playerState)
+    {
+        if (!ctx.State.HasComponent<HelperComponent>(helperEntity)) return false;
+
+        ref var helper = ref ctx.State.GetComponent<HelperComponent>(helperEntity);
+        helper.OwnerPlayer = playerEntity;
+
+        playerState.CarriedHelper = helperEntity;
+
+        if (ctx.State.HasComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(helperEntity))
+        {
+            ref var hb = ref ctx.State.GetComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(helperEntity);
+            hb.Velocity = Vector2.Zero;
+        }
+
+        ILogger.Log($"[InteractActionService] Player {playerEntity.Id} picked up helper {helperEntity.Id}");
+        return true;
+    }
+
+    private bool HandleHouseAssignCarriedHelper(Context ctx, Entity playerEntity, Entity houseEntity, ref PlayerStateComponent playerState)
+    {
+        if (!ctx.State.HasComponent<HouseComponent>(houseEntity)) return false;
+        var helperEntity = playerState.CarriedHelper;
+        if (helperEntity == Entity.Null || !ctx.State.HasComponent<HelperComponent>(helperEntity)) return false;
+
+        ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
+        house.HelperId = helperEntity;
+
+        if (ctx.State.HasComponent<Transform2D>(houseEntity) && ctx.State.HasComponent<Transform2D>(helperEntity))
+        {
+            var housePos = ctx.State.GetComponent<Transform2D>(houseEntity).Position;
+            ref var ht = ref ctx.State.GetComponent<Transform2D>(helperEntity);
+            ht.Position = housePos;
+        }
+        if (ctx.State.HasComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(helperEntity))
+        {
+            ref var hb = ref ctx.State.GetComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(helperEntity);
+            hb.Velocity = Vector2.Zero;
+        }
+
+        EnsureRoleSignForHouse(ctx, houseEntity, helperEntity);
+
+        playerState.CarriedHelper = Entity.Null;
+
+        ctx.State.AddComponent(houseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+        ILogger.Log($"[InteractActionService] Player {playerEntity.Id} assigned carried helper {helperEntity.Id} to house {houseEntity.Id}");
+        return true;
+    }
+
+    private void DropCarriedHelperInPlace(Context ctx, ref PlayerStateComponent playerState)
+    {
+        var helperEntity = playerState.CarriedHelper;
+        if (helperEntity == Entity.Null) return;
+        playerState.CarriedHelper = Entity.Null;
+        ILogger.Log($"[InteractActionService] Dropped carried helper {helperEntity.Id} in place");
+    }
+
+    private static bool IsHelperAssignedToHouse(Context ctx, Entity helperEntity)
+    {
+        foreach (var he in ctx.State.Filter<HouseComponent>())
+        {
+            if (ctx.State.GetComponent<HouseComponent>(he).HelperId == helperEntity) return true;
+        }
+        return false;
     }
 
     private bool HandleLoveHouseAssign(Context ctx, Entity playerEntity, Entity loveHouseEntity, ref PlayerStateComponent playerState, ref StateComponent sc, ref GlobalResourcesComponent globalRes, out string missingResource)
@@ -597,20 +857,6 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             return false;
         }
 
-        // Count cows vs houses to check room for calf
-        int cowCount = 0;
-        foreach (var _ in ctx.State.Filter<CowComponent>())
-            cowCount++;
-        int houseCount = 0;
-        foreach (var _ in ctx.State.Filter<HouseComponent>())
-            houseCount++;
-
-        if (cowCount >= houseCount)
-        {
-            missingResource = StateKeys.Houses;
-            return false;
-        }
-
         // Set breed cost and heart visual feedback based on cow exhaust/tier values
         int breedCost = 5;
         int heartPercent = 50;
@@ -661,43 +907,108 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
-    private bool HandleCrossbreed(Context ctx, Entity playerEntity, Entity targetCow, ref PlayerStateComponent playerState, ref StateComponent sc, ref GlobalResourcesComponent globalRes, out string missingResource)
+    private bool HandlePlayerHouseInteraction(Context ctx, Entity playerHouseEntity)
     {
-        missingResource = null;
+        ref var ph = ref ctx.State.GetComponent<PlayerHouseComponent>(playerHouseEntity);
 
-        ref var targetCowComp = ref ctx.State.GetComponent<CowComponent>(targetCow);
-
-        // Can't breed with a cow that's being milked or following someone else
-        if (targetCowComp.IsMilking) return false;
-        if (targetCowComp.FollowingPlayer != Entity.Null) return false;
-
-        // Count total cows and houses to check if there's room
-        int cowCount = 0;
-        foreach (var _ in ctx.State.Filter<CowComponent>())
-            cowCount++;
-
-        int houseCount = 0;
-        foreach (var _ in ctx.State.Filter<HouseComponent>())
-            houseCount++;
-
-        if (cowCount >= houseCount)
+        if (ph.CooldownTicksRemaining > 0)
         {
-            missingResource = StateKeys.Houses;
-            return false;
+            // On cooldown — each click subtracts 1 second (60 ticks) from remaining time (Task 11)
+            ph.CooldownTicksRemaining = System.Math.Max(0, ph.CooldownTicksRemaining - 60);
+            ctx.State.AddComponent(playerHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "cooldown_skip", Age = 0 });
+            return true;
         }
 
-        StateDefinitions.Begin(ref sc, StateKeys.Breed);
-        playerState.InteractionTarget = targetCow;
-
-        ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Breed, Phase = sc.Phase, Age = 0 });
-
-        ILogger.Log($"[InteractActionService] Player {playerEntity.Id} breeding cow {playerState.FollowingCow.Id} with {targetCow.Id}");
+        // Sleep — advance day, regen cow exhaust, reset food caps
+        Systems.SleepLogic.AdvanceDay(ctx.State);
+        ph.CooldownTicksRemaining = PlayerHouseComponent.SleepCooldownTicks;
+        ctx.State.AddComponent(playerHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "sleep", Age = 0 });
+        ILogger.Log($"[InteractActionService] Player slept at PlayerHouse {playerHouseEntity.Id} — day advanced");
         return true;
     }
 
-    private bool HandleSellPointInteraction(Context ctx, ref GlobalResourcesComponent globalRes, out string missingResource)
+    private bool HandleSellPointInteraction(Context ctx, Entity playerEntity, Entity sellPointEntity, ref PlayerStateComponent playerState, ref GlobalResourcesComponent globalRes, out string missingResource)
     {
         missingResource = null;
+
+        // Cow day: every 3rd day (day 3, 6, 9...). Day mod 3 == 2 because counter starts at 0.
+        bool cowDay = (globalRes.DayCounter % 3) == 2;
+
+        if (cowDay)
+        {
+            // Sell the front cow in the player's follow chain
+            var cowEntity = playerState.FollowingCow;
+            if (cowEntity == Entity.Null || !ctx.State.HasComponent<CowComponent>(cowEntity))
+            {
+                missingResource = StateKeys.Cows;
+                return false;
+            }
+
+            ref var cow = ref ctx.State.GetComponent<CowComponent>(cowEntity);
+            if (cow.IsMilking || cow.IsDepressed)
+                return false;
+
+            // Cow price: rested cow = full price, exhausted = lower. Tier scales price.
+            int rested = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
+            int tierBonus = (cow.PreferredFood + 1) * 10; // grass=10, carrot=20, apple=30, mushroom=40
+            int price = tierBonus + rested * 3;
+
+            globalRes.Coins += price;
+
+            // Find next cow in chain to promote
+            Entity nextCow = Entity.Null;
+            foreach (var ce in ctx.State.Filter<CowComponent>())
+            {
+                if (ce == cowEntity) continue;
+                var c = ctx.State.GetComponent<CowComponent>(ce);
+                if (c.FollowTarget == cowEntity && c.FollowingPlayer == playerEntity)
+                { nextCow = ce; break; }
+            }
+
+            // Detach sold cow: stop following, mark for sale, distribute around sell point
+            cow.FollowingPlayer = Entity.Null;
+            cow.FollowTarget = Entity.Null;
+            cow.HouseId = Entity.Null;
+
+            ctx.State.AddComponent(cowEntity, new CowForSaleComponent());
+
+            // Distribute around sell point in a deterministic pseudo-random spot
+            if (ctx.State.HasComponent<Transform2D>(sellPointEntity) && ctx.State.HasComponent<Transform2D>(cowEntity))
+            {
+                var sellPos = ctx.State.GetComponent<Transform2D>(sellPointEntity).Position;
+                var gameTime = ctx.State.GetCustomData<IGameTime>();
+                uint seed = (uint)(cowEntity.Id * 7919 + (gameTime?.CurrentTick ?? 0));
+                var rng = new DeterministicRandom(seed);
+                Float angle = rng.NextFloat((Float)0, (Float)6.2831853f);
+                Float radius = rng.NextFloat((Float)2.5f, (Float)5.5f);
+                var offset = new Vector2(Float.Cos(angle) * radius, Float.Sin(angle) * radius);
+                ref var ct = ref ctx.State.GetComponent<Transform2D>(cowEntity);
+                ct.Position = sellPos + offset;
+                if (ctx.State.HasComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(cowEntity))
+                {
+                    ref var body = ref ctx.State.GetComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(cowEntity);
+                    body.Velocity = Vector2.Zero;
+                }
+            }
+
+            // Promote next cow in chain
+            if (nextCow != Entity.Null)
+            {
+                ref var nc = ref ctx.State.GetComponent<CowComponent>(nextCow);
+                nc.FollowTarget = playerEntity;
+                playerState.FollowingCow = nextCow;
+            }
+            else
+            {
+                playerState.FollowingCow = Entity.Null;
+            }
+
+            ctx.State.AddComponent(sellPointEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = StateKeys.Coins, Age = 0 });
+            ILogger.Log($"[InteractActionService] Sold cow {cowEntity.Id} for {price} coins (rested={rested}, tier={cow.PreferredFood})");
+            return true;
+        }
+
+        // Milk day (default)
         int clickMult = 1;
         if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
             clickMult = System.Math.Max(1, ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity).ClickMultiplier);
@@ -729,6 +1040,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 var landType = land.Type;
                 int gridX = land.Arm;
                 int gridY = land.Ring;
+                LandDefinition.DeleteSignsForLand(ctx.State, landEntity);
                 ctx.State.DeleteEntity(landEntity);
 
                 CompleteLandBuilding(ctx, position, landType, gridX, gridY);
@@ -858,6 +1170,146 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return false;
     }
 
+    private void CycleHelperPlayerRole(Context ctx, Entity playerEntity)
+    {
+        ref var hp = ref ctx.State.GetComponent<HelperPlayerComponent>(playerEntity);
+        int next = hp.Type switch
+        {
+            HelperType.Gatherer => HelperType.Seller,
+            HelperType.Seller => HelperType.Builder,
+            HelperType.Builder => HelperType.Milker,
+            HelperType.Milker => HelperType.Gatherer,
+            _ => HelperType.Gatherer,
+        };
+        hp.Type = next;
+        hp.State = HelperState.Idle;
+        hp.WantedFoodType = -1;
+        hp.ClearBag();
+        hp.BagCapacity = HelperPlayerComponent.CapacityFor(next);
+        ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
+        ILogger.Log($"[InteractActionService] Helper-player {playerEntity.Id} cycled role → {next}");
+    }
+
+    private bool HandleFoodInteractionForHelperPlayer(Context ctx, Entity playerEntity, Entity foodEntity)
+    {
+        ref var hp = ref ctx.State.GetComponent<HelperPlayerComponent>(playerEntity);
+        if (hp.IsBagFull()) return false;
+
+        ref var grass = ref ctx.State.GetComponent<GrassComponent>(foodEntity);
+        grass.Durability -= 1;
+        switch (grass.FoodType)
+        {
+            case FoodType.Grass: hp.BagGrass++; break;
+            case FoodType.Carrot: hp.BagCarrot++; break;
+            case FoodType.Apple: hp.BagApple++; break;
+            case FoodType.Mushroom: hp.BagMushroom++; break;
+        }
+        if (grass.Durability <= 0)
+        {
+            ctx.State.DeleteEntity(foodEntity);
+            return false;
+        }
+        return true;
+    }
+
+    private bool HandleHelperPlayerInteraction(Context ctx, Entity helperPlayerEntity, ref GlobalResourcesComponent globalRes)
+    {
+        ref var hp = ref ctx.State.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
+
+        if (hp.HasAnyResources())
+        {
+            string gainedKey = "";
+            if (hp.BagGrass > 0) gainedKey = StateKeys.Grass;
+            else if (hp.BagCarrot > 0) gainedKey = StateKeys.Carrot;
+            else if (hp.BagApple > 0) gainedKey = StateKeys.Apple;
+            else if (hp.BagMushroom > 0) gainedKey = StateKeys.Mushroom;
+            else if (hp.BagMilk > 0) gainedKey = StateKeys.Milk;
+            else if (hp.BagCoins > 0) gainedKey = StateKeys.Coins;
+
+            globalRes.AddFood(FoodType.Grass, hp.BagGrass);
+            globalRes.AddFood(FoodType.Carrot, hp.BagCarrot);
+            globalRes.AddFood(FoodType.Apple, hp.BagApple);
+            globalRes.AddFood(FoodType.Mushroom, hp.BagMushroom);
+            globalRes.AddMilkProduct(MilkProduct.Milk, hp.BagMilk);
+            globalRes.Coins += hp.BagCoins;
+            hp.ClearBag();
+
+            if (!string.IsNullOrEmpty(gainedKey))
+                ctx.State.AddComponent(ctx.Entity, new EnterStateComponent { Key = StateKeys.GainedResource, Param = gainedKey, Age = 0 });
+
+            ILogger.Log($"[InteractActionService] Main player picked up bag from helper-player {helperPlayerEntity.Id}");
+            return true;
+        }
+
+        if (hp.Type == HelperType.Seller)
+        {
+            int capacity = hp.BagCapacity - hp.GetBagTotal();
+            int transferred = 0;
+            while (transferred < capacity && globalRes.Milk > 0) { globalRes.Milk--; hp.BagMilk++; transferred++; }
+            if (transferred > 0) return true;
+        }
+        else if (hp.Type == HelperType.Builder)
+        {
+            int needed = hp.BagCapacity - hp.BagCoins;
+            int toGive = System.Math.Max(0, System.Math.Min(needed, globalRes.Coins));
+            if (toGive > 0) { globalRes.Coins -= toGive; hp.BagCoins += toGive; return true; }
+        }
+        else if (hp.Type == HelperType.Milker && hp.WantedFoodType >= 0)
+        {
+            int foodType = hp.WantedFoodType;
+            int capacity = hp.BagCapacity - hp.GetBagTotal();
+            int available = globalRes.GetFood(foodType);
+            int toGive = System.Math.Max(0, System.Math.Min(capacity, available));
+            if (toGive > 0)
+            {
+                for (int i = 0; i < toGive; i++) globalRes.ConsumeFood(foodType);
+                switch (foodType)
+                {
+                    case FoodType.Grass: hp.BagGrass += toGive; break;
+                    case FoodType.Carrot: hp.BagCarrot += toGive; break;
+                    case FoodType.Apple: hp.BagApple += toGive; break;
+                    case FoodType.Mushroom: hp.BagMushroom += toGive; break;
+                }
+                int prereq = FoodType.PrerequisiteProduct(foodType);
+                if (prereq >= 0)
+                {
+                    int prereqNeeded = System.Math.Max(1, toGive / 4);
+                    int prereqCapacity = hp.BagCapacity - hp.GetBagTotal();
+                    int prereqAvailable = globalRes.GetMilkProduct(prereq);
+                    int prereqToGive = System.Math.Min(prereqNeeded, System.Math.Min(prereqCapacity, prereqAvailable));
+                    for (int i = 0; i < prereqToGive; i++) globalRes.ConsumeMilkProduct(prereq);
+                    hp.AddBagMilkProduct(prereq, prereqToGive);
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool DumpHelperPlayerBagToGlobal(Context ctx, Entity helperPlayerEntity, ref GlobalResourcesComponent globalRes, out string gainedResource)
+    {
+        gainedResource = null;
+        ref var hp = ref ctx.State.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
+        if (!hp.HasAnyResources()) return false;
+
+        if (hp.BagGrass > 0) gainedResource = StateKeys.Grass;
+        else if (hp.BagCarrot > 0) gainedResource = StateKeys.Carrot;
+        else if (hp.BagApple > 0) gainedResource = StateKeys.Apple;
+        else if (hp.BagMushroom > 0) gainedResource = StateKeys.Mushroom;
+        else if (hp.BagMilk > 0) gainedResource = StateKeys.Milk;
+        else if (hp.BagCoins > 0) gainedResource = StateKeys.Coins;
+
+        globalRes.AddFood(FoodType.Grass, hp.BagGrass);
+        globalRes.AddFood(FoodType.Carrot, hp.BagCarrot);
+        globalRes.AddFood(FoodType.Apple, hp.BagApple);
+        globalRes.AddFood(FoodType.Mushroom, hp.BagMushroom);
+        globalRes.AddMilkProduct(MilkProduct.Milk, hp.BagMilk);
+        globalRes.Coins += hp.BagCoins;
+        hp.ClearBag();
+        return true;
+    }
+
     /// <summary>
     /// Player picks up resources from a helper that is in WaitingForPickup state.
     /// Transfers the helper's bag contents into global resources and resets helper to Idle.
@@ -928,6 +1380,78 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return pickedUp;
     }
 
+    private static bool IsValidPetAssignTarget(Context ctx, Entity target)
+    {
+        if (target == Entity.Null) return false;
+        if (ctx.State.HasComponent<HelperComponent>(target)) return true;
+        if (ctx.State.HasComponent<CowComponent>(target)) return true;
+        if (ctx.State.HasComponent<PlayerEntity>(target)) return true;
+        return false;
+    }
+
+    private bool HandlePetInteraction(Context ctx, Entity playerEntity, Entity petEntity, ref PlayerStateComponent playerState)
+    {
+        ref var pet = ref ctx.State.GetComponent<HelperPetComponent>(petEntity);
+
+        if (playerState.CarriedPet == petEntity)
+        {
+            DropPetToIdle(ctx, petEntity, ref pet);
+            playerState.CarriedPet = Entity.Null;
+            ILogger.Log($"[Pet] Player {playerEntity.Id} dropped pet {petEntity.Id} at idle spawn");
+            return true;
+        }
+
+        if (playerState.CarriedPet != Entity.Null)
+        {
+            if (ctx.State.HasComponent<HelperPetComponent>(playerState.CarriedPet))
+            {
+                ref var prev = ref ctx.State.GetComponent<HelperPetComponent>(playerState.CarriedPet);
+                DropPetToIdle(ctx, playerState.CarriedPet, ref prev);
+            }
+            playerState.CarriedPet = Entity.Null;
+            pet = ref ctx.State.GetComponent<HelperPetComponent>(petEntity);
+        }
+
+        pet.State = PetState.Carried;
+        pet.FollowTarget = playerEntity;
+        pet.AssignedTo = Entity.Null;
+        playerState.CarriedPet = petEntity;
+        ILogger.Log($"[Pet] Player {playerEntity.Id} picked up pet {petEntity.Id}");
+        return true;
+    }
+
+    private bool HandlePetAssign(Context ctx, Entity playerEntity, Entity targetEntity, ref PlayerStateComponent playerState)
+    {
+        var petEntity = playerState.CarriedPet;
+        if (petEntity == Entity.Null) return false;
+        if (!ctx.State.HasComponent<HelperPetComponent>(petEntity)) return false;
+
+        ref var pet = ref ctx.State.GetComponent<HelperPetComponent>(petEntity);
+        pet.State = PetState.Assigned;
+        pet.AssignedTo = targetEntity;
+        pet.FollowTarget = targetEntity;
+        playerState.CarriedPet = Entity.Null;
+        ILogger.Log($"[Pet] Player {playerEntity.Id} assigned pet {petEntity.Id} to target {targetEntity.Id}");
+        return true;
+    }
+
+    private static void DropPetToIdle(Context ctx, Entity petEntity, ref HelperPetComponent pet)
+    {
+        pet.State = PetState.Idle;
+        pet.FollowTarget = Entity.Null;
+        pet.AssignedTo = Entity.Null;
+        if (ctx.State.HasComponent<Transform2D>(petEntity))
+        {
+            ref var t = ref ctx.State.GetComponent<Transform2D>(petEntity);
+            t.Position = new Vector2((Float)pet.IdleSpawnX, (Float)pet.IdleSpawnY);
+        }
+        if (ctx.State.HasComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(petEntity))
+        {
+            ref var body = ref ctx.State.GetComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(petEntity);
+            body.Velocity = Vector2.Zero;
+        }
+    }
+
     private static string FoodTypeToKey(int foodType) => foodType switch
     {
         FoodType.Grass => StateKeys.Grass,
@@ -991,31 +1515,19 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             case LandType.HelperAssistant:
                 {
                     HelperAssistantDefinition.Create(ctx, position);
-                    var assistant = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
+                    var assistant = HelperPetDefinition.CreateIdle(ctx, position, HelperType.Assistant);
                     ctx.State.AddComponent(assistant, new BreedBornComponent());
-                    if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
-                    {
-                        ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-                        ps.AssistantHelper = assistant;
-                        // Each assistant pet doubles click speed: first = x2, second = x4
-                        ps.ClickMultiplier = System.Math.Max(ps.ClickMultiplier, 1) * 2;
-                        var gt1 = ctx.State.GetCustomData<IGameTime>();
-                        ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier={ps.ClickMultiplier}");
-                    }
+                    var gt1 = ctx.State.GetCustomData<IGameTime>();
+                    ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — pet idling, click to pick up");
                     break;
                 }
             case LandType.UpgradeAssistant:
                 {
                     UpgradeAssistantDefinition.Create(ctx, position);
-                    var upgradePet = HelperPetDefinition.Create(ctx, position, HelperType.Assistant, playerEntity);
+                    var upgradePet = HelperPetDefinition.CreateIdle(ctx, position, HelperType.Assistant);
                     ctx.State.AddComponent(upgradePet, new BreedBornComponent());
-                    if (ctx.State.HasComponent<PlayerStateComponent>(playerEntity))
-                    {
-                        ref var ps = ref ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-                        ps.ClickMultiplier = 5;
-                        var gt2 = ctx.State.GetCustomData<IGameTime>();
-                        ILogger.Log($"[Building] UpgradeAssistant built at {(gt2 != null ? gt2.CurrentTick / 60f / 60f : -1):F1}m — ClickMultiplier=12");
-                    }
+                    var gt2 = ctx.State.GetCustomData<IGameTime>();
+                    ILogger.Log($"[Building] UpgradeAssistant built at {(gt2 != null ? gt2.CurrentTick / 60f / 60f : -1):F1}m — pet idling, click to pick up");
                     break;
                 }
             case LandType.UpgradeGatherer:
@@ -1033,6 +1545,12 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             case LandType.Warehouse:
                 WarehouseDefinition.Create(ctx, position);
                 break;
+            case LandType.Library:
+                LibraryDefinition.Create(ctx, position);
+                break;
+            case LandType.PlayerHouse:
+                PlayerHouseDefinition.Create(ctx, position);
+                break;
             case LandType.Decoration:
                 DecorationDefinition.Create(ctx, position);
                 break;
@@ -1044,28 +1562,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         StarGrid.SpawnNeighbors(ctx, gridX, gridY);
     }
 
-    /// <summary>
-    /// Find the player's helper of the given type and spawn a pet that follows it.
-    /// The pet signals the x2 upgrade — HelperSystem detects it and applies the boost.
-    /// </summary>
     private static void SpawnUpgradePet(Context ctx, Vector2 position, Entity playerEntity, int helperType)
     {
-        // Find the helper to upgrade
-        Entity targetHelper = Entity.Null;
-        foreach (var he in ctx.State.Filter<HelperComponent>())
-        {
-            var h = ctx.State.GetComponent<HelperComponent>(he);
-            if (h.OwnerPlayer == playerEntity && h.Type == helperType)
-            { targetHelper = he; break; }
-        }
-
-        if (targetHelper == Entity.Null) return; // helper not unlocked yet — shouldn't happen if land was locked
-
-        var pet = HelperPetDefinition.Create(ctx, position, helperType, targetHelper);
+        var pet = HelperPetDefinition.CreateIdle(ctx, position, helperType);
         ctx.State.AddComponent(pet, new BreedBornComponent());
         var gt = ctx.State.GetCustomData<IGameTime>();
         float min = gt != null ? gt.CurrentTick / 60f / 60f : -1;
-        ILogger.Log($"[UpgradePet] Upgraded helper type={helperType} at {min:F1}m");
+        ILogger.Log($"[UpgradePet] Pet for helper type={helperType} idling at {min:F1}m, click to pick up");
     }
 
     /// <summary>
@@ -1090,7 +1593,4 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return null;
     }
 
-    /// <summary>Forwarding stub for backward compatibility.</summary>
-    public static bool MilkCow(EntityWorld state, Entity cowEntity, int foodToUse, int exhaustPerClick, out bool cowDone)
-        => InteractionLogic.MilkCow(state, cowEntity, foodToUse, exhaustPerClick, out cowDone);
 }

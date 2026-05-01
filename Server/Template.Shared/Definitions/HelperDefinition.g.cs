@@ -45,6 +45,7 @@ public static partial class HelperDefinition
         component.WantedFoodType = 0;
         component.ParentA = Entity.Null;
         component.ParentB = Entity.Null;
+        component.PetCount = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

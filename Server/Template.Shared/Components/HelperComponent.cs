@@ -57,6 +57,8 @@ public struct HelperComponent : IComponent
     public Entity ParentA;
     public Entity ParentB;
 
+    public int PetCount;
+
     public int GetBagTotal() => BagGrass + BagCarrot + BagApple + BagMushroom
                               + BagMilk + BagCarrotMilkshake + BagVitaminMix + BagPurplePotion
                               + BagCoins;

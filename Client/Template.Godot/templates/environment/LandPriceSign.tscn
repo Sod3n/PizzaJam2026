@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://bpyx7deuqxtsc"]
+
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="2_signbg"]
+[ext_resource type="Texture2D" uid="uid://5l2waaftxb6k" path="res://sprites/export/icons/Money_/1.png" id="3_coin"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="4_animsprite"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://b6gxuh6n21opm" path="res://Scripts/Framework/Components/LandPriceSignComponentNode.cs" id="fw_landprice"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qgp40"]
+render_priority = -1
+shader = ExtResource("1_shader")
+shader_parameter/albedo_texture = ExtResource("2_signbg")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_signbg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_signbg")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fb4yq"]
+render_priority = -1
+shader = ExtResource("1_shader")
+shader_parameter/albedo_texture = ExtResource("3_coin")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_coin"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_coin")
+}],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="LandPriceSign" type="Node3D" unique_id=391318127]
+
+[node name="Entity" type="Node3D" parent="." unique_id=-743772608]
+script = ExtResource("fw_entity")
+EntityName = "LandPriceSign"
+StableIdSeed = "landpricesign-entity-seed"
+
+[node name="LandPriceSignComponent" type="Node" parent="Entity" unique_id=-1197501815]
+script = ExtResource("fw_landprice")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=-516761922]
+script = ExtResource("fw_phys")
+ShapeRadius = 0.8
+CollisionLayer = 5
+CollisionMask = 8
+
+[node name="Sign" type="AnimatedSprite3D" parent="." unique_id=-765531106]
+transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18766919, 2.9602835, -1.4402816)
+material_override = SubResource("ShaderMaterial_qgp40")
+modulate = Color(0.85, 0.7, 0.3, 1)
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_signbg")
+script = ExtResource("4_animsprite")
+
+[node name="CoinIcon" type="AnimatedSprite3D" parent="." unique_id=-366488833]
+transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.38425887, 0.95170426, -0.2602727)
+material_override = SubResource("ShaderMaterial_fb4yq")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_coin")
+script = ExtResource("4_animsprite")
+
+[node name="Remaining" type="Label3D" parent="." unique_id=-797692249]
+transform = Transform3D(0.5, 0, 0, 0, 0.4511347, 0.21558635, 0, -0.21558635, 0.4511347, 0.18707645, 0.918281, -0.36360815)
+no_depth_test = true
+render_priority = 2
+outline_render_priority = 1
+modulate = Color(1, 1, 0, 1)
+text = "0"
+font_size = 128

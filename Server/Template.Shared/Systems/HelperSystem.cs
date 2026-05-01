@@ -23,6 +23,8 @@ public class HelperSystem : ISystem
 
     public void Update(EntityWorld state)
     {
+        RecomputePetCounts(state);
+
         foreach (var entity in state.Filter<HelperComponent>())
         {
             if (!state.HasComponent<Transform2D>(entity)) continue;
@@ -30,6 +32,15 @@ public class HelperSystem : ISystem
             if (!state.HasComponent<NavigationAgent2D>(entity)) continue;
 
             ref var helper = ref state.GetComponent<HelperComponent>(entity);
+
+            // Carried-by-player helpers swarm-follow the carrier and skip AI
+            Entity carrier = FindHelperCarrier(state, entity);
+            if (carrier != Entity.Null)
+            {
+                helper.OwnerPlayer = carrier;
+                SwarmFollow.Follow(state, entity, carrier);
+                continue;
+            }
 
             // Update owner to closest player (with hysteresis to prevent flip-flopping)
             var closestPlayer = FindClosestPlayer(state, entity);
@@ -65,13 +76,13 @@ public class HelperSystem : ISystem
                 continue;
             }
 
-            // Check if this helper has an upgrade pet — apply x2 boost
-            bool upgraded = HasUpgradePet(state, entity);
+            int petCount = helper.PetCount;
+            int boostMul = 1 + petCount;
             var config = HelperConfig.GetByType(helper.Type);
-            helper.BagCapacity = upgraded ? config.UpgradedCapacity : config.BaseCapacity;
+            helper.BagCapacity = config.BaseCapacity * boostMul;
 
             ref var nav = ref state.GetComponent<NavigationAgent2D>(entity);
-            nav.MaxSpeed = (Float)(upgraded ? config.UpgradedSpeed : config.BaseSpeed);
+            nav.MaxSpeed = (Float)config.BaseSpeed * (Float)boostMul;
 
             switch (helper.Type)
             {
@@ -79,13 +90,13 @@ public class HelperSystem : ISystem
                     UpdateAssistant(state, entity, ref helper);
                     break;
                 case HelperType.Gatherer:
-                    UpdateGatherer(state, entity, ref helper, upgraded);
+                    UpdateGatherer(state, entity, ref helper, petCount);
                     break;
                 case HelperType.Seller:
-                    UpdateSeller(state, entity, ref helper, upgraded);
+                    UpdateSeller(state, entity, ref helper, petCount);
                     break;
                 case HelperType.Builder:
-                    UpdateBuilder(state, entity, ref helper, upgraded);
+                    UpdateBuilder(state, entity, ref helper, petCount);
                     break;
                 case HelperType.Milker:
                     UpdateMilker(state, entity, ref helper);
@@ -98,24 +109,75 @@ public class HelperSystem : ISystem
                 TryWarehouseAutoDeposit(state, entity, ref helper);
         }
 
-        // Update pets: follow their target helper
         foreach (var petEntity in state.Filter<HelperPetComponent>())
         {
             if (!state.HasComponent<Transform2D>(petEntity)) continue;
-            var pet = state.GetComponent<HelperPetComponent>(petEntity);
+            ref var pet = ref state.GetComponent<HelperPetComponent>(petEntity);
+
+            if (pet.AssignedTo != Entity.Null && !state.HasComponent<Transform2D>(pet.AssignedTo))
+            {
+                pet.State = PetState.Idle;
+                pet.FollowTarget = Entity.Null;
+                pet.AssignedTo = Entity.Null;
+                ref var t = ref state.GetComponent<Transform2D>(petEntity);
+                t.Position = new Vector2((Float)pet.IdleSpawnX, (Float)pet.IdleSpawnY);
+                continue;
+            }
+
             if (pet.FollowTarget == Entity.Null || !state.HasComponent<Transform2D>(pet.FollowTarget)) continue;
             SwarmFollow.Follow(state, petEntity, pet.FollowTarget);
         }
     }
 
-    private static bool HasUpgradePet(EntityWorld state, Entity helperEntity)
+    private static void RecomputePetCounts(EntityWorld state)
     {
+        foreach (var he in state.Filter<HelperComponent>())
+        {
+            ref var h = ref state.GetComponent<HelperComponent>(he);
+            h.PetCount = 0;
+        }
+        foreach (var ce in state.Filter<CowComponent>())
+        {
+            ref var c = ref state.GetComponent<CowComponent>(ce);
+            c.PetCount = 0;
+        }
+        foreach (var pe in state.Filter<PlayerEntity>())
+        {
+            if (!state.HasComponent<PlayerStateComponent>(pe)) continue;
+            ref var ps = ref state.GetComponent<PlayerStateComponent>(pe);
+            ps.PetCount = 0;
+        }
+
         foreach (var pe in state.Filter<HelperPetComponent>())
         {
             var pet = state.GetComponent<HelperPetComponent>(pe);
-            if (pet.FollowTarget == helperEntity) return true;
+            if (pet.State != PetState.Assigned) continue;
+            var target = pet.AssignedTo;
+            if (target == Entity.Null) continue;
+
+            if (state.HasComponent<HelperComponent>(target))
+            {
+                ref var h = ref state.GetComponent<HelperComponent>(target);
+                h.PetCount++;
+            }
+            else if (state.HasComponent<CowComponent>(target))
+            {
+                ref var c = ref state.GetComponent<CowComponent>(target);
+                c.PetCount++;
+            }
+            else if (state.HasComponent<PlayerEntity>(target) && state.HasComponent<PlayerStateComponent>(target))
+            {
+                ref var ps = ref state.GetComponent<PlayerStateComponent>(target);
+                ps.PetCount++;
+            }
         }
-        return false;
+
+        foreach (var pe in state.Filter<PlayerEntity>())
+        {
+            if (!state.HasComponent<PlayerStateComponent>(pe)) continue;
+            ref var ps = ref state.GetComponent<PlayerStateComponent>(pe);
+            ps.ClickMultiplier = 1 + ps.PetCount;
+        }
     }
 
     // ─── Assistant: follow player closely ───
@@ -130,9 +192,10 @@ public class HelperSystem : ISystem
 
     // ─── Gatherer: find food → harvest → return to player → wait for pickup ───
 
-    private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
+    private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper, int petCount = 0)
     {
-        int workDuration = upgraded ? GatherWorkDuration / 2 : GatherWorkDuration;
+        int workDuration = GatherWorkDuration / (1 + petCount);
+        if (workDuration < 1) workDuration = 1;
         switch (helper.State)
         {
             case HelperState.Idle:
@@ -168,7 +231,7 @@ public class HelperSystem : ISystem
                 helper.WorkTimer++;
                 if (helper.WorkTimer >= helper.WorkDuration)
                 {
-                    int harvestAmount = upgraded ? 5 : 1;
+                    int harvestAmount = petCount >= 1 ? 1 + petCount * 4 : 1;
                     int bagSpace = helper.BagCapacity - helper.GetBagTotal();
                     int amount = System.Math.Min(harvestAmount, bagSpace);
 
@@ -231,7 +294,7 @@ public class HelperSystem : ISystem
 
     // ─── Seller: player gives milk → sell at sell point → return with coins → wait for pickup ───
 
-    private void UpdateSeller(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
+    private void UpdateSeller(EntityWorld state, Entity entity, ref HelperComponent helper, int petCount = 0)
     {
         switch (helper.State)
         {
@@ -319,7 +382,7 @@ public class HelperSystem : ISystem
 
     // ─── Builder: player gives coins → walk to land → contribute coins ───
 
-    private void UpdateBuilder(EntityWorld state, Entity entity, ref HelperComponent helper, bool upgraded = false)
+    private void UpdateBuilder(EntityWorld state, Entity entity, ref HelperComponent helper, int petCount = 0)
     {
         switch (helper.State)
         {
@@ -393,6 +456,7 @@ public class HelperSystem : ISystem
                             int landType = landComp.Type;
                             int gridX = landComp.Arm;
                             int gridY = landComp.Ring;
+                            Definitions.LandDefinition.DeleteSignsForLand(state, landEntity);
                             state.DeleteEntity(landEntity);
 
                             var ctx = new Context(state, helper.OwnerPlayer, null!);
@@ -489,6 +553,26 @@ public class HelperSystem : ISystem
         body.Velocity = Vector2.Zero;
     }
 
+    // agent-helpers-in-house: true if the given helper is assigned as occupant of a house.
+    private static Entity FindHelperCarrier(EntityWorld state, Entity helperEntity)
+    {
+        foreach (var pe in state.Filter<PlayerStateComponent>())
+        {
+            if (state.GetComponent<PlayerStateComponent>(pe).CarriedHelper == helperEntity)
+                return pe;
+        }
+        return Entity.Null;
+    }
+
+    private static bool IsHelperInHouse(EntityWorld state, Entity helperEntity)
+    {
+        foreach (var he in state.Filter<HouseComponent>())
+        {
+            if (state.GetComponent<HouseComponent>(he).HelperId == helperEntity) return true;
+        }
+        return false;
+    }
+
     // ─── Player finding ───
 
     private static Entity FindClosestPlayer(EntityWorld state, Entity helper)
@@ -541,7 +625,8 @@ public class HelperSystem : ISystem
                     if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
                     {
                         var cow = state.GetComponent<CowComponent>(house.CowId);
-                        helper.WantedFoodType = ResolveMilkerFoodType(cow, house.SelectedFood);
+                        // agent-helpers-in-house: cow.SelectedFood is source of truth
+                        helper.WantedFoodType = ResolveMilkerFoodType(cow, cow.SelectedFood);
                     }
                     else
                     {
@@ -638,8 +723,8 @@ public class HelperSystem : ISystem
                             var cow = state.GetComponent<CowComponent>(house.CowId);
                             if (cow.Exhaust < cow.MaxExhaust)
                             {
-                                // Determine food to use from the helper's bag
-                                int foodToUse = ResolveFoodFromBag(ref helper, house.SelectedFood, cow.PreferredFood);
+                                // agent-helpers-in-house: cow.SelectedFood is source of truth
+                                int foodToUse = ResolveFoodFromBag(ref helper, cow.SelectedFood, cow.PreferredFood);
                                 if (foodToUse >= 0)
                                 {
                                     int milkPower = 1; // helpers always milk at 1x speed (no player click multiplier)

@@ -18,8 +18,14 @@ public partial class InputManager : Node
     // Touch joystick state
     private int _touchIndex = -1;
     private Vector2 _touchStart;
+    private bool _touchHoldFiring;
     private const float TouchDeadzone = 20f;
     private const float TouchMaxRadius = 100f;
+
+    private int _holdRepeatTicks;
+    // Hold-to-milk fires at ~60% of comfortable rapid-tap speed.
+    // 60 TPS / 14 ≈ 4.3 Hz vs ~7 Hz typical human rapid-click → ~60%.
+    private const int HoldRepeatThreshold = 14;
 
     public override void _Ready()
     {
@@ -64,15 +70,6 @@ public partial class InputManager : Node
             return;
         }
 
-        // F key toggles the Family Tree overlay (works even during overlays so you can close it)
-        if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.F }
-            && !BreedResultOverlay.IsActive && !SettingsOverlay.IsActive)
-        {
-            FamilyTreeOverlay.Toggle(GetTree());
-            GetViewport().SetInputAsHandled();
-            return;
-        }
-
         // C key toggles the Crafting Recipes overlay
         if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.C }
             && !BreedResultOverlay.IsActive && !SettingsOverlay.IsActive)
@@ -94,13 +91,13 @@ public partial class InputManager : Node
             }
             else if (!touch.Pressed && touch.Index == _touchIndex)
             {
-                // Release: check if it was a tap (interact) or drag (movement)
                 float dragDist = touch.Position.DistanceTo(_touchStart);
-                if (dragDist < TouchDeadzone)
+                if (dragDist < TouchDeadzone && !_touchHoldFiring)
                 {
                     SendInteract();
                 }
                 _touchIndex = -1;
+                _touchHoldFiring = false;
             }
         }
     }
@@ -114,11 +111,34 @@ public partial class InputManager : Node
         if (localPlayerId == 0) return;
 
         // --- Interaction ---
-        if (global::Godot.Input.IsActionJustPressed("ui_accept") ||
-            global::Godot.Input.IsActionJustPressed("interact") ||
-            global::Godot.Input.IsActionJustPressed("gamepad_interact"))
+        bool interactJustPressed = global::Godot.Input.IsActionJustPressed("ui_accept") ||
+                                   global::Godot.Input.IsActionJustPressed("interact") ||
+                                   global::Godot.Input.IsActionJustPressed("gamepad_interact");
+        bool interactHeld = global::Godot.Input.IsActionPressed("ui_accept") ||
+                            global::Godot.Input.IsActionPressed("interact") ||
+                            global::Godot.Input.IsActionPressed("gamepad_interact");
+        bool touchHeldStationary = _touchIndex >= 0 &&
+                                   GetViewport().GetMousePosition().DistanceTo(_touchStart) < TouchDeadzone;
+
+        if (interactJustPressed)
         {
             SendInteract();
+            _holdRepeatTicks = 0;
+        }
+        else if (interactHeld || touchHeldStationary)
+        {
+            _holdRepeatTicks++;
+            if (_holdRepeatTicks >= HoldRepeatThreshold)
+            {
+                SendInteract();
+                _holdRepeatTicks = 0;
+                if (touchHeldStationary) _touchHoldFiring = true;
+            }
+        }
+        else
+        {
+            _holdRepeatTicks = 0;
+            _touchHoldFiring = false;
         }
 
         // --- Movement ---

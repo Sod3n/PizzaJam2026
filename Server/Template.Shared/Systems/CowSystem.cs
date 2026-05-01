@@ -1,6 +1,7 @@
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
 using Template.Shared.Components;
+using Template.Shared.Actions;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
@@ -28,13 +29,8 @@ public class CowSystem : ISystem
     }
     public void Update(EntityWorld state)
     {
-        // Tick down love house breed cooldowns
-        foreach (var lhEntity in state.Filter<LoveHouseComponent>())
-        {
-            ref var lh = ref state.GetComponent<LoveHouseComponent>(lhEntity);
-            if (lh.CooldownTicksRemaining > 0)
-                lh.CooldownTicksRemaining--;
-        }
+        // Love house cooldown is NOT decremented passively any more — it only resets
+        // on sleep (see SleepLogic.AdvanceDay). Click-to-skip is still allowed.
 
         // Tick down love event timer — when it reaches 0, fire the deferred love event
         foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
@@ -135,21 +131,8 @@ public class CowSystem : ISystem
                     ILogger.Log($"[CowSystem] Cow {cowEntity.Id} recovered from depression (30s timer expired)");
                 }
             }
-            else if (cow is { Exhaust: > 0, IsMilking: false })
-            {
-                var gameTime = state.GetCustomData<IGameTime>();
-                if (gameTime != null)
-                {
-                    var random = new DeterministicRandom((uint)(cowEntity.Id ^ gameTime.CurrentTick));
-                    if (random.NextInt(0, 750) == 0)
-                    {
-                        cow.Exhaust--;
-                    }
-                }
-            }
             else if (!cow.IsMilking)
             {
-                // Don't unhide cows that are in a love house during active breeding
                 if (state.HasComponent<HiddenComponent>(cowEntity) && !IsCowInActiveBreeding(state, cowEntity))
                 {
                     state.UnhideEntity(cowEntity);
@@ -177,6 +160,8 @@ public class CowSystem : ISystem
         {
             ref var cow = ref state.GetComponent<CowComponent>(playerState.InteractionTarget);
             cow.IsMilking = false;
+            // Drop any in-progress milk cycle so the next session starts fresh.
+            cow.MilkClickCounter = 0;
             state.UnhideEntity(playerState.InteractionTarget);
         }
 
@@ -206,6 +191,12 @@ public class CowSystem : ISystem
             {
                 ref var house = ref state.GetComponent<HouseComponent>(houseId);
                 house.CowId = Entity.Null;
+                // agent-helpers-in-house: sign disappears when cow leaves (helper presence not affected)
+                if (house.HelperId == Entity.Null)
+                {
+                    var ctxTame = new Context(state, playerEntity, null!);
+                    InteractActionService.DespawnSignsForHouse(ctxTame, houseId);
+                }
             }
             else if (houseId != Entity.Null && state.HasComponent<LoveHouseComponent>(houseId))
             {
@@ -277,6 +268,13 @@ public class CowSystem : ISystem
             // Re-get house ref and set cow
             house2 = ref state.GetComponent<HouseComponent>(houseEntity);
             house2.CowId = cowEntity;
+
+            // agent-helpers-in-house: spawn food sign reflecting the cow's persistent SelectedFood.
+            // House.SelectedFood cache is updated to match. Despawns role sign if any.
+            {
+                var ctxAssign = new Context(state, playerEntity, null!);
+                InteractActionService.EnsureFoodSignForHouse(ctxAssign, houseEntity, cowEntity);
+            }
 
             // Promote next cow in chain to be the new first
             if (nextCow != Entity.Null)
@@ -457,7 +455,9 @@ public class CowSystem : ISystem
                 }
             }
 
-            // Helper unlock: deterministic at breed count threshold
+            // Helper unlock: deterministic at breed count threshold.
+            // HelpersSpawned is pre-bumped in AddPlayerAction for each helper-player that joins,
+            // so the first N breed-unlocks (one per helper-player) are silently skipped here.
             int neededHelper = GetNextNeededHelper(state, playerEntity);
             bool spawnHelper = false;
 
@@ -694,6 +694,12 @@ public class CowSystem : ISystem
             ref var house = ref state.GetComponent<HouseComponent>(loverHouseId);
             if (house.CowId == lover)
                 house.CowId = Entity.Null;
+            // agent-helpers-in-house: despawn sign when cow leaves
+            if (house.HelperId == Entity.Null)
+            {
+                var ctxLove = new Context(state, playerEntity, null!);
+                InteractActionService.DespawnSignsForHouse(ctxLove, loverHouseId);
+            }
         }
 
         // Make the lover follow the player
@@ -920,6 +926,9 @@ public class CowSystem : ISystem
             house.CowId = cowEntity;
             cow = ref state.GetComponent<CowComponent>(cowEntity);
             cow.HouseId = targetHouse;
+            // agent-helpers-in-house: spawn food sign reflecting cow's persistent SelectedFood.
+            var ctxRet = new Context(state, Entity.Null, null!);
+            InteractActionService.EnsureFoodSignForHouse(ctxRet, targetHouse, cowEntity);
         }
         else
         {

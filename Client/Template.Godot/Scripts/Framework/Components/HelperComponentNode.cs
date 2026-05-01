@@ -21,4 +21,5 @@ public partial class HelperComponentNode : Node
     [Export] public int BagCoins;
     [Export] public int BagCapacity;
     [Export] public int WantedFoodType;
+    [Export] public int PetCount;
 }

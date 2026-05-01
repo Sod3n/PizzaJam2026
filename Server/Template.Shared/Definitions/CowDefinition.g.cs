@@ -35,12 +35,15 @@ public static partial class CowDefinition
         component.FollowingPlayer = Entity.Null;
         component.FollowTarget = Entity.Null;
         component.PreferredFood = 0;
+        component.SelectedFood = 0;
         component.IsDepressed = false;
         component.DepressionTicksRemaining = 0;
         component.LoveTarget = Entity.Null;
         component.LoveConfessed = false;
         component.ParentA = Entity.Null;
         component.ParentB = Entity.Null;
+        component.PetCount = 0;
+        component.MilkClickCounter = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

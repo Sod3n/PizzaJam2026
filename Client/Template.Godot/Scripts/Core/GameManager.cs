@@ -14,6 +14,8 @@ using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Profiler;
+using Deterministic.GameFramework.Serialization;
+using Deterministic.GameFramework.Debugging;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Systems;
 using Template.Godot.Framework.Editor;
@@ -60,6 +62,7 @@ public partial class GameManager : Node
     private IDisposable _localPlayerSubscription;
     private MetricsExporter _metricsExporter;
     private int _metricsExportCounter;
+    private DesyncRecorder _desyncRecorder;
 
     public override void _Ready()
     {
@@ -516,7 +519,9 @@ public partial class GameManager : Node
             "client",
             sessionId,
             Game.Loop.TickRate);
-        Game.Loop.Simulation.Recorder = recorder;
+        // DesyncRecorder hooks into the simulation's scheduler events from Start();
+        // there is no Recorder slot on GameSimulation, so just keep the disposable alive.
+        _desyncRecorder = recorder;
         GD.Print($"[GameManager] Desync recording started: client_{sessionId}.jsonl");
     }
 

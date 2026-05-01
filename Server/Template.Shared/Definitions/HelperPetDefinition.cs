@@ -15,6 +15,31 @@ public static partial class HelperPetDefinition
         ref var component = ref ctx.GetComponent<HelperPetComponent>(entity);
         component.HelperType = helperType;
         component.FollowTarget = followTarget;
+        component.AssignedTo = followTarget;
+        component.State = followTarget == Entity.Null ? PetState.Idle : PetState.Assigned;
+        component.IdleSpawnX = (int)position.X;
+        component.IdleSpawnY = (int)position.Y;
+
+        var random = new DeterministicRandom((uint)entity.Id + 4000);
+        ctx.AddComponent(entity, NameComponent.RandomPet(ref random));
+
+        ref var navAgent = ref ctx.GetComponent<NavigationAgent2D>(entity);
+        navAgent.AvoidanceMask = 0;
+
+        return entity;
+    }
+
+    public static Entity CreateIdle(Context ctx, Vector2 position, int helperType)
+    {
+        var entity = Create(ctx, position);
+
+        ref var component = ref ctx.GetComponent<HelperPetComponent>(entity);
+        component.HelperType = helperType;
+        component.FollowTarget = Entity.Null;
+        component.AssignedTo = Entity.Null;
+        component.State = PetState.Idle;
+        component.IdleSpawnX = (int)position.X;
+        component.IdleSpawnY = (int)position.Y;
 
         var random = new DeterministicRandom((uint)entity.Id + 4000);
         ctx.AddComponent(entity, NameComponent.RandomPet(ref random));

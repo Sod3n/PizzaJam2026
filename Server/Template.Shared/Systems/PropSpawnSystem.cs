@@ -10,7 +10,9 @@ namespace Template.Shared.Systems;
 public class PropSpawnSystem : ISystem
 {
     private const int SpawnTick = 0;
-    private const int PropCount = 150;
+    private const int PropCount = 350;
+    // Match the wall bounds set up in GameplayScene so props fill the whole walled box.
+    private static readonly Float MapHalfSize = (Float)(StarGrid.OuterRadius + StarGrid.GridStep);
     private static readonly Float MinLandLabelBuffer = (Float)2; // Buffer so props don't spawn too close to land/buildings
     private static readonly Float MinPropDistance = (Float)4;    // Minimum distance between props
     private static readonly Float MinSameTypeDistance = (Float)8; // Minimum distance between same prop type (prevents clusters)
@@ -67,13 +69,9 @@ public class PropSpawnSystem : ISystem
         {
             attempts++;
 
-            // Generate random position within the star boundary
-            Float x = random.NextFloat(new Float(-StarGrid.OuterRadius), new Float(StarGrid.OuterRadius));
-            Float y = random.NextFloat(new Float(-StarGrid.OuterRadius), new Float(StarGrid.OuterRadius));
-
-            // Must be inside the star shape
-            if (!StarGrid.IsInsideStarF(x, y)) continue;
-
+            // Spawn over the entire walled map (square bounds), not just the star polygon.
+            Float x = random.NextFloat(-MapHalfSize, MapHalfSize);
+            Float y = random.NextFloat(-MapHalfSize, MapHalfSize);
             var candidatePos = new Vector2(x, y);
 
             // Small buffer around existing land plots (avoid overlapping price labels)

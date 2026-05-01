@@ -22,6 +22,14 @@ public struct GlobalResourcesComponent : IComponent
     public int LastFarmGX;     // Grid X of last dynamically spawned farm (for angular separation)
     public int LastFarmGY;     // Grid Y of last dynamically spawned farm (for angular separation)
 
+    // Day cycle (advances when player sleeps in Player House)
+    public int DayCounter;     // Days elapsed since match start (0 on day 1)
+    // Per-day food spawn cap counters — reset to 0 on day advance
+    public int FoodSpawnedTodayGrass;
+    public int FoodSpawnedTodayCarrot;
+    public int FoodSpawnedTodayApple;
+    public int FoodSpawnedTodayMushroom;
+
     // Helper unlock thresholds (breed count) — sequential, supports duplicates
     public const int GathererUnlockBreed = 2;
     public const int BuilderUnlockBreed = 4;
@@ -33,6 +41,28 @@ public struct GlobalResourcesComponent : IComponent
     public int LoveEventTimer; // Countdown ticks until the pending love event fires (0 = no pending event)
     public Entity LoveEventCowTarget; // Player entity to pass to TriggerLoveEvent when timer fires
     public int LoveEventBreedCount; // Breed count to pass to TriggerLoveEvent when timer fires
+
+    /// <summary>Get the per-day spawn count for a food type.</summary>
+    public int GetFoodSpawnedToday(int foodType) => foodType switch
+    {
+        FoodType.Grass => FoodSpawnedTodayGrass,
+        FoodType.Carrot => FoodSpawnedTodayCarrot,
+        FoodType.Apple => FoodSpawnedTodayApple,
+        FoodType.Mushroom => FoodSpawnedTodayMushroom,
+        _ => 0
+    };
+
+    /// <summary>Increment the per-day spawn count for a food type.</summary>
+    public void IncrementFoodSpawnedToday(int foodType)
+    {
+        switch (foodType)
+        {
+            case FoodType.Grass: FoodSpawnedTodayGrass++; break;
+            case FoodType.Carrot: FoodSpawnedTodayCarrot++; break;
+            case FoodType.Apple: FoodSpawnedTodayApple++; break;
+            case FoodType.Mushroom: FoodSpawnedTodayMushroom++; break;
+        }
+    }
 
     /// <summary>Get the amount of a specific food type.</summary>
     public int GetFood(int foodType)
