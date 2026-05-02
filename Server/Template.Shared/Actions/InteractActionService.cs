@@ -1057,6 +1057,20 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             if (cow.IsMilking || cow.IsDepressed)
                 return false;
 
+            // Block selling the last cow — leaves the player with no breed pool.
+            int activeCowCount = 0;
+            foreach (var ce in ctx.State.Filter<CowComponent>())
+            {
+                if (ctx.State.HasComponent<CowForSaleComponent>(ce)) continue;
+                activeCowCount++;
+                if (activeCowCount > 1) break;
+            }
+            if (activeCowCount <= 1)
+            {
+                missingResource = StateKeys.Cows;
+                return false;
+            }
+
             // Cow price: rested cow = full price, exhausted = lower. Tier scales price.
             int rested = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
             int tierBonus = (cow.PreferredFood + 1) * Template.Shared.GameData.Balance.Sell.CowTierPrice;
@@ -1624,7 +1638,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             case LandType.HelperAssistant:
                 {
                     HelperAssistantDefinition.Create(ctx, position);
-                    var assistant = HelperPetDefinition.CreateIdle(ctx, position, HelperType.Assistant);
+                    // Offset the pet so it doesn't sit on top of the cat-house — player needs
+                    // to click the pet itself to carry it.
+                    var petPos = position + new Vector2((Float)1.5f, (Float)0);
+                    var assistant = HelperPetDefinition.CreateIdle(ctx, petPos, HelperType.Assistant);
                     ctx.State.AddComponent(assistant, new BreedBornComponent());
                     var gt1 = ctx.State.GetCustomData<IGameTime>();
                     ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — pet idling, click to pick up");

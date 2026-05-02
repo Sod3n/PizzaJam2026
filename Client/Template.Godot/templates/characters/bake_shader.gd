@@ -49,12 +49,15 @@ func bake_background() -> void:
 	visible = false
 	baked_rect = TextureRect.new()
 	baked_rect.texture = result_tex
-	baked_rect.anchors_preset = Control.PRESET_FULL_RECT
+	baked_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	baked_rect.stretch_mode = TextureRect.STRETCH_SCALE
+	baked_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	get_parent().add_child(baked_rect)
 	get_parent().move_child(baked_rect, get_index())
+	# Apply full-rect anchors AFTER add_child so offsets evaluate against the real parent.
+	baked_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 0)
 	baked = true
-	print("Bake complete: ", final_img.get_size())
+	print("Bake complete: ", final_img.get_size(), " rect size: ", baked_rect.size)
 
 func unbake() -> void:
 	if not baked:

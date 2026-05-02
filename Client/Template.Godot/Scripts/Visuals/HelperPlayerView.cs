@@ -28,6 +28,7 @@ public partial class HelperPlayerView
             visualNode.GetNode<Camera3D>("Camera").QueueFree();
 
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
+        GD.Print($"[HelperPlayerView] OnSpawned entity={vm.Entity.Id} characterNode={(characterNode == null ? "NULL" : characterNode.Name.ToString())} flipPivot={(flipPivot == null ? "NULL" : flipPivot.Name.ToString())}");
         ViewHelpers.SetupMovementAnimation(vm, vm.HelperPlayer.CharacterBody2D.Velocity, flipPivot, characterNode);
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);

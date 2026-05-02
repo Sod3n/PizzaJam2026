@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="6_nr4m1"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="7_5jc8c"]
 [ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="8_milky"]
-[ext_resource type="Texture2D" uid="uid://malp5wp2cexr" path="res://sprites/export/Devochka/Body.png" id="9_cow"]
+[ext_resource type="Texture2D" uid="uid://s0mx1vf4jk7h" path="res://sprites/cow.png" id="9_cow"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" path="res://Scripts/Framework/Components/SellPointSignComponentNode.cs" id="fw_sps"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]

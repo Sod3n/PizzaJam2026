@@ -45,10 +45,10 @@ public partial class LovePopupOverlay : CanvasLayer
     private void _Setup(string loverName, string targetName)
     {
         // Cache node references from scene
-        _root = GetNode<Control>("Root");
-        _nameLabel = GetNode<Label>("Root/Panel/VBoxContainer/NameLabel");
-        _messageLabel = GetNode<Label>("Root/Panel/VBoxContainer/MessageLabel");
-        _hintLabel = GetNode<Label>("Root/Panel/VBoxContainer/HintLabel");
+        _root = GetNode<Control>("%Root");
+        _nameLabel = GetNode<Label>("%NameLabel");
+        _messageLabel = GetNode<Label>("%MessageLabel");
+        _hintLabel = GetNode<Label>("%HintLabel");
 
         // Set dynamic text content
         _nameLabel.Text = loverName;

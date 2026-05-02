@@ -196,8 +196,8 @@ public partial class FamilyTreeOverlay : CanvasLayer
         // Handle empty state
         if (_nodes.Count == 0)
         {
-            _scroll = GetNode<ScrollContainer>("Background/ScrollContainer");
-            _treeContainer = GetNode<Control>("Background/ScrollContainer/TreeContainer");
+            _scroll = GetNode<ScrollContainer>("%ScrollContainer");
+            _treeContainer = GetNode<Control>("%TreeContainer");
             var emptyLabel = new Label();
             emptyLabel.Text = "No cows yet! Tame some cows and start breeding.";
             emptyLabel.HorizontalAlignment = HorizontalAlignment.Center;
@@ -228,8 +228,8 @@ public partial class FamilyTreeOverlay : CanvasLayer
         }
 
         // Cache scene nodes
-        _scroll = GetNode<ScrollContainer>("Background/ScrollContainer");
-        _treeContainer = GetNode<Control>("Background/ScrollContainer/TreeContainer");
+        _scroll = GetNode<ScrollContainer>("%ScrollContainer");
+        _treeContainer = GetNode<Control>("%TreeContainer");
         _treeContainer.CustomMinimumSize = new Vector2(maxX + TreePadding, maxY + TreePadding);
 
         // 6. Create visual nodes
@@ -284,7 +284,7 @@ public partial class FamilyTreeOverlay : CanvasLayer
         _treeContainer.MoveChild(lineDrawer, 0);
 
         // Fade in
-        var bg = GetNode<ColorRect>("Background");
+        var bg = GetNode<ColorRect>("%Background");
         bg.Modulate = new Color(1, 1, 1, 0);
         var tween = CreateTween();
         tween.TweenProperty(bg, "modulate:a", 1f, 0.2f)
@@ -496,7 +496,7 @@ public partial class FamilyTreeOverlay : CanvasLayer
     {
         if (!IsInsideTree()) return;
 
-        var bg = GetNode<ColorRect>("Background");
+        var bg = GetNode<ColorRect>("%Background");
         var tween = CreateTween();
         tween.TweenProperty(bg, "modulate:a", 0f, 0.15f);
         tween.Chain().TweenCallback(Callable.From(() =>

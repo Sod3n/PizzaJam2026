@@ -4,6 +4,7 @@ using System.Linq;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.Network.Client;
+using Deterministic.GameFramework.DeltaSync;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
 using Template.Shared.Factories;
@@ -31,7 +32,7 @@ public class FarmingTest
         
         // 2. Setup Mock/Loopback Client
         var networkClient = new LiteNetLibNetworkClient();
-        _client = new GameClient(networkClient, "127.0.0.1:9050", _game, SyncMode.DeltaSync);
+        _client = new DeltaSyncGameClient(networkClient, "127.0.0.1:9050", _game);
         
         // 3. Connect & Join Default Match
         var defaultMatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");

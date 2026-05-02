@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\Server\Template.Shared\Template.Shared.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Reactive\Deterministic.GameFramework.Reactive.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Networking\Deterministic.GameFramework.Network.LiteNetLib\Deterministic.GameFramework.Network.LiteNetLib.csproj" />
+    <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.DeltaSync\Deterministic.GameFramework.DeltaSync.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Serialization\Deterministic.GameFramework.Serialization.csproj" />
     <ProjectReference Include="..\..\Server\Framework\Core\Deterministic.GameFramework.Debugging\Deterministic.GameFramework.Debugging.csproj" />

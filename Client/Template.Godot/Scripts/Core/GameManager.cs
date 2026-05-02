@@ -6,6 +6,7 @@ using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Network.Client;
 using Deterministic.GameFramework.Network.Interfaces;
+using Deterministic.GameFramework.DeltaSync;
 using Template.Shared.Factories;
 using Template.Shared.Components;
 using Template.Shared.Features.Movement;
@@ -63,6 +64,9 @@ public partial class GameManager : Node
     private MetricsExporter _metricsExporter;
     private int _metricsExportCounter;
     private DesyncRecorder _desyncRecorder;
+    private Action<Guid> _onLobbyCreatedHandler;
+    private Guid _orphanOfflineUserIdToPrune;
+    private bool _orphanPrunePending;
 
     public override void _Ready()
     {
@@ -111,7 +115,10 @@ public partial class GameManager : Node
 
         // 2. Setup Network
         var networkClient = new LiteNetLibNetworkClient();
-        GameClient = new GameClient(networkClient, $"{ServerIp}:{ServerPort}", Game, SyncMode.DeltaSync);
+        GameClient = new DeltaSyncGameClient(networkClient, $"{ServerIp}:{ServerPort}", Game);
+        // Send the persistent local UserId as the auth token so the server's IAuthService
+        // returns it as our PlayerId — same identity across reconnects and across publish.
+        GameClient.AuthToken = PlayerIdentity.LocalId.ToString();
         GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
         if (SimulatedLatencyMs > 0)
         {
@@ -143,24 +150,14 @@ public partial class GameManager : Node
         GD.Print("Starting in Offline Mode...");
         OfflineMode = true;
 
-        OfflineUserId = Guid.NewGuid();
+        // Use the persistent local UserId so a future PublishOfflineToLobby produces
+        // a state whose PlayerEntity.UserId matches the auth token we'll send to the
+        // server — AddPlayerActionService then sees the existing player and skips
+        // creating a duplicate / helper-player.
+        OfflineUserId = PlayerIdentity.LocalId;
         Game.Loop.Schedule(new Template.Shared.Actions.AddPlayerAction(OfflineUserId), Deterministic.GameFramework.ECS.World.Entity);
 
-        // Player will be created on first tick — find it after game loop starts
-        Game.Loop.OnTick += () =>
-        {
-            if (LocalPlayerId != 0) return;
-            foreach (var entity in Game.State.Filter<Template.Shared.Components.PlayerEntity>())
-            {
-                var p = Game.State.GetComponent<Template.Shared.Components.PlayerEntity>(entity);
-                if (p.UserId == OfflineUserId)
-                {
-                    LocalPlayerId = entity.Id;
-                    GD.Print($"[GameManager] Offline Player Created: {LocalPlayerId}");
-                    break;
-                }
-            }
-        };
+        Game.Loop.OnTick += _OfflinePlayerDiscoveryTick;
 
         StartMetricsExport();
         StartInputRecording();
@@ -193,7 +190,7 @@ public partial class GameManager : Node
         ReactiveSystem.Instance.Reset();
 
         // Find our player in the restored state
-        OfflineUserId = Guid.NewGuid();
+        OfflineUserId = PlayerIdentity.LocalId;
         var entities = Game.State.Filter<PlayerEntity>();
         var firstEntity = entities.FirstOrDefault();
         if (firstEntity.Id != 0)
@@ -227,12 +224,10 @@ public partial class GameManager : Node
             await GameClient.ConnectAsync();
 
             OnStatusChanged?.Invoke("Creating lobby...");
-            GameClient.OnLobbyCreated += (lobbyId) =>
-            {
-                CurrentLobbyId = lobbyId;
-                GD.Print($"[GameManager] Lobby created: {lobbyId}");
-                CallDeferred(nameof(EmitLobbyCreated), lobbyId.ToString());
-            };
+            if (_onLobbyCreatedHandler != null)
+                GameClient.OnLobbyCreated -= _onLobbyCreatedHandler;
+            _onLobbyCreatedHandler = HandleLobbyCreated;
+            GameClient.OnLobbyCreated += _onLobbyCreatedHandler;
 
             await GameClient.CreateLobbyAsync(lobbyName);
         }
@@ -241,6 +236,13 @@ public partial class GameManager : Node
             GD.PrintErr($"Create lobby failed: {e}");
             OnError?.Invoke(e.Message);
         }
+    }
+
+    private void HandleLobbyCreated(Guid lobbyId)
+    {
+        CurrentLobbyId = lobbyId;
+        GD.Print($"[GameManager] Lobby created: {lobbyId}");
+        CallDeferred(nameof(EmitLobbyCreated), lobbyId.ToString());
     }
 
     private void EmitLobbyCreated(string lobbyIdStr)
@@ -269,7 +271,6 @@ public partial class GameManager : Node
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
             StartDesyncRecording();
-            ArmWarmUpResync();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             GameProfiler.Enable(Game);
@@ -306,7 +307,6 @@ public partial class GameManager : Node
             GD.Print("Synced! Starting GameLoop...");
             StartMetricsExport();
             StartDesyncRecording();
-            ArmWarmUpResync();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
             GameProfiler.Enable(Game);
@@ -320,77 +320,6 @@ public partial class GameManager : Node
         }
     }
 
-    /// <summary>
-    /// HACK — the server's first N ticks are non-deterministic (scene load, navmesh bake,
-    /// physics settle). Instead of blocking startup, let the client run from tick 0 like
-    /// normal; once <see cref="Game.Loop.CurrentTick"/> crosses <see cref="WarmUpTicks"/>,
-    /// we fire off a single <c>RequestFullState</c> so the authoritative post-warm-up state
-    /// replaces whatever we built up locally. <see cref="GameClient.ApplyFullState"/> handles
-    /// the arriving snapshot on the loop thread. No framework changes.
-    /// </summary>
-    private const long WarmUpTicks = 0;
-    private bool _warmUpResyncRequested;
-    private long _lastSeenLoopTick = -1;
-
-    private void ArmWarmUpResync()
-    {
-        if (GameClient.Mode != Deterministic.GameFramework.Common.SyncMode.DeltaSync) return;
-        _warmUpResyncRequested = false;
-        _lastSeenLoopTick = -1;
-        Game.Loop.OnTick += WarmUpResyncTick;
-        Game.Loop.OnTick += RescanObserversOnTickJump;
-    }
-
-    /// <summary>
-    /// Fires <c>RequestFullState</c> exactly once when the client first crosses the warm-up
-    /// threshold, then unsubscribes itself. Server's response is handled by the general
-    /// tick-jump rescan below.
-    /// </summary>
-    private void WarmUpResyncTick()
-    {
-        if (_warmUpResyncRequested) return;
-        if (Game.Loop.CurrentTick < WarmUpTicks) return;
-
-        _warmUpResyncRequested = true;
-        GD.Print($"[WarmUp] Client at tick {Game.Loop.CurrentTick} — requesting post-warm-up FullState.");
-        _ = GameClient.RequestFullState();
-        Game.Loop.OnTick -= WarmUpResyncTick;
-    }
-
-    /// <summary>
-    /// Detects <c>Loop.ForceSetTick</c> jumps (always caused by <c>ApplyFullState</c>) and
-    /// forces a full observer re-scan. Needed because <c>Deserialize</c> wipes
-    /// <c>_dirtyEntitySet</c>, so <c>ArchetypeObserver</c>'s dirty-scan optimization misses
-    /// the FullState-imported entities — subscriptions like <c>SetupLocalPlayerDiscovery</c>
-    /// never see <c>onAdd</c> for the server-authoritative player. Running on every tick
-    /// lets this fire for the warm-up resync AND for any subsequent baseline-gap resyncs.
-    /// </summary>
-    private void RescanObserversOnTickJump()
-    {
-        long cur = Game.Loop.CurrentTick;
-        if (_lastSeenLoopTick >= 0 && cur != _lastSeenLoopTick + 1)
-        {
-            int playerEntityCount = 0;
-            int totalEntities = Game.State.NextEntityId;
-            foreach (var _ in Game.State.Filter<PlayerEntity>()) playerEntityCount++;
-
-            GD.Print($"[StateSync] Tick jump {_lastSeenLoopTick}→{cur}. " +
-                     $"State has {totalEntities} entities, {playerEntityCount} PlayerEntity, " +
-                     $"LocalPlayerId={LocalPlayerId}, GameClient.PlayerId={GameClient.PlayerId}");
-
-            foreach (var entity in Game.State.Filter<PlayerEntity>())
-            {
-                ref var p = ref Game.State.GetComponent<PlayerEntity>(entity);
-                GD.Print($"[StateSync]   PlayerEntity id={entity.Id} UserId={p.UserId}");
-            }
-
-            Game.State.MarkAllDirty();
-            GameClient.Reactive.Reset();
-
-            GD.Print($"[StateSync] After rescan: LocalPlayerId={LocalPlayerId}");
-        }
-        _lastSeenLoopTick = cur;
-    }
 
     private void SetupLocalPlayerDiscovery()
     {
@@ -472,19 +401,35 @@ public partial class GameManager : Node
         _inputRecorder.Start();
         GD.Print("[GameManager] Input recording STARTED");
 
-        // Auto-save recording every 10 seconds in case of unclean exit
-        Game.Loop.OnTick += () =>
+        Game.Loop.OnTick += _RecordingAutoSaveTick;
+    }
+
+    private void _RecordingAutoSaveTick()
+    {
+        if (_inputRecorder == null) return;
+        if (Game.Loop.CurrentTick == 0 || Game.Loop.CurrentTick % 600 != 0) return;
+
+        var dir = System.IO.Path.Combine(
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
+            "PizzaJam_Recordings");
+        System.IO.Directory.CreateDirectory(dir);
+        var path = System.IO.Path.Combine(dir, "recording_latest.bin");
+        _inputRecorder.Save(path);
+    }
+
+    private void _OfflinePlayerDiscoveryTick()
+    {
+        if (LocalPlayerId != 0) return;
+        foreach (var entity in Game.State.Filter<PlayerEntity>())
         {
-            if (_inputRecorder != null && Game.Loop.CurrentTick % 600 == 0 && Game.Loop.CurrentTick > 0)
+            var p = Game.State.GetComponent<PlayerEntity>(entity);
+            if (p.UserId == OfflineUserId)
             {
-                var dir = System.IO.Path.Combine(
-                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
-                    "PizzaJam_Recordings");
-                System.IO.Directory.CreateDirectory(dir);
-                var path = System.IO.Path.Combine(dir, "recording_latest.bin");
-                _inputRecorder.Save(path);
+                LocalPlayerId = entity.Id;
+                GD.Print($"[GameManager] Offline Player Created: {LocalPlayerId}");
+                break;
             }
-        };
+        }
     }
 
     /// <summary>
@@ -555,13 +500,26 @@ public partial class GameManager : Node
         }
     }
 
+    private void DetachAllLoopHandlers()
+    {
+        Game.Loop.OnTick -= AutoSaveTick;
+        Game.Loop.OnTick -= MetricsExportTick;
+        Game.Loop.OnTick -= _OfflinePlayerDiscoveryTick;
+        Game.Loop.OnTick -= _RecordingAutoSaveTick;
+        Game.Loop.OnTick -= _OrphanPruneTick;
+        if (_onLobbyCreatedHandler != null && GameClient != null)
+        {
+            GameClient.OnLobbyCreated -= _onLobbyCreatedHandler;
+            _onLobbyCreatedHandler = null;
+        }
+    }
+
     public override void _ExitTree()
     {
         _isRunning = false;
         TwitchIntegration.Shutdown();
         _localPlayerSubscription?.Dispose();
-        Game.Loop.OnTick -= AutoSaveTick;
-        Game.Loop.OnTick -= MetricsExportTick;
+        DetachAllLoopHandlers();
         if (_metricsExporter != null)
         {
             var path = _metricsExporter.Finish(Game.State);
@@ -571,6 +529,153 @@ public partial class GameManager : Node
         SaveGame();
         Game.Loop.Stop();
         GameClient?.Dispose();
+    }
+
+    /// <summary>
+    /// Promote the running offline session to a hosted online lobby. Captures the current
+    /// world state, stops the local loop, then walks the standard online path
+    /// (CreateLobby → StartLobby) with <see cref="_pendingLoadState"/> set so the server
+    /// boots the match from the captured snapshot instead of a fresh world.
+    /// </summary>
+    public async Task PublishOfflineToLobby(string lobbyName)
+    {
+        if (!OfflineMode)
+        {
+            OnError?.Invoke("Not in offline mode.");
+            return;
+        }
+
+        // Snapshot must include the offline player so the FullState is internally consistent.
+        var orphanId = OfflineUserId;
+
+        try
+        {
+            OnStatusChanged?.Invoke("Capturing world state...");
+
+            // The offline PlayerEntity already has UserId == PlayerIdentity.LocalId, which
+            // matches the auth token we'll send to the server on rejoin — so AddPlayerAction
+            // sees the existing player and skips creating a duplicate. No anonymization needed.
+
+            // Wrap the state in the same 8-byte tick prefix that TemplateMatchFactory.CreateMatch
+            // (and SaveGame/LoadGameFromDisk) expect, otherwise the server's deserializer is offset
+            // by 8 bytes and throws EndOfStreamException mid-read.
+            byte[] rawState = StateSerializer.Serialize(Game.State);
+            long tick = Game.Loop.CurrentTick;
+            byte[] stateData = new byte[8 + rawState.Length];
+            BitConverter.TryWriteBytes(new Span<byte>(stateData, 0, 8), tick);
+            rawState.CopyTo(stateData, 8);
+
+            DetachAllLoopHandlers();
+            Game.Loop.Stop();
+            try { await _gameLoopTask.ConfigureAwait(false); } catch { }
+            _isRunning = false;
+
+            OfflineMode = false;
+            LocalPlayerId = 0;
+            _pendingLoadState = stateData;
+
+            await CreateLobby(lobbyName);
+            // CreateLobby sets CurrentLobbyId via OnLobbyCreated; wait briefly for the event.
+            int waited = 0;
+            while (CurrentLobbyId == Guid.Empty && waited < 5000)
+            {
+                await Task.Delay(50);
+                waited += 50;
+            }
+            if (CurrentLobbyId == Guid.Empty)
+            {
+                OnError?.Invoke("Lobby creation timed out.");
+                return;
+            }
+            await StartLobby();
+            // No orphan prune needed — AddPlayerActionService claims the anonymized offline
+            // PlayerEntity (UserId = Guid.Empty) on first re-join.
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"PublishOfflineToLobby failed: {e}");
+            OnError?.Invoke(e.Message);
+        }
+    }
+
+    private void _OrphanPruneTick()
+    {
+        if (!_orphanPrunePending) return;
+        if (LocalPlayerId == 0) return;
+        if (GameClient == null || GameClient.PlayerId == Guid.Empty) return;
+
+        bool orphanFound = false;
+        foreach (var entity in Game.State.Filter<PlayerEntity>())
+        {
+            ref var p = ref Game.State.GetComponent<PlayerEntity>(entity);
+            if (p.UserId == _orphanOfflineUserIdToPrune)
+            {
+                orphanFound = true;
+                break;
+            }
+        }
+
+        if (!orphanFound)
+        {
+            _orphanPrunePending = false;
+            Game.Loop.OnTick -= _OrphanPruneTick;
+            return;
+        }
+
+        GD.Print($"[GameManager] Pruning orphan offline player UserId={_orphanOfflineUserIdToPrune}");
+        GameClient.Execute(new Template.Shared.Actions.RemovePlayerAction(_orphanOfflineUserIdToPrune), 0);
+
+        _orphanPrunePending = false;
+        Game.Loop.OnTick -= _OrphanPruneTick;
+    }
+
+    /// <summary>
+    /// Tear down the active session (offline or online) and surface the LobbyMenu so the
+    /// user can pick a new mode. Stops the loop, disconnects the network client, clears
+    /// session identity, and re-shows the LobbyMenu CanvasLayer instanced in the root scene.
+    /// </summary>
+    public void EndSessionAndReturnToLobbyMenu()
+    {
+        try
+        {
+            _isRunning = false;
+            _localPlayerSubscription?.Dispose();
+            _localPlayerSubscription = null;
+            DetachAllLoopHandlers();
+            SaveGame();
+            Game.Loop.Stop();
+
+            try { GameClient?.Dispose(); } catch (Exception e) { GD.PrintErr($"GameClient dispose: {e}"); }
+
+            // Rebuild GameClient so a subsequent CreateLobby/JoinLobby has a fresh socket.
+            var networkClient = new LiteNetLibNetworkClient();
+            GameClient = new DeltaSyncGameClient(networkClient, $"{ServerIp}:{ServerPort}", Game);
+            GameClient.OnLog += (msg) => GD.Print($"[GameClient] {msg}");
+            if (SimulatedLatencyMs > 0) GameClient.SimulatedLatencyMs = SimulatedLatencyMs;
+
+            CurrentLobbyId = Guid.Empty;
+            LocalPlayerId = 0;
+            OfflineMode = false;
+            _pendingLoadState = null;
+            _orphanPrunePending = false;
+            _orphanOfflineUserIdToPrune = Guid.Empty;
+
+            var menu = GetTree()?.Root?.FindChild("LobbyMenu", recursive: true, owned: false);
+            if (menu is Template.Godot.UI.LobbyMenu lobby)
+            {
+                lobby.Visible = true;
+                lobby.ShowMainMenu();
+            }
+            else
+            {
+                GD.PrintErr("[GameManager] EndSession: LobbyMenu node not found in scene tree.");
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"EndSession failed: {e}");
+            OnError?.Invoke(e.Message);
+        }
     }
 
     // Expose for other systems

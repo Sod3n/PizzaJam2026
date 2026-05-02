@@ -3,6 +3,7 @@ using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.Network.Client;
 using Deterministic.GameFramework.Network.Interfaces;
+using Deterministic.GameFramework.DeltaSync;
 using Template.Shared.Factories;
 using Template.Shared.Features.Movement;
 using Template.Shared.Components; // Added for ScoreComponent/PlayerEntity

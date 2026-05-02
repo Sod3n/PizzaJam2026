@@ -278,42 +278,45 @@ CollisionMask = 5
 transform = Transform3D(0.17, 0, 0, 0, 0.16590457, 0.03709013, 0, -0.03709013, 0.16590457, 0, -0.18061149, 0)
 skin_node = NodePath("ScaleAnchor/Skin2")
 
-[node name="Body" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="0" unique_id=1133601551]
+[node name="Skin" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223348, 1423863731) index="0" unique_id=1045908558]
+transform = Transform3D(1.2141037, 0, 0, 0, 1.2141037, 0, 0, 0, 1, -0.05092001, 5.276968, 0)
+visible = false
+
+[node name="Body" parent="Character/ScaleAnchor/Skin" index="0" unique_id=1133601551]
 material_override = SubResource("ShaderMaterial_udp0q")
 
-[node name="Hair" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="1" unique_id=610589464]
+[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
 material_override = SubResource("ShaderMaterial_fs5v2")
 
-[node name="BackHair" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="2" unique_id=232127656]
+[node name="BackHair" parent="Character/ScaleAnchor/Skin" index="2" unique_id=232127656]
 material_override = SubResource("ShaderMaterial_n8brg")
 
-[node name="Torns" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="3" unique_id=2031229694]
+[node name="Torns" parent="Character/ScaleAnchor/Skin" index="3" unique_id=2031229694]
 material_override = SubResource("ShaderMaterial_rgw3y")
 
-[node name="Ears" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="4" unique_id=1368322551]
+[node name="Ears" parent="Character/ScaleAnchor/Skin" index="4" unique_id=1368322551]
 material_override = SubResource("ShaderMaterial_gjli1")
 
-[node name="Eyes" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="5" unique_id=50470159]
+[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="5" unique_id=50470159]
 material_override = SubResource("ShaderMaterial_pj3fa")
 
-[node name="Top" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="6" unique_id=2106512903]
+[node name="Top" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2106512903]
 material_override = SubResource("ShaderMaterial_ex1bp")
 
-[node name="Hand" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="7" unique_id=599028963]
+[node name="Hand" parent="Character/ScaleAnchor/Skin" index="7" unique_id=599028963]
 material_override = SubResource("ShaderMaterial_nq4og")
 
-[node name="Bottom1" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="8" unique_id=2120793389]
+[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="8" unique_id=2120793389]
 material_override = SubResource("ShaderMaterial_0m45m")
 
-[node name="Bottom2" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="9" unique_id=294789255]
+[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="9" unique_id=294789255]
 material_override = SubResource("ShaderMaterial_5hf2j")
 
-[node name="Tail" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="10" unique_id=543932425]
+[node name="Tail" parent="Character/ScaleAnchor/Skin" index="10" unique_id=543932425]
 material_override = SubResource("ShaderMaterial_wre2s")
 
 [node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223348, 1423863731) index="1" unique_id=661096089]
 transform = Transform3D(0.99999976, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 4.9999995, 5.2107387, 0.17353888)
-visible = false
 sorting_offset = -10.0
 alpha_cut = 2
 texture_filter = 0

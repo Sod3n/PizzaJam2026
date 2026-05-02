@@ -61,9 +61,9 @@ public partial class BuildingInfoOverlay : CanvasLayer
     private void _Setup(string buildingName, string description)
     {
         // Get node references from the scene
-        _root = GetNode<Control>("Control");
-        _nameLabel = GetNode<Label>("Control/Panel/VBoxContainer/NameLabel");
-        _descLabel = GetNode<Label>("Control/Panel/VBoxContainer/DescLabel");
+        _root = GetNode<Control>("%Control");
+        _nameLabel = GetNode<Label>("%NameLabel");
+        _descLabel = GetNode<Label>("%DescLabel");
 
         // Set text
         _nameLabel.Text = buildingName;

@@ -34,9 +34,8 @@ public partial class SettingsOverlay : CanvasLayer
     private Label _lobbyCodeLabel;
     private Button _lobbyCopyButton;
     private Label _lobbyStatusLabel;
-    private LineEdit _lobbyCodeInput;
-    private Button _lobbyJoinButton;
     private Button _lobbyCreateButton;
+    private Button _lobbyEndSessionButton;
     private Guid _lastSeenLobbyId;
     private string _lastSeenStatus;
     private Action<string> _statusHandler;
@@ -73,15 +72,15 @@ public partial class SettingsOverlay : CanvasLayer
 
     public override void _Ready()
     {
-        _root = GetNode<Control>("Root");
+        _root = GetNode<Control>("%Root");
 
         // Connection row
-        _statusLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/ConnectRow/StatusLabel");
-        _connectButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/ConnectRow/ConnectButton");
+        _statusLabel = GetNode<Label>("%StatusLabel");
+        _connectButton = GetNode<Button>("%ConnectButton");
         _connectButton.Pressed += _OnConnectPressed;
 
         // Toggles
-        _nameCowsToggle = GetNode<CheckButton>("Root/ScrollContainer/CenterWrapper/Panel/Content/NameCowsToggle");
+        _nameCowsToggle = GetNode<CheckButton>("%NameCowsToggle");
         _nameCowsToggle.ButtonPressed = TwitchSettings.NameCowsFromChat;
         _nameCowsToggle.Toggled += on =>
         {
@@ -89,7 +88,7 @@ public partial class SettingsOverlay : CanvasLayer
             TwitchSettings.Save();
         };
 
-        _enableRewardsToggle = GetNode<CheckButton>("Root/ScrollContainer/CenterWrapper/Panel/Content/EnableRewardsToggle");
+        _enableRewardsToggle = GetNode<CheckButton>("%EnableRewardsToggle");
         _enableRewardsToggle.ButtonPressed = TwitchSettings.EnableRewards;
         _enableRewardsToggle.Toggled += on =>
         {
@@ -98,8 +97,8 @@ public partial class SettingsOverlay : CanvasLayer
         };
 
         // Love Confession slider
-        _loveConfessionValueLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/HeaderRow/ValueLabel");
-        _loveConfessionSlider = GetNode<HSlider>("Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/Slider");
+        _loveConfessionValueLabel = GetNode<Label>("%LoveValueLabel");
+        _loveConfessionSlider = GetNode<HSlider>("%LoveSlider");
         _loveConfessionSlider.Value = TwitchSettings.LoveConfessionCost;
         _loveConfessionValueLabel.Text = TwitchSettings.LoveConfessionCost.ToString();
         _loveConfessionSlider.ValueChanged += val =>
@@ -112,8 +111,8 @@ public partial class SettingsOverlay : CanvasLayer
         };
 
         // Say Something slider
-        _saySomethingValueLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/HeaderRow/ValueLabel");
-        _saySomethingSlider = GetNode<HSlider>("Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/Slider");
+        _saySomethingValueLabel = GetNode<Label>("%SayValueLabel");
+        _saySomethingSlider = GetNode<HSlider>("%SaySlider");
         _saySomethingSlider.Value = TwitchSettings.SaySomethingCost;
         _saySomethingValueLabel.Text = TwitchSettings.SaySomethingCost.ToString();
         _saySomethingSlider.ValueChanged += val =>
@@ -126,16 +125,15 @@ public partial class SettingsOverlay : CanvasLayer
         };
 
         // Lobby section
-        _lobbyCodeLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow/CodeLabel");
-        _lobbyCopyButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow/CopyButton");
-        _lobbyStatusLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyStatusLabel");
-        _lobbyCodeInput = GetNode<LineEdit>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow/CodeInput");
-        _lobbyJoinButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow/JoinButton");
-        _lobbyCreateButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyActionsRow/CreateButton");
+        _lobbyCodeLabel = GetNode<Label>("%CodeLabel");
+        _lobbyCopyButton = GetNode<Button>("%CopyButton");
+        _lobbyStatusLabel = GetNode<Label>("%LobbyStatusLabel");
+        _lobbyCreateButton = GetNode<Button>("%CreateButton");
+        _lobbyEndSessionButton = GetNode<Button>("%EndSessionButton");
 
         _lobbyCopyButton.Pressed += _OnCopyLobbyPressed;
-        _lobbyJoinButton.Pressed += _OnJoinLobbyPressed;
         _lobbyCreateButton.Pressed += _OnCreateLobbyPressed;
+        _lobbyEndSessionButton.Pressed += _OnEndSessionPressed;
 
         var gm = GameManager.Instance;
         if (gm != null)
@@ -208,7 +206,8 @@ public partial class SettingsOverlay : CanvasLayer
             _lobbyCodeLabel.AddThemeColorOverride("font_color", DisconnectedColor);
             _lobbyCopyButton.Disabled = true;
             _lobbyCreateButton.Disabled = true;
-            _lobbyJoinButton.Disabled = true;
+            _lobbyCreateButton.Visible = true;
+            _lobbyEndSessionButton.Visible = false;
             return;
         }
 
@@ -229,8 +228,16 @@ public partial class SettingsOverlay : CanvasLayer
             _lobbyCopyButton.Disabled = true;
         }
 
+        bool offlineNoLobby = offline && !hasLobby;
+        bool onlineWithLobby = !offline && hasLobby;
+        bool sessionRunning = gm.IsGameRunning;
+        _lobbyCreateButton.Visible = !onlineWithLobby;
         _lobbyCreateButton.Disabled = false;
-        _lobbyJoinButton.Disabled = false;
+        _lobbyCreateButton.Text = offlineNoLobby ? "Publish to New Lobby" : "Create New Lobby";
+        // Show End Session whenever a session (offline or online) is running so the user
+        // can always escape back to the LobbyMenu.
+        _lobbyEndSessionButton.Visible = sessionRunning;
+        _lobbyEndSessionButton.Disabled = false;
     }
 
     private void _OnLobbyStatusDeferred(string status)
@@ -260,49 +267,47 @@ public partial class SettingsOverlay : CanvasLayer
         };
     }
 
-    private void _OnJoinLobbyPressed()
-    {
-        var gm = GameManager.Instance;
-        if (gm == null) return;
-        var text = _lobbyCodeInput.Text?.Trim() ?? "";
-        if (!Guid.TryParse(text, out var lobbyId))
-        {
-            _lobbyStatusLabel.Text = "Invalid lobby code.";
-            return;
-        }
-        _lobbyStatusLabel.Text = "Joining...";
-        _lobbyJoinButton.Disabled = true;
-        _lobbyCreateButton.Disabled = true;
-        _ = gm.JoinLobby(lobbyId);
-    }
-
     private void _OnCreateLobbyPressed()
     {
         var gm = GameManager.Instance;
         if (gm == null) return;
-        _lobbyStatusLabel.Text = "Creating lobby...";
         _lobbyCreateButton.Disabled = true;
-        _lobbyJoinButton.Disabled = true;
-        _ = gm.CreateLobby("Game Lobby");
+        if (gm.OfflineMode)
+        {
+            _lobbyStatusLabel.Text = "Publishing offline world to new lobby...";
+            _ = gm.PublishOfflineToLobby("Game Lobby");
+        }
+        else
+        {
+            _lobbyStatusLabel.Text = "Creating lobby...";
+            _ = gm.CreateLobby("Game Lobby");
+        }
+    }
+
+    private void _OnEndSessionPressed()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+        _lobbyEndSessionButton.Disabled = true;
+        _lobbyStatusLabel.Text = "Ending session...";
+        gm.EndSessionAndReturnToLobbyMenu();
+        _Dismiss();
     }
 
     // ── Input ──────────────────────────────────────────────────────────
 
-    public override void _Input(InputEvent @event)
+    // _UnhandledInput runs AFTER _gui_input, so button clicks reach their handlers
+    // first; we only swallow leftovers (gameplay keys like WASD) so they don't fire
+    // while the overlay is open.
+    public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event is InputEventKey { Pressed: true, Echo: false } key)
+        if (@event is InputEventKey { Pressed: true, Echo: false } key && key.Keycode == Key.Escape)
         {
-            if (key.Keycode == Key.Escape)
-            {
-                _Dismiss();
-                GetViewport().SetInputAsHandled();
-                return;
-            }
+            _Dismiss();
+            GetViewport().SetInputAsHandled();
+            return;
         }
 
-        // LineEdit consumes its own GUI input first; only swallow leftovers so
-        // gameplay (WASD etc.) doesn't fire while the overlay is open.
-        if (_lobbyCodeInput != null && _lobbyCodeInput.HasFocus()) return;
         GetViewport().SetInputAsHandled();
     }
 

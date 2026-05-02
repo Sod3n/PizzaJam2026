@@ -122,25 +122,25 @@ public partial class BreedResultOverlay : CanvasLayer
         _data = data;
 
         // Cache nodes
-        _top = GetNode<Control>("GachaScreen/Top");
-        _bottom = GetNode<Control>("GachaScreen/Bottom");
-        _starsBox = GetNode<HBoxContainer>("GachaScreen/Top/HBoxContainer");
-        _nameLabel = GetNode<Label>("GachaScreen/Top/Name");
-        _profLabel = GetNode<Label>("GachaScreen/Top/Proffession");
-        _charContainer = GetNode<SubViewportContainer>("GachaScreen/Control/CharViewport");
+        _top = GetNode<Control>("%Top");
+        _bottom = GetNode<Control>("%Bottom");
+        _starsBox = GetNode<HBoxContainer>("%HBoxContainer");
+        _nameLabel = GetNode<Label>("%Name");
+        _profLabel = GetNode<Label>("%Proffession");
+        _charContainer = GetNode<SubViewportContainer>("%CharViewport");
 
         // Configure star visibility
-        _starsBox.GetNode<Control>("Control").Visible  = data.Stars >= 1;
-        _starsBox.GetNode<Control>("Control2").Visible = data.Stars >= 2;
-        _starsBox.GetNode<Control>("Control3").Visible = data.Stars >= 3;
+        GetNode<Control>("%Control").Visible  = data.Stars >= 1;
+        GetNode<Control>("%Control2").Visible = data.Stars >= 2;
+        GetNode<Control>("%Control3").Visible = data.Stars >= 3;
 
         // Set label text
         _nameLabel.Text = data.Name;
         _profLabel.Text = data.Profession;
 
         // Background — legendary for helpers (3★)
-        var generalBack = GetNode<ColorRect>("GachaScreen/GeneralBack");
-        var legendaryBack = GetNode<ColorRect>("GachaScreen/LegendaryBack");
+        var generalBack = GetNode<ColorRect>("%GeneralBack");
+        var legendaryBack = GetNode<ColorRect>("%LegendaryBack");
         generalBack.Visible  = data.Stars < 3;
         legendaryBack.Visible = data.Stars >= 3;
         _background = data.Stars >= 3 ? legendaryBack : generalBack;
@@ -150,9 +150,9 @@ public partial class BreedResultOverlay : CanvasLayer
         if (data.ShowBottom)
         {
             if (data.FoodPreference >= 0 && data.FoodPreference < _foodIcons.Length)
-                GetNode<TextureRect>("GachaScreen/Bottom/StatsBack/FoodPreferenceIcon").Texture =
+                GetNode<TextureRect>("%FoodPreferenceIcon").Texture =
                     GD.Load<Texture2D>(_foodIcons[data.FoodPreference]);
-            GetNode<Label>("GachaScreen/Bottom/StatsBack/MaxExhaust").Text = $"{data.MaxExhaust}";
+            GetNode<Label>("%MaxExhaust").Text = $"{data.MaxExhaust}";
         }
 
         // ── Hide UI for reveal phase ──
@@ -247,7 +247,7 @@ public partial class BreedResultOverlay : CanvasLayer
         if (!IsInsideTree()) return;
         _phase = Phase.Reveal;
 
-        var screen = GetNode<Control>("GachaScreen");
+        var screen = GetNode<Control>("%GachaScreen");
         screen.Modulate = new Color(1, 1, 1, 0);
 
         _activeTween = CreateTween();
@@ -300,7 +300,7 @@ public partial class BreedResultOverlay : CanvasLayer
         _activeTween?.Kill();
 
         // Snap to final reveal state
-        GetNode<Control>("GachaScreen").Modulate = Colors.White;
+        GetNode<Control>("%GachaScreen").Modulate = Colors.White;
         _charContainer.Modulate = Colors.White;
         if (_charNode != null)
         {
@@ -333,10 +333,10 @@ public partial class BreedResultOverlay : CanvasLayer
         }
 
         // Stars pop in sequentially
-        string[] starNames = { "Control", "Control2", "Control3" };
+        string[] starNames = { "%Control", "%Control2", "%Control3" };
         for (int i = 0; i < _data.Stars; i++)
         {
-            var star = _starsBox.GetNode<Control>(starNames[i])
+            var star = GetNode<Control>(starNames[i])
                 .GetNode<TextureRect>("Star");
             // pivot_offset already set to (35,35) in scene
             star.Scale = Vector2.Zero;
@@ -371,7 +371,7 @@ public partial class BreedResultOverlay : CanvasLayer
         if (!IsInsideTree()) return;
 
         _background.Call("unbake");
-        var screen = GetNode<Control>("GachaScreen");
+        var screen = GetNode<Control>("%GachaScreen");
 
         var tween = CreateTween();
         tween.TweenProperty(screen, "modulate:a", 0f, 0.25f);

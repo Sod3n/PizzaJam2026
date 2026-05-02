@@ -31,28 +31,28 @@ public partial class LobbyMenu : CanvasLayer
 
     public override void _Ready()
     {
-        _mainMenu = GetNode<Control>("MainMenu");
-        _createPanel = GetNode<Control>("CreatePanel");
-        _joinPanel = GetNode<Control>("JoinPanel");
-        _waitingPanel = GetNode<Control>("WaitingPanel");
+        _mainMenu = GetNode<Control>("%MainMenu");
+        _createPanel = GetNode<Control>("%CreatePanel");
+        _joinPanel = GetNode<Control>("%JoinPanel");
+        _waitingPanel = GetNode<Control>("%WaitingPanel");
 
-        _createBtn = _mainMenu.GetNode<Button>("VBox/CreateBtn");
-        _joinBtn = _mainMenu.GetNode<Button>("VBox/JoinBtn");
-        _offlineBtn = _mainMenu.GetNode<Button>("VBox/OfflineBtn");
-        _useSaveCheck = _mainMenu.GetNode<CheckButton>("VBox/UseSaveCheck");
-        _remoteServerCheck = _mainMenu.GetNode<CheckButton>("VBox/RemoteServerCheck");
+        _createBtn = GetNode<Button>("%CreateBtn");
+        _joinBtn = GetNode<Button>("%JoinBtn");
+        _offlineBtn = GetNode<Button>("%OfflineBtn");
+        _useSaveCheck = GetNode<CheckButton>("%UseSaveCheck");
+        _remoteServerCheck = GetNode<CheckButton>("%RemoteServerCheck");
 
-        _lobbyCodeLabel = _createPanel.GetNode<Label>("VBox/CodeLabel");
-        _copyCodeBtn = _createPanel.GetNode<Button>("VBox/CopyBtn");
-        _startMatchBtn = _createPanel.GetNode<Button>("VBox/StartBtn");
-        _backFromCreateBtn = _createPanel.GetNode<Button>("VBox/BackBtn");
+        _lobbyCodeLabel = GetNode<Label>("%CodeLabel");
+        _copyCodeBtn = GetNode<Button>("%CopyBtn");
+        _startMatchBtn = GetNode<Button>("%StartBtn");
+        _backFromCreateBtn = GetNode<Button>("%CreateBackBtn");
 
-        _codeInput = _joinPanel.GetNode<LineEdit>("VBox/CodeInput");
-        _confirmJoinBtn = _joinPanel.GetNode<Button>("VBox/ConfirmBtn");
-        _backFromJoinBtn = _joinPanel.GetNode<Button>("VBox/BackBtn");
+        _codeInput = GetNode<LineEdit>("%CodeInput");
+        _confirmJoinBtn = GetNode<Button>("%ConfirmBtn");
+        _backFromJoinBtn = GetNode<Button>("%JoinBackBtn");
 
-        _statusLabel = _waitingPanel.GetNode<Label>("VBox/StatusLabel");
-        _backFromWaitBtn = _waitingPanel.GetNode<Button>("VBox/BackBtn");
+        _statusLabel = GetNode<Label>("%StatusLabel");
+        _backFromWaitBtn = GetNode<Button>("%WaitBackBtn");
 
         _createBtn.Pressed += OnCreatePressed;
         _joinBtn.Pressed += OnJoinPressed;
@@ -78,7 +78,7 @@ public partial class LobbyMenu : CanvasLayer
         ShowMainMenu();
     }
 
-    private void ShowMainMenu()
+    public void ShowMainMenu()
     {
         _mainMenu.Visible = true;
         _createPanel.Visible = false;

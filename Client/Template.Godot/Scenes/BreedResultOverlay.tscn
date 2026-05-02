@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bsvieuibwikgx" path="res://sprites/gacha_stats_back.png" id="4_aa4cw"]
 [ext_resource type="Script" uid="uid://dw6iuuk6reky3" path="res://templates/characters/bake_shader.gd" id="4_fuvob"]
 [ext_resource type="Texture2D" uid="uid://uwff6csdbj8y" path="res://sprites/export/icons/Grass_/1.png" id="6_slt83"]
+[ext_resource type="Theme" uid="uid://chxeajla0yriy" path="res://Styles/default_theme.tres" id="9_theme"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aa4cw"]
 shader = ExtResource("3_s3wog")
@@ -51,14 +52,17 @@ layer = 200
 script = ExtResource("1_script")
 
 [node name="GachaScreen" type="Control" parent="." unique_id=878999940]
+unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("9_theme")
 
 [node name="GeneralBack" type="ColorRect" parent="GachaScreen" unique_id=1851383510]
+unique_name_in_owner = true
 visible = false
 material = SubResource("ShaderMaterial_aa4cw")
 layout_mode = 1
@@ -71,6 +75,7 @@ color = Color(0, 0, 0, 1)
 script = ExtResource("4_fuvob")
 
 [node name="LegendaryBack" type="ColorRect" parent="GachaScreen" unique_id=1409633919]
+unique_name_in_owner = true
 visible = false
 material = SubResource("ShaderMaterial_slt83")
 layout_mode = 1
@@ -85,6 +90,7 @@ color = Color(0, 0, 0, 1)
 script = ExtResource("4_fuvob")
 
 [node name="Top" type="Control" parent="GachaScreen" unique_id=628673929]
+unique_name_in_owner = true
 anchors_preset = 0
 offset_left = 595.0
 offset_top = 91.0
@@ -92,6 +98,7 @@ offset_right = 1332.0
 offset_bottom = 351.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="GachaScreen/Top" unique_id=675607858]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 98.0
 offset_top = 28.0
@@ -100,6 +107,7 @@ offset_bottom = 112.0
 alignment = 1
 
 [node name="Control" type="Control" parent="GachaScreen/Top/HBoxContainer" unique_id=457657328]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(97, 72)
 layout_mode = 2
 
@@ -116,6 +124,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="Control2" type="Control" parent="GachaScreen/Top/HBoxContainer" unique_id=1091549908]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(97, 72)
 layout_mode = 2
 
@@ -132,6 +141,7 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="Control3" type="Control" parent="GachaScreen/Top/HBoxContainer" unique_id=2001510080]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
 
@@ -148,11 +158,14 @@ expand_mode = 1
 stretch_mode = 4
 
 [node name="Name" type="Label" parent="GachaScreen/Top" unique_id=286116378]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 114.0
 offset_top = 142.0
 offset_right = 614.0
 offset_bottom = 222.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0)
 theme_override_fonts/font = ExtResource("2_fuvob")
 theme_override_font_sizes/font_size = 50
 text = "IVAN"
@@ -160,25 +173,28 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Proffession" type="Label" parent="GachaScreen/Top" unique_id=1217845381]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 114.0
 offset_top = 192.0
 offset_right = 614.0
 offset_bottom = 272.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0)
 theme_override_fonts/font = ExtResource("2_fuvob")
 theme_override_font_sizes/font_size = 35
 text = "slayer"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Control" type="Control" parent="GachaScreen" unique_id=2038334943]
+[node name="CharRoot" type="Control" parent="GachaScreen" unique_id=2038334943]
 anchors_preset = 0
 offset_left = 704.0
 offset_top = 342.0
 offset_right = 1219.0
 offset_bottom = 933.0
 
-[node name="Shadow2" type="TextureRect" parent="GachaScreen/Control" unique_id=317729]
+[node name="Shadow2" type="TextureRect" parent="GachaScreen/CharRoot" unique_id=317729]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -195,7 +211,8 @@ pivot_offset = Vector2(35, 35)
 texture = ExtResource("2_8lr5e")
 stretch_mode = 2
 
-[node name="CharViewport" type="SubViewportContainer" parent="GachaScreen/Control" unique_id=1155269493]
+[node name="CharViewport" type="SubViewportContainer" parent="GachaScreen/CharRoot" unique_id=1155269493]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = 75.0
 offset_top = 51.0
@@ -203,7 +220,7 @@ offset_right = 435.0
 offset_bottom = 551.0
 stretch = true
 
-[node name="Viewport" type="SubViewport" parent="GachaScreen/Control/CharViewport" unique_id=1839745442]
+[node name="Viewport" type="SubViewport" parent="GachaScreen/CharRoot/CharViewport" unique_id=1839745442]
 unique_name_in_owner = true
 own_world_3d = true
 transparent_bg = true
@@ -211,19 +228,20 @@ handle_input_locally = false
 size = Vector2i(360, 500)
 render_target_update_mode = 4
 
-[node name="Camera3D" type="Camera3D" parent="GachaScreen/Control/CharViewport/Viewport" unique_id=505623003]
+[node name="Camera3D" type="Camera3D" parent="GachaScreen/CharRoot/CharViewport/Viewport" unique_id=505623003]
 transform = Transform3D(1, 0, 0, 0, 0.98006666, 0.19866893, 0, -0.19866893, 0.98006666, 0, 7, 4)
 projection = 1
 size = 15.0
 
-[node name="CharEnv" type="WorldEnvironment" parent="GachaScreen/Control/CharViewport/Viewport" unique_id=429528581]
+[node name="CharEnv" type="WorldEnvironment" parent="GachaScreen/CharRoot/CharViewport/Viewport" unique_id=429528581]
 environment = SubResource("Env_preview")
 
-[node name="CharLight" type="DirectionalLight3D" parent="GachaScreen/Control/CharViewport/Viewport" unique_id=824424669]
+[node name="CharLight" type="DirectionalLight3D" parent="GachaScreen/CharRoot/CharViewport/Viewport" unique_id=824424669]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 3, 3)
 light_energy = 1.5
 
 [node name="Bottom" type="Control" parent="GachaScreen" unique_id=991094836]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -246,6 +264,7 @@ texture = ExtResource("4_aa4cw")
 stretch_mode = 3
 
 [node name="FoodPreferenceIcon" type="TextureRect" parent="GachaScreen/Bottom/StatsBack" unique_id=1676684514]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -264,12 +283,13 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="MaxExhaust" type="Label" parent="GachaScreen/Bottom/StatsBack" unique_id=504113439]
+unique_name_in_owner = true
 layout_mode = 0
-offset_left = 976.0
+offset_left = 975.0
 offset_top = 39.0
-offset_right = 1061.0
+offset_right = 1060.0
 offset_bottom = 101.0
-theme_override_colors/font_color = Color(0.20392157, 0.3882353, 0.23921569, 1)
+theme_override_colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 theme_override_fonts/font = ExtResource("2_fuvob")
 theme_override_font_sizes/font_size = 35
 text = "100"
