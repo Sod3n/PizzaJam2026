@@ -6,6 +6,7 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Components;
+using Template.Shared.GameData;
 
 namespace Template.Shared.Definitions;
 
@@ -35,7 +36,22 @@ public static partial class CowDefinition
         // Weighted random: common cows prefer cheap food, rare cows prefer expensive food
         component.PreferredFood = FoodType.RandomPreferred(ref random);
 
-        ILogger.Log($"[CowDefinition] Created Cow {entity.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {component.PreferredFood} (Skins: {skinComponent.Skins.Count})");
+        // Some cows also like a second food (different from primary).
+        if (random.NextInt(100) < Balance.Cow.SecondaryPreferenceChancePercent)
+        {
+            int second;
+            int safety = 0;
+            do { second = random.NextInt(0, 4); safety++; }
+            while (second == component.PreferredFood && safety < 8);
+            component.SecondaryPreferredFood = second == component.PreferredFood ? -1 : second;
+        }
+        else
+        {
+            component.SecondaryPreferredFood = -1;
+        }
+        component.DiscoveredFoodMask = 0;
+
+        ILogger.Log($"[CowDefinition] Created Cow {entity.Id} MaxExhaust={totalExhaust} Pref={component.PreferredFood} Pref2={component.SecondaryPreferredFood}");
         component.MaxExhaust = totalExhaust;
 
         ctx.AddComponent(entity, NameComponent.RandomCow(ref random));

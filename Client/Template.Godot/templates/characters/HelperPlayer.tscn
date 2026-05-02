@@ -1,0 +1,820 @@
+[gd_scene format=3 uid="uid://be6m0gnkahsxm"]
+
+[ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_muct3"]
+[ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="2_chjm5"]
+[ext_resource type="Script" uid="uid://bin2tkdo8ql7q" path="res://Scripts/Visuals/UI.cs" id="3_k554n"]
+[ext_resource type="PackedScene" uid="uid://cuh1yaoty6gvf" path="res://Scenes/camera.tscn" id="3_lwepe"]
+[ext_resource type="Texture2D" uid="uid://pbxh4yjmurfo" path="res://sprites/export/Devochka/Hair/1.png" id="4_c7qr6"]
+[ext_resource type="Texture2D" uid="uid://cffi5cdejfvo1" path="res://sprites/gg.PNG" id="5_0pq82"]
+[ext_resource type="Texture2D" uid="uid://c38chmolijnlk" path="res://sprites/export/Devochka/Rota/Rog2.png" id="5_xydrf"]
+[ext_resource type="Texture2D" uid="uid://b8y15hqgl65go" path="res://sprites/export/Devochka/Uni.png" id="6_vhitc"]
+[ext_resource type="Texture2D" uid="uid://malp5wp2cexr" path="res://sprites/export/Devochka/Body.png" id="6_xl50o"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="7_rapy0"]
+[ext_resource type="Texture2D" uid="uid://bmuf1vcojhaxr" path="res://sprites/export/Devochka/Booba2/3.png" id="8_lkh7d"]
+[ext_resource type="Texture2D" uid="uid://sog52td2kolw" path="res://sprites/export/Devochka/___/6.png" id="9_u7nxn"]
+[ext_resource type="Texture2D" uid="uid://cqfncs3raoqdc" path="res://sprites/export/Tail.png" id="10_6q1hw"]
+[ext_resource type="Texture2D" uid="uid://crjr7f6kr7t11" path="res://sprites/export/Devochka/Back_hair/_____119.png" id="12_hgbuf"]
+[ext_resource type="Texture2D" uid="uid://d2mmnsm3177lb" path="res://sprites/export/Devochka/Face/Eye3.png" id="14_y80ge"]
+[ext_resource type="Script" uid="uid://dshqidlygsd71" path="res://templates/characters/rich_text_label.gd" id="16_c7qr6"]
+[ext_resource type="Texture2D" uid="uid://c55x5qdyrh67t" path="res://sprites/back.png" id="16_xydrf"]
+[ext_resource type="Texture2D" uid="uid://3vbcgbnc71yu" path="res://sprites/export/Devochka/Hand/_____46.png" id="17_wl1od"]
+[ext_resource type="Texture2D" uid="uid://e024qkwcbcl0" path="res://sprites/IMG_0407.PNG" id="18_l3wpo"]
+[ext_resource type="Script" uid="uid://cndtd78smhj8n" path="res://templates/characters/final_dialogue.gd" id="18_vhitc"]
+[ext_resource type="Texture2D" uid="uid://bn254vxec75ij" path="res://sprites/image 1.png" id="24_bsw1x"]
+[ext_resource type="Texture2D" uid="uid://u00s5sx7upln" path="res://sprites/Shadow.png" id="24_mfgwx"]
+[ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="24_ql6fu"]
+[ext_resource type="Texture2D" uid="uid://uwff6csdbj8y" path="res://sprites/export/icons/Grass_/1.png" id="25_q4gn4"]
+[ext_resource type="Texture2D" uid="uid://5l2waaftxb6k" path="res://sprites/export/icons/Money_/1.png" id="26_snram"]
+[ext_resource type="Texture2D" uid="uid://1yqfj7ryol10" path="res://sprites/export/icons/Carrot_/1.png" id="27_qe0ps"]
+[ext_resource type="Texture2D" uid="uid://lmtb8dohmyt1" path="res://sprites/export/icons/Apply_/1.png" id="28_mfgwx"]
+[ext_resource type="Texture2D" uid="uid://bvwxfefj3ba40" path="res://sprites/export/icons/Mashroom/1.png" id="29_lu4ek"]
+[ext_resource type="Script" uid="uid://cefbc5s5mb1ym" path="res://Scripts/Framework/FrameworkChildEntity.cs" id="fw_child"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://8rc8wgadrsks" path="res://Scripts/Framework/Components/HelperPlayerComponentNode.cs" id="fw_helperplayer"]
+[ext_resource type="Script" uid="uid://chhimgnwlp4ue" path="res://Scripts/Framework/Components/NavMeshConstraintNode.cs" id="fw_navconstraint"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://bnd6dercnrtkw" path="res://Scripts/Framework/Components/PlayerEntityNode.cs" id="fw_player"]
+[ext_resource type="Script" uid="uid://dd2p6nybks8wq" path="res://Scripts/Framework/Components/PlayerStateComponentNode.cs" id="fw_playerstate"]
+[ext_resource type="Script" uid="uid://dinx5371fnt6o" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
+[ext_resource type="Script" uid="uid://w882ltaxhyd6" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
+atlas = ExtResource("6_xl50o")
+region = Rect2(0, 0, 461, 904)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_udp0q"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3iv28"]
+atlas = ExtResource("4_c7qr6")
+region = Rect2(0, 0, 512, 498)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fs5v2"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n8brg"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("12_hgbuf")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dqt6i"]
+atlas = ExtResource("5_xydrf")
+region = Rect2(0, 0, 658, 166)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rgw3y"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qhcqh"]
+atlas = ExtResource("6_vhitc")
+region = Rect2(0, 0, 632, 142)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gjli1"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pj3fa"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("14_y80ge")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_egwm2"]
+atlas = ExtResource("8_lkh7d")
+region = Rect2(0, 0, 337, 191)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ex1bp"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nq4og"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("17_wl1od")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0m45m"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("9_u7nxn")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5hf2j"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wre2s"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("10_6q1hw")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q472n"]
+atlas = ExtResource("6_xl50o")
+region = Rect2(0, 0, 461, 904)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ei75f"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_0pq82")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q472n")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_money"]
+bg_color = Color(0.522, 0.737, 0.698, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 52
+corner_radius_top_right = 52
+corner_radius_bottom_right = 52
+corner_radius_bottom_left = 52
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_food"]
+bg_color = Color(0.522, 0.737, 0.698, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 52
+corner_radius_top_right = 52
+corner_radius_bottom_right = 52
+corner_radius_bottom_left = 52
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_milk"]
+bg_color = Color(0.522, 0.737, 0.561, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 52
+corner_radius_top_right = 52
+corner_radius_bottom_right = 52
+corner_radius_bottom_left = 52
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_circle"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 0.55, 0.45, 0.4)
+corner_radius_top_left = 37
+corner_radius_top_right = 37
+corner_radius_bottom_right = 37
+corner_radius_bottom_left = 37
+
+[node name="HelperPlayer" type="Node3D" unique_id=1227286795]
+
+[node name="Entity" type="Node3D" parent="." unique_id=683149250]
+script = ExtResource("fw_entity")
+EntityName = "HelperPlayer"
+StableIdSeed = "helperplayer-entity-seed"
+
+[node name="PlayerEntity" type="Node" parent="Entity" unique_id=256439166]
+script = ExtResource("fw_player")
+
+[node name="HelperPlayerComponent" type="Node" parent="Entity" unique_id=256439167]
+script = ExtResource("fw_helperplayer")
+
+[node name="Physics" type="Node3D" parent="Entity" unique_id=1881591114]
+script = ExtResource("fw_phys")
+BodyType = 0
+ShapeRadius = 0.46962145
+
+[node name="State" type="Node" parent="Entity" unique_id=561460477]
+script = ExtResource("fw_state")
+
+[node name="Skin" type="Node" parent="Entity" unique_id=1548874237]
+script = ExtResource("fw_skin")
+
+[node name="PlayerStateComponent" type="Node" parent="Entity" unique_id=1582383702]
+script = ExtResource("fw_playerstate")
+
+[node name="NavMeshConstraint" type="Node" parent="Entity" unique_id=1575246104]
+script = ExtResource("fw_navconstraint")
+
+[node name="InteractionZone" type="Node" parent="Entity" unique_id=2034575381]
+script = ExtResource("fw_child")
+ChildName = "InteractionZone"
+StoreInComponent = "PlayerStateComponent"
+StoreInField = "InteractionZone"
+
+[node name="Area" type="Node3D" parent="Entity/InteractionZone" unique_id=2001690954]
+script = ExtResource("fw_phys")
+BodyType = 2
+ShapeRadius = 2.0
+CollisionLayer = 8
+CollisionMask = 5
+
+[node name="Character" parent="." unique_id=1227223348 node_paths=PackedStringArray("skin_node") instance=ExtResource("1_muct3")]
+transform = Transform3D(0.17, 0, 0, 0, 0.16590457, 0.03709013, 0, -0.03709013, 0.16590457, 0, -0.18061149, 0)
+skin_node = NodePath("ScaleAnchor/Skin2")
+
+[node name="Body" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="0" unique_id=1133601551]
+material_override = SubResource("ShaderMaterial_udp0q")
+
+[node name="Hair" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="1" unique_id=610589464]
+material_override = SubResource("ShaderMaterial_fs5v2")
+
+[node name="BackHair" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="2" unique_id=232127656]
+material_override = SubResource("ShaderMaterial_n8brg")
+
+[node name="Torns" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="3" unique_id=2031229694]
+material_override = SubResource("ShaderMaterial_rgw3y")
+
+[node name="Ears" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="4" unique_id=1368322551]
+material_override = SubResource("ShaderMaterial_gjli1")
+
+[node name="Eyes" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="5" unique_id=50470159]
+material_override = SubResource("ShaderMaterial_pj3fa")
+
+[node name="Top" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="6" unique_id=2106512903]
+material_override = SubResource("ShaderMaterial_ex1bp")
+
+[node name="Hand" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="7" unique_id=599028963]
+material_override = SubResource("ShaderMaterial_nq4og")
+
+[node name="Bottom1" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="8" unique_id=2120793389]
+material_override = SubResource("ShaderMaterial_0m45m")
+
+[node name="Bottom2" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="9" unique_id=294789255]
+material_override = SubResource("ShaderMaterial_5hf2j")
+
+[node name="Tail" parent="Character/ScaleAnchor/Skin" parent_id_path=PackedInt32Array(1227223348, 1045908558) index="10" unique_id=543932425]
+material_override = SubResource("ShaderMaterial_wre2s")
+
+[node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223348, 1423863731) index="1" unique_id=661096089]
+transform = Transform3D(0.99999976, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 4.9999995, 5.2107387, 0.17353888)
+visible = false
+sorting_offset = -10.0
+alpha_cut = 2
+texture_filter = 0
+sprite_frames = SubResource("SpriteFrames_ei75f")
+script = ExtResource("7_rapy0")
+
+[node name="Camera" parent="." unique_id=2095400399 instance=ExtResource("3_lwepe")]
+transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 20.943493, 34.389595)
+size = 20.0
+pixels_per_meter = 32.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915662]
+layer = 100
+script = ExtResource("3_k554n")
+
+[node name="Control" type="Control" parent="Camera/CanvasLayer" unique_id=697887397]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=2054512329]
+visible = false
+layout_mode = 0
+offset_right = 1916.0
+offset_bottom = 1080.0
+texture = ExtResource("24_bsw1x")
+
+[node name="Shadow" type="TextureRect" parent="Camera/CanvasLayer/Control" unique_id=972310571]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -215.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("24_mfgwx")
+expand_mode = 1
+
+[node name="BottomBar" type="Control" parent="Camera/CanvasLayer/Control" unique_id=1036117861]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 737.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MoneyPill" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1937106530]
+layout_mode = 0
+offset_left = 426.0
+offset_top = 204.0
+offset_right = 525.0
+offset_bottom = 304.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_money")
+
+[node name="FoodPill" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=51384158]
+layout_mode = 0
+offset_left = 544.0
+offset_top = 204.0
+offset_right = 1002.0
+offset_bottom = 304.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_food")
+
+[node name="MilkPill" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=952442908]
+layout_mode = 0
+offset_left = 1021.0
+offset_top = 201.0
+offset_right = 1494.0
+offset_bottom = 301.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_milk")
+
+[node name="MoneyCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=640033668]
+layout_mode = 0
+offset_left = 438.0
+offset_top = 216.0
+offset_right = 512.0
+offset_bottom = 290.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="GrassCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1482748661]
+layout_mode = 0
+offset_left = 563.0
+offset_top = 217.0
+offset_right = 637.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="CarrotCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1062729984]
+layout_mode = 0
+offset_left = 674.0
+offset_top = 217.0
+offset_right = 748.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="AppleCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1237057528]
+layout_mode = 0
+offset_left = 785.0
+offset_top = 217.0
+offset_right = 859.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="MushroomCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1475675489]
+layout_mode = 0
+offset_left = 896.0
+offset_top = 214.0
+offset_right = 970.0
+offset_bottom = 288.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="MilkCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=760301476]
+layout_mode = 0
+offset_left = 1053.0
+offset_top = 216.0
+offset_right = 1127.0
+offset_bottom = 290.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="CarrotMilkshakeCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2057385171]
+layout_mode = 0
+offset_left = 1166.0
+offset_top = 214.0
+offset_right = 1240.0
+offset_bottom = 288.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="VitaminMixCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1047730159]
+layout_mode = 0
+offset_left = 1277.0
+offset_top = 214.0
+offset_right = 1351.0
+offset_bottom = 288.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="PurplePotionCircle" type="Panel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1448486750]
+layout_mode = 0
+offset_left = 1388.0
+offset_top = 213.0
+offset_right = 1462.0
+offset_bottom = 287.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_circle")
+
+[node name="TextureRect" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1658218570]
+layout_mode = 0
+offset_left = 1067.0
+offset_top = 215.0
+offset_right = 1117.0
+offset_bottom = 282.0
+texture = ExtResource("24_ql6fu")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect2" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=708845766]
+layout_mode = 0
+offset_left = 568.0
+offset_top = 228.0
+offset_right = 632.0
+offset_bottom = 279.0
+texture = ExtResource("25_q4gn4")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect3" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=199807206]
+layout_mode = 0
+offset_left = 443.0
+offset_top = 227.0
+offset_right = 507.0
+offset_bottom = 279.0
+texture = ExtResource("26_snram")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="CarrotIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=70368817]
+layout_mode = 0
+offset_left = 680.0
+offset_top = 227.0
+offset_right = 734.6017
+offset_bottom = 285.5056
+rotation = 0.5236
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("27_qe0ps")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AppleIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1405031120]
+layout_mode = 0
+offset_left = 794.0
+offset_top = 230.00006
+offset_right = 845.57056
+offset_bottom = 280.3708
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("28_mfgwx")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MushroomIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=602575161]
+layout_mode = 0
+offset_left = 904.00006
+offset_top = 228.0
+offset_right = 959.4787
+offset_bottom = 283.47864
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
+texture = ExtResource("29_lu4ek")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="CarrotMilkshakeIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=841107672]
+layout_mode = 0
+offset_left = 1168.0
+offset_top = 216.0
+offset_right = 1238.0
+offset_bottom = 286.0
+rotation = 0.5236
+pivot_offset = Vector2(35, 35)
+expand_mode = 1
+stretch_mode = 4
+
+[node name="VitaminMixIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=237178286]
+layout_mode = 0
+offset_left = 1279.0
+offset_top = 216.0
+offset_right = 1349.0
+offset_bottom = 286.0
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
+expand_mode = 1
+stretch_mode = 4
+
+[node name="PurplePotionIcon" type="TextureRect" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=213610520]
+layout_mode = 0
+offset_left = 1390.0
+offset_top = 213.0
+offset_right = 1460.0
+offset_bottom = 283.0
+rotation = 0.2618
+pivot_offset = Vector2(35, 35)
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Grass" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1787843799]
+layout_mode = 0
+offset_left = 548.0
+offset_top = 200.0
+offset_right = 648.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Milk" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=438230215]
+layout_mode = 0
+offset_left = 1038.0
+offset_top = 200.0
+offset_right = 1138.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Coins" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1451730020]
+layout_mode = 0
+offset_left = 421.0
+offset_top = 200.0
+offset_right = 521.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "10000"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Carrot" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1021002627]
+layout_mode = 0
+offset_left = 659.0
+offset_top = 200.0
+offset_right = 759.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Apple" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=2087341197]
+layout_mode = 0
+offset_left = 770.0
+offset_top = 200.0
+offset_right = 870.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Mushroom" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1074602624]
+layout_mode = 0
+offset_left = 881.0
+offset_top = 200.0
+offset_right = 981.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CarrotMilkshake" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=430290443]
+layout_mode = 0
+offset_left = 1151.0
+offset_top = 200.0
+offset_right = 1251.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VitaminMix" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1343337996]
+layout_mode = 0
+offset_left = 1262.0
+offset_top = 200.0
+offset_right = 1362.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PurplePotion" type="RichTextLabel" parent="Camera/CanvasLayer/Control/BottomBar" unique_id=1899059631]
+layout_mode = 0
+offset_left = 1365.0
+offset_top = 200.0
+offset_right = 1465.0
+offset_bottom = 238.0
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 28
+text = "0"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartDialogue" type="Control" parent="Camera/CanvasLayer/Control" unique_id=87533070]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect4" type="TextureRect" parent="Camera/CanvasLayer/Control/StartDialogue" unique_id=1349411432]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 2.0
+offset_right = 101.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("16_xydrf")
+
+[node name="Character1" type="TextureRect" parent="Camera/CanvasLayer/Control/StartDialogue" unique_id=1294229977]
+layout_mode = 0
+offset_left = -144.0
+offset_top = -134.0
+offset_right = 1035.0
+offset_bottom = 1606.0
+texture = ExtResource("5_0pq82")
+
+[node name="Character2" type="TextureRect" parent="Camera/CanvasLayer/Control/StartDialogue" unique_id=1902925129]
+layout_mode = 0
+offset_left = 301.0
+offset_top = -982.0
+offset_right = 2781.0
+offset_bottom = 2526.0
+texture = ExtResource("18_l3wpo")
+
+[node name="ColorRect2" type="ColorRect" parent="Camera/CanvasLayer/Control/StartDialogue" unique_id=1626185417]
+layout_mode = 0
+offset_left = 119.0
+offset_top = 822.0
+offset_right = 1823.0
+offset_bottom = 1030.0
+color = Color(0.21960784, 0.21960784, 0.21960784, 0.8352941)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Camera/CanvasLayer/Control/StartDialogue/ColorRect2" unique_id=1831474113]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 25.0
+offset_right = 1646.0
+offset_bottom = 182.0
+theme_override_font_sizes/normal_font_size = 42
+theme_override_font_sizes/bold_font_size = 42
+bbcode_enabled = true
+script = ExtResource("16_c7qr6")
+
+[node name="Timer" type="Timer" parent="Camera/CanvasLayer/Control/StartDialogue/ColorRect2/RichTextLabel" unique_id=1031912855]
+
+[node name="Button" type="Button" parent="Camera/CanvasLayer/Control/StartDialogue" unique_id=1932795960]
+layout_mode = 0
+offset_left = 1674.0
+offset_top = 31.0
+offset_right = 1771.0
+offset_bottom = 97.0
+theme_override_font_sizes/font_size = 42
+text = "SKIP"
+
+[node name="FinalDialogue" type="Control" parent="Camera/CanvasLayer/Control" unique_id=638532642]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Character3" type="TextureRect" parent="Camera/CanvasLayer/Control/FinalDialogue" unique_id=14522708]
+layout_mode = 0
+offset_left = -144.0
+offset_top = -134.0
+offset_right = 1035.0
+offset_bottom = 1606.0
+texture = ExtResource("5_0pq82")
+
+[node name="Character4" type="TextureRect" parent="Camera/CanvasLayer/Control/FinalDialogue" unique_id=425726023]
+layout_mode = 0
+offset_left = 302.0
+offset_top = -985.0
+offset_right = 2782.0
+offset_bottom = 2523.0
+texture = ExtResource("18_l3wpo")
+
+[node name="ColorRect3" type="ColorRect" parent="Camera/CanvasLayer/Control/FinalDialogue" unique_id=1921354471]
+visible = false
+layout_mode = 0
+offset_left = 119.0
+offset_top = 822.0
+offset_right = 1823.0
+offset_bottom = 1030.0
+color = Color(0.21960784, 0.21960784, 0.21960784, 0.8352941)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Camera/CanvasLayer/Control/FinalDialogue/ColorRect3" unique_id=18575146]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 25.0
+offset_right = 1646.0
+offset_bottom = 182.0
+theme_override_font_sizes/normal_font_size = 42
+theme_override_font_sizes/bold_font_size = 42
+bbcode_enabled = true
+script = ExtResource("18_vhitc")
+
+[node name="Timer" type="Timer" parent="Camera/CanvasLayer/Control/FinalDialogue/ColorRect3/RichTextLabel" unique_id=1725211965]
+
+[editable path="Character"]

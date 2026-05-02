@@ -2,6 +2,7 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
 using Template.Shared.Components;
 using Template.Shared.Actions;
+using Template.Shared.GameData;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
@@ -32,23 +33,27 @@ public class CowSystem : ISystem
         // Love house cooldown is NOT decremented passively any more — it only resets
         // on sleep (see SleepLogic.AdvanceDay). Click-to-skip is still allowed.
 
-        // Tick down love event timer — when it reaches 0, fire the deferred love event
-        foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
+        // Tick down love event timer — when it reaches 0, fire the deferred love event.
+        // Skipped entirely when love events are disabled in Balance.
+        if (Balance.Love.Enabled)
         {
-            ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-            if (gr.LoveEventTimer > 0)
+            foreach (var grEntity in state.Filter<GlobalResourcesComponent>())
             {
-                gr.LoveEventTimer--;
-                if (gr.LoveEventTimer <= 0)
+                ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+                if (gr.LoveEventTimer > 0)
                 {
-                    var targetPlayer = gr.LoveEventCowTarget;
-                    var breedCountForLove = gr.LoveEventBreedCount;
-                    gr.LoveEventCowTarget = Entity.Null;
-                    gr.LoveEventBreedCount = 0;
-                    if (targetPlayer != Entity.Null && state.HasComponent<PlayerStateComponent>(targetPlayer))
+                    gr.LoveEventTimer--;
+                    if (gr.LoveEventTimer <= 0)
                     {
-                        ILogger.Log($"[CowSystem] Love event timer expired — triggering deferred love event for player {targetPlayer.Id}");
-                        TriggerLoveEvent(state, targetPlayer, breedCountForLove);
+                        var targetPlayer = gr.LoveEventCowTarget;
+                        var breedCountForLove = gr.LoveEventBreedCount;
+                        gr.LoveEventCowTarget = Entity.Null;
+                        gr.LoveEventBreedCount = 0;
+                        if (targetPlayer != Entity.Null && state.HasComponent<PlayerStateComponent>(targetPlayer))
+                        {
+                            ILogger.Log($"[CowSystem] Love event timer expired — triggering deferred love event for player {targetPlayer.Id}");
+                            TriggerLoveEvent(state, targetPlayer, breedCountForLove);
+                        }
                     }
                 }
             }
@@ -401,15 +406,14 @@ public class CowSystem : ISystem
             // Different-pref breeding: chance of failure based on tier gap
             // Love pairs never fail — the whole point is a guaranteed upgrade
             bool breedFailed = false;
-            if (!sameTier && !guaranteedUpgrade)
+            if (Balance.Cow.DepressionEnabled && !sameTier && !guaranteedUpgrade)
             {
                 int tierGap = System.Math.Abs(parentACow.PreferredFood - parentBCow.PreferredFood);
-                // 1 tier apart = 50%, 2 tiers = 75%, 3 tiers = 90%
                 int failChance = tierGap switch
                 {
-                    1 => 50,
-                    2 => 75,
-                    _ => 90,
+                    1 => Balance.Breed.FailChanceTier1,
+                    2 => Balance.Breed.FailChanceTier2,
+                    _ => Balance.Breed.FailChanceTier3Plus,
                 };
                 breedFailed = breedRandom.NextInt(100) < failChance;
             }
@@ -418,7 +422,7 @@ public class CowSystem : ISystem
             {
                 // Both cows enter depression: fixed 30s timer, visible but non-interactable until recovery
                 ILogger.Log($"[CowSystem] Breed FAILED! Cows {cow1.Id} and {cow2.Id} are depressed (tier gap: {System.Math.Abs(parentACow.PreferredFood - parentBCow.PreferredFood)})");
-                const int DepressionDurationTicks = 1800; // 30 seconds at 60 TPS
+                const int DepressionDurationTicks = Balance.Cow.DepressionTicks;
                 if (state.HasComponent<CowComponent>(cow1))
                 {
                     ref var c1 = ref state.GetComponent<CowComponent>(cow1);
@@ -445,12 +449,11 @@ public class CowSystem : ISystem
                 breedCount = gr.TotalBreedCount;
                 ILogger.Log($"[CowSystem] Breed #{breedCount} succeeded. NextLoveBreedCount={gr.NextLoveBreedCount}");
 
-                // Love system: initialize threshold on first breed (checked after parents return to houses)
-                if (gr.NextLoveBreedCount == 0)
+                // Love system: initialize threshold on first breed. Skipped when disabled.
+                if (Balance.Love.Enabled && gr.NextLoveBreedCount == 0)
                 {
-                    // First time: set initial threshold (after 2-4 breeds)
                     var loveSeed = new DeterministicRandom((uint)(breedCount ^ 0xBEEF));
-                    gr.NextLoveBreedCount = breedCount + loveSeed.NextInt(2, 5);
+                    gr.NextLoveBreedCount = breedCount + loveSeed.NextInt(Balance.Love.NextEventBreedsMin, Balance.Love.NextEventBreedsMax);
                     ILogger.Log($"[CowSystem] Love threshold initialized to {gr.NextLoveBreedCount}");
                 }
             }
@@ -501,10 +504,10 @@ public class CowSystem : ISystem
                 babyCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, guaranteedUpgrade, breedCount);
                 ILogger.Log($"[CowSystem] POST-SPAWN babyCow={babyCow.Id} NextEntityId={state.NextEntityId}");
 
-                // Twins: 5% chance for same-pref breeds (no house limit — twin follows player until dismissed)
+                // Twins on same-pref breeds: cow follows player until dismissed (no house limit)
                 if (sameTier && babyCow != Entity.Null)
                 {
-                    if (breedRandom.NextInt(100) < 1)
+                    if (breedRandom.NextInt(100) < Balance.Cow.TwinChancePercent)
                     {
                         var babySkin = state.GetComponent<SkinComponent>(babyCow);
                         var twinCow = SpawnCrossbredCow(state, playerEntity, cow1, cow2, false, 0, twinSkin: babySkin);
@@ -537,7 +540,9 @@ public class CowSystem : ISystem
             ReturnCowToHouse(state, cow2);
         }
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-        loveHouse.CooldownTicksRemaining = LoveHouseComponent.BreedCooldownTicks;
+        // Set to 1 as a binary "on cooldown" flag — the actual value doesn't matter,
+        // SleepLogic.AdvanceDay zeroes it. There is no per-tick decay.
+        loveHouse.CooldownTicksRemaining = 1;
 
         // Love system: after every 2 breeds, set a random timer before the love event fires
         // (instead of triggering immediately)
@@ -549,19 +554,17 @@ public class CowSystem : ISystem
             if (grEntity != Entity.Null)
             {
                 ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-                if (breedCount >= gr.NextLoveBreedCount && gr.LoveEventTimer <= 0)
+                if (Balance.Love.Enabled && breedCount >= gr.NextLoveBreedCount && gr.LoveEventTimer <= 0)
                 {
-                    // Set a random timer: 0 to 10800 ticks (0 to 3 minutes at 60 TPS)
                     var timerSeed = new DeterministicRandom((uint)(breedCount * 31337));
-                    gr.LoveEventTimer = timerSeed.NextInt(0, 10801); // 0..10800 inclusive
+                    gr.LoveEventTimer = timerSeed.NextInt(Balance.Love.EventDelayTicksMin, Balance.Love.EventDelayTicksMax);
                     if (gr.LoveEventTimer == 0) gr.LoveEventTimer = 1; // Ensure at least 1 tick delay
                     gr.LoveEventCowTarget = playerEntity;
                     gr.LoveEventBreedCount = breedCount;
                     ILogger.Log($"[CowSystem] Love event threshold reached: breedCount={breedCount} >= NextLoveBreedCount={gr.NextLoveBreedCount}. Timer set to {gr.LoveEventTimer} ticks ({gr.LoveEventTimer / 60f:F1}s)");
 
-                    // Schedule next love threshold
                     var nextSeed = new DeterministicRandom((uint)(breedCount * 31337 + 7));
-                    gr.NextLoveBreedCount = breedCount + nextSeed.NextInt(2, 5);
+                    gr.NextLoveBreedCount = breedCount + nextSeed.NextInt(Balance.Love.NextEventBreedsMin, Balance.Love.NextEventBreedsMax);
                     ILogger.Log($"[CowSystem] Next love threshold set to {gr.NextLoveBreedCount}");
                 }
             }
@@ -795,40 +798,35 @@ public class CowSystem : ISystem
         newCowComp.ParentA = parentA;
         newCowComp.ParentB = parentB;
 
-        // Inherit food preference from parents
+        // Food preference: random with parent inheritance.
+        //   25% inherit parent A's primary preference
+        //   25% inherit parent B's primary preference
+        //   50% random (weighted: grass-heavy via FoodType.RandomPreferred)
         var parentACow = state.GetComponent<CowComponent>(parentA);
         var parentBCow = state.GetComponent<CowComponent>(parentB);
+        int inheritChance = Balance.Cow.BreedInheritParentChancePercent;
+        int prefRoll = random.NextInt(100);
+        if (prefRoll < inheritChance)
+            newCowComp.PreferredFood = parentACow.PreferredFood;
+        else if (prefRoll < inheritChance * 2)
+            newCowComp.PreferredFood = parentBCow.PreferredFood;
+        else
+            newCowComp.PreferredFood = FoodType.RandomPreferred(ref random);
 
-        if (guaranteedUpgrade)
+        // Optional secondary preference (any food, not the primary).
+        if (random.NextInt(100) < Balance.Cow.SecondaryPreferenceChancePercent)
         {
-            // Guaranteed upgrade: one tier above the LOWEST parent — rewards same-tier pairing
-            int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
-            newCowComp.PreferredFood = System.Math.Min(minParent + 1, FoodType.Mushroom);
-            ILogger.Log($"[CowSystem] Guaranteed upgrade breed: min({parentACow.PreferredFood},{parentBCow.PreferredFood}) → {newCowComp.PreferredFood}");
+            int second;
+            int safety = 0;
+            do { second = random.NextInt(0, 4); safety++; }
+            while (second == newCowComp.PreferredFood && safety < 8);
+            newCowComp.SecondaryPreferredFood = second == newCowComp.PreferredFood ? -1 : second;
         }
         else
         {
-            // If breeding succeeded, parents are same-tier or got lucky with diff-tier
-            // Same-tier: 25% upgrade / 1% downgrade / 74% inherit
-            // Diff-tier (survived fail check): 15% upgrade / 1% downgrade / 84% inherit
-            bool sameFood = parentACow.PreferredFood == parentBCow.PreferredFood;
-            int upgradeChance = sameFood ? 25 : 15;
-            int prefRoll = random.NextInt(100);
-            if (prefRoll < upgradeChance)
-            {
-                int maxParent = System.Math.Max(parentACow.PreferredFood, parentBCow.PreferredFood);
-                newCowComp.PreferredFood = System.Math.Min(maxParent + 1, FoodType.Mushroom);
-            }
-            else if (prefRoll < upgradeChance + 1)
-            {
-                int minParent = System.Math.Min(parentACow.PreferredFood, parentBCow.PreferredFood);
-                newCowComp.PreferredFood = System.Math.Max(minParent - 1, FoodType.Grass);
-            }
-            else if (prefRoll < upgradeChance + 1 + (100 - upgradeChance - 1) / 2)
-                newCowComp.PreferredFood = parentACow.PreferredFood;
-            else
-                newCowComp.PreferredFood = parentBCow.PreferredFood;
+            newCowComp.SecondaryPreferredFood = -1;
         }
+        newCowComp.DiscoveredFoodMask = 0;
 
         state.AddComponent(newCow, new BreedBornComponent());
         ILogger.Log($"[CowSystem] Bred new cow {newCow.Id} with MaxExhaust: {totalExhaust}, PreferredFood: {newCowComp.PreferredFood}");

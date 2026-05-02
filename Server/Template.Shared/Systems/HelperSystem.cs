@@ -13,13 +13,13 @@ namespace Template.Shared.Systems;
 
 public class HelperSystem : ISystem
 {
-    private static readonly Float TargetReachedDistSq = (Float)9;    // 3^2 — for sell points and land
-    private static readonly Float PlayerReturnDistSq = (Float)36;   // 6^2 — helpers stop farther from player (2x normal)
-    private static readonly Float GatherReachedDistSq = (Float)4;   // 2^2 — closer for food collection
-    private const int GatherWorkDuration = 30;        // 0.5 sec
-    private const int SellWorkDuration = 10;          // per item
-    private const int BuildWorkDuration = 15;         // per coin
-    private const int MilkWorkDuration = 20;          // per milk action
+    private static readonly Float TargetReachedDistSq = (Float)Template.Shared.GameData.Balance.Helper.TargetReachedDistSq;
+    private static readonly Float PlayerReturnDistSq = (Float)Template.Shared.GameData.Balance.Helper.PlayerReturnDistSq;
+    private static readonly Float GatherReachedDistSq = (Float)Template.Shared.GameData.Balance.Helper.GatherReachedDistSq;
+    private const int GatherWorkDuration = Template.Shared.GameData.Balance.Helper.GatherWorkDuration;
+    private const int SellWorkDuration = Template.Shared.GameData.Balance.Helper.SellWorkDuration;
+    private const int BuildWorkDuration = Template.Shared.GameData.Balance.Helper.BuildWorkDuration;
+    private const int MilkWorkDuration = Template.Shared.GameData.Balance.Helper.MilkWorkDuration;
 
     public void Update(EntityWorld state)
     {
@@ -46,8 +46,7 @@ public class HelperSystem : ISystem
             var closestPlayer = FindClosestPlayer(state, entity);
             if (closestPlayer != Entity.Null && closestPlayer != helper.OwnerPlayer)
             {
-                // Only switch if new player is significantly closer (>5 units closer)
-                Float switchThresholdSq = (Float)25; // 5^2
+                Float switchThresholdSq = (Float)Template.Shared.GameData.Balance.Helper.OwnerSwitchThresholdSq;
                 var myPos = state.GetComponent<Transform2D>(entity).Position;
                 var newDist = Vector2.DistanceSquared(myPos, state.GetComponent<Transform2D>(closestPlayer).Position);
                 var oldDist = helper.OwnerPlayer != Entity.Null && state.HasComponent<Transform2D>(helper.OwnerPlayer)
@@ -77,7 +76,7 @@ public class HelperSystem : ISystem
             }
 
             int petCount = helper.PetCount;
-            int boostMul = 1 + petCount;
+            int boostMul = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase + Template.Shared.GameData.Balance.Pets.BoostPerPet * petCount;
             var config = HelperConfig.GetByType(helper.Type);
             helper.BagCapacity = config.BaseCapacity * boostMul;
 
@@ -176,7 +175,10 @@ public class HelperSystem : ISystem
         {
             if (!state.HasComponent<PlayerStateComponent>(pe)) continue;
             ref var ps = ref state.GetComponent<PlayerStateComponent>(pe);
-            ps.ClickMultiplier = 1 + ps.PetCount;
+            int baseline = state.HasComponent<HelperPlayerComponent>(pe)
+                ? Template.Shared.GameData.Balance.HelperPlayer.ClickMultiplier
+                : Template.Shared.GameData.Balance.Pets.AdditiveBoostBase;
+            ps.ClickMultiplier = baseline + Template.Shared.GameData.Balance.Pets.BoostPerPet * ps.PetCount;
         }
     }
 
@@ -194,7 +196,8 @@ public class HelperSystem : ISystem
 
     private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper, int petCount = 0)
     {
-        int workDuration = GatherWorkDuration / (1 + petCount);
+        int boost = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase + Template.Shared.GameData.Balance.Pets.BoostPerPet * petCount;
+        int workDuration = GatherWorkDuration / boost;
         if (workDuration < 1) workDuration = 1;
         switch (helper.State)
         {
@@ -204,6 +207,13 @@ public class HelperSystem : ISystem
                 var foodEntity = FindNearestFood(state, entity);
                 if (foodEntity == Entity.Null)
                 {
+                    // Daily caps may be exhausted — bring whatever's in the bag back to the player
+                    // instead of standing idle on empty.
+                    if (helper.GetBagTotal() > 0)
+                    {
+                        helper.State = HelperState.Returning;
+                        return;
+                    }
                     StopMovement(state, entity);
                     return;
                 }
@@ -435,7 +445,7 @@ public class HelperSystem : ISystem
                     if (helper.BagCoins > 0 && state.HasComponent<LandComponent>(helper.TargetEntity))
                     {
                         var landEntity = helper.TargetEntity;
-                        int buildAmount = System.Math.Min(3, helper.BagCoins);
+                        int buildAmount = System.Math.Min(Template.Shared.GameData.Balance.Helper.BuildCoinsPerWork, helper.BagCoins);
 
                         int deposited = InteractionLogic.DepositToLand(state, landEntity, buildAmount, leaveOneForPlayer: true, out bool landComplete);
                         if (deposited <= 0)
@@ -453,7 +463,7 @@ public class HelperSystem : ISystem
                             var transform = state.GetComponent<Transform2D>(landEntity);
                             var position = transform.Position;
                             var landComp = state.GetComponent<LandComponent>(landEntity);
-                            int landType = landComp.Type;
+                            var landType = landComp.Type;
                             int gridX = landComp.Arm;
                             int gridY = landComp.Ring;
                             Definitions.LandDefinition.DeleteSignsForLand(state, landEntity);

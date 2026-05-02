@@ -16,18 +16,9 @@ public static class FoodType
     /// <summary>Food preference is a requirement for satisfying the cow, not a milk tier.</summary>
     public static int MaxTier(int preferredFood) => preferredFood;
 
-    /// <summary>
-    /// Weighted random food preference. Rarer foods = rarer cows.
-    /// Grass ~50%, Carrot ~28%, Apple ~15%, Mushroom ~7%
-    /// </summary>
+    /// <summary>Uniform random food preference — every food type is equally likely (25% each).</summary>
     public static int RandomPreferred(ref Deterministic.GameFramework.Types.DeterministicRandom random)
-    {
-        int roll = random.NextInt(100);
-        if (roll < 50) return Grass;       // 50%
-        if (roll < 78) return Carrot;      // 28%
-        if (roll < 93) return Apple;       // 15%
-        return Mushroom;                   // 7%
-    }
+        => random.NextInt(0, 4);
 }
 
 public static class MilkProduct

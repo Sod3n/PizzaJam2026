@@ -1,23 +1,18 @@
 using Deterministic.GameFramework.ECS;
 using Godot;
 using R3;
+using Template.Godot.GameResources;
 using Template.Shared.Components;
 
 namespace Template.Godot.Visuals;
 
 public partial class LandSignView
 {
-    private static readonly System.Collections.Generic.Dictionary<int, string> LandTypeIcons = new()
-    {
-        { LandType.House, "res://sprites/export/homes/A_bar.png" },
-        { LandType.LoveHouse, "res://sprites/export/homes/Love_Hotel_.png" },
-        { LandType.SellPoint, "res://sprites/export/homes/Sell_Point_.png" },
-        { LandType.CarrotFarm, "res://sprites/export/homes/Rabbit_Home_.png" },
-        { LandType.AppleOrchard, "res://sprites/export/homes/Hours_Home_.png" },
-        { LandType.MushroomCave, "res://sprites/export/homes/Mash_Home_.png" },
-        { LandType.Warehouse, "res://sprites/export/homes/A_bar.png" },
-        { LandType.Library, "res://sprites/export/homes/Hours_Home_.png" },
-    };
+    private const string IconSetPath = "res://Resources/LandTypeIcons.tres";
+    private static LandTypeIconSet _iconSet;
+
+    private static LandTypeIconSet GetIconSet()
+        => _iconSet ??= ResourceLoader.Load<LandTypeIconSet>(IconSetPath);
 
     partial void OnSpawned(LandSignViewModel vm, Node3D visualNode)
     {
@@ -40,8 +35,8 @@ public partial class LandSignView
             Callable.From(() =>
             {
                 if (!IsInstanceValid(iconSprite)) return;
-                if (!LandTypeIcons.TryGetValue(landType, out var iconPath)) return;
-                var texture = GD.Load<Texture2D>(iconPath);
+                var iconSet = GetIconSet();
+                if (iconSet == null || !iconSet.TryGet(landType, out var texture)) return;
                 if (texture == null) return;
 
                 var frames = new SpriteFrames();

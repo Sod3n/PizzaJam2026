@@ -278,25 +278,80 @@ theme_override_constants/outline_size = 6
 text = "5000"
 horizontal_alignment = 2
 
-[node name="GameSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LobbySeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="GameHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LobbyHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 22
 theme_override_constants/outline_size = 6
-text = "Game"
+text = "Lobby"
 
-[node name="GamePlaceholder" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LobbyCodeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CodeLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 6
+text = "Offline"
+
+[node name="CopyButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Copy"
+
+[node name="LobbyStatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_constants/outline_size = 6
-text = "More settings coming soon..."
+text = ""
+
+[node name="LobbyJoinRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CodeInput" type="LineEdit" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+placeholder_text = "Lobby code"
+
+[node name="JoinButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow"]
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Join"
+
+[node name="LobbyActionsRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CreateButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyActionsRow"]
+custom_minimum_size = Vector2(160, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Create New Lobby"
 
 [node name="CloseSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
 layout_mode = 2

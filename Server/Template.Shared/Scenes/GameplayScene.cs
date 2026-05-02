@@ -12,6 +12,7 @@ using Template.Shared.Actions;
 using Template.Shared.Definitions;
 using Template.Shared.Debugging;
 using Template.Shared.Components;
+using Template.Shared.GameData;
 using Deterministic.GameFramework.Navigation2D.Components;
 using Deterministic.GameFramework.Navigation2D.Systems;
 
@@ -74,7 +75,7 @@ public class GameplayScene : IScene
 
         // Initialize Global Resources
         var globalRes = state.CreateEntity();
-        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = 50, HelpersEnabled = 1 });
+        state.AddComponent(globalRes, new GlobalResourcesComponent { Grass = 0, Milk = 0, Coins = Balance.Match.StartingCoins, HelpersEnabled = 1 });
 
         // Initialize Metrics tracking
         var metricsEntity = state.CreateEntity();
@@ -87,12 +88,14 @@ public class GameplayScene : IScene
         // Single starting land plot at center
         StarGrid.TrySpawnLand(context, 0, 0);
 
-        // Spawn 2 initial cows
-        var cow1 = CowDefinition.Create(context, new Vector2(2, 2));
-        state.GetComponent<CowComponent>(cow1).PreferredFood = FoodType.Grass;
-
-        var cow2 = CowDefinition.Create(context, new Vector2(-2, 2));
-        state.GetComponent<CowComponent>(cow2).PreferredFood = FoodType.Grass;
+        for (int i = 0; i < Balance.Match.StartingCowCount; i++)
+        {
+            Float xOffset = (i % 2 == 0) ? (Float)2 : (Float)(-2);
+            Float yOffset = (Float)2 + (Float)(i / 2) * (Float)2;
+            var cow = CowDefinition.Create(context, new Vector2(xOffset, yOffset));
+            int food = Balance.Match.StarterCowFoods[i % Balance.Match.StarterCowFoods.Length];
+            state.GetComponent<CowComponent>(cow).PreferredFood = food;
+        }
     }
 
     private void CreateWall(EntityWorld state, Vector2 position, Vector2 size)

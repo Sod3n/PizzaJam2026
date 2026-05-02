@@ -31,7 +31,7 @@ public static partial class WarehouseDefinition
         entityBody.CollisionMask = 1u;
         ctx.AddComponent(entity, entityBody);
 
-        ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2f, 2f)));
+        ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2.991519f, 2f)));
 
         var childEntities = new Dictionary<string, Entity>
         {

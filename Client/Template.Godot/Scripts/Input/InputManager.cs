@@ -5,6 +5,7 @@ using Template.Godot.Visuals;
 using Template.Shared.Components;
 using Template.Shared.Features.Movement;
 using Template.Shared.Actions;
+using Template.Shared.GameData;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.ECS;
 
@@ -26,6 +27,19 @@ public partial class InputManager : Node
     // Hold-to-milk fires at ~60% of comfortable rapid-tap speed.
     // 60 TPS / 14 ≈ 4.3 Hz vs ~7 Hz typical human rapid-click → ~60%.
     private const int HoldRepeatThreshold = 14;
+
+    private static bool TryGetLocalPlayerStats(int localPlayerId, out bool isHelperPlayer, out int petCount)
+    {
+        isHelperPlayer = false;
+        petCount = 0;
+        var state = Deterministic.GameFramework.Reactive.ReactiveSystem.Instance?.BoundState;
+        if (state == null) return false;
+        var ent = new Entity(localPlayerId);
+        if (!state.HasComponent<PlayerStateComponent>(ent)) return false;
+        petCount = state.GetComponent<PlayerStateComponent>(ent).PetCount;
+        isHelperPlayer = state.HasComponent<HelperPlayerComponent>(ent);
+        return true;
+    }
 
     public override void _Ready()
     {
@@ -120,6 +134,9 @@ public partial class InputManager : Node
         bool touchHeldStationary = _touchIndex >= 0 &&
                                    GetViewport().GetMousePosition().DistanceTo(_touchStart) < TouchDeadzone;
 
+        TryGetLocalPlayerStats(localPlayerId, out bool isHelperPlayer, out int petCount);
+        int holdThreshold = isHelperPlayer ? Balance.HelperPlayer.HoldRepeatThreshold : HoldRepeatThreshold;
+
         if (interactJustPressed)
         {
             SendInteract();
@@ -128,7 +145,7 @@ public partial class InputManager : Node
         else if (interactHeld || touchHeldStationary)
         {
             _holdRepeatTicks++;
-            if (_holdRepeatTicks >= HoldRepeatThreshold)
+            if (_holdRepeatTicks >= holdThreshold)
             {
                 SendInteract();
                 _holdRepeatTicks = 0;
@@ -177,9 +194,10 @@ public partial class InputManager : Node
         if (direction.LengthSquared() > 1f)
             direction = direction.Normalized();
 
-        // Sprint (shift = x2 speed)
         bool sprinting = global::Godot.Input.IsActionPressed("sprint");
-        float speed = sprinting ? 20f : 15f;
+        float baseWalk = isHelperPlayer ? Balance.HelperPlayer.WalkSpeed : Balance.Player.WalkSpeed;
+        float baseSprint = isHelperPlayer ? Balance.HelperPlayer.SprintSpeed : Balance.Player.SprintSpeed;
+        float speed = (sprinting ? baseSprint : baseWalk) + Balance.Pets.SpeedPerPet * petCount;
 
         var fixedDirection = new Deterministic.GameFramework.Types.Vector2((float)direction.X, (float)direction.Y);
 

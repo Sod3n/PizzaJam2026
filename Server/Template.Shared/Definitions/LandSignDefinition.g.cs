@@ -23,7 +23,7 @@ public static partial class LandSignDefinition
 
         ref var component = ref ctx.GetComponent<LandSignComponent>(entity);
         component.LandId = Entity.Null;
-        component.SelectedType = 0;
+        component.SelectedType = default;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

@@ -2,15 +2,16 @@
 
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_yfgae"]
 [ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="5_phbed"]
+[ext_resource type="Texture2D" uid="uid://cyuta3xni8wug" path="res://sprites/government-building.png" id="5_rg3lj"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="8_no7kv"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/PlayerHouseComponentNode.cs" id="fw_playerhouse"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://c3spbtt3xyebk" path="res://Scripts/Framework/Components/PlayerHouseComponentNode.cs" id="fw_playerhouse"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_phyfg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1b6ul"]
 render_priority = -1
 shader = ExtResource("4_yfgae")
-shader_parameter/albedo_texture = ExtResource("5_phbed")
+shader_parameter/albedo_texture = ExtResource("5_rg3lj")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
@@ -19,6 +20,9 @@ shader_parameter/cooldown_fill = 0.0
 [sub_resource type="SpriteFrames" id="SpriteFrames_phyfg"]
 animations = [{
 "frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_rg3lj")
+}, {
 "duration": 1.0,
 "texture": ExtResource("5_phbed")
 }],
@@ -29,7 +33,7 @@ animations = [{
 
 [node name="PlayerHouse" type="Node3D" unique_id=2138857976]
 
-[node name="Entity" type="Node3D" parent="." unique_id=2646629905]
+[node name="Entity" type="Node3D" parent="." unique_id=-1648337391]
 script = ExtResource("fw_entity")
 EntityName = "PlayerHouse"
 StableIdSeed = "playerhouse-entity-seed"
@@ -37,15 +41,15 @@ StableIdSeed = "playerhouse-entity-seed"
 [node name="PlayerHouseComponent" type="Node" parent="Entity" unique_id=2023142438]
 script = ExtResource("fw_playerhouse")
 
-[node name="Physics" type="Node3D" parent="Entity" unique_id=2933266033]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=-1361701263]
 script = ExtResource("fw_phys")
 ShapeType = 1
-ShapeWidth = 2.0
+ShapeWidth = 2.9178114
 ShapeHeight = 2.0
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=2942393034]
-transform = Transform3D(0.4, 0, 0, 0, 0.36328357, 0.16740684, 0, -0.16740684, 0.36328357, -0.18842411, 1.3655618, -0.80295324)
-material_override = SubResource("ShaderMaterial_phyfg")
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=-1352574262]
+transform = Transform3D(0.6, 0, 0, 0, 0.5449254, 0.2511103, 0, -0.2511103, 0.5449254, -0.006319046, 1.0096537, -0.5023414)
+material_override = SubResource("ShaderMaterial_1b6ul")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_phyfg")
 script = ExtResource("8_no7kv")

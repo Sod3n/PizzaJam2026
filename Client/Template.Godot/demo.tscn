@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://de55uopw2vwaa" path="res://templates/environment/Land.tscn" id="7_gdsc3"]
 [ext_resource type="PackedScene" uid="uid://dpvl77oofc2w3" path="res://templates/characters/Cow.tscn" id="7_jbdfk"]
 [ext_resource type="PackedScene" uid="uid://blxgls556ydaj" path="res://templates/characters/Player.tscn" id="8_n4w22"]
+[ext_resource type="PackedScene" uid="uid://chlpr3npmaid1" path="res://templates/characters/HelperPlayer.tscn" id="tpl_helperplayer"]
 [ext_resource type="PackedScene" uid="uid://bg7ki6hs4neoa" path="res://templates/environment/House.tscn" id="8_svejp"]
 [ext_resource type="PackedScene" uid="uid://b3a1efqph14je" path="res://templates/environment/SellPoint.tscn" id="9_36gju"]
 [ext_resource type="PackedScene" uid="uid://blnhcjlcy72i3" path="res://templates/environment/FinalStructure.tscn" id="10_svejp"]
@@ -62,6 +63,7 @@
 [ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/LoveHouseView.cs" id="view_lovehouse"]
 [ext_resource type="Script" uid="uid://dbqbtifw2l624" path="res://Scripts/Visuals/MushroomCaveView.cs" id="view_mushroomcave"]
 [ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
+[ext_resource type="Script" path="res://Scripts/Visuals/HelperPlayerView.cs" id="view_helperplayer"]
 [ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
 [ext_resource type="Script" uid="uid://tdslau71ofae" path="res://Scripts/Visuals/UpgradeAssistantView.cs" id="view_upgradeassistant"]
@@ -4256,6 +4258,10 @@ multimesh = SubResource("MultiMesh_884kg")
 [node name="PlayerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1605113672]
 script = ExtResource("view_player")
 Prefab = ExtResource("8_n4w22")
+
+[node name="HelperPlayerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1605113673]
+script = ExtResource("view_helperplayer")
+Prefab = ExtResource("tpl_helperplayer")
 
 [node name="CowView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1614741670]
 script = ExtResource("view_cow")

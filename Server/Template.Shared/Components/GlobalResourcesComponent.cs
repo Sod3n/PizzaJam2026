@@ -30,12 +30,13 @@ public struct GlobalResourcesComponent : IComponent
     public int FoodSpawnedTodayApple;
     public int FoodSpawnedTodayMushroom;
 
-    // Helper unlock thresholds (breed count) — sequential, supports duplicates
-    public const int GathererUnlockBreed = 2;
-    public const int BuilderUnlockBreed = 4;
-    public const int SellerUnlockBreed = 6;
-    public const int MilkerUnlockBreed = 10;
-    public const int GuaranteedMegaBreed = 12;
+    // Helper unlock thresholds (breed count) — sequential, supports duplicates.
+    // Source of truth: GameData.Balance.Helper.*UnlockBreed.
+    public const int GathererUnlockBreed = GameData.Balance.Helper.GathererUnlockBreed;
+    public const int BuilderUnlockBreed = GameData.Balance.Helper.BuilderUnlockBreed;
+    public const int SellerUnlockBreed = GameData.Balance.Helper.SellerUnlockBreed;
+    public const int MilkerUnlockBreed = GameData.Balance.Helper.MilkerUnlockBreed;
+    public const int GuaranteedMegaBreed = GameData.Balance.Helper.GuaranteedMegaBreed;
     public int HelpersSpawned; // How many helpers have been spawned (index into unlock sequence)
     public int NextLoveBreedCount; // Breed count at which the next love event triggers (0 = not yet set)
     public int LoveEventTimer; // Countdown ticks until the pending love event fires (0 = no pending event)

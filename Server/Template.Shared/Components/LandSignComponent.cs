@@ -8,5 +8,5 @@ namespace Template.Shared.Components;
 public struct LandSignComponent : IComponent
 {
     public Entity LandId;
-    public int SelectedType;
+    public LandType SelectedType;
 }

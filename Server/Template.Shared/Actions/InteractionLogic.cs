@@ -59,11 +59,12 @@ public static class InteractionLogic
     /// Returns true if milk was produced this click, false otherwise.
     /// </summary>
     /// <summary>
-    /// Milk takes <see cref="ClicksPerMilk"/> clicks per unit produced.
-    /// Mid-cycle (counter > 0), additional clicks are allowed even at MaxExhaust so the cow
-    /// can finish the in-progress milk — this fixes the "kicked out with X clicks left" bug.
+    /// Milk takes <see cref="ClicksPerMilk"/> clicks per unit produced (alias of
+    /// <see cref="GameData.Balance.Cow.ClicksPerMilk"/>). Mid-cycle (counter > 0), additional
+    /// clicks are allowed past MaxExhaust so the cow can finish the in-progress milk —
+    /// this fixes the "kicked out with X clicks left" bug.
     /// </summary>
-    public const int ClicksPerMilk = 4;
+    public const int ClicksPerMilk = GameData.Balance.Cow.ClicksPerMilk;
 
     public static bool MilkCow(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, out bool cowDone)
     {
@@ -106,7 +107,7 @@ public static class InteractionLogic
             return false;
         }
 
-        bool isPreferred = foodToUse == cow.PreferredFood;
+        bool isPreferred = cow.IsFoodPreferred(foodToUse);
         var gameTime = state.GetCustomData<IGameTime>();
 
         // Allow clicks past MaxExhaust just enough to finish a mid-cycle milk.
@@ -121,6 +122,7 @@ public static class InteractionLogic
         for (int i = 0; i < clicks; i++)
         {
             globalRes.ConsumeFood(foodToUse);
+            cow.RecordFed(foodToUse);
             if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
             cow.MilkClickCounter++;
             if (cow.MilkClickCounter >= ClicksPerMilk)
@@ -131,7 +133,7 @@ public static class InteractionLogic
                 {
                     uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
                     var milkRng = new DeterministicRandom(milkSeed);
-                    blocked = milkRng.NextInt(100) < 50;
+                    blocked = milkRng.NextInt(100) < GameData.Balance.Cow.NonPreferredFoodFailPercent;
                 }
                 if (!blocked) milksProduced++;
             }
@@ -258,7 +260,7 @@ public static class InteractionLogic
         }
         else { cowDone = true; return false; }
 
-        bool isPreferred = foodToUse == cow.PreferredFood;
+        bool isPreferred = cow.IsFoodPreferred(foodToUse);
         var gameTime = state.GetCustomData<IGameTime>();
 
         int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
@@ -272,6 +274,7 @@ public static class InteractionLogic
         for (int i = 0; i < clicks; i++)
         {
             globalRes.ConsumeFood(foodToUse);
+            cow.RecordFed(foodToUse);
             if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
             cow.MilkClickCounter++;
             if (cow.MilkClickCounter >= ClicksPerMilk)
@@ -282,7 +285,7 @@ public static class InteractionLogic
                 {
                     uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
                     var milkRng = new DeterministicRandom(milkSeed);
-                    blocked = milkRng.NextInt(100) < 50;
+                    blocked = milkRng.NextInt(100) < GameData.Balance.Cow.NonPreferredFoodFailPercent;
                 }
                 if (!blocked) milksProduced++;
             }
@@ -323,7 +326,7 @@ public static class InteractionLogic
         }
         else { cowDone = true; return false; }
 
-        bool isPreferred = foodToUse == cow.PreferredFood;
+        bool isPreferred = cow.IsFoodPreferred(foodToUse);
         var gameTime = state.GetCustomData<IGameTime>();
 
         int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
@@ -337,6 +340,7 @@ public static class InteractionLogic
         for (int i = 0; i < clicks; i++)
         {
             helperBag.ConsumeBagFood(foodToUse);
+            cow.RecordFed(foodToUse);
             if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
             cow.MilkClickCounter++;
             if (cow.MilkClickCounter >= ClicksPerMilk)
@@ -347,7 +351,7 @@ public static class InteractionLogic
                 {
                     uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
                     var milkRng = new DeterministicRandom(milkSeed);
-                    blocked = milkRng.NextInt(100) < 50;
+                    blocked = milkRng.NextInt(100) < GameData.Balance.Cow.NonPreferredFoodFailPercent;
                 }
                 if (!blocked) milksProduced++;
             }

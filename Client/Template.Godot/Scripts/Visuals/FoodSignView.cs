@@ -66,23 +66,36 @@ public partial class FoodSignView
 
         var heartTexture = GD.Load<Texture2D>("res://sprites/heart.png");
         var brokenHeartTexture = GD.Load<Texture2D>("res://sprites/broken-heart.png");
+        var questionTexture = GD.Load<Texture2D>("res://sprites/question-mark.png");
 
-        // -1 means no cow assigned
-        var cowPreferredFood = new ReactiveProperty<int>(-1);
-        vm.Disposables.Add(cowPreferredFood);
+        // (primary, secondary, discoveredMask). primary < 0 → no cow.
+        var cowState = new ReactiveProperty<(int pref, int pref2, int discovered)>((-1, -1, 0));
+        vm.Disposables.Add(cowState);
 
-        cowPreferredFood
-            .CombineLatest(vm.FoodSign.FoodSign.SelectedFood, (pref, selected) => (pref, selected))
+        cowState
+            .CombineLatest(vm.FoodSign.FoodSign.SelectedFood, (state, selected) => (state, selected))
             .Subscribe(pair =>
             {
                 Callable.From(() =>
                 {
-                    if (pair.pref < 0)
+                    var (cs, selected) = pair;
+                    if (cs.pref < 0)
                     {
                         heartSprite.Visible = false;
                         return;
                     }
-                    var texture = pair.selected == pair.pref ? heartTexture : brokenHeartTexture;
+
+                    bool discovered = selected >= 0 && (cs.discovered & (1 << selected)) != 0;
+                    Texture2D texture;
+                    if (!discovered)
+                    {
+                        texture = questionTexture;
+                    }
+                    else
+                    {
+                        bool isPref = selected == cs.pref || (cs.pref2 >= 0 && selected == cs.pref2);
+                        texture = isPref ? heartTexture : brokenHeartTexture;
+                    }
                     if (texture != null)
                         SetSpriteTexture(heartSprite, texture);
                     heartSprite.Visible = true;
@@ -98,14 +111,15 @@ public partial class FoodSignView
         {
             if (cowId != Entity.Null && EntityViewModel.EntityViewModels.TryGetValue(cowId, out var cowVmBase) && cowVmBase is CowViewModel cowVm)
             {
-                cowVm.Cow.Cow.PreferredFood.Subscribe(pref =>
-                {
-                    cowPreferredFood.Value = pref;
-                }).AddTo(vm.Disposables);
+                cowVm.Cow.Cow.PreferredFood
+                    .CombineLatest(cowVm.Cow.Cow.SecondaryPreferredFood, (a, b) => (a, b))
+                    .CombineLatest(cowVm.Cow.Cow.DiscoveredFoodMask, (ab, mask) => (ab.a, ab.b, mask))
+                    .Subscribe(t => cowState.Value = t)
+                    .AddTo(vm.Disposables);
             }
             else
             {
-                cowPreferredFood.Value = -1;
+                cowState.Value = (-1, -1, 0);
             }
         }).AddTo(vm.Disposables);
     }

@@ -49,7 +49,9 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
         var random = new Deterministic.GameFramework.Types.DeterministicRandom((uint)seed);
 
         var position = FindValidSpawnPosition(ctx, ref random);
-        var playerEntity = PlayerDefinition.Create(ctx, action.UserId, position, 0);
+        var playerEntity = isHelperPlayer
+            ? HelperPlayerDefinition.Create(ctx, action.UserId, position, 0)
+            : PlayerDefinition.Create(ctx, action.UserId, position, 0);
 
         ILogger.Log($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position} (helperPlayer={isHelperPlayer}). NextEntityId After: {ctx.State.NextEntityId}");
 
@@ -57,15 +59,6 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
 
         if (isHelperPlayer)
         {
-            int role = HelperType.Gatherer;
-            ctx.State.AddComponent(playerEntity, new HelperPlayerComponent
-            {
-                Type = role,
-                State = HelperState.Idle,
-                BagCapacity = HelperPlayerComponent.CapacityFor(role),
-                WantedFoodType = -1,
-            });
-
             // A helper-player replaces one auto-spawned breed helper from the unlock pool:
             // bump HelpersSpawned now so the next breed unlock is skipped.
             foreach (var ge in ctx.State.Filter<GlobalResourcesComponent>())

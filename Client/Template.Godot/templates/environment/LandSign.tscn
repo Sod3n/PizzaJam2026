@@ -93,6 +93,7 @@ script = ExtResource("7_5jc8c")
 
 [node name="SelectedBadge" type="Sprite3D" parent="." unique_id=128478464]
 transform = Transform3D(0.06918491, 0.010475525, 0.012689096, -0.0103976, 0.0636762, 0.17881538, 0.0023106106, -0.027122043, 0.42471758, 0.46212372, 1.0827757, -0.54568845)
+visible = false
 no_depth_test = true
 alpha_cut = 2
 render_priority = 4

@@ -8,7 +8,7 @@ public partial class LandComponentNode : Node
 {
     [Export] public int CurrentCoins;
     [Export] public int Threshold;
-    [Export] public int Type;
+    [Export(PropertyHint.Enum, "House:0,LoveHouse:1,SellPoint:2,FinalStructure:3,CarrotFarm:4,AppleOrchard:5,MushroomCave:6,HelperAssistant:7,UpgradeGatherer:8,UpgradeBuilder:9,UpgradeSeller:10,UpgradeAssistant:11,Decoration:12,Warehouse:13,PlayerHouse:14,Library:15")] public int Type;
     [Export] public int Arm;
     [Export] public int Ring;
     [Export] public int Locked;

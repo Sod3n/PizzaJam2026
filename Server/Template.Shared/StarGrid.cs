@@ -26,7 +26,7 @@ public static class StarGrid
 
     // Fixed positions: only economy bootstrap buildings that MUST be at known locations.
     // Farms are spawned dynamically (see DynamicSpecials) so they scatter across the star.
-    public static int? GetFixedType(int gx, int gy)
+    public static LandType? GetFixedType(int gx, int gy)
     {
         if (gx == 0 && gy == 0) return LandType.PlayerHouse; // Center: sleep to advance day
         if (gx == 0 && gy == 1) return LandType.SellPoint;   // Shifted north — opposite the win direction
@@ -78,17 +78,17 @@ public static class StarGrid
     public static int GetThreshold(int gx, int gy)
     {
         int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
-        int type = GetBuildingType(gx, gy);
+        var type = GetBuildingType(gx, gy);
         int priceMult = GetPriceMultiplier(type);
         if (priceMult < 0) // Decoration: quarter cost
-            return gridDist * GetEraMultiplier(gridDist) * 10 / 4;
-        return gridDist * GetEraMultiplier(gridDist) * priceMult * 10;
+            return gridDist * GetEraMultiplier(gridDist) * GameData.Balance.Build.BasePriceMultiplier / 4;
+        return gridDist * GetEraMultiplier(gridDist) * priceMult * GameData.Balance.Build.BasePriceMultiplier;
     }
 
     // Food farm frequency: every Nth house-slot becomes a food farm instead
     private const int FoodFarmFreq = 5;
 
-    public static int GetPriceMultiplier(int landType)
+    public static int GetPriceMultiplier(LandType landType)
     {
         switch (landType)
         {
@@ -118,11 +118,11 @@ public static class StarGrid
     /// </summary>
     public static int GetEraMultiplier(int gridDist)
     {
-        if (gridDist >= 6) return 6;
-        if (gridDist >= 5) return 4;
-        if (gridDist >= 4) return 3;
-        if (gridDist >= 3) return 2;
-        return 1;
+        if (gridDist >= 6) return GameData.Balance.Build.EraMultiplier_Ring6Plus;
+        if (gridDist >= 5) return GameData.Balance.Build.EraMultiplier_Ring5;
+        if (gridDist >= 4) return GameData.Balance.Build.EraMultiplier_Ring4;
+        if (gridDist >= 3) return GameData.Balance.Build.EraMultiplier_Ring3;
+        return GameData.Balance.Build.EraMultiplier_RingDefault;
     }
 
     // ─── Dynamic special buildings: spawn at player's expansion frontier ───
@@ -145,7 +145,7 @@ public static class StarGrid
     /// Farms use angular separation: each new farm must be in a different quadrant than the last,
     /// rewarding players who expand in multiple directions.
     /// </summary>
-    private static readonly (int type, int triggerDist, int bit, bool isFarm)[] DynamicSpecials =
+    private static readonly (LandType type, int triggerDist, int bit, bool isFarm)[] DynamicSpecials =
     {
         // Farms — each appears 1 era BEFORE it's needed (affordable with current-era income)
         (LandType.CarrotFarm,    2, 4, true),
@@ -175,9 +175,9 @@ public static class StarGrid
 
     /// <summary>
     /// Check if this grid position should become a special building.
-    /// Returns the LandType if yes, -1 if no.
+    /// Returns the LandType if yes, null if no.
     /// </summary>
-    private static int TryGetSpecialType(EntityWorld state, int gx, int gy)
+    private static LandType? TryGetSpecialType(EntityWorld state, int gx, int gy)
     {
         int dist = System.Math.Abs(gx) + System.Math.Abs(gy);
 
@@ -185,7 +185,7 @@ public static class StarGrid
         Entity grEntity = Entity.Null;
         foreach (var e in state.Filter<GlobalResourcesComponent>())
         { grEntity = e; break; }
-        if (grEntity == Entity.Null) return -1;
+        if (grEntity == Entity.Null) return null;
 
         ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
 
@@ -216,7 +216,7 @@ public static class StarGrid
             }
             return type;
         }
-        return -1;
+        return null;
     }
 
     // Pre-computed special building positions on a sparse grid.
@@ -284,7 +284,7 @@ public static class StarGrid
         return result;
     }
 
-    public static int GetBuildingType(int gx, int gy)
+    public static LandType GetBuildingType(int gx, int gy)
     {
         // Check for fixed special positions first
         var fixedType = GetFixedType(gx, gy);
@@ -344,22 +344,22 @@ public static class StarGrid
             }
         }
 
-        int type = GetBuildingType(gx, gy);
+        var type = GetBuildingType(gx, gy);
 
         // Dynamic specials: override type if this distance triggers a special building
         // Never override fixed positions (SellPoint, LoveHouse, FinalStructure)
         if (!GetFixedType(gx, gy).HasValue)
         {
-            int specialType = TryGetSpecialType(ctx.State, gx, gy);
-            if (specialType >= 0)
-                type = specialType;
+            var specialType = TryGetSpecialType(ctx.State, gx, gy);
+            if (specialType.HasValue)
+                type = specialType.Value;
         }
 
         int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
         int pm = GetPriceMultiplier(type);
         int threshold = pm < 0
-            ? gridDist * GetEraMultiplier(gridDist) * 10 / 4
-            : gridDist * GetEraMultiplier(gridDist) * pm * 10;
+            ? gridDist * GetEraMultiplier(gridDist) * GameData.Balance.Build.BasePriceMultiplier / 4
+            : gridDist * GetEraMultiplier(gridDist) * pm * GameData.Balance.Build.BasePriceMultiplier;
         LandDefinition.Create(ctx, new Vector2(px, py), threshold, type, gx, gy, 0);
         return true;
     }
@@ -397,10 +397,11 @@ public static class StarGrid
         SpawnRingIfPriorComplete(ctx, dist + 1);
     }
 
-    // Global build-count limits. Selected types disappear from the cycle pool once
-    // their world-wide count reaches the limit (counts both built buildings and
-    // pending land plots already cycled to that type).
-    private static int CountWorldType(EntityWorld state, int landType, int excludeGx, int excludeGy)
+    // Global build-count limits. A plot only counts toward the limit once it's been
+    // *committed* (CurrentCoins > 0 → cycling is locked) or actually built into a
+    // standing building. Plots that have merely been cycled to the type without any
+    // investment don't reserve a slot — the player can keep window-shopping.
+    private static int CountWorldType(EntityWorld state, LandType landType, int excludeGx, int excludeGy)
     {
         int count = 0;
         // Built buildings
@@ -425,84 +426,126 @@ public static class StarGrid
                 foreach (var _ in state.Filter<LibraryComponent>()) count++;
                 break;
         }
-        // Plots already cycled to this type (excluding the plot doing the query).
+        // Locked-in plots (player has invested at least 1 coin → cycling is rejected),
+        // excluding the plot doing the query.
         foreach (var le in state.Filter<LandComponent>())
         {
             var lc = state.GetComponent<LandComponent>(le);
             if (lc.Arm == excludeGx && lc.Ring == excludeGy) continue;
-            if (lc.Type == landType) count++;
+            if (lc.Type == landType && lc.CurrentCoins > 0) count++;
         }
         return count;
     }
 
-    private static int CountInRing(EntityWorld state, int landType, int ringDist, int excludeGx, int excludeGy)
+    private static bool TransformIsAtRing(EntityWorld state, Entity e, int ringDist)
+    {
+        if (!state.HasComponent<Transform2D>(e)) return false;
+        var pos = state.GetComponent<Transform2D>(e).Position;
+        int gx = (int)System.Math.Round((float)pos.X / GridStep);
+        int gy = (int)System.Math.Round((float)pos.Y / GridStep);
+        return System.Math.Abs(gx) + System.Math.Abs(gy) == ringDist;
+    }
+
+    private static int CountInRing(EntityWorld state, LandType landType, int ringDist, int excludeGx, int excludeGy)
     {
         int count = 0;
-        // Built buildings at this ring (only HelperAssistant matters for now)
-        if (landType == LandType.HelperAssistant)
+        // Built buildings at this ring — gridify their world position back to grid coords.
+        switch (landType)
         {
-            foreach (var ha in state.Filter<HelperAssistantComponent>())
-            {
-                if (!state.HasComponent<Transform2D>(ha)) continue;
-                var pos = state.GetComponent<Transform2D>(ha).Position;
-                int gx = (int)System.Math.Round((float)pos.X / GridStep);
-                int gy = (int)System.Math.Round((float)pos.Y / GridStep);
-                if (System.Math.Abs(gx) + System.Math.Abs(gy) == ringDist) count++;
-            }
+            case LandType.HelperAssistant:
+                foreach (var e in state.Filter<HelperAssistantComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.CarrotFarm:
+                foreach (var e in state.Filter<CarrotFarmComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.AppleOrchard:
+                foreach (var e in state.Filter<AppleOrchardComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.MushroomCave:
+                foreach (var e in state.Filter<MushroomCaveComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.Warehouse:
+                foreach (var e in state.Filter<WarehouseComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.Library:
+                foreach (var e in state.Filter<LibraryComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.LoveHouse:
+                foreach (var e in state.Filter<LoveHouseComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
+            case LandType.SellPoint:
+                foreach (var e in state.Filter<SellPointComponent>())
+                    if (TransformIsAtRing(state, e, ringDist)) count++;
+                break;
         }
-        // Plots in this ring already cycled to this type
+        // Locked-in plots in this ring (CurrentCoins > 0).
         foreach (var le in state.Filter<LandComponent>())
         {
             var lc = state.GetComponent<LandComponent>(le);
             if (lc.Arm == excludeGx && lc.Ring == excludeGy) continue;
             if (System.Math.Abs(lc.Arm) + System.Math.Abs(lc.Ring) != ringDist) continue;
-            if (lc.Type == landType) count++;
+            if (lc.Type == landType && lc.CurrentCoins > 0) count++;
         }
         return count;
     }
 
     /// <summary>
-    /// Pool of LandTypes the player can cycle through on a sign at a given ring distance.
-    /// Filters by per-type limits:
-    ///   • CarrotFarm/AppleOrchard/MushroomCave — max 2 worldwide each
-    ///   • Warehouse — max 1 worldwide
-    ///   • HelperAssistant (generic pet sanctuary) — max 1 per ring, unlocked at ring 2
-    ///   • Library — unlocked at ring 3
-    ///   • UpgradeGatherer/Builder/Seller/Assistant — removed (HelperAssistant is the unified pet building)
-    ///   • Decoration — removed
+    /// Returns true when both the world and per-ring caps still have room for one more
+    /// of the given <paramref name="landType"/>. -1 on either side means uncapped.
     /// </summary>
-    public static int[] GetCycleableTypesForRing(EntityWorld state, int ringDist, int gx, int gy)
+    private static bool PassesLimits(EntityWorld state, LandType landType, int worldLimit, int ringLimit, int ringDist, int gx, int gy)
     {
-        var list = new System.Collections.Generic.List<int> { LandType.House };
+        if (worldLimit >= 0 && CountWorldType(state, landType, gx, gy) >= worldLimit) return false;
+        if (ringLimit >= 0 && CountInRing(state, landType, ringDist, gx, gy) >= ringLimit) return false;
+        return true;
+    }
 
-        // Library: ring 3+, max 1 worldwide
-        if (ringDist >= 3 && CountWorldType(state, LandType.Library, gx, gy) < 1)
+    /// <summary>
+    /// Pool of LandTypes the player can cycle through on a sign at a given ring distance.
+    /// Each type has an unlock-ring threshold + world cap (Balance.Build.Limit.*) +
+    /// per-ring cap (Balance.Build.LimitPerRing.*). -1 on a cap means uncapped.
+    /// </summary>
+    public static LandType[] GetCycleableTypesForRing(EntityWorld state, int ringDist, int gx, int gy)
+    {
+        var list = new System.Collections.Generic.List<LandType> { LandType.House };
+
+        if (ringDist >= GameData.Balance.Build.UnlockRing.Library
+            && PassesLimits(state, LandType.Library, GameData.Balance.Build.Limit.Library.World, GameData.Balance.Build.Limit.Library.PerRing, ringDist, gx, gy))
             list.Add(LandType.Library);
 
-        // LoveHouse: ring 3+ (unlimited)
-        if (ringDist >= 3) list.Add(LandType.LoveHouse);
+        if (ringDist >= GameData.Balance.Build.UnlockRing.LoveHouse
+            && PassesLimits(state, LandType.LoveHouse, GameData.Balance.Build.Limit.LoveHouse.World, GameData.Balance.Build.Limit.LoveHouse.PerRing, ringDist, gx, gy))
+            list.Add(LandType.LoveHouse);
 
-        // SellPoint: ring 5+ (unlimited)
-        if (ringDist >= 5) list.Add(LandType.SellPoint);
+        if (ringDist >= GameData.Balance.Build.UnlockRing.SellPoint
+            && PassesLimits(state, LandType.SellPoint, GameData.Balance.Build.Limit.SellPoint.World, GameData.Balance.Build.Limit.SellPoint.PerRing, ringDist, gx, gy))
+            list.Add(LandType.SellPoint);
 
-        // CarrotFarm: ring 2+, max 2 worldwide
-        if (ringDist >= 2 && CountWorldType(state, LandType.CarrotFarm, gx, gy) < 2)
+        if (ringDist >= GameData.Balance.Build.UnlockRing.CarrotFarm
+            && PassesLimits(state, LandType.CarrotFarm, GameData.Balance.Build.Limit.CarrotFarm.World, GameData.Balance.Build.Limit.CarrotFarm.PerRing, ringDist, gx, gy))
             list.Add(LandType.CarrotFarm);
 
-        // AppleOrchard: ring 4+, max 2 worldwide
-        if (ringDist >= 4 && CountWorldType(state, LandType.AppleOrchard, gx, gy) < 2)
+        if (ringDist >= GameData.Balance.Build.UnlockRing.AppleOrchard
+            && PassesLimits(state, LandType.AppleOrchard, GameData.Balance.Build.Limit.AppleOrchard.World, GameData.Balance.Build.Limit.AppleOrchard.PerRing, ringDist, gx, gy))
             list.Add(LandType.AppleOrchard);
 
-        // MushroomCave: ring 6+, max 2 worldwide
-        if (ringDist >= 6 && CountWorldType(state, LandType.MushroomCave, gx, gy) < 2)
+        if (ringDist >= GameData.Balance.Build.UnlockRing.MushroomCave
+            && PassesLimits(state, LandType.MushroomCave, GameData.Balance.Build.Limit.MushroomCave.World, GameData.Balance.Build.Limit.MushroomCave.PerRing, ringDist, gx, gy))
             list.Add(LandType.MushroomCave);
 
-        // Warehouse: ring 3+, max 1 worldwide
-        if (ringDist >= 3 && CountWorldType(state, LandType.Warehouse, gx, gy) < 1)
+        if (ringDist >= GameData.Balance.Build.UnlockRing.Warehouse
+            && PassesLimits(state, LandType.Warehouse, GameData.Balance.Build.Limit.Warehouse.World, GameData.Balance.Build.Limit.Warehouse.PerRing, ringDist, gx, gy))
             list.Add(LandType.Warehouse);
 
-        // HelperAssistant — single unified pet building. Ring 2+, max 1 per ring.
-        if (ringDist >= 2 && CountInRing(state, LandType.HelperAssistant, ringDist, gx, gy) < 1)
+        if (ringDist >= GameData.Balance.Build.UnlockRing.HelperAssistant
+            && PassesLimits(state, LandType.HelperAssistant, GameData.Balance.Build.Limit.HelperAssistant.World, GameData.Balance.Build.Limit.HelperAssistant.PerRing, ringDist, gx, gy))
             list.Add(LandType.HelperAssistant);
 
         return list.ToArray();

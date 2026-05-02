@@ -256,8 +256,6 @@ script = ExtResource("fw_playerstate")
 
 [node name="NavMeshConstraint" type="Node" parent="Entity" unique_id=1575246103]
 script = ExtResource("fw_navconstraint")
-Slide = true
-PushOutOfObstacles = true
 
 [node name="InteractionZone" type="Node" parent="Entity" unique_id=2034575380]
 script = ExtResource("fw_child")
@@ -326,6 +324,7 @@ size = 20.0
 pixels_per_meter = 32.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915661]
+layer = 100
 script = ExtResource("3_k554n")
 
 [node name="Control" type="Control" parent="Camera/CanvasLayer" unique_id=697887396]

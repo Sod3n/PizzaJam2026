@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="LandTypeIconSet" format=3 uid="uid://sl1jg7j8fdpl"]
+
+[ext_resource type="Script" uid="uid://cltlnmuul5xc8" path="res://Scripts/Resources/LandTypeIconSet.cs" id="1_set"]
+[ext_resource type="Script" uid="uid://hgwua3lrowt5" path="res://Scripts/Resources/LandTypeIconEntry.cs" id="2_entry"]
+[ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="3_abar"]
+[ext_resource type="Texture2D" uid="uid://bfkn1x48707v7" path="res://sprites/export/homes/Love_Hotel_.png" id="4_love"]
+[ext_resource type="Texture2D" uid="uid://pijssbtjn8jk" path="res://sprites/export/homes/Sell_Point_.png" id="5_sell"]
+[ext_resource type="Texture2D" uid="uid://baibyw0uinncn" path="res://sprites/export/homes/Rabbit_Home_.png" id="6_rabbit"]
+[ext_resource type="Texture2D" uid="uid://cfrvwrmmmhuqh" path="res://sprites/export/homes/Hours_Home_.png" id="7_hours"]
+[ext_resource type="Texture2D" uid="uid://diq64rsgarh25" path="res://sprites/export/homes/Mash_Home_.png" id="8_mash"]
+[ext_resource type="Texture2D" uid="uid://jmsdunqcaubc" path="res://sprites/library.png" id="8_sv7i8"]
+[ext_resource type="Texture2D" uid="uid://bto0ft3v5t4ke" path="res://sprites/cat-house.png" id="9_vy7oo"]
+[ext_resource type="Texture2D" uid="uid://b716huy5tf3td" path="res://sprites/warehouse.png" id="10_5hh2f"]
+[ext_resource type="Texture2D" uid="uid://cyuta3xni8wug" path="res://sprites/government-building.png" id="11_faafv"]
+
+[sub_resource type="Resource" id="entry_house"]
+script = ExtResource("2_entry")
+Icon = ExtResource("3_abar")
+
+[sub_resource type="Resource" id="entry_lovehouse"]
+script = ExtResource("2_entry")
+LandType = 1
+Icon = ExtResource("4_love")
+
+[sub_resource type="Resource" id="entry_sellpoint"]
+script = ExtResource("2_entry")
+LandType = 2
+Icon = ExtResource("5_sell")
+
+[sub_resource type="Resource" id="entry_carrotfarm"]
+script = ExtResource("2_entry")
+LandType = 4
+Icon = ExtResource("6_rabbit")
+
+[sub_resource type="Resource" id="entry_appleorchard"]
+script = ExtResource("2_entry")
+LandType = 5
+Icon = ExtResource("7_hours")
+
+[sub_resource type="Resource" id="entry_mushroomcave"]
+script = ExtResource("2_entry")
+LandType = 6
+Icon = ExtResource("8_mash")
+
+[sub_resource type="Resource" id="entry_warehouse"]
+script = ExtResource("2_entry")
+LandType = 13
+Icon = ExtResource("3_abar")
+
+[sub_resource type="Resource" id="entry_library"]
+script = ExtResource("2_entry")
+LandType = 15
+Icon = ExtResource("8_sv7i8")
+
+[sub_resource type="Resource" id="Resource_28i5f"]
+script = ExtResource("2_entry")
+LandType = 7
+Icon = ExtResource("9_vy7oo")
+metadata/_custom_type_script = "uid://hgwua3lrowt5"
+
+[sub_resource type="Resource" id="Resource_p7dhh"]
+script = ExtResource("2_entry")
+LandType = 13
+Icon = ExtResource("10_5hh2f")
+metadata/_custom_type_script = "uid://hgwua3lrowt5"
+
+[sub_resource type="Resource" id="Resource_7yd6l"]
+script = ExtResource("2_entry")
+LandType = 14
+Icon = ExtResource("11_faafv")
+metadata/_custom_type_script = "uid://hgwua3lrowt5"
+
+[resource]
+script = ExtResource("1_set")
+Entries = [SubResource("entry_house"), SubResource("entry_lovehouse"), SubResource("entry_sellpoint"), SubResource("entry_carrotfarm"), SubResource("entry_appleorchard"), SubResource("entry_mushroomcave"), SubResource("entry_warehouse"), SubResource("entry_library"), SubResource("Resource_28i5f"), SubResource("Resource_p7dhh"), SubResource("Resource_7yd6l")]

@@ -11,7 +11,7 @@ public static partial class LandDefinition
 {
     private static readonly Float SignClearRadius = (Float)1.6f;
 
-    public static Entity Create(Context ctx, Vector2 position, int threshold, int type = LandType.House, int arm = 0, int ring = 0, int locked = 0)
+    public static Entity Create(Context ctx, Vector2 position, int threshold, LandType type = LandType.House, int arm = 0, int ring = 0, int locked = 0)
     {
         var entity = Create(ctx, position);
         ref var land = ref ctx.GetComponent<LandComponent>(entity);

@@ -1,4 +1,6 @@
+using System;
 using Godot;
+using Template.Godot.Core;
 
 namespace Template.Godot.Visuals;
 
@@ -27,6 +29,18 @@ public partial class SettingsOverlay : CanvasLayer
     private Label _loveConfessionValueLabel;
     private HSlider _saySomethingSlider;
     private Label _saySomethingValueLabel;
+
+    // Lobby UI
+    private Label _lobbyCodeLabel;
+    private Button _lobbyCopyButton;
+    private Label _lobbyStatusLabel;
+    private LineEdit _lobbyCodeInput;
+    private Button _lobbyJoinButton;
+    private Button _lobbyCreateButton;
+    private Guid _lastSeenLobbyId;
+    private string _lastSeenStatus;
+    private Action<string> _statusHandler;
+    private Action<Guid> _lobbyCreatedHandler;
 
     // Colors for connection status
     private static readonly Color ConnectedColor = new(0.4f, 0.9f, 0.4f);
@@ -111,6 +125,28 @@ public partial class SettingsOverlay : CanvasLayer
             TwitchSettings.Save();
         };
 
+        // Lobby section
+        _lobbyCodeLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow/CodeLabel");
+        _lobbyCopyButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow/CopyButton");
+        _lobbyStatusLabel = GetNode<Label>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyStatusLabel");
+        _lobbyCodeInput = GetNode<LineEdit>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow/CodeInput");
+        _lobbyJoinButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow/JoinButton");
+        _lobbyCreateButton = GetNode<Button>("Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyActionsRow/CreateButton");
+
+        _lobbyCopyButton.Pressed += _OnCopyLobbyPressed;
+        _lobbyJoinButton.Pressed += _OnJoinLobbyPressed;
+        _lobbyCreateButton.Pressed += _OnCreateLobbyPressed;
+
+        var gm = GameManager.Instance;
+        if (gm != null)
+        {
+            _statusHandler = (status) => CallDeferred(nameof(_OnLobbyStatusDeferred), status);
+            _lobbyCreatedHandler = (_) => CallDeferred(nameof(_RefreshLobbyUI));
+            gm.OnStatusChanged += _statusHandler;
+            gm.OnLobbyCreated += _lobbyCreatedHandler;
+        }
+        _RefreshLobbyUI();
+
         // Set initial connection UI state
         _UpdateConnectionUI();
 
@@ -160,21 +196,107 @@ public partial class SettingsOverlay : CanvasLayer
         _UpdateConnectionUI();
     }
 
+    // ── Lobby Logic ─────────────────────────────────────────────────────
+
+    private void _RefreshLobbyUI()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null)
+        {
+            _lobbyCodeLabel.Text = "Offline";
+            _lobbyCodeLabel.AddThemeColorOverride("font_color", DisconnectedColor);
+            _lobbyCopyButton.Disabled = true;
+            _lobbyCreateButton.Disabled = true;
+            _lobbyJoinButton.Disabled = true;
+            return;
+        }
+
+        _lastSeenLobbyId = gm.CurrentLobbyId;
+        bool hasLobby = gm.CurrentLobbyId != Guid.Empty;
+        bool offline = gm.OfflineMode;
+
+        if (hasLobby)
+        {
+            _lobbyCodeLabel.Text = gm.CurrentLobbyId.ToString();
+            _lobbyCodeLabel.AddThemeColorOverride("font_color", ConnectedColor);
+            _lobbyCopyButton.Disabled = false;
+        }
+        else
+        {
+            _lobbyCodeLabel.Text = offline ? "Offline" : "Not connected";
+            _lobbyCodeLabel.AddThemeColorOverride("font_color", DisconnectedColor);
+            _lobbyCopyButton.Disabled = true;
+        }
+
+        _lobbyCreateButton.Disabled = false;
+        _lobbyJoinButton.Disabled = false;
+    }
+
+    private void _OnLobbyStatusDeferred(string status)
+    {
+        _lastSeenStatus = status;
+        if (_lobbyStatusLabel != null && IsInsideTree())
+            _lobbyStatusLabel.Text = status;
+        _RefreshLobbyUI();
+    }
+
+    private void _OnCopyLobbyPressed()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null || gm.CurrentLobbyId == Guid.Empty) return;
+        DisplayServer.ClipboardSet(gm.CurrentLobbyId.ToString());
+        _lobbyCopyButton.Text = "Copied!";
+        GetTree().CreateTimer(1.5).Timeout += () =>
+        {
+            if (Node.IsInstanceValid(_lobbyCopyButton))
+                _lobbyCopyButton.Text = "Copy";
+        };
+    }
+
+    private void _OnJoinLobbyPressed()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+        var text = _lobbyCodeInput.Text?.Trim() ?? "";
+        if (!Guid.TryParse(text, out var lobbyId))
+        {
+            _lobbyStatusLabel.Text = "Invalid lobby code.";
+            return;
+        }
+        _lobbyStatusLabel.Text = "Joining...";
+        _lobbyJoinButton.Disabled = true;
+        _lobbyCreateButton.Disabled = true;
+        _ = gm.JoinLobby(lobbyId);
+    }
+
+    private void _OnCreateLobbyPressed()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null) return;
+        _lobbyStatusLabel.Text = "Creating lobby...";
+        _lobbyCreateButton.Disabled = true;
+        _lobbyJoinButton.Disabled = true;
+        _ = gm.CreateLobby("Game Lobby");
+    }
+
     // ── Input ──────────────────────────────────────────────────────────
 
     public override void _Input(InputEvent @event)
     {
-        // Consume all input while active to block game
-        GetViewport().SetInputAsHandled();
-
         if (@event is InputEventKey { Pressed: true, Echo: false } key)
         {
             if (key.Keycode == Key.Escape)
             {
                 _Dismiss();
+                GetViewport().SetInputAsHandled();
                 return;
             }
         }
+
+        // LineEdit consumes its own GUI input first; only swallow leftovers so
+        // gameplay (WASD etc.) doesn't fire while the overlay is open.
+        if (_lobbyCodeInput != null && _lobbyCodeInput.HasFocus()) return;
+        GetViewport().SetInputAsHandled();
     }
 
     // ── Dismiss ────────────────────────────────────────────────────────
@@ -182,6 +304,13 @@ public partial class SettingsOverlay : CanvasLayer
     private void _Dismiss()
     {
         if (!IsInsideTree()) return;
+
+        var gm = GameManager.Instance;
+        if (gm != null)
+        {
+            if (_statusHandler != null) gm.OnStatusChanged -= _statusHandler;
+            if (_lobbyCreatedHandler != null) gm.OnLobbyCreated -= _lobbyCreatedHandler;
+        }
 
         var tween = CreateTween();
         tween.TweenProperty(_root, "modulate:a", 0f, 0.15f);

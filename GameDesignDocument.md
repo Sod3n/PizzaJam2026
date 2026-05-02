@@ -6,197 +6,374 @@
 
 ## 1. High Concept
 
-You play a **farm owner** building a small dairy empire on a star-shaped plot of land. The cows you raise are **anthropomorphic cowgirls** (girls with cow horns, ears, tails, and bell collars). The helpers you hire are **maids** in frilled aprons with **oversized bows on their heads**. The pets that boost your operation are **various cats** — calico apprentices, black-cat foremen, fluffy upgrade specialists.
+You play a **farm owner** building a small dairy empire on a star-shaped plot of land. The cows you raise are **anthropomorphic cowgirls** (girls with cow horns, ears, tails, and bell collars). The helpers you hire are **maids** in frilled aprons with **oversized bows on their heads**. The pets that boost your operation are **various cats** — picked up and placed wherever you want them, on cows, on maids, on yourself.
 
 The art style is hand-drawn / painterly with the chunky silhouettes and high-contrast shadows of *Don't Starve*, but warmer in palette — the cozy, slightly cursed pastoral mood of *Cult of the Lamb*. Top-down, soft camera follow, rim lighting at dawn/dusk.
 
-**Session goal:** breed cowgirls, milk them, sell milk, expand the farm, and eventually build the **Final Structure** at the southern tip of the map.
+**Session goal:** breed cowgirls, milk them, sell milk and occasionally cows, expand the farm, and eventually build the **Final Structure** at the southern tip of the map.
+
+**Tagline:** *"All cows are girls. All helpers wear bows. All cats are in charge. Build the shrine before the milk runs out."*
 
 ---
 
-## 2. Tone & Visual Direction
+## 2. Design Philosophy
+
+These rules define what the game is. Every system respects them.
+
+- **Input vocabulary: movement + one contextual button.** No menus, no mouse, no second button.
+- **Encounter teaching:** every system is taught by encountering it in the world, never by tutorial or up-front information.
+- **Strategic variance from world state:** variance comes from the world changing, not from the player choosing between simultaneous menu options.
+- **Cycle-tap on the contextual button is the only allowed form of "selection."**
+- **One physical target per semantic action.** Two actions need two targets.
+- **Differentiated objects, not duplicated signs.** When a system needs multiple physical targets, those targets must be visually and categorically distinct, not variants of the same object.
+- **Bonuses bind to roles, not individuals.** When workers can rotate jobs, upgrades stay anchored to the function being performed.
+- **Pacing comes from cooldowns and resets, not clocks.** The player chooses when to advance; the systems enforce minimums, never maximums.
+- **Strategic depth comes from gentle scarcity throughout, never from forced choice.** The player should always be able to ignore optimization and still enjoy the farm.
+- **Wait states have an active alternative.** If the player is forced to wait, give them an action that meaningfully reduces the wait — *unless the wait is the design point* (sleep/cooldown loops gated to a single shared rhythm are intentional).
+- **Multiplayer is asymmetric.** Strategic decisions are owned by Player 1; tactical execution is shared.
+
+> All numeric values mentioned in this document are *illustrative* — the canonical source is `Server/Template.Shared/GameData/Balance.cs`. When the doc and the code disagree, the code wins.
+
+---
+
+## 3. Tone & Visual Direction
 
 | Element | Direction |
 |---|---|
 | **Cows** | Cowgirls — black-and-white, brown, or tier-rare colorings (mushroom-spotted, apple-blushed). Bell collar, cow ears + small horns, swishing tail. Idle animations: tail flick, hoof tap, bashful blush when "in love." |
-| **Helpers** | Maids in classic black-and-white French maid outfits. Each has a **giant signature bow** in a unique color identifying their role (Ame the Assistant: pink; Lefantis the Gatherer: green; Mochi the Seller: gold; Brix the Builder: orange; Daisy the Milker: white). |
-| **Pets** | Cats. The Assistant pets are tabby kittens that shadow the player. |
-| **World** | Star-shaped pasture, five arms radiating from the central Sell Point. Each arm transitions biome as you expand outward: pasture → carrot fields → apple orchard → glowing mushroom cave. |
+| **Helpers** | Maids in classic black-and-white French maid outfits. Each has a giant signature bow identifying her **current** role (green = Gatherer, orange = Builder, gold = Seller, white = Milker). Maids switch bow color when they switch roles. |
+| **Pets** | Cats. Sleepy, judgmental, devastatingly effective. Sit at the pet sanctuary until picked up. Players carry them on the shoulder and place them on cows, maids, or themselves. |
+| **World** | Star-shaped pasture, five arms radiating from the central Player's House. Each arm transitions biome as you expand outward: pasture → carrot fields → apple orchard → glowing mushroom cave. |
+
+Anime-style emotion symbols above characters' heads communicate state — anger vein for upset, sweat drop for stressed, heart for in-love, music note for content, sleep Z for exhausted, sparkle for milestones. One symbol at a time per cow, highest-priority emotion shown.
 
 ---
 
-## 3. Core Loop
+## 4. Core Loop
 
 ```
-   ┌──── HARVEST food ────► FEED cow ────► MILK cow ────► SELL milk ─┐
-   │                                                                  │
-   └──── BUILD plots ◄──── EARN coins ◄────────────────────────────── ┘
-                │
-                └──► UNLOCK helpers / pets / farms ──► BREED stronger cowgirls
-                                                            │
-                                                            └──► WIN: Final Structure
+   ┌── HARVEST food ──► FEED cow ──► MILK cow ──► SELL ──┐
+   │                                                      │
+   └── BUILD plots ◄── EARN coins ◄────────────────────── ┘
+            │
+            └──► UNLOCK helpers / cats ──► BREED cowgirls
+                                                │
+                                                └──► WIN: Final Structure
 ```
 
-A run starts with **50 coins, two starter cowgirls, and one Sell Point**. The player clicks to milk, walks to sell, then deposits earnings into adjacent land plots to unlock houses, farms, love houses, and eventually the Final Structure at grid distance 7 due south.
+A run starts with a small coin reserve and two grass-locked starter cowgirls in the pasture near the central Player's House. The player taps to milk, walks to the Sell Point, deposits earnings into adjacent land plots to unlock houses, farms, love houses, and eventually the Final Structure at grid distance 7 due south.
 
-**Win condition:** build the Final Structure at grid (0, –7). Cost ramps to roughly 1680 coins by era multipliers, so the late game is about volume, not subsistence.
+Days advance when the player **sleeps** at their house. Each sleep refreshes cow exhaust, food caps, love-house cooldowns, and the Sell Point's accepted-product mode.
 
----
-
-## 4. The World — Star Grid
-
-The map is a five-pointed star, each arm 7 grid steps long (12.6 world units per step). Distance from center determines an **era multiplier** that scales every cost:
-
-| Grid distance | Era multiplier |
-|---|---|
-| 1–2 | ×1 |
-| 3 | ×2 |
-| 4 | ×3 |
-| 5 | ×4 |
-| 6+ | ×6 |
-
-Building cost = `gridDist × era × priceMultiplier × 10`. So a House at distance 1 is 10 coins; the Final Structure at distance 7 is 1680.
-
-Key fixed positions:
-- **(0, 0)** — Sell Point (the central well/altar where milk becomes coins).
-- **(1, 0)** — Love House (the first breeding pen, gated behind early income).
-- **(0, –7)** — Final Structure (the win goal).
-
-Farms (Carrot, Apple, Mushroom) spawn on every 5th house slot at staggered angles, forcing the player to expand into multiple arms instead of tunneling one direction.
+**Win condition:** build the Final Structure at grid `(0, –7)`. Cost ramps via era multipliers, so the late game is about volume, not subsistence.
 
 ---
 
-## 5. The Cowgirls
+## 5. The World — Star Grid
+
+The map is a five-pointed star. Distance from center determines an **era multiplier** that scales every cost — a House near center is cheap; the Final Structure at the southern tip is the most expensive thing in the game by an order of magnitude.
+
+**Building progression by ring.** The player builds outward in concentric "circles" (rings) around the center. Each ring becomes available once the *entire previous ring* is built. New buildings can only be placed within the currently-active ring. Ring boundaries are visually distinguished by ground color/banner tint.
+
+**Key fixed positions:**
+- **(0, 0) — Player's House.** The central anchor; spawn point; sleep target; cat-bonding target.
+- **Sell Point** — adjacent to the Player's House; accepts milk most days, switches to cow-buyer mode on a cycle.
+- **(0, –7) — Final Structure.** The win goal.
+
+Farms (Carrot, Apple, Mushroom) unlock at specific rings, forcing the player to expand outward through the era-cost curve to access higher tiers.
+
+---
+
+## 6. The Cowgirls
 
 ### Anatomy
+
 Each cowgirl has:
-- A **preferred food**: Grass (50% of cows), Carrot (28%), Apple (15%), Mushroom (7%).
-- A **MaxExhaust** stat (≥10) — how much milk she can give before she needs to rest.
+- A **food preference** — primary food (one of Grass / Carrot / Apple / Mushroom). A minority of cowgirls also have a **secondary** food they're equally happy with.
+- A **MaxExhaust** stat — how much milk she can give before she's spent.
 - A skin/coloring that's inherited at breeding and visually telegraphs her tier.
 
+Food preference is bound to the cow herself, not to a house. When she moves house, her preference travels with her. The two starter cows are forced to a known preference (grass) so the opening is predictable.
+
+### Discovering preferences
+
+A new cowgirl's preferences are **hidden** until the player feeds her. The food sign next to her house shows a **question mark** for any food the player hasn't yet tested with her. To discover whether she likes a particular food, the player must feed her enough of it to fill one full exhaust cycle (`MaxExhaust` units of that food). After that, the sign shows a **heart** if it's a preference or a **broken heart** if it isn't.
+
+This means picking which food to feed a new cow is itself a small puzzle: spend resources testing, or stick to the food you already know works.
+
 ### Milking
-The player taps to milk. Each tap consumes 1 unit of food and produces 1 unit of milk **if** the food matches her preference. Non-preferred food has a **50% chance to fail**. When MaxExhaust is reached, she's spent and needs reassignment or rest.
+
+The player taps to milk. Milking is a **cycle**: it takes a fixed number of clicks per unit of milk (the cow drains exhaust on every click but only produces milk every Nth click). Holding the button auto-fires at a slightly slower cadence than a fast tap — comfortable for long sessions, but rapid-tapping is still slightly more productive.
+
+If the food is one of the cow's preferences, every produced milk lands. If it isn't, each *produced milk* has a chance to fail (the food is still consumed). When `MaxExhaust` is reached the cow is spent. Mid-cycle clicks are honored even past `MaxExhaust` — she always gets to finish whatever milk she was working on.
+
+Cow exhaust does **not** regenerate passively. It only resets when the player sleeps.
 
 ### Breeding
-At a **Love House** (capacity 2 cowgirls), the player picks a pair and clicks to breed. Cost = sum of both cows' current exhaust.
 
-| Pair type | Outcome |
-|---|---|
-| Same-preference | Always succeeds. 1% chance of twins. No tier upgrade. |
-| Cross-tier (1 step) | 50% fail. Success = tier upgrade. |
-| Cross-tier (2 steps) | 75% fail. |
-| Cross-tier (3 steps) | 90% fail. |
+At a **Love House** (capacity 2 cowgirls), the player picks a pair and clicks to breed. The Love House has a **cooldown** between breeds that **only resets when the player sleeps** — no click-to-skip. Breeding cost scales with the parents' average `MaxExhaust`.
 
-A **failed breed** sends both cowgirls into **Depression** for 30 seconds — they sit slumped under the love house, non-interactable, then recover.
+**Offspring food preference** is rolled per breed:
+- Per-parent **inherit chance** for each parent (each rolled independently). With both parents same-pref, the result is more likely to share that pref; with mixed parents, you get a coin-flip plus randomness.
+- Otherwise, a **uniform random** food across all four types.
+- Some offspring also gain a **secondary** food preference (rolled at a small chance).
 
-### Love Events
-Every 2–5 breeds, a **love event** triggers: a random housed cowgirl gets infatuated with the highest-tier target on the farm. The next breed between them is a **guaranteed success and tier upgrade**. Storytelling-wise, this is the cowgirl's "anime confession" moment — a brief cutscene flourish before the love house shudders with hearts.
+There is no "tier ladder" — preferences are not ordered, and a cross-tier breed is just as likely to produce a low-tier as a high-tier offspring. Tier diversity comes from population size and breed volume, not from a guaranteed climb.
 
----
+**No empty house is required to breed.** Offspring without an available house follow the player or wait near the love house until the player assigns them.
 
-## 6. The Maids (Helpers)
+### Twins and love events
 
-Helpers are unlocked sequentially as your breed counter climbs:
+- **Twins** — small chance per breed to spawn two offspring instead of one.
+- **Love events** — a "guaranteed positive variance" event between two random housed cowgirls. The next breed between the two cows is the love-confession breed. (Love events can be globally disabled in the code as a tuning lever.)
 
-| Unlock breed # | Maid | Bow color | Job | Capacity | Speed |
-|---|---|---|---|---|---|
-| 2 | **Lefantis** the Gatherer | Green | Harvests food from farms | 75 → 120 | 2 → 6 |
-| 4 | **Brix** the Builder | Orange | Walks coins from player to land plots | 500 → 1000 | 2 → 6 |
-| 6 | **Mochi** the Seller | Gold | Carries milk to the Sell Point | 500 → 1000 | 2 → 6 |
-| 10 | **Daisy** the Milker | White | Autonomously milks housed cowgirls | 125 → 250 | 2 → 6 |
+### Failed-breed depression *(currently disabled)*
 
-Maid AI states: `Idle → SeekingTarget → MovingToTarget → Working → Returning → Depositing`. They drop resources at the player's feet unless a **Warehouse** has been built, in which case they auto-deposit into central storage. This is a major late-game unlock — it removes the player as a logistics bottleneck.
-
-**Maids are spawned from the Love House** when conditions are met (so breeding is also recruitment).
+The codebase scaffolds a "depression on failed cross-tier breed" mechanic, but it's switched off by default. When enabled, cross-tier breeds can fail (with cost penalties) and put both parents into a temporary timeout. Treat this as a feature toggle, not the current play experience.
 
 ---
 
-## 7. The Cats (Pets)
+## 7. The Maids (Helpers)
 
-Pets are upgrades that ride alongside helpers — sleepy, judgmental, devastatingly effective.
+Maids are unlocked sequentially as your breed counter climbs (one slot at a small breed count, the next a few breeds later, etc.).
 
-- **Assistant cats** sit at the **HelperAssistant building** (grid dist 2, then 6). The first cat doubles your click speed (×2), the second multiplies it again (up to ×10 with the second-tier UpgradeAssistant building). Visually they perch on the player's shoulder or scamper alongside.
-- **Upgrade cats** spawn at **UpgradeGatherer / UpgradeBuilder / UpgradeSeller / UpgradeMilker** buildings. Each one **doubles the capacity** and **triples the speed** of its target maid.
+**Maids are generic at hire-time** — they don't have fixed roles. Each maid is assigned to a cowgirl-style **House** (the same building cows live in), with a **role sign** attached. Cycling the role sign instantly changes the maid's job:
 
----
+- **Gatherer** (green bow) — harvests food from farms.
+- **Builder** (orange bow) — carries coins from the player to land plots.
+- **Seller** (gold bow) — carries milk to the Sell Point.
+- **Milker** (white bow) — autonomously milks housed cowgirls.
 
-## 8. Food & Farms
+Mid-trip tasks finish before the role-switch takes effect. The bow color updates so the player can read the whole maid workforce at a glance.
 
-| Tier | Food | Source | Rarity |
-|---|---|---|---|
-| 0 | Grass | Pasture (everywhere) | 50% cow preference |
-| 1 | Carrot | Carrot Farm (dist 2, 3) | 28% |
-| 2 | Apple | Apple Orchard (dist 4, 5) | 15% |
-| 3 | Mushroom | Mushroom Cave (dist 6, 7) | 7% |
+Maid AI states: `Idle → SeekingTarget → MovingToTarget → Working → Returning → Depositing`. They drop resources at the player's feet unless a **Warehouse** has been built, in which case they auto-deposit into central storage.
 
-Food is harvested by clicking the plant, or by Lefantis the Gatherer once she's hired. Farms regrow durability over time. The deeper-tier foods are required to milk rare-preference cowgirls efficiently — so unlocking the mushroom cave is a real mid-game goal, not just decoration.
-
-Houses display a **food sign** indicating which food the assigned cowgirl will eat. Mismatched signs mean failed milkings, so this is a small puzzle layer.
+Maids carry only resources relevant to their current role. A Gatherer carries food; a Milker carries milk; a Builder carries coins. They cannot transfer resources outside their role's normal flow.
 
 ---
 
-## 9. Buildings
+## 8. The Cats (Pets)
 
-| Building | Cost mult | Purpose |
+Cats live at the **Pet Sanctuary** building (one unified pet building, not five role-specific ones). The player walks to a cat, presses the contextual button → cat hops onto the player's shoulder.
+
+### Carrying and placing
+
+While carrying a cat, the contextual button **places** the cat instead of performing the target's normal action. Valid drop targets (each shows a faint glow when player is adjacent and carrying a cat):
+
+- **A cowgirl** — cat boosts that cow's milking yield.
+- **A maid** — cat boosts whatever role she's currently performing.
+- **The player** — cat permanently bonds and rides on the player's shoulder, boosting whatever the player is doing.
+- **Back at the Sanctuary** — un-assigns the cat.
+
+Pickup is reversible: walk to a placed cat, press button, it hops back on the shoulder.
+
+### Stacking and the strategic spectrum
+
+Multiple cats stack on the same target, **additive** (each cat adds the same amount of boost; they don't multiply). This creates the central strategic axis of the game:
+
+- **Hermit build** — stack all cats on the player. Player becomes a hyper-efficient one-person workforce. Active, click-heavy late game.
+- **Empress build** — distribute cats across cowgirls and maids. Player oversees a boosted workforce. Passive, managerial late game.
+- **Hybrid** — any combination in between.
+
+Cat distribution is the player's primary expression of late-game playstyle. It is **reauthorable** — pick up and move cats freely as the farm evolves.
+
+---
+
+## 9. Food & Farms
+
+| Tier | Food | Source |
 |---|---|---|
-| House | ×1 | Holds 1 cowgirl. Food sign chooses what she eats. |
-| Love House | ×2 | Holds 2. Click to breed. Spawns helpers when conditions trigger. |
-| Sell Point | – | Fixed at center. Milk → coins, 1:1. |
-| Carrot Farm / Apple Orchard / Mushroom Cave | ×1 | Tiered food sources. |
-| HelperAssistant / UpgradeAssistant | ×1 | Spawns assistant cats (click multipliers). |
-| UpgradeGatherer / Builder / Seller / Milker | ×1 | Spawns upgrade cats for that maid. |
-| Warehouse | ×2 | Removes the player from the logistics chain. |
-| Decoration | ×0.25 | Cosmetic. Pure flex. |
-| **Final Structure** | ×4 | Win condition. Distance 7 south. |
+| 0 | Grass | Pasture (everywhere — no farm needed) |
+| 1 | Carrot | Carrot Farm |
+| 2 | Apple | Apple Orchard |
+| 3 | Mushroom | Mushroom Cave |
+
+### Daily food caps
+
+Each food has a **daily production cap** that resets when the player sleeps:
+
+- **Grass** has a flat daily cap that does *not* require a building. It comes for free; it's the floor of the economy.
+- **Carrot / Apple / Mushroom** have **no base cap** — you must build farms to produce them. Each farm of that type adds to its tier's daily cap. There's a worldwide max number of farms per type.
+
+Capped food simply stops appearing on its source when the day's allotment is reached. Empty farm = capped, will refresh after sleep.
+
+### Equal milk values
+
+All milk is worth the same regardless of which cow produced it. Tiers do not differentiate milk value.
+
+### Why tiers matter
+
+With equal milk values and per-tier daily caps, the player needs cows of multiple food types to fully utilize their daily food budget. A farm of all grass cows leaves carrot/apple/mushroom production unused. A farm of all mushroom cows can't be fed (cap too small without enough caves). The optimal farm is automatically a portfolio. Tier diversity emerges from supply constraints, not from output value.
+
+The player can always choose to ignore optimization — under-fed cows simply wait without producing, no punishment.
 
 ---
 
-## 10. Strategic Depth — What's the Player Actually Choosing?
+## 10. Buildings
 
-1. **Who do I breed with whom?** Safe same-tier breeds are reliable income; cross-tier gambles risk 30s of dead time but give tier-upgrades that compound forever.
-2. **Which arm of the star do I expand into first?** Farms force multi-arm growth; expanding only south reaches the Final Structure faster but starves you of food variety.
-3. **Helpers vs. self-reliance.** A no-helper run takes 30+ minutes of clicking. A selective-helper run (Gatherer + assistant cats early, then Milker late) closes in ~20.
-4. **When do I take the Warehouse plunge?** Costs 2× a normal building, but transforms maids from "drop at player's feet" to "fully autonomous loop."
-5. **Click economy.** Stacking Assistant cats up to ×10 click speed makes the player themself the most powerful milker in the game — but only if you spend the building budget on it.
+| Building | Purpose |
+|---|---|
+| **House** | Holds 1 cowgirl OR 1 maid. The sign on the side is a **food sign** for cows or a **role sign** for maids. The sign appears only after the house is occupied. |
+| **Love House** | Holds 2 cowgirls. Click to breed. Cooldown only resets on sleep. |
+| **Sell Point** | Fixed near the Player's House. Sells milk most days; on cow-buyer days it accepts cowgirls instead. |
+| **Carrot Farm / Apple Orchard / Mushroom Cave** | Tiered food sources. Each adds to its tier's daily cap. Capped per type worldwide. |
+| **Pet Sanctuary** (HelperAssistant) | Houses cats. Cats spawn here, idle until picked up, return here when un-assigned. |
+| **Warehouse** | Centralized resource storage. Removes the player as logistics bottleneck. Capped at 1. |
+| **Library** | Mid-game opt-in. Displays the cowgirl family tree (lineage + portraits, no stats). Memorial space. Capped at 1. |
+| **Player's House** | Fixed at center `(0, 0)`. Sleep target. Cat-bonding target. |
+| **Decoration** | Cosmetic. Pure flex. |
+| **Final Structure** | Win condition. Distance 7 south. |
 
-The metrics system tracks cumulative food/milk/coins, peaks, and "zero-tick" bottlenecks (how often a resource ran dry), and feeds an ML bot trainer for balance tuning.
+### Building selection — the two signs on a plot
+
+Each empty plot has **two physical signs** flanking the land:
+
+- **Type sign (right)** — press the contextual button to **cycle** through the building types valid at this ring. The icon and label update to whatever's currently selected. Only buildings unlocked at the current ring (and whose worldwide / per-ring caps haven't been hit) appear in the cycle.
+- **Coin sign (left)** — press the contextual button to **deposit coins** toward the currently-selected type. The progress display updates as you pay it down. Once any coin has been deposited, the type cycle is **locked** for that plot — the building is committed. A "selected" badge appears on the type sign so the choice is visually frozen.
+
+The land plot itself is not interactable. Walk up to the appropriate sign for the action you want.
+
+The Final Structure and the central Player's House are fixed (no cycling) at their reserved coordinates.
 
 ---
 
-## 11. Game Feel
+## 11. Sleep, Days, and the Sell Point Rotation
 
-- **Cowgirls in the follow chain** drift behind the player in a soft serpentine — same swarm-follow algorithm as classic Pikmin / Cult of the Lamb followers, with a 1.8-unit separation push so they don't clip.
+### Sleep
+
+The player walks to their house and presses the contextual button to sleep. Sleeping advances the day and:
+- Resets all cow exhaust to full.
+- Refreshes all daily food caps.
+- Clears all Love House cooldowns.
+- Rotates the Sell Point's accepted-product mode.
+
+Sleep itself has a cooldown to prevent spam. While on cooldown, clicking on the Player's House subtracts a small fixed amount per click — the player always has something meaningful to do, never blocked, never idle-waiting.
+
+The day cycle is **structural pacing, not time pressure.** There is no ticking clock within a day, no sky darkening, no "before the day ends" panic. Days end when the player chooses to sleep.
+
+### Sell Point modes
+
+The Sell Point rotates between two modes on a fixed day cycle (most days = milk; every Nth day = cows). A sign next to the Sell Point displays today's mode:
+
+- **Milk mode** (most days) — sells milk at base rate (1 milk = 1 coin).
+- **Cow-buyer mode** (every Nth day) — accepts cowgirls in exchange for coins. Cow price scales with **tier** + **rested exhaust** (a fully-rested high-tier cow sells for more than a tired low-tier one).
+
+When a cow is sold during cow-buyer mode, she walks to a holding area scattered around the Sell Point. She stays there for the rest of the run as part of the world's evolving population — a visual reminder of the herd you've built and let go.
+
+This creates a parallel economy: sell milk (steady income, slow accumulation) vs. breed-and-sell cows (burst income on cow-buyer days). Players choose which build to lean into; hybrids are natural.
+
+---
+
+## 12. Multiplayer (Optional)
+
+Player 2 joins as a **humanized maid**. They share the maid's interaction surface — own bag, role-locked resource carrying, role-cycle on empty interact (no nearby target), and the same drop-at-player-or-warehouse pattern as AI maids.
+
+Player 2 is **tactical**: they pick what to gather first, which cow to milk, where to walk, what role to play. The strategic surface is reserved for Player 1 and **enforced server-side** — when a helper-player tries one of the strategic interactions, the click is silently rejected (no animation, no state change). The locked actions are:
+
+- **Sleep** at the Player's House (advances the day cycle).
+- **Breeding** at the Love House (assigning cows, starting the breed).
+- **Cycling building type** on a land plot (locks once any coin is invested anyway).
+- **Picking up / placing cats**.
+- **Selling a cowgirl** on a cow-buyer day. (Selling milk is open to either player — that's tactical.)
+
+Everything else — milking cows, harvesting food, depositing coins via the price sign, cycling a cow's food sign or a maid's role sign, transferring bag contents to/from the main player — stays open to both players.
+
+When Player 2 joins, one of the AI maid breeding-pool slots is removed — Player 2 takes that slot in the workforce, so the unlock cadence still feels right.
+
+Cooperation is mediated through the existing resource flow. If Player 1 wants Player 2 to help build, Player 1 deposits coins where Player 2 can pick them up — same loop the AI Builder follows in single-player.
+
+The asymmetry preserves Player 1's authorship of the farm while giving Player 2 meaningful, varied work.
+
+---
+
+## 13. Strategic Depth
+
+What is the player actually choosing across a run?
+
+1. **Cat distribution.** The central strategic axis — how active vs. passive do you want to be? Hermit, Empress, or hybrid? Reauthorable throughout the run.
+2. **Maid role allocation.** With 4 maids and 4 roles, what's your workforce composition? Can be rebalanced as bottlenecks shift through the run.
+3. **Which arm of the star to expand into first.** Farms force multi-arm growth; expanding only south reaches the Final Structure faster but starves you of food variety.
+4. **Build philosophy.** Lean into the milk economy or the cow-sale economy? Hybrid both? Each shapes which buildings to prioritize.
+5. **When to take the Warehouse plunge.** Costs more than a normal building, but transforms maids from "drop at player's feet" to "fully autonomous loop."
+6. **Cow portfolio composition.** With daily food caps, how many of each tier do you want? Match your portfolio to your daily food production. Discovery layer adds an information-gathering puzzle: which cow do you bother testing?
+7. **Sleep timing.** Sleep early to refresh resources, or push longer to make use of accumulated capacity?
+8. **Cow-buyer day strategy.** Save cows for cow-buyer days, or sell continuously into milk?
+
+---
+
+## 14. Game Feel
+
+- **Cowgirls in the follow chain** drift behind the player in a soft serpentine — same swarm-follow algorithm as classic Pikmin / Cult of the Lamb followers, with a separation push so they don't clip.
 - **Maids have navmesh avoidance** so they look purposeful, not glued to the player.
-- **Cats just teleport when off-screen.** They're cats.
-- Ticks are 60 TPS, deterministic (server/client lockstep). Inputs are buffered — the click feel should be tight, with a satisfying "clink" + tiny milk-bottle animation per successful click.
+- **Cats** ride on the shoulder when carried, leap off into a sleeping pose when placed, and idle-wash themselves when stationary at the Sanctuary.
+- Server simulation runs deterministically (server/client lockstep). Inputs are buffered.
+- The contextual button has a satisfying "clink" + tiny milk-bottle animation per successful click.
+- Anime emotion icons above characters' heads communicate state at a glance — no UI panels needed.
 
 ---
 
-## 12. Win State & Replay
+## 15. Win State & Replay
 
-When the Final Structure is built at (0, –7), the run ends. Suggested win flourish: the structure unfolds into a small chapel/shrine, every cowgirl on the farm trots to it for a group bow, all maids curtsy in unison, every cat falls asleep. Run-time, breed count, and peak coin readout shown on a ribbon.
+When the Final Structure is built at `(0, –7)`, the run ends. Suggested win flourish: the structure unfolds into a small chapel/shrine, every cowgirl on the farm trots to it for a group bow, all maids curtsy in unison, every cat falls asleep. Run-time, breed count, peak coin readout, and sleep count shown on a ribbon.
 
-Replay value comes from:
-- Speedrun targets (20 / 25 / 30 minute tiers).
-- Skin / cat collection completion.
-- Self-imposed challenges (no helpers, no cross-breeding, single-arm run).
+Replayability comes from:
+- Strategic branching — Hermit vs. Empress vs. hybrid produce different runs.
+- Cat distribution choices — every run can use the cats differently.
+- Build philosophy — milk-focused vs. cow-sale-focused vs. mixed.
+- Sleep count as a quiet metric — players who care about optimization see "completed in N sleeps" and can target lower.
+
+The sleep count exists for those who want a metric to chase; players who don't care won't notice it. No leaderboards, no achievements forced on the player.
 
 ---
 
-## 13. Reference Constants (Engineering)
+## 16. UI Philosophy
 
-For balancing reference, the current shipped values (subject to tuning):
+The game has essentially **no traditional UI**. State is communicated through:
 
-- Start: 50 coins, 2 grass cows, 1 Sell Point.
-- Milk → coin: 1:1.
-- Cow depression: 1800 ticks (30 s).
-- Love event interval: 2–5 breeds; deferred 0–180 s.
-- Twin chance: 1%.
-- Cross-tier breed fail: 50% / 75% / 90%.
-- Helper unlocks: breed #2, #4, #6, #10.
-- Capacity upgrades: ×2. Speed upgrades: ×3.
-- Click multipliers: ×2 (Assistant), ×5 (UpgradeAssistant) — stack up to ~×10.
-- Grid step: 12.6 units. Final structure: dist 7.
+- The world itself — empty farms = capped, sleeping cats = unassigned, bow color = role, badge on the type sign = building committed.
+- Anime emotion icons above characters' heads.
+- Bell colors and charms on cowgirls (subtle bond/trait indicators).
+- Glow on valid targets when carrying something (cats).
+- Signs flanking houses and plots — food/role/blueprint, cycle-tap to set.
+- Question marks and hearts/broken-hearts on food signs to convey discovery state.
+
+The two allowed overlays:
+- **Family tree** at the Library building (lineage + portraits, no stats — memorial only).
+- **End-of-run ribbon** (stats summary at win).
+
+Both are opt-in and triggered by physical objects in the world.
+
+---
+
+## 17. Engineering Reference
+
+The canonical balance config lives at:
+```
+Server/Template.Shared/GameData/Balance.cs
+```
+
+`Balance.cs` is the single source of truth for every tunable lever — costs, cooldowns, caps, click cadences, fail rolls, era multipliers, ring-unlock thresholds, per-building caps (both world and per-ring), starting state, formulas, and feature toggles (depression, love events, etc.).
+
+> Treat any numbers in this document as illustrative rather than authoritative. If you need an exact value, read `Balance.cs`.
+
+Selected feature toggles worth knowing about while reading the doc:
+- `Balance.Cow.DepressionEnabled` — failed-breed depression (currently off).
+- `Balance.Love.Enabled` — love events (currently on).
+- `Balance.Build.Limit.<Building>.{World, PerRing}` — per-building caps; `-1` on either axis disables that side of the check.
+
+---
+
+## 18. Future Considerations
+
+Ideas scoped out of the current build, kept here for future iteration after the core loop is validated:
+
+- **Social layer.** Cowgirls develop bonds with the player and with each other; relationships affect breeding and milk production.
+- **Exhaust-cost breeding + depression risk.** Breeding consumes exhaust from both cows; tired cows are more likely to fail emotionally and become depressed. Some scaffolding already exists in code, gated behind `Balance.Cow.DepressionEnabled = false`.
+- **Buyer-NPC tier acquisition.** Currently the cow-buyer is just a Sell Point mode (you sell *to* them, you don't buy *from* them). A future expansion could let the player *purchase* fresh cows of new food tiers from the visiting buyer.
+- **Cow cart pickup.** Currently sold cows stay around the Sell Point indefinitely as flavor. A future polish pass could add a periodic cart that hauls accumulated sold cows off-screen.
+- **Post-hoc accomplishment scrapbook** at the player's house.
+- **Multiple win conditions** — Shrine of Abundance / Devotion / Prosperity, each requiring a different farm shape.
+- **Map randomization** beyond food layout.
 
 ---
 

@@ -17,6 +17,13 @@ public partial class PlayerView
 
     partial void OnSpawned(PlayerViewModel vm, Node3D visualNode)
     {
+        var state = GameManager.Instance?.Game?.State;
+        if (state != null && state.HasComponent<HelperPlayerComponent>(vm.Entity))
+        {
+            visualNode.QueueFree();
+            return;
+        }
+
         if (GameManager.Instance.LocalPlayerId != vm.Entity.Id)
             visualNode.GetNode<Camera3D>("Camera").QueueFree();
 
@@ -24,10 +31,6 @@ public partial class PlayerView
         ViewHelpers.SetupMovementAnimation(vm, vm.Player.CharacterBody2D.Velocity, flipPivot, characterNode);
         ViewHelpers.SetupPositionTween(vm, visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
-
-        var state = ReactiveSystem.Instance.BoundState;
-        if (state != null && state.HasComponent<HelperPlayerComponent>(vm.Entity))
-            SetupHelperPlayerBagUI(vm, visualNode);
 
         // Zoom camera when player is hidden (milking, breeding)
         var camera = visualNode.GetNodeOrNull<Camera3D>("Camera");
@@ -85,71 +88,5 @@ public partial class PlayerView
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
         }
-    }
-
-    private static void SetupHelperPlayerBagUI(PlayerViewModel vm, Node3D visualNode)
-    {
-        var bagLabel = new Label3D
-        {
-            Text = "",
-            FontSize = 64,
-            Modulate = Colors.White,
-            OutlineModulate = Colors.Black,
-            Position = new GVector3(0, 3.0f, 0),
-            NoDepthTest = true,
-            RenderPriority = 4,
-            OutlineRenderPriority = 3,
-            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
-        };
-        visualNode.AddChild(bagLabel);
-
-        var roleLabel = new Label3D
-        {
-            Text = "",
-            FontSize = 48,
-            Modulate = new Color(0.85f, 0.95f, 1f, 1f),
-            OutlineModulate = Colors.Black,
-            Position = new GVector3(0, 3.6f, 0),
-            NoDepthTest = true,
-            RenderPriority = 4,
-            OutlineRenderPriority = 3,
-            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
-        };
-        visualNode.AddChild(roleLabel);
-
-        var timer = new Timer { WaitTime = 0.2f, Autostart = true };
-        timer.Timeout += () =>
-        {
-            if (!Node.IsInstanceValid(bagLabel) || !Node.IsInstanceValid(roleLabel)) return;
-            var rs = ReactiveSystem.Instance.BoundState;
-            if (rs == null || !rs.HasComponent<HelperPlayerComponent>(vm.Entity)) return;
-            var hp = rs.GetComponent<HelperPlayerComponent>(vm.Entity);
-            roleLabel.Text = RoleName(hp.Type);
-            bagLabel.Text = FormatBag(hp);
-        };
-        visualNode.AddChild(timer);
-    }
-
-    private static string RoleName(int type) => type switch
-    {
-        HelperType.Gatherer => "Gatherer",
-        HelperType.Seller => "Seller",
-        HelperType.Builder => "Builder",
-        HelperType.Milker => "Milker",
-        HelperType.Assistant => "Assistant",
-        _ => "?",
-    };
-
-    private static string FormatBag(HelperPlayerComponent hp)
-    {
-        var sb = new System.Text.StringBuilder();
-        if (hp.BagGrass > 0) sb.Append($"G{hp.BagGrass} ");
-        if (hp.BagCarrot > 0) sb.Append($"C{hp.BagCarrot} ");
-        if (hp.BagApple > 0) sb.Append($"A{hp.BagApple} ");
-        if (hp.BagMushroom > 0) sb.Append($"M{hp.BagMushroom} ");
-        if (hp.BagMilk > 0) sb.Append($"Mk{hp.BagMilk} ");
-        if (hp.BagCoins > 0) sb.Append($"${hp.BagCoins} ");
-        if (sb.Length == 0) return $"[{hp.GetBagTotal()}/{hp.BagCapacity}]";
-        return $"{sb.ToString().TrimEnd()} [{hp.GetBagTotal()}/{hp.BagCapacity}]";
     }
 }

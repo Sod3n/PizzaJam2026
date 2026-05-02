@@ -4,6 +4,7 @@ using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.Physics2D.Components;
 using Template.Shared.Components;
 using Template.Shared.Definitions;
+using Template.Shared.GameData;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Navigation2D.Systems;
 
@@ -11,7 +12,7 @@ namespace Template.Shared.Systems;
 
 public class GrassSpawnSystem : ISystem
 {
-    private const int SpawnInterval = 600; // 10 seconds @ 60 ticks (x4 slower)
+    private const int SpawnInterval = Balance.FoodSpawn.IntervalTicks;
 
     private readonly Vector2 _minPos = new Vector2(-30, -30);
     private readonly Vector2 _maxPos = new Vector2(30, 30);
@@ -99,7 +100,7 @@ public class GrassSpawnSystem : ISystem
         }
     }
 
-    private const int MaxSpawnAttempts = 10;
+    private const int MaxSpawnAttempts = Balance.FoodSpawn.MaxSpawnAttempts;
 
     private bool SpawnFood(Context context, uint seed, int foodType)
     {

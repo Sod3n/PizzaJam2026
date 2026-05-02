@@ -9,5 +9,6 @@ public struct PlayerHouseComponent : IComponent
 {
     public int CooldownTicksRemaining;
 
-    public const int SleepCooldownTicks = 7200;
+    /// <summary>Forwards to <see cref="GameData.Balance.PlayerHouse.SleepCooldownTicks"/> for back-compat.</summary>
+    public const int SleepCooldownTicks = GameData.Balance.PlayerHouse.SleepCooldownTicks;
 }

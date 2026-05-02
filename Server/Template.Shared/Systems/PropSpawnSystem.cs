@@ -10,13 +10,13 @@ namespace Template.Shared.Systems;
 public class PropSpawnSystem : ISystem
 {
     private const int SpawnTick = 0;
-    private const int PropCount = 350;
+    private const int PropCount = Template.Shared.GameData.Balance.Props.Count;
     // Match the wall bounds set up in GameplayScene so props fill the whole walled box.
     private static readonly Float MapHalfSize = (Float)(StarGrid.OuterRadius + StarGrid.GridStep);
-    private static readonly Float MinLandLabelBuffer = (Float)2; // Buffer so props don't spawn too close to land/buildings
-    private static readonly Float MinPropDistance = (Float)4;    // Minimum distance between props
-    private static readonly Float MinSameTypeDistance = (Float)8; // Minimum distance between same prop type (prevents clusters)
-    private const uint Seed = 98765;
+    private static readonly Float MinLandLabelBuffer = (Float)Template.Shared.GameData.Balance.Props.MinLandLabelBuffer;
+    private static readonly Float MinPropDistance = (Float)Template.Shared.GameData.Balance.Props.MinPropDistance;
+    private static readonly Float MinSameTypeDistance = (Float)Template.Shared.GameData.Balance.Props.MinSameTypeDistance;
+    private const uint Seed = Template.Shared.GameData.Balance.Props.Seed;
 
     // Spawn weights per prop type (higher = more common)
     // Barrel=0, Bush1=1, Bush2=2, Flowers=3, Tree=4

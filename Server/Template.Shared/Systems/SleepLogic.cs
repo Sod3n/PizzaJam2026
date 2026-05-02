@@ -1,13 +1,12 @@
 using Deterministic.GameFramework.ECS;
 using Template.Shared.Components;
+using Template.Shared.GameData;
 using Deterministic.GameFramework.Utils.Logging;
 
 namespace Template.Shared.Systems;
 
 public static class SleepLogic
 {
-    public const int FoodCapPerFarmPerDay = 5;
-    public const int GrassCapBaseDay = 12;
 
     public static void AdvanceDay(EntityWorld state)
     {
@@ -33,7 +32,7 @@ public static class SleepLogic
             cow.MilkClickCounter = 0;
         }
 
-        int product = (newDay % 3) == 2 ? SellProduct.Cow : SellProduct.Milk;
+        int product = (newDay % Balance.Sell.DayCycle) == Balance.Sell.CowDayRemainder ? SellProduct.Cow : SellProduct.Milk;
         foreach (var signEntity in state.Filter<SellPointSignComponent>())
         {
             ref var sign = ref state.GetComponent<SellPointSignComponent>(signEntity);
@@ -50,21 +49,26 @@ public static class SleepLogic
 
     public static int GetFoodCapForToday(EntityWorld state, int foodType)
     {
-        if (foodType == FoodType.Grass) return GrassCapBaseDay;
-
-        int farmCount = 0;
+        // Per-food formula: BasePerDay + PerFarm * (count of matching farm building).
         switch (foodType)
         {
+            case FoodType.Grass:
+                return Balance.Sleep.Grass.BasePerDay + Balance.Sleep.Grass.PerFarm * 0;
             case FoodType.Carrot:
-                foreach (var _ in state.Filter<CarrotFarmComponent>()) farmCount++;
-                break;
+                return Balance.Sleep.Carrot.BasePerDay + Balance.Sleep.Carrot.PerFarm * CountFarms<CarrotFarmComponent>(state);
             case FoodType.Apple:
-                foreach (var _ in state.Filter<AppleOrchardComponent>()) farmCount++;
-                break;
+                return Balance.Sleep.Apple.BasePerDay + Balance.Sleep.Apple.PerFarm * CountFarms<AppleOrchardComponent>(state);
             case FoodType.Mushroom:
-                foreach (var _ in state.Filter<MushroomCaveComponent>()) farmCount++;
-                break;
+                return Balance.Sleep.Mushroom.BasePerDay + Balance.Sleep.Mushroom.PerFarm * CountFarms<MushroomCaveComponent>(state);
+            default:
+                return 0;
         }
-        return farmCount * FoodCapPerFarmPerDay;
+    }
+
+    private static int CountFarms<T>(EntityWorld state) where T : unmanaged, Deterministic.GameFramework.ECS.IComponent
+    {
+        int count = 0;
+        foreach (var _ in state.Filter<T>()) count++;
+        return count;
     }
 }

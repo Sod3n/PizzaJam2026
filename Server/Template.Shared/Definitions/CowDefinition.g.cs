@@ -35,7 +35,13 @@ public static partial class CowDefinition
         component.FollowingPlayer = Entity.Null;
         component.FollowTarget = Entity.Null;
         component.PreferredFood = 0;
+        component.SecondaryPreferredFood = 0;
         component.SelectedFood = 0;
+        component.DiscoveredFoodMask = 0;
+        component.FedGrassCount = 0;
+        component.FedCarrotCount = 0;
+        component.FedAppleCount = 0;
+        component.FedMushroomCount = 0;
         component.IsDepressed = false;
         component.DepressionTicksRemaining = 0;
         component.LoveTarget = Entity.Null;

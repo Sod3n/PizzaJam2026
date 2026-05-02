@@ -6,36 +6,36 @@ using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
 
-public static class LandType
+public enum LandType
 {
-    public const int House = 0;
-    public const int LoveHouse = 1;
-    public const int SellPoint = 2;
-    public const int FinalStructure = 3;
-    public const int CarrotFarm = 4;
-    public const int AppleOrchard = 5;
-    public const int MushroomCave = 6;
-    public const int HelperAssistant = 7;
-    public const int UpgradeGatherer = 8;
-    public const int UpgradeBuilder = 9;
-    public const int UpgradeSeller = 10;
-    public const int UpgradeAssistant = 11; // Late-game: x5 click speed (x10 with HelperAssistant)
-    public const int Decoration = 12;       // Stub building — costs coins but doesn't house cows
-    public const int Warehouse = 13;        // Warehouse — helpers auto-deposit resources when enabled
-    public const int PlayerHouse = 14;      // Player's house — sleep to advance day, regen exhaust, reset food caps
-    public const int Library = 15;
+    House = 0,
+    LoveHouse = 1,
+    SellPoint = 2,
+    FinalStructure = 3,
+    CarrotFarm = 4,
+    AppleOrchard = 5,
+    MushroomCave = 6,
+    HelperAssistant = 7,
+    UpgradeGatherer = 8,
+    UpgradeBuilder = 9,
+    UpgradeSeller = 10,
+    UpgradeAssistant = 11,
+    Decoration = 12,
+    Warehouse = 13,
+    PlayerHouse = 14,
+    Library = 15,
+}
 
+public static class LandTypes
+{
     /// <summary>Get the FoodType this farm land type produces, or -1 if not a farm.</summary>
-    public static int GetFoodType(int landType)
+    public static int GetFoodType(LandType landType) => landType switch
     {
-        return landType switch
-        {
-            CarrotFarm => FoodType.Carrot,
-            AppleOrchard => FoodType.Apple,
-            MushroomCave => FoodType.Mushroom,
-            _ => -1
-        };
-    }
+        LandType.CarrotFarm => FoodType.Carrot,
+        LandType.AppleOrchard => FoodType.Apple,
+        LandType.MushroomCave => FoodType.Mushroom,
+        _ => -1
+    };
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -44,7 +44,7 @@ public struct LandComponent : IComponent
 {
     public int CurrentCoins;
     public int Threshold;
-    public int Type;
+    public LandType Type;
     public int Arm;    // 0-4: which star arm
     public int Ring;   // 0 = innermost, higher = further out
     public int Locked; // 1 = hidden/non-interactable, 0 = unlocked
