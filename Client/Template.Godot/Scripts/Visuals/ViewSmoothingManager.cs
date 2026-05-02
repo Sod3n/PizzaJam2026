@@ -132,7 +132,9 @@ public partial class ViewSmoothingManager : Node
         if (_wasPaused && !paused)
         {
             // Transitioned from paused -> running: FullState catch-up finished.
-            Smoother?.ResetAll();
+            // OnTick runs on the game-loop thread but Reset's appliers touch Godot
+            // nodes (Position, etc.) which must run on the main thread.
+            Callable.From(() => Smoother?.ResetAll()).CallDeferred();
         }
         _wasPaused = paused;
     }

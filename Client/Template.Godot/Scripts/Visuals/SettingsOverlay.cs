@@ -140,8 +140,9 @@ public partial class SettingsOverlay : CanvasLayer
         var gm = GameManager.Instance;
         if (gm != null)
         {
-            _statusHandler = (status) => CallDeferred(nameof(_OnLobbyStatusDeferred), status);
-            _lobbyCreatedHandler = (_) => CallDeferred(nameof(_RefreshLobbyUI));
+            // Callable.From bypasses Godot's name-based dispatch (which silently fails on private methods).
+            _statusHandler = (status) => Callable.From(() => _OnLobbyStatusDeferred(status)).CallDeferred();
+            _lobbyCreatedHandler = (_) => Callable.From(_RefreshLobbyUI).CallDeferred();
             gm.OnStatusChanged += _statusHandler;
             gm.OnLobbyCreated += _lobbyCreatedHandler;
         }
@@ -243,8 +244,14 @@ public partial class SettingsOverlay : CanvasLayer
     private void _OnCopyLobbyPressed()
     {
         var gm = GameManager.Instance;
-        if (gm == null || gm.CurrentLobbyId == Guid.Empty) return;
-        DisplayServer.ClipboardSet(gm.CurrentLobbyId.ToString());
+        var lobbyId = gm?.CurrentLobbyId ?? Guid.Empty;
+        var labelText = _lobbyCodeLabel?.Text ?? "";
+        // Prefer the label text — works in offline mode too, and matches what the user sees.
+        string toCopy = lobbyId != Guid.Empty ? lobbyId.ToString() : labelText;
+        GD.Print($"[SettingsOverlay] Copy pressed. lobbyId={lobbyId} label='{labelText}' toCopy='{toCopy}'");
+        if (string.IsNullOrEmpty(toCopy) || toCopy == "Offline" || toCopy == "Not connected") return;
+
+        DisplayServer.ClipboardSet(toCopy);
         _lobbyCopyButton.Text = "Copied!";
         GetTree().CreateTimer(1.5).Timeout += () =>
         {

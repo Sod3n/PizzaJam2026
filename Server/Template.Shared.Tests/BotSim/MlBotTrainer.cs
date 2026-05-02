@@ -202,10 +202,6 @@ public sealed class MlBotTrainer
             + CountBuilt<AppleOrchardComponent>(game)
             + CountBuilt<MushroomCaveComponent>(game)
             + CountBuilt<HelperAssistantComponent>(game)
-            + CountBuilt<UpgradeGathererComponent>(game)
-            + CountBuilt<UpgradeBuilderComponent>(game)
-            + CountBuilt<UpgradeSellerComponent>(game)
-            + CountBuilt<UpgradeAssistantComponent>(game)
             + CountBuilt<WarehouseComponent>(game)
             + CountBuilt<FinalStructureComponent>(game);
     }

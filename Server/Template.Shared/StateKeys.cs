@@ -36,10 +36,6 @@ public static class StateKeys
     public const string InfoAppleOrchard = "apple_orchard";
     public const string InfoMushroomCave = "mushroom_cave";
     public const string InfoHelperAssistant = "helper_assistant";
-    public const string InfoUpgradeGatherer = "upgrade_gatherer";
-    public const string InfoUpgradeBuilder = "upgrade_builder";
-    public const string InfoUpgradeSeller = "upgrade_seller";
-    public const string InfoUpgradeAssistant = "upgrade_assistant";
     public const string InfoDecoration = "decoration";
     public const string InfoWarehouse = "warehouse";
     public const string InfoDepressed = "depressed";

@@ -1,8 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bb2kj66xf7s1n"]
 
 [ext_resource type="Script" uid="uid://bpg176dniu7y7" path="res://Scripts/Visuals/SettingsOverlay.cs" id="1_script"]
+[ext_resource type="StyleBox" uid="uid://20yac7pqm4o4" path="res://Styles/sub_container.tres" id="2_g4k1h"]
+[ext_resource type="Theme" uid="uid://chxeajla0yriy" path="res://Styles/default_theme.tres" id="3_qjwmu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 32.0
+content_margin_top = 24.0
+content_margin_right = 32.0
+content_margin_bottom = 24.0
 bg_color = Color(0.522, 0.737, 0.698, 1)
 border_width_left = 2
 border_width_top = 2
@@ -13,73 +19,64 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-content_margin_left = 32.0
-content_margin_top = 24.0
-content_margin_right = 32.0
-content_margin_bottom = 24.0
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g4k1h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.45, 0.65, 0.62, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 1, 1, 1)
 border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-content_margin_left = 12.0
-content_margin_top = 6.0
-content_margin_right = 12.0
-content_margin_bottom = 6.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
-bg_color = Color(0.5175, 0.7475, 0.713, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-content_margin_left = 12.0
-content_margin_top = 6.0
-content_margin_right = 12.0
-content_margin_bottom = 6.0
+shadow_size = 2
+shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
-bg_color = Color(0.3825, 0.5525, 0.527, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 1, 1, 1)
 border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
 content_margin_left = 12.0
 content_margin_top = 6.0
 content_margin_right = 12.0
 content_margin_bottom = 6.0
+bg_color = Color(1, 1, 1, 1)
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 2
+shadow_offset = Vector2(0, 2)
 
-[node name="SettingsOverlay" type="CanvasLayer"]
+[node name="SettingsOverlay" type="CanvasLayer" unique_id=854990831]
 layer = 100
 script = ExtResource("1_script")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=260580854]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Background" type="ColorRect" parent="Root"]
+[node name="Background" type="ColorRect" parent="Root" unique_id=413123019]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -88,7 +85,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.05, 0.08, 0.07, 0.85)
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Root"]
+[node name="ScrollContainer" type="ScrollContainer" parent="Root" unique_id=1818728393]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -97,159 +94,201 @@ grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="CenterWrapper" type="CenterContainer" parent="Root/ScrollContainer"]
+[node name="CenterWrapper" type="CenterContainer" parent="Root/ScrollContainer" unique_id=342020738]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
-[node name="Panel" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper"]
+[node name="Panel" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper" unique_id=1576797538]
 custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="Content" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel"]
+[node name="Content" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel" unique_id=703543026]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="HBoxContainer" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=492827116]
+custom_minimum_size = Vector2(0, 39)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_g4k1h")
+
+[node name="Title" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/HBoxContainer" unique_id=212379661]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 28
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="TwitchSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="TwitchSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=2109688886]
 layout_mode = 2
 theme_override_constants/separation = 6
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g4k1h")
 
-[node name="TwitchHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="MarginContainer" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=2037548682]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer" unique_id=455772277]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer" unique_id=1736304988]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_g4k1h")
+
+[node name="TwitchHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=2142907888]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 22
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
 text = "Twitch Integration"
+horizontal_alignment = 1
 
-[node name="ConnectRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="TwitchSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer" unique_id=1999956944]
+layout_mode = 2
+theme_override_constants/separation = 6
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g4k1h")
+
+[node name="HBoxContainer3" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer" unique_id=2104645676]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_g4k1h")
+
+[node name="MarginContainer" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=764424812]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer" unique_id=1823819818]
+layout_mode = 2
+
+[node name="ConnectRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=1063646338]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="StatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/ConnectRow"]
+[node name="StatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/ConnectRow" unique_id=1419859534]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "Not connected"
 
-[node name="ConnectButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/ConnectRow"]
+[node name="ConnectButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/ConnectRow" unique_id=729493420]
 custom_minimum_size = Vector2(160, 36)
 layout_mode = 2
+theme = ExtResource("3_qjwmu")
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 text = "Connect Twitch"
 
-[node name="NameCowsToggle" type="CheckButton" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="NameCowsToggle" type="CheckButton" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=768554158]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "Name cows from chat"
 
-[node name="EnableRewardsToggle" type="CheckButton" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="EnableRewardsToggle" type="CheckButton" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=509329109]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "Enable channel point rewards"
 
-[node name="LoveConfessionRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LoveConfessionRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=40805428]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow"]
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow" unique_id=235186594]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/HeaderRow"]
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow/HeaderRow" unique_id=1265198893]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "Love Confession cost"
 
-[node name="ValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/HeaderRow"]
+[node name="ValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow/HeaderRow" unique_id=1438264773]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_color = Color(0.7957298, 0.65609366, 1.540184e-06, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "500"
 horizontal_alignment = 2
 
-[node name="Slider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow"]
+[node name="Slider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow" unique_id=171730642]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 min_value = 100.0
 max_value = 10000.0
 step = 500.0
-value = 500.0
+value = 600.0
 
-[node name="RangeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow"]
+[node name="RangeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow" unique_id=279577656]
 layout_mode = 2
 
-[node name="MinLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/RangeRow"]
+[node name="MinLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow/RangeRow" unique_id=679613130]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 12
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
 text = "100"
 
-[node name="MaxLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LoveConfessionRow/RangeRow"]
+[node name="MaxLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LoveConfessionRow/RangeRow" unique_id=931782166]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 12
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
 text = "10000"
 horizontal_alignment = 2
 
-[node name="SaySomethingRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="SaySomethingRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=760822416]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow"]
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow" unique_id=184531246]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/HeaderRow"]
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow/HeaderRow" unique_id=1522669187]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "Say Something cost"
 
-[node name="ValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/HeaderRow"]
+[node name="ValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow/HeaderRow" unique_id=601195312]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_color = Color(0.8039216, 0.6666667, 0.02745098, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "50"
 horizontal_alignment = 2
 
-[node name="Slider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow"]
+[node name="Slider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow" unique_id=283817935]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 min_value = 50.0
@@ -257,111 +296,149 @@ max_value = 5000.0
 step = 50.0
 value = 50.0
 
-[node name="RangeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow"]
+[node name="RangeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow" unique_id=336687245]
 layout_mode = 2
 
-[node name="MinLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/RangeRow"]
+[node name="MinLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow/RangeRow" unique_id=53164141]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 12
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
 text = "50"
 
-[node name="MaxLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/SaySomethingRow/RangeRow"]
+[node name="MaxLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/SaySomethingRow/RangeRow" unique_id=2103389516]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
+theme_override_colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 12
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 12
 text = "5000"
 horizontal_alignment = 2
 
-[node name="LobbySeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="TwitchSeparator2" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=1736930665]
 layout_mode = 2
 theme_override_constants/separation = 6
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g4k1h")
 
-[node name="LobbyHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="MarginContainer2" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=214621500]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2" unique_id=892773031]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer" unique_id=1663986126]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_g4k1h")
+
+[node name="TwitchHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer2" unique_id=325370161]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 22
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "Lobby"
+horizontal_alignment = 1
+
+[node name="TwitchSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer" unique_id=1536413878]
+layout_mode = 2
+theme_override_constants/separation = 6
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g4k1h")
+
+[node name="HBoxContainer3" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer" unique_id=1358583684]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_g4k1h")
+
+[node name="MarginContainer" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3" unique_id=388253586]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer" unique_id=2076893022]
+layout_mode = 2
+
+[node name="LobbyHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=474613026]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.05, 0.05, 0.05, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
 text = "Lobby"
 
-[node name="LobbyCodeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LobbyCodeRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=1337855724]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="CodeLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow"]
+[node name="CodeLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LobbyCodeRow" unique_id=325233394]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 16
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 16
 text = "Offline"
 
-[node name="CopyButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyCodeRow"]
+[node name="CopyButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LobbyCodeRow" unique_id=155860526]
 custom_minimum_size = Vector2(120, 36)
 layout_mode = 2
+theme = ExtResource("3_qjwmu")
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 text = "Copy"
 
-[node name="LobbyStatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LobbyStatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=1014442559]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
 theme_override_constants/outline_size = 6
-text = ""
+theme_override_font_sizes/font_size = 14
 
-[node name="LobbyJoinRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="LobbyActionsRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=739408247]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="CodeInput" type="LineEdit" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
-placeholder_text = "Lobby code"
-
-[node name="JoinButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyJoinRow"]
-custom_minimum_size = Vector2(100, 36)
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "Join"
-
-[node name="LobbyActionsRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="CreateButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/LobbyActionsRow"]
+[node name="CreateButton" type="Button" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer/LobbyActionsRow" unique_id=601975968]
 custom_minimum_size = Vector2(160, 36)
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("3_qjwmu")
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 text = "Create New Lobby"
 
-[node name="CloseSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="TwitchSeparator3" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=1984011409]
 layout_mode = 2
 theme_override_constants/separation = 6
+theme_override_styles/separator = SubResource("StyleBoxEmpty_g4k1h")
 
-[node name="CloseHint" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content"]
+[node name="MarginContainer3" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=1014741683]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer3" unique_id=727656924]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer3/VBoxContainer" unique_id=696556887]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_g4k1h")
+
+[node name="CloseHint" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer3/VBoxContainer/HBoxContainer2" unique_id=628545419]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.15, 0.15, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
 theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
 text = "Press Escape to close"
 horizontal_alignment = 1

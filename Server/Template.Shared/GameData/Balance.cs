@@ -28,14 +28,14 @@ public static class Balance
 
     public static class Player
     {
-        public const float WalkSpeed = 10f;
-        public const float SprintSpeed = 13f;
+        public const float WalkSpeed = 14f;
+        public const float SprintSpeed = 16f;
     }
 
     public static class HelperPlayer
     {
-        public const float WalkSpeed = 15f;
-        public const float SprintSpeed = 18f;
+        public const float WalkSpeed = 20f;
+        public const float SprintSpeed = 22f;
         /// <summary>Effective "infinite" — high enough that no realistic gather session fills it.</summary>
         public const int BagCapacity = 999_999;
         /// <summary>Baseline ClickMultiplier (vs main player's 1). HelperSystem recomputes per tick adding pets on top.</summary>

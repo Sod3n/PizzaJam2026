@@ -34,10 +34,6 @@
 [ext_resource type="PackedScene" uid="uid://dhh4knobdftnn" path="res://templates/environment/MushroomCave.tscn" id="tpl_mushroomcave"]
 [ext_resource type="PackedScene" path="res://templates/environment/Prop.tscn" id="tpl_prop"]
 [ext_resource type="PackedScene" uid="uid://c1nvklhoxhbvc" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeAssistant.tscn" id="tpl_upgradeassistant"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeBuilder.tscn" id="tpl_upgradebuilder"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeGatherer.tscn" id="tpl_upgradegatherer"]
-[ext_resource type="PackedScene" path="res://templates/environment/UpgradeSeller.tscn" id="tpl_upgradeseller"]
 [ext_resource type="PackedScene" path="res://templates/environment/Warehouse.tscn" id="tpl_warehouse"]
 [ext_resource type="PackedScene" path="res://templates/environment/WarehouseSign.tscn" id="tpl_warehousesign"]
 [ext_resource type="PackedScene" uid="uid://dwsrlkwr4ej6g" path="res://templates/environment/Library.tscn" id="tpl_library"]
@@ -66,10 +62,6 @@
 [ext_resource type="Script" path="res://Scripts/Visuals/HelperPlayerView.cs" id="view_helperplayer"]
 [ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
 [ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
-[ext_resource type="Script" uid="uid://tdslau71ofae" path="res://Scripts/Visuals/UpgradeAssistantView.cs" id="view_upgradeassistant"]
-[ext_resource type="Script" uid="uid://b5s7vh8savarq" path="res://Scripts/Visuals/UpgradeBuilderView.cs" id="view_upgradebuilder"]
-[ext_resource type="Script" uid="uid://bhaw2lc4hhrbj" path="res://Scripts/Visuals/UpgradeGathererView.cs" id="view_upgradegatherer"]
-[ext_resource type="Script" uid="uid://cpchm5xkwlt1h" path="res://Scripts/Visuals/UpgradeSellerView.cs" id="view_upgradeseller"]
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
 [ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/WarehouseView.cs" id="view_warehouse"]
 [ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/WarehouseSignView.cs" id="view_warehousesign"]
@@ -4324,22 +4316,6 @@ Prefab = ExtResource("tpl_helperassistant")
 [node name="HelperPetView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1425441025]
 script = ExtResource("view_helperpet")
 Prefab = ExtResource("tpl_helperpet")
-
-[node name="UpgradeGathererView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1027788213]
-script = ExtResource("view_upgradegatherer")
-Prefab = ExtResource("tpl_upgradegatherer")
-
-[node name="UpgradeBuilderView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1884027225]
-script = ExtResource("view_upgradebuilder")
-Prefab = ExtResource("tpl_upgradebuilder")
-
-[node name="UpgradeSellerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=569775162]
-script = ExtResource("view_upgradeseller")
-Prefab = ExtResource("tpl_upgradeseller")
-
-[node name="UpgradeAssistantView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=239160958]
-script = ExtResource("view_upgradeassistant")
-Prefab = ExtResource("tpl_upgradeassistant")
 
 [node name="DecorationView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=2145567296]
 script = ExtResource("view_decoration")

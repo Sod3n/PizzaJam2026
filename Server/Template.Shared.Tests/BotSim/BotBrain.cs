@@ -1148,22 +1148,6 @@ public class BotBrain
             if (land.Type == LandType.FinalStructure)
                 score /= 20;
 
-            // Priority: upgrade buildings — x2 helper boost, but only if helper exists and not yet upgraded
-            if (land.Type == LandType.UpgradeGatherer || land.Type == LandType.UpgradeBuilder || land.Type == LandType.UpgradeSeller)
-            {
-                int upgradeType = land.Type switch
-                {
-                    LandType.UpgradeGatherer => HelperType.Gatherer,
-                    LandType.UpgradeBuilder => HelperType.Builder,
-                    LandType.UpgradeSeller => HelperType.Seller,
-                    _ => -1
-                };
-                if (upgradeType >= 0 && HasHelper(upgradeType) && !HasUpgradePetForType(upgradeType))
-                    score /= 7;
-                else
-                    continue; // skip — helper not unlocked yet or already upgraded
-            }
-
             if (score < bestScore)
             {
                 bestScore = score;
@@ -1171,26 +1155,6 @@ public class BotBrain
             }
         }
         return best;
-    }
-
-    private bool HasHelper(int helperType)
-    {
-        foreach (var e in _game.State.Filter<HelperComponent>())
-        {
-            var h = _game.State.GetComponent<HelperComponent>(e);
-            if (h.OwnerPlayer == _player && h.Type == helperType) return true;
-        }
-        return false;
-    }
-
-    private bool HasUpgradePetForType(int helperType)
-    {
-        foreach (var e in _game.State.Filter<HelperPetComponent>())
-        {
-            var pet = _game.State.GetComponent<HelperPetComponent>(e);
-            if (pet.HelperType == helperType) return true;
-        }
-        return false;
     }
 
     /// <summary>How much food to stockpile before starting a milking session.</summary>

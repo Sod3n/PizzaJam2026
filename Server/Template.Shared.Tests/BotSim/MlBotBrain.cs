@@ -315,11 +315,7 @@ public sealed class MlBotBrain
             if (remaining <= 0) continue;
 
             int score = remaining;
-            if (land.Type == LandType.HelperAssistant
-                || land.Type == LandType.UpgradeGatherer
-                || land.Type == LandType.UpgradeBuilder
-                || land.Type == LandType.UpgradeSeller
-                || land.Type == LandType.UpgradeAssistant)
+            if (land.Type == LandType.HelperAssistant)
                 score /= 4;
             if (land.Type == LandType.FinalStructure)
                 score /= 10;
@@ -450,10 +446,6 @@ public sealed class MlBotBrain
             built += CountBuilt<AppleOrchardComponent>(game);
             built += CountBuilt<MushroomCaveComponent>(game);
             built += CountBuilt<HelperAssistantComponent>(game);
-            built += CountBuilt<UpgradeGathererComponent>(game);
-            built += CountBuilt<UpgradeBuilderComponent>(game);
-            built += CountBuilt<UpgradeSellerComponent>(game);
-            built += CountBuilt<UpgradeAssistantComponent>(game);
             built += CountBuilt<WarehouseComponent>(game);
             built += CountBuilt<FinalStructureComponent>(game);
 

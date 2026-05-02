@@ -99,10 +99,6 @@ public static class StarGrid
             case LandType.AppleOrchard: return 1;
             case LandType.MushroomCave: return 1;
             case LandType.HelperAssistant: return 1;
-            case LandType.UpgradeGatherer: return 1;
-            case LandType.UpgradeBuilder: return 1;
-            case LandType.UpgradeSeller: return 1;
-            case LandType.UpgradeAssistant: return 1;
             case LandType.Warehouse: return 2;
             case LandType.PlayerHouse: return 1;
             case LandType.Decoration: return -1; // half cost (handled in GetThreshold)
@@ -154,8 +150,7 @@ public static class StarGrid
         (LandType.AppleOrchard,  5, 7, true),
         (LandType.MushroomCave,  6, 8, true),
         (LandType.MushroomCave,  7, 9, true),
-        // HelperAssistant is the unified pet building post-pet-refactor — old
-        // UpgradeGatherer/Builder/Seller/Assistant slots are removed; pet is generic.
+        // post-pet-refactor cleanup complete — HelperAssistant is the unified generic pet building.
         (LandType.HelperAssistant, 2, 0, false),
         (LandType.HelperAssistant, 5, 14, false),
         // Warehouse — mid-early game, helpers auto-deposit resources
@@ -331,10 +326,6 @@ public static class StarGrid
                  ctx.State.HasComponent<AppleOrchardComponent>(entity) ||
                  ctx.State.HasComponent<MushroomCaveComponent>(entity) ||
                  ctx.State.HasComponent<HelperAssistantComponent>(entity) ||
-                 ctx.State.HasComponent<UpgradeGathererComponent>(entity) ||
-                 ctx.State.HasComponent<UpgradeBuilderComponent>(entity) ||
-                 ctx.State.HasComponent<UpgradeSellerComponent>(entity) ||
-                 ctx.State.HasComponent<UpgradeAssistantComponent>(entity) ||
                  ctx.State.HasComponent<DecorationComponent>(entity) ||
                  ctx.State.HasComponent<WarehouseComponent>(entity)))
             {

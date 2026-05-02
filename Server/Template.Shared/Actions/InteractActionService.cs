@@ -1601,9 +1601,6 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         // Destroy nearby props to clear space
         DestroyNearbyProps(ctx, position, 4f);
 
-        // Find the player entity from context for helper spawning
-        Entity playerEntity = ctx.Entity;
-
         switch (landType)
         {
             case LandType.LoveHouse:
@@ -1633,27 +1630,6 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                     ILogger.Log($"[Building] HelperAssistant built at {(gt1 != null ? gt1.CurrentTick / 60f / 60f : -1):F1}m — pet idling, click to pick up");
                     break;
                 }
-            case LandType.UpgradeAssistant:
-                {
-                    UpgradeAssistantDefinition.Create(ctx, position);
-                    var upgradePet = HelperPetDefinition.CreateIdle(ctx, position, HelperType.Assistant);
-                    ctx.State.AddComponent(upgradePet, new BreedBornComponent());
-                    var gt2 = ctx.State.GetCustomData<IGameTime>();
-                    ILogger.Log($"[Building] UpgradeAssistant built at {(gt2 != null ? gt2.CurrentTick / 60f / 60f : -1):F1}m — pet idling, click to pick up");
-                    break;
-                }
-            case LandType.UpgradeGatherer:
-                UpgradeGathererDefinition.Create(ctx, position);
-                SpawnUpgradePet(ctx, position, playerEntity, HelperType.Gatherer);
-                break;
-            case LandType.UpgradeBuilder:
-                UpgradeBuilderDefinition.Create(ctx, position);
-                SpawnUpgradePet(ctx, position, playerEntity, HelperType.Builder);
-                break;
-            case LandType.UpgradeSeller:
-                UpgradeSellerDefinition.Create(ctx, position);
-                SpawnUpgradePet(ctx, position, playerEntity, HelperType.Seller);
-                break;
             case LandType.Warehouse:
                 WarehouseDefinition.Create(ctx, position);
                 break;
@@ -1674,15 +1650,6 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         StarGrid.SpawnNeighbors(ctx, gridX, gridY);
     }
 
-    private static void SpawnUpgradePet(Context ctx, Vector2 position, Entity playerEntity, int helperType)
-    {
-        var pet = HelperPetDefinition.CreateIdle(ctx, position, helperType);
-        ctx.State.AddComponent(pet, new BreedBornComponent());
-        var gt = ctx.State.GetCustomData<IGameTime>();
-        float min = gt != null ? gt.CurrentTick / 60f / 60f : -1;
-        ILogger.Log($"[UpgradePet] Pet for helper type={helperType} idling at {min:F1}m, click to pick up");
-    }
-
     /// <summary>
     /// Returns a building info param key for the given entity, or null if it's not a known building.
     /// Used to show info popups when the player interacts with a building that has no primary action.
@@ -1696,10 +1663,6 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (ctx.State.HasComponent<AppleOrchardComponent>(entity)) return StateKeys.InfoAppleOrchard;
         if (ctx.State.HasComponent<MushroomCaveComponent>(entity)) return StateKeys.InfoMushroomCave;
         if (ctx.State.HasComponent<HelperAssistantComponent>(entity)) return StateKeys.InfoHelperAssistant;
-        if (ctx.State.HasComponent<UpgradeGathererComponent>(entity)) return StateKeys.InfoUpgradeGatherer;
-        if (ctx.State.HasComponent<UpgradeBuilderComponent>(entity)) return StateKeys.InfoUpgradeBuilder;
-        if (ctx.State.HasComponent<UpgradeSellerComponent>(entity)) return StateKeys.InfoUpgradeSeller;
-        if (ctx.State.HasComponent<UpgradeAssistantComponent>(entity)) return StateKeys.InfoUpgradeAssistant;
         if (ctx.State.HasComponent<DecorationComponent>(entity)) return StateKeys.InfoDecoration;
         if (ctx.State.HasComponent<WarehouseComponent>(entity)) return StateKeys.InfoWarehouse;
         return null;
