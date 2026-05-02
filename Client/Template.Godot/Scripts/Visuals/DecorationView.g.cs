@@ -6,6 +6,7 @@ using R3;
 using ObservableCollections;
 using Template.Godot.Core;
 using Template.Shared.Components;
+using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.DAR;
 using DTransform2D = Deterministic.GameFramework.TwoD.Transform2D;
@@ -43,7 +44,11 @@ public partial class DecorationView : Node3D
     {
         _registered = true;
         var client = GameManager.Instance.GameClient;
-        var list = client.Reactive.ObservableList<DecorationComponent, DTransform2D, DecorationViewModel>(
+        var query = client.Reactive.ObservableCollection<DecorationComponent, DTransform2D>();
+        Func<Entity, bool> filter = null;
+        GetEntityFilter(ref filter);
+        if (filter != null) query = query.Where(filter);
+        var list = query.ToObservableList(
             ctx => new DecorationViewModel(ctx),
             _disposables
         );
@@ -112,6 +117,9 @@ public partial class DecorationView : Node3D
 
     /// <summary>Called when entity is being removed. Play disappear animations here. Set DespawnDelay in the editor to defer QueueFree.</summary>
     partial void OnDespawned(DecorationViewModel vm, Node3D visualNode);
+
+    /// <summary>Optional archetype filter. Assign the ref to a predicate to gate which entities this view spawns.</summary>
+    partial void GetEntityFilter(ref Func<Entity, bool> filter);
 
     public override void _ExitTree()
     {

@@ -13,6 +13,7 @@ using Template.Shared.Features.Movement;
 using FixedMathSharp;
 using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.TwoD;
+using R3;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Profiler;
 using Deterministic.GameFramework.Serialization;
@@ -44,7 +45,13 @@ public partial class GameManager : Node
 
     public GameClient GameClient { get; private set; }
     public Deterministic.GameFramework.Common.Game Game { get; private set; }
-    public int LocalPlayerId { get; private set; }
+    private readonly ReactiveProperty<int> _localPlayerId = new(0);
+    public ReadOnlyReactiveProperty<int> LocalPlayerIdReactive => _localPlayerId;
+    public int LocalPlayerId
+    {
+        get => _localPlayerId.Value;
+        private set => _localPlayerId.Value = value;
+    }
     public Guid OfflineUserId { get; private set; }
     public Guid CurrentLobbyId { get; private set; }
 

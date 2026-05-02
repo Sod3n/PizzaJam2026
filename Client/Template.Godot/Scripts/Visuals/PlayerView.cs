@@ -1,7 +1,9 @@
+using System;
 using Godot;
 using R3;
 using Template.Godot.Core;
 using Template.Shared.Components;
+using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using GVector3 = Godot.Vector3;
 
@@ -15,18 +17,15 @@ public partial class PlayerView
     private const float ZoomOutDelay = 1.0f;
     private const float ZoomOutDuration = 0.8f;
 
-    partial void OnSpawned(PlayerViewModel vm, Node3D visualNode)
+    partial void GetEntityFilter(ref Func<Entity, bool> filter)
     {
         var state = GameManager.Instance?.Game?.State;
-        if (state != null && state.HasComponent<HelperPlayerComponent>(vm.Entity))
-        {
-            visualNode.QueueFree();
-            return;
-        }
+        if (state == null) return;
+        filter = entity => !state.HasComponent<HelperPlayerComponent>(entity);
+    }
 
-        if (GameManager.Instance.LocalPlayerId != vm.Entity.Id)
-            visualNode.GetNode<Camera3D>("Camera").QueueFree();
-
+    partial void OnSpawned(PlayerViewModel vm, Node3D visualNode)
+    {
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, vm.Player.CharacterBody2D.Velocity, flipPivot, characterNode);
         ViewHelpers.SetupPositionTween(vm, visualNode);
@@ -36,6 +35,18 @@ public partial class PlayerView
         var camera = visualNode.GetNodeOrNull<Camera3D>("Camera");
         if (camera != null)
         {
+            // LocalPlayerId is set by SetupLocalPlayerDiscovery on a separate reactive
+            // tick — racing OnSpawned. Subscribe so the camera ends up correct whenever
+            // discovery resolves, instead of locking in a stale answer at spawn time.
+            GameManager.Instance.LocalPlayerIdReactive.Subscribe(localId =>
+            {
+                Callable.From(() =>
+                {
+                    if (!Node.IsInstanceValid(camera)) return;
+                    camera.Current = (localId == vm.Entity.Id);
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
+
             Tween zoomTween = null;
             bool zoomingOut = false;
             bool waitingToZoomOut = false;
