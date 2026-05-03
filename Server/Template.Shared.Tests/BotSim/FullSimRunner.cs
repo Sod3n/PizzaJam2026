@@ -66,7 +66,11 @@ public class FullSimRunner : IDisposable
         _gameSystems = new ISystem[]
         {
             new Template.Shared.Systems.AnimationsSystem(),
-            new Template.Shared.Systems.CowSystem(),
+            new Template.Shared.Systems.CowInteractionSystem(),
+            new Template.Shared.Systems.CowBreedingSystem(),
+            new Template.Shared.Systems.CowLoveEventSystem(),
+            new Template.Shared.Systems.CowDepressionSystem(),
+            new Template.Shared.Systems.CowVisibilitySystem(),
             new Template.Shared.Systems.HelperSystem(),
             new Template.Shared.Systems.GrassSpawnSystem(),
             new Template.Shared.Systems.CoinCollectionSystem(),

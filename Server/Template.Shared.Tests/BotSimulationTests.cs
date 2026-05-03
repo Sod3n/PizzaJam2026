@@ -206,7 +206,7 @@ public class BotSimulationTests
             bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedLevel, directionalExpansion));
         }
 
-        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
+        CowSystemHelpers.SetHelpersEnabled(game.State, helpersEnabled);
         var runner = new LightSimRunner(game);
         for (int i = 0; i < 10; i++) game.Loop.RunSingleTick();
 
@@ -368,7 +368,7 @@ public class BotSimulationTests
         _output.WriteLine($"Starting simulation: {botCount} bot(s), {maxMinutes} min, breeding={(selectiveBreeding ? "selective" : "random")}, helpers={(helpersEnabled ? "ON" : "OFF")}...");
 
         // Toggle helper spawning — when off, breeding always produces cows instead
-        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
+        CowSystemHelpers.SetHelpersEnabled(game.State, helpersEnabled);
 
         var runner = new LightSimRunner(game);
 
@@ -657,7 +657,7 @@ public class BotSimulationTests
         var player = AddBotPlayer(game, userId);
         var bot = new BotBrain(game, player, userId, 0, coordinator, selectiveBreeding: true, breedLevel: 2);
 
-        CowSystem.SetHelpersEnabled(game.State, true);
+        CowSystemHelpers.SetHelpersEnabled(game.State, true);
         var runner = new LightSimRunner(game);
         for (int i = 0; i < 10; i++) game.Loop.RunSingleTick();
 
@@ -824,7 +824,7 @@ public class BotSimulationTests
             bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedLevel: 1));
         }
 
-        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
+        CowSystemHelpers.SetHelpersEnabled(game.State, helpersEnabled);
 
         // Use FullSimRunner with real physics + navigation
         using var runner = new FullSimRunner(game);
@@ -966,7 +966,7 @@ public class BotSimulationTests
             bots.Add(new BotBrain(game, player, userId, i, coordinator, selectiveBreeding, breedLevel: 1));
         }
 
-        CowSystem.SetHelpersEnabled(game.State, helpersEnabled);
+        CowSystemHelpers.SetHelpersEnabled(game.State, helpersEnabled);
 
         // Use FullSimRunner with CDT navigation instead of grid-rasterization
         using var runner = new FullSimRunner(game, useCDTNavigation: true);
