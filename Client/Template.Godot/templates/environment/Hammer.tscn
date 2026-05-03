@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/HammerComponentNode.cs" id="fw_hammer"]
+[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hammer"]
+albedo_color = Color(0.65, 0.65, 0.7, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hammer"]
+top_radius = 0.25
+bottom_radius = 0.25
+height = 0.6
+material = SubResource("StandardMaterial3D_hammer")
+
+[node name="Hammer" type="Node3D"]
+
+[node name="Entity" type="Node3D" parent="."]
+script = ExtResource("fw_entity")
+EntityName = "Hammer"
+StableIdSeed = "hammer-entity-seed"
+
+[node name="HammerComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_hammer")
+
+[node name="Physics" type="Node3D" parent="Entity"]
+script = ExtResource("fw_phys")
+BodyType = 1
+ShapeType = 0
+ShapeRadius = 0.4
+CollisionLayer = 4
+CollisionMask = 8
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_hammer")

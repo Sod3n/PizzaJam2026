@@ -56,10 +56,9 @@ public static partial class PlayerDefinition
             InteractionZone = Entity.Null,
             FollowingCow = Entity.Null,
             AssistantHelper = Entity.Null,
-            ClickMultiplier = 0,
-            CarriedPet = Entity.Null,
+            CarriedEntity = Entity.Null,
+            FollowingHelper = Entity.Null,
             PetCount = 0,
-            CarriedHelper = Entity.Null,
         });
 
         ctx.AddComponent(entity, new NavMeshConstraint

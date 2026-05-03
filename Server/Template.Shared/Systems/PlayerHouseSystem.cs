@@ -7,11 +7,7 @@ public class PlayerHouseSystem : ISystem
 {
     public void Update(EntityWorld state)
     {
-        foreach (var entity in state.Filter<PlayerHouseComponent>())
-        {
-            ref var ph = ref state.GetComponent<PlayerHouseComponent>(entity);
-            if (ph.CooldownTicksRemaining > 0)
-                ph.CooldownTicksRemaining--;
-        }
+        // Cooldown is now driven by CooldownSystem decrementing CooldownComponent (Unit=Ticks).
+        // PlayerHouseSystem reserved for any future per-tick player-house logic.
     }
 }

@@ -20,6 +20,7 @@ public enum LandType
     Warehouse = 13,
     PlayerHouse = 14,
     Library = 15,
+    Smithy = 16,
 }
 
 public static class LandTypes

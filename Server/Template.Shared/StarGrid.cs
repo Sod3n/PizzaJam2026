@@ -103,6 +103,7 @@ public static class StarGrid
             case LandType.PlayerHouse: return 1;
             case LandType.Decoration: return -1; // half cost (handled in GetThreshold)
             case LandType.Library: return 1;
+            case LandType.Smithy: return 3;
             default: return 1; // House
         }
     }
@@ -538,6 +539,10 @@ public static class StarGrid
         if (ringDist >= GameData.Balance.Build.UnlockRing.HelperAssistant
             && PassesLimits(state, LandType.HelperAssistant, GameData.Balance.Build.Limit.HelperAssistant.World, GameData.Balance.Build.Limit.HelperAssistant.PerRing, ringDist, gx, gy))
             list.Add(LandType.HelperAssistant);
+
+        if (ringDist >= GameData.Balance.Build.UnlockRing.Smithy
+            && PassesLimits(state, LandType.Smithy, GameData.Balance.Build.Limit.Smithy.World, GameData.Balance.Build.Limit.Smithy.PerRing, ringDist, gx, gy))
+            list.Add(LandType.Smithy);
 
         return list.ToArray();
     }

@@ -425,8 +425,8 @@ public class BotSimulationTests
                     foreach (var he in game.State.Filter<HelperComponent>()) hCount++;
                     int hPetCount = 0;
                     foreach (var pe in game.State.Filter<HelperPetComponent>()) hPetCount++;
-                    _output.WriteLine($"  [{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Helpers={hCount} Pets={hPetCount} ClickMult={ps0.ClickMultiplier} Food={snap.TotalFood} Milk={snap.TotalMilk} | {bots[0].LastAction}");
-                    System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!, "sim_debug.txt"), $"[{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Helpers={hCount} Pets={hPetCount} ClickMult={ps0.ClickMultiplier} Food={snap.TotalFood} Milk={snap.TotalMilk}\n");
+                    _output.WriteLine($"  [{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Helpers={hCount} Pets={hPetCount} PlayerPets={ps0.PetCount} Food={snap.TotalFood} Milk={snap.TotalMilk} | {bots[0].LastAction}");
+                    System.IO.File.AppendAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!, "sim_debug.txt"), $"[{tick / 3600f:F1}m] Coins={snap.Coins} Houses={snap.Houses} Cows={snap.Cows} Helpers={hCount} Pets={hPetCount} PlayerPets={ps0.PetCount} Food={snap.TotalFood} Milk={snap.TotalMilk}\n");
                 }
             }
 

@@ -16,8 +16,16 @@ public struct PlayerStateComponent : IComponent
     public Entity InteractionZone;
     public Entity FollowingCow;
     public Entity AssistantHelper;
-    public int ClickMultiplier;
-    public Entity CarriedPet;
+    /// <summary>
+    /// The single thing the player is physically holding — a pet (cat) or a hammer.
+    /// Mutually exclusive: you can't carry both. Disambiguate by component type on the
+    /// entity (HelperPetComponent, HammerComponent) at the use site.
+    /// </summary>
+    public Entity CarriedEntity;
+    /// <summary>
+    /// Helper trailing the player like a cow in a follow chain — not carried, just queued
+    /// for the next house assignment. Cleared when the player drops it or assigns it to a house.
+    /// </summary>
+    public Entity FollowingHelper;
     public int PetCount;
-    public Entity CarriedHelper;
 }

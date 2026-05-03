@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 [ext_resource type="Script" uid="uid://c3spbtt3xyebk" path="res://Scripts/Framework/Components/PlayerHouseComponentNode.cs" id="fw_playerhouse"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/CooldownComponentNode.cs" id="fw_cooldown"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1b6ul"]
 render_priority = -1
@@ -40,6 +41,9 @@ StableIdSeed = "playerhouse-entity-seed"
 
 [node name="PlayerHouseComponent" type="Node" parent="Entity" unique_id=2023142438]
 script = ExtResource("fw_playerhouse")
+
+[node name="CooldownComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_cooldown")
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=-1361701263]
 script = ExtResource("fw_phys")

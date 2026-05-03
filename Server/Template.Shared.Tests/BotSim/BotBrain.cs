@@ -387,7 +387,8 @@ public class BotBrain
         int totalMilk = globalRes.Milk;
 
         // ── Score each option: value / (travel_ticks + work_ticks) ──
-        int assistMult = System.Math.Max(1, ps.ClickMultiplier);
+        // Each click is worth one unit of work (cow exhaust / coins) — helper-player gets faster cadence, not bigger clicks.
+        const int assistMult = 1;
 
         int foodNeeded = GetFoodNeededForMilking();
         bool needFood = totalFood < foodNeeded;
@@ -940,7 +941,7 @@ public class BotBrain
         foreach (var e in _game.State.Filter<LoveHouseComponent>())
         {
             var lh = _game.State.GetComponent<LoveHouseComponent>(e);
-            if (lh.CooldownTicksRemaining > 0) continue; // skip love houses on cooldown
+            if (_game.State.HasComponent<CooldownComponent>(e) && _game.State.GetComponent<CooldownComponent>(e).TicksRemaining > 0) continue; // skip love houses on cooldown
             if (lh.CowId1 == Entity.Null || lh.CowId2 == Entity.Null)
                 return e;
         }
@@ -1001,7 +1002,7 @@ public class BotBrain
         foreach (var e in _game.State.Filter<LoveHouseComponent>())
         {
             var lh = _game.State.GetComponent<LoveHouseComponent>(e);
-            if (lh.CooldownTicksRemaining > 0) continue; // skip love houses on cooldown
+            if (_game.State.HasComponent<CooldownComponent>(e) && _game.State.GetComponent<CooldownComponent>(e).TicksRemaining > 0) continue; // skip love houses on cooldown
             if (lh.CowId1 != Entity.Null && lh.CowId2 != Entity.Null)
                 return e;
         }

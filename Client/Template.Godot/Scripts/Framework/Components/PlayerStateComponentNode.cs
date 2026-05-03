@@ -7,6 +7,5 @@ namespace Template.Godot.Framework;
 public partial class PlayerStateComponentNode : Node
 {
     [Export] public Vector2 ReturnPosition;
-    [Export] public int ClickMultiplier;
     [Export] public int PetCount;
 }

@@ -24,9 +24,6 @@ public partial class InputManager : Node
     private const float TouchMaxRadius = 100f;
 
     private int _holdRepeatTicks;
-    // Hold-to-milk fires at ~60% of comfortable rapid-tap speed.
-    // 60 TPS / 14 ≈ 4.3 Hz vs ~7 Hz typical human rapid-click → ~60%.
-    private const int HoldRepeatThreshold = 14;
 
     private static bool TryGetLocalPlayerStats(int localPlayerId, out bool isHelperPlayer, out int petCount)
     {
@@ -135,7 +132,10 @@ public partial class InputManager : Node
                                    GetViewport().GetMousePosition().DistanceTo(_touchStart) < TouchDeadzone;
 
         TryGetLocalPlayerStats(localPlayerId, out bool isHelperPlayer, out int petCount);
-        int holdThreshold = isHelperPlayer ? Balance.HelperPlayer.HoldRepeatThreshold : HoldRepeatThreshold;
+        int holdThreshold = isHelperPlayer ? Balance.HelperPlayer.HoldRepeatThreshold : Balance.Player.HoldRepeatThreshold;
+        holdThreshold = System.Math.Max(
+            Balance.Pets.HoldRepeatFloor,
+            holdThreshold - petCount * Balance.Pets.HoldRepeatReductionPerPet);
 
         if (interactJustPressed)
         {

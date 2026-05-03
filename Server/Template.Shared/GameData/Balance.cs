@@ -30,6 +30,8 @@ public static class Balance
     {
         public const float WalkSpeed = 14f;
         public const float SprintSpeed = 16f;
+        /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact. 60 TPS / 14 ≈ 4.3 Hz.</summary>
+        public const int HoldRepeatThreshold = 20;
     }
 
     public static class HelperPlayer
@@ -38,10 +40,8 @@ public static class Balance
         public const float SprintSpeed = 22f;
         /// <summary>Effective "infinite" — high enough that no realistic gather session fills it.</summary>
         public const int BagCapacity = 999_999;
-        /// <summary>Baseline ClickMultiplier (vs main player's 1). HelperSystem recomputes per tick adding pets on top.</summary>
-        public const int ClickMultiplier = 2;
         /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact.</summary>
-        public const int HoldRepeatThreshold = 7;
+        public const int HoldRepeatThreshold = 14;
     }
 
     public static class Cow
@@ -179,17 +179,17 @@ public static class Balance
 
     public static class Helper
     {
-        // Work durations — ticks per atomic action
-        public const int GatherWorkDuration = 30; // 0.5s
-        public const int SellWorkDuration = 10;   // per item
-        public const int BuildWorkDuration = 15;  // per coin
+        // Work durations — ticks per work cycle. Each cycle produces 1 unit of work
+        // (1 food, 1 milk, 1 coin sold/deposited). Pets accelerate the cycle, not the yield.
+        public const int GatherWorkDuration = 30; // 0.5s per food
+        public const int SellWorkDuration = 10;   // per item sold
+        public const int BuildWorkDuration = 15;  // per coin deposited
         public const int MilkWorkDuration = 20;   // per milk action
 
-        // Helper unlocks: breed counter thresholds for spawning each helper type
-        public const int GathererUnlockBreed = 2;
-        public const int BuilderUnlockBreed = 4;
-        public const int SellerUnlockBreed = 6;
-        public const int MilkerUnlockBreed = 10;
+        // Helper unlocks: breed counter thresholds for spawning the Nth helper.
+        // All helpers are mechanically identical — the player cycles their role via the role sign —
+        // so this is a pure ladder of "spawn another helper" gates, not a per-type unlock.
+        public static readonly int[] HelperUnlockBreeds = [2, 4, 6, 10];
         public const int GuaranteedMegaBreed = 12;
 
         // Distance-squared thresholds for helper navigation
@@ -198,9 +198,6 @@ public static class Balance
         public const float GatherReachedDistSq = 4f;   // 2 units from food
         /// <summary>Owner-switch hysteresis: new player must be this much closer (squared units) to steal ownership.</summary>
         public const float OwnerSwitchThresholdSq = 25f;
-
-        /// <summary>Builder coins deposited per work cycle.</summary>
-        public const int BuildCoinsPerWork = 3;
     }
 
     public static class Pets
@@ -211,6 +208,10 @@ public static class Balance
         public const int BoostPerPet = 1;
         /// <summary>Movement-speed bonus added per cat carried (additive, applies to both player types).</summary>
         public const float SpeedPerPet = 3f;
+        /// <summary>Ticks shaved off the player's hold-repeat threshold per pet carried. Floor below.</summary>
+        public const int HoldRepeatReductionPerPet = 1;
+        /// <summary>Floor for the hold-repeat threshold after pet reductions. Stops cadence from going absurdly fast.</summary>
+        public const int HoldRepeatFloor = 3;
     }
 
     public static class FoodSpawn
@@ -253,6 +254,7 @@ public static class Balance
             public const int LoveHouse = 3;
             public const int SellPoint = 5;
             public const int HelperAssistant = 2;
+            public const int Smithy = 4;
         }
 
         /// <summary>
@@ -271,6 +273,7 @@ public static class Balance
             public static class HelperAssistant{ public const int World = -1; public const int PerRing = 1;  }
             public static class LoveHouse      { public const int World = -1; public const int PerRing = -1; }
             public static class SellPoint      { public const int World = -1; public const int PerRing = -1; }
+            public static class Smithy         { public const int World = -1; public const int PerRing = -1; }
         }
     }
 }

@@ -39,11 +39,13 @@ public static class SleepLogic
             sign.CurrentProduct = product;
         }
 
-        // Love houses also reset their breed cooldown on sleep — same logic as cow exhaust.
-        foreach (var lhEntity in state.Filter<LoveHouseComponent>())
+        // Day-unit cooldowns decrement by 1 per sleep — MaxTicks=N means N sleeps to clear.
+        // Tick-unit cooldowns are handled by CooldownSystem each frame.
+        foreach (var entity in state.Filter<CooldownComponent>())
         {
-            ref var lh = ref state.GetComponent<LoveHouseComponent>(lhEntity);
-            lh.CooldownTicksRemaining = 0;
+            ref var cd = ref state.GetComponent<CooldownComponent>(entity);
+            if (cd.Unit == CooldownUnit.Days && cd.TicksRemaining > 0)
+                cd.TicksRemaining--;
         }
     }
 

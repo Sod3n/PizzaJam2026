@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://3vbcgbnc71yu" path="res://sprites/export/Devochka/Hand/_____46.png" id="17_wl1od"]
 [ext_resource type="Texture2D" uid="uid://e024qkwcbcl0" path="res://sprites/IMG_0407.PNG" id="18_l3wpo"]
 [ext_resource type="Script" uid="uid://cndtd78smhj8n" path="res://templates/characters/final_dialogue.gd" id="18_vhitc"]
+[ext_resource type="Texture2D" uid="uid://dg1qryd32wy8o" path="res://sprites/helper_lefantis.png" id="22_fs5v2"]
 [ext_resource type="Texture2D" uid="uid://bn254vxec75ij" path="res://sprites/image 1.png" id="24_bsw1x"]
 [ext_resource type="Texture2D" uid="uid://u00s5sx7upln" path="res://sprites/Shadow.png" id="24_mfgwx"]
 [ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="24_ql6fu"]
@@ -156,18 +157,11 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_q472n"]
-atlas = ExtResource("6_xl50o")
-region = Rect2(0, 0, 461, 904)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_ei75f"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("5_0pq82")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_q472n")
+"texture": ExtResource("22_fs5v2")
 }],
 "loop": true,
 "name": &"default",
@@ -316,11 +310,12 @@ material_override = SubResource("ShaderMaterial_5hf2j")
 material_override = SubResource("ShaderMaterial_wre2s")
 
 [node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223348, 1423863731) index="1" unique_id=661096089]
-transform = Transform3D(0.99999976, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 4.9999995, 5.2107387, 0.17353888)
+transform = Transform3D(0.9999998, 0, 0, 0, 0.9999998, 2.9802322e-08, 0, -2.9802322e-08, 0.9999998, -0.12651977, 4.299885, -0.084164545)
 sorting_offset = -10.0
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_ei75f")
+frame_progress = 0.7239769
 script = ExtResource("7_rapy0")
 
 [node name="Camera" parent="." unique_id=2095400399 instance=ExtResource("3_lwepe")]

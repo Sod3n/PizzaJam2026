@@ -13,6 +13,7 @@ namespace Template.Shared.Definitions;
 [EntityDefinition(
     typeof(Transform2D),
     typeof(LoveHouseComponent),
+    typeof(CooldownComponent),
     typeof(StaticBody2D),
     typeof(CollisionShape2D))]
 public static partial class LoveHouseDefinition
@@ -27,7 +28,6 @@ public static partial class LoveHouseDefinition
         component.BreedProgress = 0;
         component.BreedCost = 0;
         component.HeartPercent = 0;
-        component.CooldownTicksRemaining = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
@@ -37,6 +37,13 @@ public static partial class LoveHouseDefinition
         ctx.AddComponent(entity, entityBody);
 
         ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2f, 2f)));
+
+        ctx.AddComponent(entity, new CooldownComponent
+        {
+            MaxTicks = 0,
+            TicksRemaining = 0,
+            Unit = 0,
+        });
 
         var childEntities = new Dictionary<string, Entity>
         {

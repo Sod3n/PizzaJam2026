@@ -390,7 +390,8 @@ public sealed class MlBotBrain
         foreach (var e in _game.State.Filter<LoveHouseComponent>())
         {
             var loveHouse = _game.State.GetComponent<LoveHouseComponent>(e);
-            if (loveHouse.CowId1 != Entity.Null && loveHouse.CowId2 != Entity.Null && loveHouse.CooldownTicksRemaining <= 0)
+            bool onCooldown = _game.State.HasComponent<CooldownComponent>(e) && _game.State.GetComponent<CooldownComponent>(e).TicksRemaining > 0;
+            if (loveHouse.CowId1 != Entity.Null && loveHouse.CowId2 != Entity.Null && !onCooldown)
                 return e;
         }
         return Entity.Null;

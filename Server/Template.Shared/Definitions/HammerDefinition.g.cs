@@ -12,43 +12,36 @@ namespace Template.Shared.Definitions;
 
 [EntityDefinition(
     typeof(Transform2D),
-    typeof(PlayerHouseComponent),
-    typeof(CooldownComponent),
+    typeof(HammerComponent),
     typeof(StaticBody2D),
     typeof(CollisionShape2D))]
-public static partial class PlayerHouseDefinition
+public static partial class HammerDefinition
 {
     public static Entity Create(Context ctx, Vector2 position)
     {
-        var entity = ctx.CreateEntity<PlayerHouseComponent>();
+        var entity = ctx.CreateEntity<HammerComponent>();
 
-        ref var component = ref ctx.GetComponent<PlayerHouseComponent>(entity);
+        ref var component = ref ctx.GetComponent<HammerComponent>(entity);
+        component.State = 0;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
         var entityBody = StaticBody2D.Default;
-        entityBody.CollisionLayer = 1u;
-        entityBody.CollisionMask = 1u;
+        entityBody.CollisionLayer = 4u;
+        entityBody.CollisionMask = 8u;
         ctx.AddComponent(entity, entityBody);
 
-        ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2.9178114f, 2f)));
-
-        ctx.AddComponent(entity, new CooldownComponent
-        {
-            MaxTicks = 0,
-            TicksRemaining = 0,
-            Unit = 0,
-        });
+        ctx.AddComponent(entity, CollisionShape2D.CreateCircle(0.4f));
 
         var childEntities = new Dictionary<string, Entity>
         {
         };
-        component = ref ctx.GetComponent<PlayerHouseComponent>(entity);
+        component = ref ctx.GetComponent<HammerComponent>(entity);
 
         OnEntityCreated(ctx, entity, ref component, childEntities);
 
         return entity;
     }
 
-    static partial void OnEntityCreated(Context ctx, Entity entity, ref PlayerHouseComponent component, Dictionary<string, Entity> childEntities);
+    static partial void OnEntityCreated(Context ctx, Entity entity, ref HammerComponent component, Dictionary<string, Entity> childEntities);
 }

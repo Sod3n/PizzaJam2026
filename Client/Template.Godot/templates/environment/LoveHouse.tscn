@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="8_no7kv"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://1ni4ix16yuim" path="res://Scripts/Framework/Components/LoveHouseComponentNode.cs" id="fw_lovehouse"]
+[ext_resource type="Script" path="res://Scripts/Framework/Components/CooldownComponentNode.cs" id="fw_cooldown"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yfgae"]
@@ -44,6 +45,9 @@ StableIdSeed = "lovehouse-entity-seed"
 
 [node name="LoveHouseComponent" type="Node" parent="Entity" unique_id=2023142437]
 script = ExtResource("fw_lovehouse")
+
+[node name="CooldownComponent" type="Node" parent="Entity"]
+script = ExtResource("fw_cooldown")
 
 [node name="Physics" type="Node3D" parent="Entity" unique_id=933266033]
 script = ExtResource("fw_phys")

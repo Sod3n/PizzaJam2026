@@ -4,6 +4,7 @@ using Godot;
 namespace Template.Godot.Framework;
 
 [Tool]
-public partial class PlayerHouseComponentNode : Node
+public partial class HammerComponentNode : Node
 {
+    [Export] public int State;
 }

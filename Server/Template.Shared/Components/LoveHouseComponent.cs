@@ -15,9 +15,5 @@ public struct LoveHouseComponent : IComponent
     public int BreedProgress; // Clicks so far during breeding
     public int BreedCost;     // Total clicks needed (set from cow exhaust values)
     public int HeartPercent; // Visual feedback: % chance of showing heart vs broken-heart per click
-    /// <summary>
-    /// Non-zero = on cooldown (waiting for sleep to clear it). Doesn't tick down on its own;
-    /// only <see cref="Systems.SleepLogic.AdvanceDay"/> resets it back to 0.
-    /// </summary>
-    public int CooldownTicksRemaining;
+    // Cooldown lives on a sibling CooldownComponent (Unit=Days, cleared on day advance).
 }

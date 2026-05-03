@@ -21,6 +21,19 @@ public class HelperSystem : ISystem
     private const int BuildWorkDuration = Template.Shared.GameData.Balance.Helper.BuildWorkDuration;
     private const int MilkWorkDuration = Template.Shared.GameData.Balance.Helper.MilkWorkDuration;
 
+    /// <summary>
+    /// Helpers do 1 unit of work per cycle — pets shrink the cycle instead of
+    /// bulk-multiplying per cycle. Mirrors the player-side cadence model.
+    /// </summary>
+    private static int ApplyPetSpeedBoost(int baseDuration, int petCount)
+    {
+        int boost = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase
+                  + Template.Shared.GameData.Balance.Pets.BoostPerPet * petCount;
+        if (boost < 1) boost = 1;
+        int duration = baseDuration / boost;
+        return duration < 1 ? 1 : duration;
+    }
+
     public void Update(EntityWorld state)
     {
         RecomputePetCounts(state);
@@ -98,7 +111,7 @@ public class HelperSystem : ISystem
                     UpdateBuilder(state, entity, ref helper, petCount);
                     break;
                 case HelperType.Milker:
-                    UpdateMilker(state, entity, ref helper);
+                    UpdateMilker(state, entity, ref helper, petCount);
                     break;
             }
 
@@ -170,16 +183,6 @@ public class HelperSystem : ISystem
                 ps.PetCount++;
             }
         }
-
-        foreach (var pe in state.Filter<PlayerEntity>())
-        {
-            if (!state.HasComponent<PlayerStateComponent>(pe)) continue;
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(pe);
-            int baseline = state.HasComponent<HelperPlayerComponent>(pe)
-                ? Template.Shared.GameData.Balance.HelperPlayer.ClickMultiplier
-                : Template.Shared.GameData.Balance.Pets.AdditiveBoostBase;
-            ps.ClickMultiplier = baseline + Template.Shared.GameData.Balance.Pets.BoostPerPet * ps.PetCount;
-        }
     }
 
     // ─── Assistant: follow player closely ───
@@ -196,9 +199,7 @@ public class HelperSystem : ISystem
 
     private void UpdateGatherer(EntityWorld state, Entity entity, ref HelperComponent helper, int petCount = 0)
     {
-        int boost = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase + Template.Shared.GameData.Balance.Pets.BoostPerPet * petCount;
-        int workDuration = GatherWorkDuration / boost;
-        if (workDuration < 1) workDuration = 1;
+        int workDuration = ApplyPetSpeedBoost(GatherWorkDuration, petCount);
         switch (helper.State)
         {
             case HelperState.Idle:
@@ -241,9 +242,9 @@ public class HelperSystem : ISystem
                 helper.WorkTimer++;
                 if (helper.WorkTimer >= helper.WorkDuration)
                 {
-                    int harvestAmount = petCount >= 1 ? 1 + petCount * 4 : 1;
+                    // 1 unit per cycle — pets accelerate the cycle (see ApplyPetSpeedBoost), not the yield.
                     int bagSpace = helper.BagCapacity - helper.GetBagTotal();
-                    int amount = System.Math.Min(harvestAmount, bagSpace);
+                    int amount = bagSpace > 0 ? 1 : 0;
 
                     if (InteractionLogic.HarvestFood(state, helper.TargetEntity, amount, out int foodType, out bool destroyed))
                     {
@@ -343,7 +344,7 @@ public class HelperSystem : ISystem
                 {
                     helper.State = HelperState.Working;
                     helper.WorkTimer = 0;
-                    helper.WorkDuration = SellWorkDuration;
+                    helper.WorkDuration = ApplyPetSpeedBoost(SellWorkDuration, petCount);
                 }
                 break;
 
@@ -432,7 +433,7 @@ public class HelperSystem : ISystem
                 {
                     helper.State = HelperState.Working;
                     helper.WorkTimer = 0;
-                    helper.WorkDuration = BuildWorkDuration;
+                    helper.WorkDuration = ApplyPetSpeedBoost(BuildWorkDuration, petCount);
                 }
                 break;
 
@@ -445,7 +446,8 @@ public class HelperSystem : ISystem
                     if (helper.BagCoins > 0 && state.HasComponent<LandComponent>(helper.TargetEntity))
                     {
                         var landEntity = helper.TargetEntity;
-                        int buildAmount = System.Math.Min(Template.Shared.GameData.Balance.Helper.BuildCoinsPerWork, helper.BagCoins);
+                        // 1 coin per cycle — pets accelerate the cycle (see ApplyPetSpeedBoost), not the per-cycle yield.
+                        int buildAmount = System.Math.Min(1, helper.BagCoins);
 
                         int deposited = InteractionLogic.DepositToLand(state, landEntity, buildAmount, leaveOneForPlayer: true, out bool landComplete);
                         if (deposited <= 0)
@@ -466,11 +468,14 @@ public class HelperSystem : ISystem
                             var landType = landComp.Type;
                             int gridX = landComp.Arm;
                             int gridY = landComp.Ring;
+                            CooldownComponent? carry = null;
+                            if (state.HasComponent<CooldownComponent>(landEntity))
+                                carry = state.GetComponent<CooldownComponent>(landEntity);
                             Definitions.LandDefinition.DeleteSignsForLand(state, landEntity);
                             state.DeleteEntity(landEntity);
 
                             var ctx = new Context(state, helper.OwnerPlayer, null!);
-                            InteractActionService.CompleteLandBuilding(ctx, position, landType, gridX, gridY);
+                            InteractActionService.CompleteLandBuilding(ctx, position, landType, gridX, gridY, carry);
 
                             helper = ref state.GetComponent<HelperComponent>(entity);
                             helper.TargetEntity = Entity.Null;
@@ -568,7 +573,7 @@ public class HelperSystem : ISystem
     {
         foreach (var pe in state.Filter<PlayerStateComponent>())
         {
-            if (state.GetComponent<PlayerStateComponent>(pe).CarriedHelper == helperEntity)
+            if (state.GetComponent<PlayerStateComponent>(pe).FollowingHelper == helperEntity)
                 return pe;
         }
         return Entity.Null;
@@ -608,7 +613,7 @@ public class HelperSystem : ISystem
 
     // ─── Milker: find house → follow player asking for food → receive food → go milk → return with milk → wait for pickup ───
 
-    private void UpdateMilker(EntityWorld state, Entity entity, ref HelperComponent helper)
+    private void UpdateMilker(EntityWorld state, Entity entity, ref HelperComponent helper, int petCount = 0)
     {
         switch (helper.State)
         {
@@ -713,7 +718,7 @@ public class HelperSystem : ISystem
                     }
                     helper.State = HelperState.Working;
                     helper.WorkTimer = 0;
-                    helper.WorkDuration = MilkWorkDuration;
+                    helper.WorkDuration = ApplyPetSpeedBoost(MilkWorkDuration, petCount);
                 }
                 break;
 
@@ -939,12 +944,12 @@ public class HelperSystem : ISystem
     }
 
     /// <summary>
-    /// Builder targets the FARTHEST unlocked land — expands the frontier
-    /// while the player builds nearby cheap plots manually.
+    /// Builder targets the FARTHEST plot the player has already committed to —
+    /// CurrentCoins > 0 means the player dropped a fixation coin, so the build type
+    /// is locked. Builder will not invest in plots that are still cycling type.
     /// </summary>
     private Entity FindFarthestUnlockedLand(EntityWorld state, Entity helper)
     {
-        // Use center (0,0) as reference — farthest from center = frontier expansion
         Entity farthest = Entity.Null;
         Float maxDistSq = 0f;
 
@@ -952,6 +957,7 @@ public class HelperSystem : ISystem
         {
             var land = state.GetComponent<LandComponent>(entity);
             if (land.Locked != 0) continue;
+            if (land.CurrentCoins <= 0) continue; // Player hasn't fixated build type yet — leave alone
             if (land.CurrentCoins >= land.Threshold - 1) continue; // Skip buildings at threshold-1 (builder leaves last coin for player)
             if (!state.HasComponent<Transform2D>(entity)) continue;
 

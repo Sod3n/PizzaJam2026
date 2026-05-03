@@ -5,8 +5,6 @@ namespace Template.Godot.Visuals;
 
 public partial class PlayerHouseView
 {
-    private const int SleepCooldownTicks = 7200;
-
     partial void OnSpawned(PlayerHouseViewModel vm, global::Godot.Node3D visualNode)
     {
         DespawnDelay = 0.3f;
@@ -16,20 +14,16 @@ public partial class PlayerHouseView
         var sprite = visualNode.GetNodeOrNull<AnimatedSprite3D>("AnimatedSprite3D");
         var mat = sprite?.MaterialOverride as ShaderMaterial;
 
-        vm.PlayerHouse.PlayerHouse.CooldownTicksRemaining.Subscribe(ticks =>
+        // Tick-unit cooldown — counts down each tick. Overlay scales with progress.
+        var cd = vm.PlayerHouse.Cooldown;
+        cd.TicksRemaining.Subscribe(ticks =>
         {
             Callable.From(() =>
             {
                 if (mat == null || !IsInstanceValid(sprite)) return;
-                if (ticks > 0)
-                {
-                    float progress = (float)ticks / SleepCooldownTicks;
-                    mat.SetShaderParameter("cooldown_fill", Mathf.Clamp(progress, 0f, 1f));
-                }
-                else
-                {
-                    mat.SetShaderParameter("cooldown_fill", 0f);
-                }
+                int max = cd.MaxTicks.CurrentValue;
+                float progress = max > 0 ? (float)ticks / max : 0f;
+                mat.SetShaderParameter("cooldown_fill", Mathf.Clamp(progress, 0f, 1f));
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }

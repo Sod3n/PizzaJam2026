@@ -31,7 +31,6 @@ public static partial class HelperPlayerDefinition
 
         ref var ps = ref ctx.GetComponent<PlayerStateComponent>(entity);
         ps.ReturnPosition = position;
-        ps.ClickMultiplier = Balance.HelperPlayer.ClickMultiplier;
 
         ref var hp = ref ctx.GetComponent<HelperPlayerComponent>(entity);
         hp.Type = HelperType.Gatherer;

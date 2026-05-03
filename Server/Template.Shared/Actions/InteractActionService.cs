@@ -49,8 +49,20 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (nearestTarget == Entity.Null)
         {
+            // Empty-air click while carrying a hammer → drop the hammer at player's feet.
+            if (playerState.CarriedEntity != Entity.Null
+                && ctx.State.HasComponent<HammerComponent>(playerState.CarriedEntity))
+            {
+                if (ctx.State.HasComponent<Transform2D>(playerEntity))
+                {
+                    var pp = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+                    DropCarriedHammerAt(ctx, ref playerState, pp);
+                    ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "drop_hammer", Age = 0 });
+                }
+                return;
+            }
             // Empty-air click while carrying a pet → assign to self.
-            if (!isHelperPlayer && playerState.CarriedPet != Entity.Null
+            if (!isHelperPlayer && playerState.CarriedEntity != Entity.Null
                 && HandlePetAssign(ctx, playerEntity, playerEntity, ref playerState))
             {
                 ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
@@ -67,11 +79,46 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         string gainedResource = null;
         Entity interactedTarget = nearestTarget;
 
+        // Cooldown gate: any entity with an active CooldownComponent ignores all gameplay interactions
+        // (smithy/hammer flow above is exempt — hammer demolish should still work on cooled-down buildings,
+        // and carried-hammer drop is handled before this point).
+        if (IsOnCooldown(ctx, nearestTarget)
+            && !ctx.State.HasComponent<HammerComponent>(nearestTarget)
+            && !(playerState.CarriedEntity != Entity.Null && ctx.State.HasComponent<HammerComponent>(playerState.CarriedEntity)))
+        {
+            ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = "cooldown", Age = 0 });
+            return;
+        }
+
+        // Hammer takes priority: clicking a building demolishes it; clicking the carried hammer drops it.
+        bool carryingHammer = playerState.CarriedEntity != Entity.Null
+                              && ctx.State.HasComponent<HammerComponent>(playerState.CarriedEntity);
+        if (carryingHammer && nearestTarget == playerState.CarriedEntity)
+        {
+            if (ctx.State.HasComponent<Transform2D>(playerEntity))
+            {
+                var pp = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+                DropCarriedHammerAt(ctx, ref playerState, pp);
+                ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "drop_hammer", Age = 0 });
+            }
+            return;
+        }
+        if (carryingHammer && IsDemolishableBuilding(ctx, nearestTarget))
+        {
+            var hammer = playerState.CarriedEntity;
+            DemolishBuilding(ctx, nearestTarget, ref globalRes);
+            playerState.CarriedEntity = Entity.Null;
+            if (ctx.State.HasComponent<HammerComponent>(hammer))
+                ctx.State.DeleteEntity(hammer);
+            ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "demolish", Age = 0 });
+            return;
+        }
+
         // Carrying a pet → click target to assign (or click pet itself to drop).
         // Helper-players are tactical only — they never carry pets, so this branch is a no-op for them.
         if (!isHelperPlayer
-            && playerState.CarriedPet != Entity.Null
-            && nearestTarget != playerState.CarriedPet
+            && playerState.CarriedEntity != Entity.Null
+            && nearestTarget != playerState.CarriedEntity
             && IsValidPetAssignTarget(ctx, nearestTarget))
         {
             if (HandlePetAssign(ctx, playerEntity, nearestTarget, ref playerState))
@@ -92,13 +139,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 return;
             }
         }
-        // Helper interaction → resource exchange first; fall back to pickup into CarriedHelper
+        // Helper interaction → resource exchange first; fall back to pickup into FollowingHelper
         else if (ctx.State.HasComponent<HelperComponent>(nearestTarget))
         {
             // Drop the helper if clicking the one we're already carrying
-            if (playerState.CarriedHelper == nearestTarget)
+            if (playerState.FollowingHelper == nearestTarget)
             {
-                DropCarriedHelperInPlace(ctx, ref playerState);
+                DropFollowingHelperInPlace(ctx, ref playerState);
                 ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "drop", Age = 0 });
                 return;
             }
@@ -109,7 +156,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             {
                 ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
             }
-            else if (playerState.CarriedHelper == Entity.Null && !IsHelperAssignedToHouse(ctx, nearestTarget))
+            else if (playerState.FollowingHelper == Entity.Null && !IsHelperAssignedToHouse(ctx, nearestTarget))
             {
                 // No exchange happened → pick up the helper to carry/assign
                 success = HandleHelperPickup(ctx, playerEntity, nearestTarget, ref playerState);
@@ -183,9 +230,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                     if (success) return;
                 }
                 // Empty house + carrying a helper → assign helper to house
-                else if (house.CowId == Entity.Null && house.HelperId == Entity.Null && playerState.CarriedHelper != Entity.Null)
+                else if (house.CowId == Entity.Null && house.HelperId == Entity.Null && playerState.FollowingHelper != Entity.Null)
                 {
-                    success = HandleHouseAssignCarriedHelper(ctx, playerEntity, nearestTarget, ref playerState);
+                    success = HandleHouseAssignFollowingHelper(ctx, playerEntity, nearestTarget, ref playerState);
                     if (success) return;
                 }
             }
@@ -196,7 +243,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             if (isHelperPlayer) return;
             ref var lh = ref ctx.State.GetComponent<LoveHouseComponent>(nearestTarget);
             // Cooldown is sleep-only — click does nothing while it's active.
-            if (lh.CooldownTicksRemaining > 0) return;
+            if (IsOnCooldown(ctx, nearestTarget)) return;
             bool bothFull = lh.CowId1 != Entity.Null && lh.CowId2 != Entity.Null;
             if (bothFull)
             {
@@ -263,6 +310,28 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         {
             success = HandleFinalStructureInteraction(ctx, nearestTarget, ref globalRes, out missingResource);
         }
+        else if (ctx.State.HasComponent<SmithyComponent>(nearestTarget))
+        {
+            // Smithy hands out a hammer. Player must have empty hands.
+            if (playerState.CarriedEntity == Entity.Null && ctx.State.HasComponent<Transform2D>(playerEntity))
+            {
+                var pp = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+                SpawnAndCarryHammer(ctx, ref playerState, pp);
+                success = true;
+            }
+        }
+        else if (ctx.State.HasComponent<HammerComponent>(nearestTarget))
+        {
+            // Pick up an idle hammer off the ground (or no-op if hands are full or it's already carried).
+            var h = ctx.State.GetComponent<HammerComponent>(nearestTarget);
+            if (h.State == HammerState.Idle && playerState.CarriedEntity == Entity.Null)
+            {
+                ref var hh = ref ctx.State.GetComponent<HammerComponent>(nearestTarget);
+                hh.State = HammerState.Carried;
+                playerState.CarriedEntity = nearestTarget;
+                success = true;
+            }
+        }
 
         if (success)
         {
@@ -308,7 +377,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         int foodToUse = cow.SelectedFood;
 
         int cowBoost = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase + Template.Shared.GameData.Balance.Pets.BoostPerPet * cow.PetCount;
-        int exhaustPerClick = System.Math.Max(1, playerState.ClickMultiplier) * cowBoost;
+        int exhaustPerClick = cowBoost;
         bool produced = InteractionLogic.MilkCow(ctx.State, cowEntity, foodToUse, exhaustPerClick, out bool cowDone);
 
         Entity target = cowEntity;
@@ -800,7 +869,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var helper = ref ctx.State.GetComponent<HelperComponent>(helperEntity);
         helper.OwnerPlayer = playerEntity;
 
-        playerState.CarriedHelper = helperEntity;
+        playerState.FollowingHelper = helperEntity;
 
         if (ctx.State.HasComponent<Deterministic.GameFramework.Physics2D.Components.CharacterBody2D>(helperEntity))
         {
@@ -812,10 +881,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return true;
     }
 
-    private bool HandleHouseAssignCarriedHelper(Context ctx, Entity playerEntity, Entity houseEntity, ref PlayerStateComponent playerState)
+    private bool HandleHouseAssignFollowingHelper(Context ctx, Entity playerEntity, Entity houseEntity, ref PlayerStateComponent playerState)
     {
         if (!ctx.State.HasComponent<HouseComponent>(houseEntity)) return false;
-        var helperEntity = playerState.CarriedHelper;
+        var helperEntity = playerState.FollowingHelper;
         if (helperEntity == Entity.Null || !ctx.State.HasComponent<HelperComponent>(helperEntity)) return false;
 
         ref var house = ref ctx.State.GetComponent<HouseComponent>(houseEntity);
@@ -835,18 +904,18 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         EnsureRoleSignForHouse(ctx, houseEntity, helperEntity);
 
-        playerState.CarriedHelper = Entity.Null;
+        playerState.FollowingHelper = Entity.Null;
 
         ctx.State.AddComponent(houseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "", Age = 0 });
         ILogger.Log($"[InteractActionService] Player {playerEntity.Id} assigned carried helper {helperEntity.Id} to house {houseEntity.Id}");
         return true;
     }
 
-    private void DropCarriedHelperInPlace(Context ctx, ref PlayerStateComponent playerState)
+    private void DropFollowingHelperInPlace(Context ctx, ref PlayerStateComponent playerState)
     {
-        var helperEntity = playerState.CarriedHelper;
+        var helperEntity = playerState.FollowingHelper;
         if (helperEntity == Entity.Null) return;
-        playerState.CarriedHelper = Entity.Null;
+        playerState.FollowingHelper = Entity.Null;
         ILogger.Log($"[InteractActionService] Dropped carried helper {helperEntity.Id} in place");
     }
 
@@ -869,7 +938,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
 
         // Block assignment while love house is on cooldown
-        if (loveHouse.CooldownTicksRemaining > 0)
+        if (IsOnCooldown(ctx, loveHouseEntity))
         {
             ILogger.Log($"[InteractActionService] Love house {loveHouseEntity.Id} is on cooldown, cannot assign cow");
             return false;
@@ -939,9 +1008,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ref var loveHouse = ref ctx.State.GetComponent<LoveHouseComponent>(loveHouseEntity);
 
         // Block breeding while love house is on cooldown
-        if (loveHouse.CooldownTicksRemaining > 0)
+        if (IsOnCooldown(ctx, loveHouseEntity))
         {
-            ILogger.Log($"[InteractActionService] Love house {loveHouseEntity.Id} is on cooldown ({loveHouse.CooldownTicksRemaining} ticks remaining)");
+            ILogger.Log($"[InteractActionService] Love house {loveHouseEntity.Id} is on cooldown");
             return false;
         }
 
@@ -1010,19 +1079,36 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
     private bool HandlePlayerHouseInteraction(Context ctx, Entity playerHouseEntity)
     {
-        ref var ph = ref ctx.State.GetComponent<PlayerHouseComponent>(playerHouseEntity);
-
-        if (ph.CooldownTicksRemaining > 0)
+        if (ctx.State.HasComponent<CooldownComponent>(playerHouseEntity))
         {
-            // On cooldown — each click subtracts 1 second (60 ticks) from remaining time (Task 11)
-            ph.CooldownTicksRemaining = System.Math.Max(0, ph.CooldownTicksRemaining - 60);
-            ctx.State.AddComponent(playerHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "cooldown_skip", Age = 0 });
-            return true;
+            ref var cd = ref ctx.State.GetComponent<CooldownComponent>(playerHouseEntity);
+            if (cd.TicksRemaining > 0)
+            {
+                // On cooldown — each click subtracts 1 second (60 ticks) from remaining time
+                cd.TicksRemaining = System.Math.Max(0, cd.TicksRemaining - Template.Shared.GameData.Balance.PlayerHouse.ClickToSkipTicks);
+                ctx.State.AddComponent(playerHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "cooldown_skip", Age = 0 });
+                return true;
+            }
         }
 
         // Sleep — advance day, regen cow exhaust, reset food caps
         Systems.SleepLogic.AdvanceDay(ctx.State);
-        ph.CooldownTicksRemaining = PlayerHouseComponent.SleepCooldownTicks;
+        if (ctx.State.HasComponent<CooldownComponent>(playerHouseEntity))
+        {
+            ref var cd = ref ctx.State.GetComponent<CooldownComponent>(playerHouseEntity);
+            cd.MaxTicks = PlayerHouseComponent.SleepCooldownTicks;
+            cd.TicksRemaining = PlayerHouseComponent.SleepCooldownTicks;
+            cd.Unit = CooldownUnit.Ticks;
+        }
+        else
+        {
+            ctx.State.AddComponent(playerHouseEntity, new CooldownComponent
+            {
+                MaxTicks = PlayerHouseComponent.SleepCooldownTicks,
+                TicksRemaining = PlayerHouseComponent.SleepCooldownTicks,
+                Unit = CooldownUnit.Ticks,
+            });
+        }
         ctx.State.AddComponent(playerHouseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "sleep", Age = 0 });
         ILogger.Log($"[InteractActionService] Player slept at PlayerHouse {playerHouseEntity.Id} — day advanced");
         return true;
@@ -1133,12 +1219,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             return true;
         }
 
-        // Milk day (default)
-        int clickMult = 1;
-        if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
-            clickMult = System.Math.Max(1, ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity).ClickMultiplier);
-
-        int coins = InteractionLogic.SellFromGlobal(ctx.State, clickMult);
+        // Milk day (default) — one milk per click; helper players just click faster (cadence).
+        int coins = InteractionLogic.SellFromGlobal(ctx.State, 1);
         if (coins > 0) return true;
         missingResource = StateKeys.Milk;
         return false;
@@ -1150,9 +1232,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (globalRes.Coins > 0)
         {
-            var ps = ctx.State.GetComponent<PlayerStateComponent>(playerEntity);
-            int coinsPerClick = System.Math.Max(1, ps.ClickMultiplier);
-            int coins = System.Math.Min(coinsPerClick, globalRes.Coins);
+            // One coin per click — helper players just click faster (cadence).
+            int coins = System.Math.Min(1, globalRes.Coins);
 
             int deposited = InteractionLogic.DepositToLand(ctx.State, landEntity, coins, leaveOneForPlayer: false, out bool landComplete);
             globalRes.Coins -= deposited;
@@ -1165,10 +1246,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 var landType = land.Type;
                 int gridX = land.Arm;
                 int gridY = land.Ring;
+                CooldownComponent? carry = null;
+                if (ctx.State.HasComponent<CooldownComponent>(landEntity))
+                    carry = ctx.State.GetComponent<CooldownComponent>(landEntity);
                 LandDefinition.DeleteSignsForLand(ctx.State, landEntity);
                 ctx.State.DeleteEntity(landEntity);
 
-                CompleteLandBuilding(ctx, position, landType, gridX, gridY);
+                CompleteLandBuilding(ctx, position, landType, gridX, gridY, carry);
                 return false;
             }
             return deposited > 0;
@@ -1205,11 +1289,8 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
         if (final.CurrentCoins >= final.Threshold) return false;
 
-        int clickPower = 1;
-        if (ctx.State.HasComponent<PlayerStateComponent>(ctx.Entity))
-            clickPower = System.Math.Max(1, ctx.State.GetComponent<PlayerStateComponent>(ctx.Entity).ClickMultiplier);
-
-        int deposit = System.Math.Min(clickPower, globalRes.Coins);
+        // One coin per click — helper players just click faster (cadence).
+        int deposit = System.Math.Min(1, globalRes.Coins);
         deposit = System.Math.Min(deposit, final.Threshold - final.CurrentCoins);
         globalRes.Coins -= deposit;
         final.CurrentCoins += deposit;
@@ -1519,36 +1600,36 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     {
         ref var pet = ref ctx.State.GetComponent<HelperPetComponent>(petEntity);
 
-        if (playerState.CarriedPet == petEntity)
+        if (playerState.CarriedEntity == petEntity)
         {
             DropPetToIdle(ctx, petEntity, ref pet);
-            playerState.CarriedPet = Entity.Null;
+            playerState.CarriedEntity = Entity.Null;
             ILogger.Log($"[Pet] Player {playerEntity.Id} dropped pet {petEntity.Id} at idle spawn");
             return true;
         }
 
-        if (playerState.CarriedPet != Entity.Null)
+        if (playerState.CarriedEntity != Entity.Null)
         {
-            if (ctx.State.HasComponent<HelperPetComponent>(playerState.CarriedPet))
+            if (ctx.State.HasComponent<HelperPetComponent>(playerState.CarriedEntity))
             {
-                ref var prev = ref ctx.State.GetComponent<HelperPetComponent>(playerState.CarriedPet);
-                DropPetToIdle(ctx, playerState.CarriedPet, ref prev);
+                ref var prev = ref ctx.State.GetComponent<HelperPetComponent>(playerState.CarriedEntity);
+                DropPetToIdle(ctx, playerState.CarriedEntity, ref prev);
             }
-            playerState.CarriedPet = Entity.Null;
+            playerState.CarriedEntity = Entity.Null;
             pet = ref ctx.State.GetComponent<HelperPetComponent>(petEntity);
         }
 
         pet.State = PetState.Carried;
         pet.FollowTarget = playerEntity;
         pet.AssignedTo = Entity.Null;
-        playerState.CarriedPet = petEntity;
+        playerState.CarriedEntity = petEntity;
         ILogger.Log($"[Pet] Player {playerEntity.Id} picked up pet {petEntity.Id}");
         return true;
     }
 
     private bool HandlePetAssign(Context ctx, Entity playerEntity, Entity targetEntity, ref PlayerStateComponent playerState)
     {
-        var petEntity = playerState.CarriedPet;
+        var petEntity = playerState.CarriedEntity;
         if (petEntity == Entity.Null) return false;
         if (!ctx.State.HasComponent<HelperPetComponent>(petEntity)) return false;
 
@@ -1556,7 +1637,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         pet.State = PetState.Assigned;
         pet.AssignedTo = targetEntity;
         pet.FollowTarget = targetEntity;
-        playerState.CarriedPet = Entity.Null;
+        playerState.CarriedEntity = Entity.Null;
         ILogger.Log($"[Pet] Player {playerEntity.Id} assigned pet {petEntity.Id} to target {targetEntity.Id}");
         return true;
     }
@@ -1610,34 +1691,35 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     /// Called by both player interaction and builder helper.
     /// The land entity should already be deleted before calling this.
     /// </summary>
-    public static void CompleteLandBuilding(Context ctx, Vector2 position, LandType landType, int gridX, int gridY)
+    public static void CompleteLandBuilding(Context ctx, Vector2 position, LandType landType, int gridX, int gridY, CooldownComponent? carryCooldown = null)
     {
         // Destroy nearby props to clear space
         DestroyNearbyProps(ctx, position, 4f);
 
+        Entity built = Entity.Null;
         switch (landType)
         {
             case LandType.LoveHouse:
-                LoveHouseDefinition.Create(ctx, position);
+                built = LoveHouseDefinition.Create(ctx, position);
                 break;
             case LandType.SellPoint:
-                SellPointDefinition.Create(ctx, position);
+                built = SellPointDefinition.Create(ctx, position);
                 break;
             case LandType.FinalStructure:
-                FinalStructureDefinition.Create(ctx, position, 0);
+                built = FinalStructureDefinition.Create(ctx, position, 0);
                 break;
             case LandType.CarrotFarm:
-                CarrotFarmDefinition.Create(ctx, position);
+                built = CarrotFarmDefinition.Create(ctx, position);
                 break;
             case LandType.AppleOrchard:
-                AppleOrchardDefinition.Create(ctx, position);
+                built = AppleOrchardDefinition.Create(ctx, position);
                 break;
             case LandType.MushroomCave:
-                MushroomCaveDefinition.Create(ctx, position);
+                built = MushroomCaveDefinition.Create(ctx, position);
                 break;
             case LandType.HelperAssistant:
                 {
-                    HelperAssistantDefinition.Create(ctx, position);
+                    built = HelperAssistantDefinition.Create(ctx, position);
                     // Offset the pet so it doesn't sit on top of the cat-house — player needs
                     // to click the pet itself to carry it.
                     var petPos = position + new Vector2((Float)1.5f, (Float)0);
@@ -1648,20 +1730,35 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                     break;
                 }
             case LandType.Warehouse:
-                WarehouseDefinition.Create(ctx, position);
+                built = WarehouseDefinition.Create(ctx, position);
                 break;
             case LandType.Library:
-                LibraryDefinition.Create(ctx, position);
+                built = LibraryDefinition.Create(ctx, position);
                 break;
             case LandType.PlayerHouse:
-                PlayerHouseDefinition.Create(ctx, position);
+                built = PlayerHouseDefinition.Create(ctx, position);
                 break;
             case LandType.Decoration:
-                DecorationDefinition.Create(ctx, position);
+                built = DecorationDefinition.Create(ctx, position);
+                break;
+            case LandType.Smithy:
+                built = SmithyDefinition.Create(ctx, position);
                 break;
             default:
-                HouseDefinition.Create(ctx, position);
+                built = HouseDefinition.Create(ctx, position);
                 break;
+        }
+
+        // Inherit cooldown from the demolished plot, if any. The new building starts at MaxTicks
+        // (full cooldown) so a quick demolish-rebuild cycle can't be used to skip cycles.
+        if (carryCooldown.HasValue && built != Entity.Null && carryCooldown.Value.MaxTicks > 0)
+        {
+            ctx.State.AddComponent(built, new CooldownComponent
+            {
+                MaxTicks = carryCooldown.Value.MaxTicks,
+                TicksRemaining = carryCooldown.Value.MaxTicks,
+                Unit = carryCooldown.Value.Unit,
+            });
         }
 
         StarGrid.SpawnNeighbors(ctx, gridX, gridY);
@@ -1671,6 +1768,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
     /// Returns a building info param key for the given entity, or null if it's not a known building.
     /// Used to show info popups when the player interacts with a building that has no primary action.
     /// </summary>
+    /// <summary>True when <paramref name="e"/> has an active CooldownComponent (any unit). Read-only check.</summary>
+    public static bool IsOnCooldown(Context ctx, Entity e)
+    {
+        if (!ctx.State.HasComponent<CooldownComponent>(e)) return false;
+        return ctx.State.GetComponent<CooldownComponent>(e).TicksRemaining > 0;
+    }
+
     private static string GetBuildingInfoKey(Context ctx, Entity entity)
     {
         if (ctx.State.HasComponent<SellPointComponent>(entity)) return StateKeys.InfoSellPoint;
@@ -1685,4 +1789,142 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         return null;
     }
 
+    /// <summary>
+    /// Any entity carrying a building tag — used by the hammer to determine "is this a building I can demolish".
+    /// Smithy is included on purpose: hammers destroy hammers' source too.
+    /// </summary>
+    private static bool IsDemolishableBuilding(Context ctx, Entity e)
+    {
+        return ctx.State.HasComponent<HouseComponent>(e)
+            || ctx.State.HasComponent<LoveHouseComponent>(e)
+            || ctx.State.HasComponent<SellPointComponent>(e)
+            || ctx.State.HasComponent<FinalStructureComponent>(e)
+            || ctx.State.HasComponent<CarrotFarmComponent>(e)
+            || ctx.State.HasComponent<AppleOrchardComponent>(e)
+            || ctx.State.HasComponent<MushroomCaveComponent>(e)
+            || ctx.State.HasComponent<HelperAssistantComponent>(e)
+            || ctx.State.HasComponent<WarehouseComponent>(e)
+            || ctx.State.HasComponent<LibraryComponent>(e)
+            || ctx.State.HasComponent<PlayerHouseComponent>(e)
+            || ctx.State.HasComponent<DecorationComponent>(e)
+            || ctx.State.HasComponent<SmithyComponent>(e);
+    }
+
+    private static LandType ResolveBuildingType(Context ctx, Entity e)
+    {
+        if (ctx.State.HasComponent<HouseComponent>(e)) return LandType.House;
+        if (ctx.State.HasComponent<LoveHouseComponent>(e)) return LandType.LoveHouse;
+        if (ctx.State.HasComponent<SellPointComponent>(e)) return LandType.SellPoint;
+        if (ctx.State.HasComponent<FinalStructureComponent>(e)) return LandType.FinalStructure;
+        if (ctx.State.HasComponent<CarrotFarmComponent>(e)) return LandType.CarrotFarm;
+        if (ctx.State.HasComponent<AppleOrchardComponent>(e)) return LandType.AppleOrchard;
+        if (ctx.State.HasComponent<MushroomCaveComponent>(e)) return LandType.MushroomCave;
+        if (ctx.State.HasComponent<HelperAssistantComponent>(e)) return LandType.HelperAssistant;
+        if (ctx.State.HasComponent<WarehouseComponent>(e)) return LandType.Warehouse;
+        if (ctx.State.HasComponent<LibraryComponent>(e)) return LandType.Library;
+        if (ctx.State.HasComponent<PlayerHouseComponent>(e)) return LandType.PlayerHouse;
+        if (ctx.State.HasComponent<DecorationComponent>(e)) return LandType.Decoration;
+        if (ctx.State.HasComponent<SmithyComponent>(e)) return LandType.Smithy;
+        return LandType.House;
+    }
+
+    /// <summary>
+    /// Refund = sticker price (Threshold) of the destroyed building. Recomputed from grid
+    /// coords + StarGrid since the LandComponent is gone after build completion.
+    /// </summary>
+    private static int ComputeDemolishRefund(LandType type, int gx, int gy)
+    {
+        int gridDist = System.Math.Max(1, System.Math.Abs(gx) + System.Math.Abs(gy));
+        int pm = StarGrid.GetPriceMultiplier(type);
+        return pm < 0
+            ? gridDist * StarGrid.GetEraMultiplier(gridDist) * Template.Shared.GameData.Balance.Build.BasePriceMultiplier / 4
+            : gridDist * StarGrid.GetEraMultiplier(gridDist) * pm * Template.Shared.GameData.Balance.Build.BasePriceMultiplier;
+    }
+
+    private static void GridCoordsFromPosition(Vector2 position, out int gx, out int gy)
+    {
+        // Round nearest grid step. StarGrid.GridStep is the spacing.
+        float step = StarGrid.GridStep;
+        gx = (int)System.Math.Round((double)((float)position.X / step));
+        gy = (int)System.Math.Round((double)((float)position.Y / step));
+    }
+
+    /// <summary>
+    /// Demolish a completed building. Refunds CurrentCoins (= threshold) to global coins, recreates
+    /// the plot as a cycling Land. Cooldown comes from the victim's CooldownComponent.MaxTicks
+    /// (and unit) — if absent, the recreated plot has no demolish cooldown.
+    /// </summary>
+    private static void DemolishBuilding(Context ctx, Entity buildingEntity, ref GlobalResourcesComponent globalRes)
+    {
+        if (!ctx.State.HasComponent<Transform2D>(buildingEntity)) return;
+        var pos = ctx.State.GetComponent<Transform2D>(buildingEntity).Position;
+        GridCoordsFromPosition(pos, out int gx, out int gy);
+
+        var type = ResolveBuildingType(ctx, buildingEntity);
+        int refund = ComputeDemolishRefund(type, gx, gy);
+        globalRes.Coins += refund;
+
+        // Capture cooldown spec from the victim before deletion.
+        int cdMax = 0;
+        int cdUnit = CooldownUnit.Ticks;
+        if (ctx.State.HasComponent<CooldownComponent>(buildingEntity))
+        {
+            var cd = ctx.State.GetComponent<CooldownComponent>(buildingEntity);
+            cdMax = cd.MaxTicks;
+            cdUnit = cd.Unit;
+        }
+
+        // Detach any cow assigned to this house — release into the wild (no follow target).
+        if (ctx.State.HasComponent<HouseComponent>(buildingEntity))
+        {
+            var house = ctx.State.GetComponent<HouseComponent>(buildingEntity);
+            if (house.CowId != Entity.Null && ctx.State.HasComponent<CowComponent>(house.CowId))
+            {
+                ref var cow = ref ctx.State.GetComponent<CowComponent>(house.CowId);
+                cow.HouseId = Entity.Null;
+            }
+        }
+
+        // Wipe any signs that reference this entity (price sign, role sign) before deletion.
+        Definitions.LandDefinition.DeleteSignsForLand(ctx.State, buildingEntity);
+        ctx.State.DeleteEntity(buildingEntity);
+
+        // Recreate the cycling plot at the same grid cell. Threshold is recomputed inside.
+        int threshold = ComputeDemolishRefund(type, gx, gy);
+        var plot = Definitions.LandDefinition.Create(ctx, pos, threshold, type, gx, gy);
+        if (cdMax > 0)
+        {
+            ctx.State.AddComponent(plot, new CooldownComponent
+            {
+                MaxTicks = cdMax,
+                TicksRemaining = cdMax,
+                Unit = cdUnit,
+            });
+        }
+
+        ILogger.Log($"[Demolish] Razed {type} at ({gx},{gy}); refund={refund} coins; cooldownMax={cdMax} unit={cdUnit}");
+    }
+
+    private static void SpawnAndCarryHammer(Context ctx, ref PlayerStateComponent playerState, Vector2 position)
+    {
+        var hammer = Definitions.HammerDefinition.Create(ctx, position);
+        ref var h = ref ctx.State.GetComponent<HammerComponent>(hammer);
+        h.State = HammerState.Carried;
+        playerState.CarriedEntity = hammer;
+    }
+
+    private static void DropCarriedHammerAt(Context ctx, ref PlayerStateComponent playerState, Vector2 position)
+    {
+        var hammer = playerState.CarriedEntity;
+        if (hammer == Entity.Null) return;
+        if (!ctx.State.HasComponent<HammerComponent>(hammer)) return;
+        ref var h = ref ctx.State.GetComponent<HammerComponent>(hammer);
+        h.State = HammerState.Idle;
+        if (ctx.State.HasComponent<Transform2D>(hammer))
+        {
+            ref var t = ref ctx.State.GetComponent<Transform2D>(hammer);
+            t.Position = position;
+        }
+        playerState.CarriedEntity = Entity.Null;
+    }
 }

@@ -30,9 +30,6 @@ public class CowSystem : ISystem
     }
     public void Update(EntityWorld state)
     {
-        // Love house cooldown is NOT decremented passively any more — it only resets
-        // on sleep (see SleepLogic.AdvanceDay). Click-to-skip is still allowed.
-
         // Tick down love event timer — when it reaches 0, fire the deferred love event.
         // Skipped entirely when love events are disabled in Balance.
         if (Balance.Love.Enabled)
@@ -467,8 +464,8 @@ public class CowSystem : ISystem
             if (neededHelper >= 0 && !guaranteedUpgrade)
             {
                 int spawnedCount = state.GetComponent<GlobalResourcesComponent>(globalResEntity).HelpersSpawned;
-                if (spawnedCount < HelperUnlockOrder.Length)
-                    spawnHelper = breedCount >= HelperUnlockOrder[spawnedCount].threshold;
+                if (spawnedCount < Balance.Helper.HelperUnlockBreeds.Length)
+                    spawnHelper = breedCount >= Balance.Helper.HelperUnlockBreeds[spawnedCount];
             }
 
             if (spawnHelper && GetHelpersEnabled(state))
@@ -488,14 +485,7 @@ public class CowSystem : ISystem
                     gr2.HelpersSpawned++;
                     var gt = state.GetCustomData<IGameTime>();
                     float hMin = gt != null ? gt.CurrentTick / 60f / 60f : -1;
-                    ILogger.Log($"[CowSystem] Helper unlocked: {neededHelper switch { 0 => "Assistant", 1 => "Gatherer", 3 => "Builder", 2 => "Seller", _ => "Helper" }} #{gr2.HelpersSpawned} at breed #{breedCount} ({hMin:F1}m)!");
-
-                    // Wire Assistant to player so milking/breeding clicks are doubled
-                    if (neededHelper == HelperType.Assistant)
-                    {
-                        ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-                        ps.AssistantHelper = babyHelper;
-                    }
+                    ILogger.Log($"[CowSystem] Helper unlocked: #{gr2.HelpersSpawned} at breed #{breedCount} ({hMin:F1}m)!");
                 }
             }
             else
@@ -540,9 +530,25 @@ public class CowSystem : ISystem
             ReturnCowToHouse(state, cow2);
         }
         loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-        // Set to 1 as a binary "on cooldown" flag — the actual value doesn't matter,
-        // SleepLogic.AdvanceDay zeroes it. There is no per-tick decay.
-        loveHouse.CooldownTicksRemaining = 1;
+        // Mark on cooldown via the unified CooldownComponent (Unit=Days, cleared by SleepLogic.AdvanceDay).
+        // Binary semantics: any non-zero TicksRemaining means "on cooldown" — actual ticks don't decay
+        // per-tick because the unit is days.
+        if (state.HasComponent<CooldownComponent>(loveHouseEntity))
+        {
+            ref var cd = ref state.GetComponent<CooldownComponent>(loveHouseEntity);
+            if (cd.MaxTicks <= 0) cd.MaxTicks = 1;
+            cd.TicksRemaining = cd.MaxTicks;
+            cd.Unit = CooldownUnit.Days;
+        }
+        else
+        {
+            state.AddComponent(loveHouseEntity, new CooldownComponent
+            {
+                MaxTicks = 1,
+                TicksRemaining = 1,
+                Unit = CooldownUnit.Days,
+            });
+        }
 
         // Love system: after every 2 breeds, set a random timer before the love event fires
         // (instead of triggering immediately)
@@ -934,17 +940,14 @@ public class CowSystem : ISystem
         }
     }
 
-    private static readonly (int type, int threshold)[] HelperUnlockOrder =
-    {
-        (HelperType.Gatherer,  GlobalResourcesComponent.GathererUnlockBreed),
-        (HelperType.Builder,   GlobalResourcesComponent.BuilderUnlockBreed),
-        (HelperType.Seller,    GlobalResourcesComponent.SellerUnlockBreed),
-        (HelperType.Milker,    GlobalResourcesComponent.MilkerUnlockBreed),
-    };
+    /// <summary>
+    /// Default initial role for a freshly-spawned helper. The player can cycle to any
+    /// other role via the role sign, so this is just the starting state.
+    /// </summary>
+    private const int DefaultHelperRole = HelperType.Gatherer;
 
     /// <summary>
-    /// Returns the next helper type and threshold based on sequential spawn index.
-    /// Returns -1 if all helpers have been spawned.
+    /// Returns the default helper role to spawn next, or -1 if the unlock ladder is exhausted.
     /// </summary>
     private int GetNextNeededHelper(EntityWorld state, Entity playerEntity)
     {
@@ -954,8 +957,8 @@ public class CowSystem : ISystem
         if (globalResEntity == Entity.Null) return -1;
 
         int spawnedCount = state.GetComponent<GlobalResourcesComponent>(globalResEntity).HelpersSpawned;
-        if (spawnedCount >= HelperUnlockOrder.Length) return -1;
-        return HelperUnlockOrder[spawnedCount].type;
+        if (spawnedCount >= Balance.Helper.HelperUnlockBreeds.Length) return -1;
+        return DefaultHelperRole;
     }
 
     private static ref SkinSpawnCountsComponent GetSpawnCounts(EntityWorld state)

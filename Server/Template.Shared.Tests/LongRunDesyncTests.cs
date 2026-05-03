@@ -330,26 +330,21 @@ public class LongRunDesyncTests : IDisposable
             server.Loop.RunSingleTick();
             client.Loop.RunSingleTick();
 
-            // Track breed completion on both sides
+            // Track breed completion on both sides via the new CooldownComponent (Unit=Days flag).
             foreach (var lh in server.State.Filter<LoveHouseComponent>())
             {
-                var slh = server.State.GetComponent<LoveHouseComponent>(lh);
-                if (slh.CooldownTicksRemaining == LoveHouseComponent.BreedCooldownTicks)
+                if (server.State.HasComponent<CooldownComponent>(lh)
+                    && server.State.GetComponent<CooldownComponent>(lh).TicksRemaining > 0)
                 {
                     _output.WriteLine($"  SERVER breed complete at serverTick={server.Loop.CurrentTick} testTick={tick}");
-                    // Only log once
-                    server.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining--;
-                    server.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining++;
                 }
             }
             foreach (var lh in client.State.Filter<LoveHouseComponent>())
             {
-                var clh = client.State.GetComponent<LoveHouseComponent>(lh);
-                if (clh.CooldownTicksRemaining == LoveHouseComponent.BreedCooldownTicks)
+                if (client.State.HasComponent<CooldownComponent>(lh)
+                    && client.State.GetComponent<CooldownComponent>(lh).TicksRemaining > 0)
                 {
                     _output.WriteLine($"  CLIENT breed complete at clientTick={client.Loop.CurrentTick} testTick={tick}");
-                    client.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining--;
-                    client.State.GetComponent<LoveHouseComponent>(lh).CooldownTicksRemaining++;
                 }
             }
 
@@ -392,12 +387,14 @@ public class LongRunDesyncTests : IDisposable
             foreach (var lh in server.State.Filter<LoveHouseComponent>())
             {
                 var slh = server.State.GetComponent<LoveHouseComponent>(lh);
-                _output.WriteLine($"  Server LoveHouse {lh.Id}: Progress={slh.BreedProgress}/{slh.BreedCost} Cooldown={slh.CooldownTicksRemaining}");
+                int cd = server.State.HasComponent<CooldownComponent>(lh) ? server.State.GetComponent<CooldownComponent>(lh).TicksRemaining : 0;
+                _output.WriteLine($"  Server LoveHouse {lh.Id}: Progress={slh.BreedProgress}/{slh.BreedCost} Cooldown={cd}");
             }
             foreach (var lh in client.State.Filter<LoveHouseComponent>())
             {
                 var clh = client.State.GetComponent<LoveHouseComponent>(lh);
-                _output.WriteLine($"  Client LoveHouse {lh.Id}: Progress={clh.BreedProgress}/{clh.BreedCost} Cooldown={clh.CooldownTicksRemaining}");
+                int cd = client.State.HasComponent<CooldownComponent>(lh) ? client.State.GetComponent<CooldownComponent>(lh).TicksRemaining : 0;
+                _output.WriteLine($"  Client LoveHouse {lh.Id}: Progress={clh.BreedProgress}/{clh.BreedCost} Cooldown={cd}");
             }
         }
 
