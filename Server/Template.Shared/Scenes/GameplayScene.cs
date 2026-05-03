@@ -13,6 +13,7 @@ using Template.Shared.Definitions;
 using Template.Shared.Debugging;
 using Template.Shared.Components;
 using Template.Shared.GameData;
+using Template.Shared.Systems;
 using Deterministic.GameFramework.Navigation2D.Components;
 using Deterministic.GameFramework.Navigation2D.Systems;
 
@@ -69,7 +70,7 @@ public class GameplayScene : IScene
         CreateWall(state, new Vector2(center + halfSize, center), new Vector2(wallThickness, halfSize * 2));
 
         // Spawn some coins
-        var context = new Context(state, Entity.Null, null!);
+        var context = state.Ctx(Entity.Null);
 
         // Navigation world - auto-bakes nav mesh from physics obstacles
         var navWorld = state.CreateEntity();

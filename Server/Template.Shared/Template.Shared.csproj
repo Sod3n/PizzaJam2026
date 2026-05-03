@@ -29,7 +29,8 @@
 
     <!-- CodeGen: auto-runs when component .cs files or .tscn templates change -->
     <ItemGroup>
-      <CodeGenInputs Include="$(MSBuildThisFileDirectory)Components\**\*.cs" Exclude="$(MSBuildThisFileDirectory)Components\**\*.g.cs" />
+      <CodeGenInputs Include="$(MSBuildThisFileDirectory)**\*.cs"
+                     Exclude="$(MSBuildThisFileDirectory)**\*.g.cs;$(MSBuildThisFileDirectory)bin\**\*.cs;$(MSBuildThisFileDirectory)obj\**\*.cs" />
       <CodeGenInputs Include="$(ScenesDir)\**\*.tscn" />
     </ItemGroup>
 

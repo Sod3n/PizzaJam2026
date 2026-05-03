@@ -13,7 +13,6 @@ namespace Template.Shared.Definitions;
 
 [EntityDefinition(
     typeof(Transform2D),
-    typeof(TestEntityComponent),
     typeof(CharacterBody2D),
     typeof(CollisionShape2D),
     typeof(StateComponent),
@@ -24,13 +23,6 @@ public static partial class TestEntityDefinition
     public static Entity Create(Context ctx, Vector2 position)
     {
         var entity = ctx.CreateEntity<TestEntityComponent>();
-
-        ref var component = ref ctx.GetComponent<TestEntityComponent>(entity);
-        component.Health = 100;
-        component.MaxHealth = 100;
-        component.Speed = default;
-        component.IsAlive = true;
-        component.Target = Entity.Null;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
@@ -60,12 +52,11 @@ public static partial class TestEntityDefinition
         var childEntities = new Dictionary<string, Entity>
         {
         };
-        component = ref ctx.GetComponent<TestEntityComponent>(entity);
 
-        OnEntityCreated(ctx, entity, ref component, childEntities);
+        OnEntityCreated(ctx, entity, childEntities);
 
         return entity;
     }
 
-    static partial void OnEntityCreated(Context ctx, Entity entity, ref TestEntityComponent component, Dictionary<string, Entity> childEntities);
+    static partial void OnEntityCreated(Context ctx, Entity entity, Dictionary<string, Entity> childEntities);
 }
