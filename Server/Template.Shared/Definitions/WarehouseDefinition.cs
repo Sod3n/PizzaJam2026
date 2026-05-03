@@ -14,5 +14,7 @@ public static partial class WarehouseDefinition
         // Spawn an enable/disable sign next to the warehouse
         var warehousePos = ctx.GetComponent<Transform2D>(entity).Position;
         WarehouseSignDefinition.Create(ctx, warehousePos + new Vector2(-2, 0), entity);
+
+        ctx.AddComponent(entity, new BuildingComponent { Type = LandType.Warehouse });
     }
 }

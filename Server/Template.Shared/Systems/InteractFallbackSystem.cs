@@ -28,15 +28,8 @@ public class InteractFallbackSystem : ISystem
 
     private static string GetBuildingInfoKey(EntityWorld state, Entity entity)
     {
-        if (state.HasComponent<SellPointComponent>(entity)) return StateKeys.InfoSellPoint;
-        if (state.HasComponent<HouseComponent>(entity)) return StateKeys.InfoHouse;
-        if (state.HasComponent<LoveHouseComponent>(entity)) return StateKeys.InfoLoveHouse;
-        if (state.HasComponent<CarrotFarmComponent>(entity)) return StateKeys.InfoCarrotFarm;
-        if (state.HasComponent<AppleOrchardComponent>(entity)) return StateKeys.InfoAppleOrchard;
-        if (state.HasComponent<MushroomCaveComponent>(entity)) return StateKeys.InfoMushroomCave;
-        if (state.HasComponent<HelperAssistantComponent>(entity)) return StateKeys.InfoHelperAssistant;
-        if (state.HasComponent<DecorationComponent>(entity)) return StateKeys.InfoDecoration;
-        if (state.HasComponent<WarehouseComponent>(entity)) return StateKeys.InfoWarehouse;
+        if (state.HasComponent<BuildingComponent>(entity))
+            return Template.Shared.Actions.BuildingInfo.GetInfoKey(state.GetComponent<BuildingComponent>(entity).Type);
         return null;
     }
 }

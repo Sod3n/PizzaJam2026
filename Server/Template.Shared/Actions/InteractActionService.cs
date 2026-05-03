@@ -443,36 +443,13 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
     private static bool IsDemolishableBuilding(Context ctx, Entity e)
     {
-        return ctx.State.HasComponent<HouseComponent>(e)
-            || ctx.State.HasComponent<LoveHouseComponent>(e)
-            || ctx.State.HasComponent<SellPointComponent>(e)
-            || ctx.State.HasComponent<FinalStructureComponent>(e)
-            || ctx.State.HasComponent<CarrotFarmComponent>(e)
-            || ctx.State.HasComponent<AppleOrchardComponent>(e)
-            || ctx.State.HasComponent<MushroomCaveComponent>(e)
-            || ctx.State.HasComponent<HelperAssistantComponent>(e)
-            || ctx.State.HasComponent<WarehouseComponent>(e)
-            || ctx.State.HasComponent<LibraryComponent>(e)
-            || ctx.State.HasComponent<PlayerHouseComponent>(e)
-            || ctx.State.HasComponent<DecorationComponent>(e)
-            || ctx.State.HasComponent<SmithyComponent>(e);
+        return ctx.State.HasComponent<BuildingComponent>(e);
     }
 
     private static LandType ResolveBuildingType(Context ctx, Entity e)
     {
-        if (ctx.State.HasComponent<HouseComponent>(e)) return LandType.House;
-        if (ctx.State.HasComponent<LoveHouseComponent>(e)) return LandType.LoveHouse;
-        if (ctx.State.HasComponent<SellPointComponent>(e)) return LandType.SellPoint;
-        if (ctx.State.HasComponent<FinalStructureComponent>(e)) return LandType.FinalStructure;
-        if (ctx.State.HasComponent<CarrotFarmComponent>(e)) return LandType.CarrotFarm;
-        if (ctx.State.HasComponent<AppleOrchardComponent>(e)) return LandType.AppleOrchard;
-        if (ctx.State.HasComponent<MushroomCaveComponent>(e)) return LandType.MushroomCave;
-        if (ctx.State.HasComponent<HelperAssistantComponent>(e)) return LandType.HelperAssistant;
-        if (ctx.State.HasComponent<WarehouseComponent>(e)) return LandType.Warehouse;
-        if (ctx.State.HasComponent<LibraryComponent>(e)) return LandType.Library;
-        if (ctx.State.HasComponent<PlayerHouseComponent>(e)) return LandType.PlayerHouse;
-        if (ctx.State.HasComponent<DecorationComponent>(e)) return LandType.Decoration;
-        if (ctx.State.HasComponent<SmithyComponent>(e)) return LandType.Smithy;
+        if (ctx.State.HasComponent<BuildingComponent>(e))
+            return ctx.State.GetComponent<BuildingComponent>(e).Type;
         return LandType.House;
     }
 

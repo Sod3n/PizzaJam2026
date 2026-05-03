@@ -22,5 +22,7 @@ public static partial class SellPointDefinition
         }
 
         SellPointSignDefinition.Create(ctx, pos + new Vector2(-2, 0), entity, product);
+
+        ctx.AddComponent(entity, new BuildingComponent { Type = LandType.SellPoint });
     }
 }

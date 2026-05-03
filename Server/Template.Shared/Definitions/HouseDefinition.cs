@@ -12,5 +12,6 @@ public static partial class HouseDefinition
     static partial void OnEntityCreated(Context ctx, Entity entity, ref HouseComponent component, Dictionary<string, Entity> childEntities)
     {
         // Sign is spawned when the house gets a cow or helper occupant.
+        ctx.AddComponent(entity, new BuildingComponent { Type = LandType.House });
     }
 }

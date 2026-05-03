@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
@@ -14,5 +15,10 @@ public static partial class FinalStructureDefinition
         ref var fs = ref ctx.GetComponent<FinalStructureComponent>(entity);
         fs.Threshold = threshold;
         return entity;
+    }
+
+    static partial void OnEntityCreated(Context ctx, Entity entity, ref FinalStructureComponent component, Dictionary<string, Entity> childEntities)
+    {
+        ctx.AddComponent(entity, new BuildingComponent { Type = LandType.FinalStructure });
     }
 }
