@@ -20,17 +20,26 @@ namespace Template.Shared.Scenes;
 
 public class GameplayScene : IScene
 {
-    // Use CDT navigation instead of grid-based — filter out the old NavigationSystem
+    // Use CDT navigation instead of grid-based — filter out the old NavigationSystem.
+    // InteractFallbackSystem must run AFTER all per-feature interaction systems so that
+    // unclaimed InteractRequestComponent markers fall through to BuildingInfo / cleanup.
     public IEnumerable<ISystem> RegisterSystems(GameSimulation loop)
     {
+        Template.Shared.Systems.InteractFallbackSystem fallback = null;
         foreach (var system in ServiceLocator.GetAll<ISystem>())
         {
             if (system is NavigationSystem)
                 continue;
             if (system is Template.Shared.Systems.DebugObstacleSpawnSystem)
                 continue;
+            if (system is Template.Shared.Systems.InteractFallbackSystem fb)
+            {
+                fallback = fb;
+                continue;
+            }
             yield return system;
         }
+        if (fallback != null) yield return fallback;
     }
     public IEnumerable<IActionService> RegisterActionServices(GameSimulation loop) => ServiceLocator.GetAll<IActionService>();
     public void OnEnter(GameSimulation loop)

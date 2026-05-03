@@ -75,6 +75,7 @@ public class FullSimRunner : IDisposable
             new Template.Shared.Systems.GrassSpawnSystem(),
             new Template.Shared.Systems.CoinCollectionSystem(),
             new Template.Shared.Systems.MetricsSystem(),
+            new Template.Shared.Systems.InteractFallbackSystem(), // must run last
         };
 
         _wallClock.Start();
