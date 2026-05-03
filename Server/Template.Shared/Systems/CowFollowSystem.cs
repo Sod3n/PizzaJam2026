@@ -1,8 +1,7 @@
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.TwoD;
-using Deterministic.GameFramework.Physics2D.Components;
-using Deterministic.GameFramework.Navigation2D.Components;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 using Deterministic.GameFramework.Types;
 
 namespace Template.Shared.Systems;
@@ -15,100 +14,80 @@ public class CowFollowSystem : ISystem
 
     public void Update(EntityWorld state)
     {
-        foreach (var cowEntity in state.Filter<CowComponent>())
+        foreach (var cowRef in state.Filter<CowArchetype>())
         {
-            ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
-            if (!state.HasComponent<NavigationAgent2D>(cowEntity)) continue;
-            if (!state.HasComponent<CharacterBody2D>(cowEntity)) continue;
+            // FollowTarget chains: head cow follows player, others follow the cow ahead.
+            var followTarget = cowRef.Cow.FollowTarget;
 
-            ref var navAgent = ref state.GetComponent<NavigationAgent2D>(cowEntity);
-            ref var cowBody = ref state.GetComponent<CharacterBody2D>(cowEntity);
-
-            // Use FollowTarget for chain following (could be player or another cow)
-            var followTarget = cow.FollowTarget;
-
-            if (followTarget == Entity.Null || cow.FollowingPlayer == Entity.Null)
+            if (followTarget == Entity.Null || cowRef.Cow.FollowingPlayer == Entity.Null)
             {
-                // Not following anyone — check if cow needs to walk to its house
-                if (cow.HouseId != Entity.Null && !cow.IsMilking
-                    && state.HasComponent<Transform2D>(cow.HouseId) && state.HasComponent<Transform2D>(cowEntity))
+                // Idle — walk back to assigned house if there is one.
+                if (!cowRef.Cow.IsMilking
+                    && state.TryGetComponent<Transform2D>(cowRef.Cow.HouseId, out var houseTransform))
                 {
-                    var housePos = state.GetComponent<Transform2D>(cow.HouseId).Position;
                     var offset = new Vector2(2, 2);
-                    // Love house: second cow goes to the left
-                    if (state.HasComponent<LoveHouseComponent>(cow.HouseId))
+                    // Love house: pair-bonded cows stand on opposite sides.
+                    if (state.TryGetComponent<LoveHouseComponent>(cowRef.Cow.HouseId, out var lh)
+                        && lh.CowId2 == cowRef.Entity)
                     {
-                        var lh = state.GetComponent<LoveHouseComponent>(cow.HouseId);
-                        if (lh.CowId2 == cowEntity) offset = new Vector2(-2, 2);
+                        offset = new Vector2(-2, 2);
                     }
-                    var targetHousePos = housePos + offset;
-                    var curPos = state.GetComponent<Transform2D>(cowEntity).Position;
-                    var distSq = (targetHousePos - curPos).SqrMagnitude;
+                    var targetHousePos = houseTransform.Position + offset;
+                    var distSq = (targetHousePos - cowRef.Transform2D.Position).SqrMagnitude;
 
-                    if (distSq > (Float)0.01f) // 0.1 * 0.1
+                    if (distSq > (Float)0.01f)
                     {
-                        // Use tight desired distance for house arrival
-                        navAgent.TargetDesiredDistance = 0.1f;
-                        navAgent.TargetPosition = targetHousePos;
-                        navAgent.IsNavigationFinished = false;
-                        cowBody.Velocity = navAgent.Velocity;
-                        if (navAgent.Velocity.SqrMagnitude > (Float)0.01f)
-                        {
-                            ref var ct = ref state.GetComponent<Transform2D>(cowEntity);
-                            ct.Rotation = navAgent.Velocity.ToAngle();
-                        }
+                        // Tight arrival distance so cow plants itself at the house.
+                        cowRef.NavigationAgent2D.TargetDesiredDistance = 0.1f;
+                        cowRef.NavigationAgent2D.TargetPosition = targetHousePos;
+                        cowRef.NavigationAgent2D.IsNavigationFinished = false;
+                        cowRef.CharacterBody2D.Velocity = cowRef.NavigationAgent2D.Velocity;
+                        if (cowRef.NavigationAgent2D.Velocity.SqrMagnitude > (Float)0.01f)
+                            cowRef.Transform2D.Rotation = cowRef.NavigationAgent2D.Velocity.ToAngle();
                         continue;
                     }
                     else
                     {
-                        // Arrived — restore default desired distance
-                        navAgent.TargetDesiredDistance = 2f;
+                        cowRef.NavigationAgent2D.TargetDesiredDistance = 2f;
                     }
                 }
 
-                if (!navAgent.IsNavigationFinished)
+                if (!cowRef.NavigationAgent2D.IsNavigationFinished)
                 {
-                    navAgent.IsNavigationFinished = true;
-                    cowBody.Velocity = Vector2.Zero;
+                    cowRef.NavigationAgent2D.IsNavigationFinished = true;
+                    cowRef.CharacterBody2D.Velocity = Vector2.Zero;
                 }
                 continue;
             }
 
-            if (!state.HasComponent<Transform2D>(followTarget) || !state.HasComponent<Transform2D>(cowEntity))
+            if (!state.TryGetComponent<Transform2D>(followTarget, out var followTargetTransform))
             {
-                cowBody.Velocity = Vector2.Zero;
+                cowRef.CharacterBody2D.Velocity = Vector2.Zero;
                 continue;
             }
 
-            // Use SwarmFollow for crowd behavior
-            // First cow follows player via flow field, chained cows follow their target directly
+            // Head cow follows player via flow field; chained cows follow their target directly.
             if (state.HasComponent<PlayerEntity>(followTarget))
             {
-                SwarmFollow.Follow(state, cowEntity, followTarget);
+                SwarmFollow.Follow(state, cowRef.Entity, followTarget);
             }
             else
             {
-                // Chained cow: simple nav follow toward the cow ahead
-                var targetPos = state.GetComponent<Transform2D>(followTarget).Position;
-                var cowPos = state.GetComponent<Transform2D>(cowEntity).Position;
-                var distToTargetSq = (targetPos - cowPos).SqrMagnitude;
+                var targetPos = followTargetTransform.Position;
+                var distToTargetSq = (targetPos - cowRef.Transform2D.Position).SqrMagnitude;
 
-                var targetDriftSq = (targetPos - navAgent.TargetPosition).SqrMagnitude;
-                if (targetDriftSq > TargetUpdateThresholdSq || navAgent.IsNavigationFinished)
-                    navAgent.TargetPosition = targetPos;
+                var targetDriftSq = (targetPos - cowRef.NavigationAgent2D.TargetPosition).SqrMagnitude;
+                if (targetDriftSq > TargetUpdateThresholdSq || cowRef.NavigationAgent2D.IsNavigationFinished)
+                    cowRef.NavigationAgent2D.TargetPosition = targetPos;
 
-                if (distToTargetSq > navAgent.TargetDesiredDistance * navAgent.TargetDesiredDistance)
-                    navAgent.IsNavigationFinished = false;
+                if (distToTargetSq > cowRef.NavigationAgent2D.TargetDesiredDistance * cowRef.NavigationAgent2D.TargetDesiredDistance)
+                    cowRef.NavigationAgent2D.IsNavigationFinished = false;
 
-                // Velocity lerp for smooth movement
-                var desiredVel = navAgent.Velocity;
-                cowBody.Velocity = cowBody.Velocity + (desiredVel - cowBody.Velocity) * (Float)0.12f;
+                // Velocity lerp for smooth chain movement.
+                cowRef.CharacterBody2D.Velocity += (cowRef.NavigationAgent2D.Velocity - cowRef.CharacterBody2D.Velocity) * (Float)0.12f;
 
-                if (cowBody.Velocity.SqrMagnitude > (Float)0.01f)
-                {
-                    ref var cowTransform = ref state.GetComponent<Transform2D>(cowEntity);
-                    cowTransform.Rotation = cowBody.Velocity.ToAngle();
-                }
+                if (cowRef.CharacterBody2D.Velocity.SqrMagnitude > (Float)0.01f)
+                    cowRef.Transform2D.Rotation = cowRef.CharacterBody2D.Velocity.ToAngle();
             }
         }
     }
