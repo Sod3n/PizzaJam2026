@@ -3,6 +3,7 @@ using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 using Template.Shared.GameData;
 
 namespace Template.Shared.Systems;
@@ -31,102 +32,111 @@ public class HelperPlayerExchangeSystem : ISystem
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
             if (state.HasComponent<HelperPlayerComponent>(playerEntity)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var helperPlayerEntity = req.Target;
-            if (!state.HasComponent<HelperPlayerComponent>(helperPlayerEntity)) continue;
+            var helperPlayerEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<HelperPlayerArchetype>(helperPlayerEntity, out var hpRef)) continue;
 
-            TryExchange(state, playerEntity, helperPlayerEntity);
+            TryExchange(state, playerEntity, hpRef);
         }
     }
 
-    private static void TryExchange(EntityWorld state, Entity playerEntity, Entity helperPlayerEntity)
+    private static void TryExchange(EntityWorld state, Entity playerEntity, HelperPlayerRef hpRef)
     {
         var ctx = state.Ctx(playerEntity);
 
         var grEntity = InteractFeedback.GetGlobalResourcesEntity(state);
         if (grEntity == Entity.Null) return;
 
-        var hpSnapshot = state.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
-
-        if (hpSnapshot.HasAnyResources())
+        if (hpRef.HelperPlayer.HasAnyResources())
         {
-            string gainedKey = "";
-            {
-                ref var hp = ref state.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
-                ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-                if (hp.BagGrass > 0) gainedKey = StateKeys.Grass;
-                else if (hp.BagCarrot > 0) gainedKey = StateKeys.Carrot;
-                else if (hp.BagApple > 0) gainedKey = StateKeys.Apple;
-                else if (hp.BagMushroom > 0) gainedKey = StateKeys.Mushroom;
-                else if (hp.BagMilk > 0) gainedKey = StateKeys.Milk;
-                else if (hp.BagCoins > 0) gainedKey = StateKeys.Coins;
-
-                globalRes.AddFood(FoodType.Grass, hp.BagGrass);
-                globalRes.AddFood(FoodType.Carrot, hp.BagCarrot);
-                globalRes.AddFood(FoodType.Apple, hp.BagApple);
-                globalRes.AddFood(FoodType.Mushroom, hp.BagMushroom);
-                globalRes.AddMilkProduct(MilkProduct.Milk, hp.BagMilk);
-                globalRes.Coins += hp.BagCoins;
-                hp.ClearBag();
-            }
-
-            ILogger.Log($"[HelperPlayerExchangeSystem] Main player picked up bag from helper-player {helperPlayerEntity.Id}");
-            InteractFeedback.Success(ctx, playerEntity, helperPlayerEntity, string.IsNullOrEmpty(gainedKey) ? null : gainedKey);
+            PickupBagFromHelperPlayer(ctx, playerEntity, hpRef, grEntity);
             return;
         }
 
-        bool didExchange = false;
-
-        if (hpSnapshot.Type == HelperType.Seller)
+        bool didExchange = hpRef.HelperPlayer.Type switch
         {
-            ref var hp = ref state.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
-            ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-            int capacity = hp.BagCapacity - hp.GetBagTotal();
-            int transferred = 0;
-            while (transferred < capacity && globalRes.Milk > 0) { globalRes.Milk--; hp.BagMilk++; transferred++; }
-            if (transferred > 0) didExchange = true;
-        }
-        else if (hpSnapshot.Type == HelperType.Builder)
-        {
-            ref var hp = ref state.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
-            ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-            int needed = hp.BagCapacity - hp.BagCoins;
-            int toGive = System.Math.Max(0, System.Math.Min(needed, globalRes.Coins));
-            if (toGive > 0) { globalRes.Coins -= toGive; hp.BagCoins += toGive; didExchange = true; }
-        }
-        else if (hpSnapshot.Type == HelperType.Milker && hpSnapshot.WantedFoodType >= 0)
-        {
-            ref var hp = ref state.GetComponent<HelperPlayerComponent>(helperPlayerEntity);
-            ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-            int foodType = hp.WantedFoodType;
-            int capacity = hp.BagCapacity - hp.GetBagTotal();
-            int available = globalRes.GetFood(foodType);
-            int toGive = System.Math.Max(0, System.Math.Min(capacity, available));
-            if (toGive > 0)
-            {
-                for (int i = 0; i < toGive; i++) globalRes.ConsumeFood(foodType);
-                switch (foodType)
-                {
-                    case FoodType.Grass: hp.BagGrass += toGive; break;
-                    case FoodType.Carrot: hp.BagCarrot += toGive; break;
-                    case FoodType.Apple: hp.BagApple += toGive; break;
-                    case FoodType.Mushroom: hp.BagMushroom += toGive; break;
-                }
-                int prereq = FoodType.PrerequisiteProduct(foodType);
-                if (prereq >= 0)
-                {
-                    int prereqNeeded = System.Math.Max(1, toGive / 4);
-                    int prereqCapacity = hp.BagCapacity - hp.GetBagTotal();
-                    int prereqAvailable = globalRes.GetMilkProduct(prereq);
-                    int prereqToGive = System.Math.Min(prereqNeeded, System.Math.Min(prereqCapacity, prereqAvailable));
-                    for (int i = 0; i < prereqToGive; i++) globalRes.ConsumeMilkProduct(prereq);
-                    hp.AddBagMilkProduct(prereq, prereqToGive);
-                }
-                didExchange = true;
-            }
-        }
+            HelperType.Seller => LoadMilkIntoSeller(hpRef, grEntity, state),
+            HelperType.Builder => LoadCoinsIntoBuilder(hpRef, grEntity, state),
+            HelperType.Milker when hpRef.HelperPlayer.WantedFoodType >= 0 => LoadFoodIntoMilker(hpRef, grEntity, state),
+            _ => false,
+        };
 
         if (didExchange)
-            InteractFeedback.Success(ctx, playerEntity, helperPlayerEntity);
+            InteractFeedback.Success(ctx, playerEntity, hpRef.Entity);
+    }
+
+    private static void PickupBagFromHelperPlayer(Context ctx, Entity playerEntity, HelperPlayerRef hpRef, Entity grEntity)
+    {
+        ref var hp = ref hpRef.HelperPlayer;
+        ref var globalRes = ref ctx.State.GetComponent<GlobalResourcesComponent>(grEntity);
+
+        string gainedKey =
+            hp.BagGrass > 0 ? StateKeys.Grass
+            : hp.BagCarrot > 0 ? StateKeys.Carrot
+            : hp.BagApple > 0 ? StateKeys.Apple
+            : hp.BagMushroom > 0 ? StateKeys.Mushroom
+            : hp.BagMilk > 0 ? StateKeys.Milk
+            : hp.BagCoins > 0 ? StateKeys.Coins
+            : "";
+
+        globalRes.AddFood(FoodType.Grass, hp.BagGrass);
+        globalRes.AddFood(FoodType.Carrot, hp.BagCarrot);
+        globalRes.AddFood(FoodType.Apple, hp.BagApple);
+        globalRes.AddFood(FoodType.Mushroom, hp.BagMushroom);
+        globalRes.AddMilkProduct(MilkProduct.Milk, hp.BagMilk);
+        globalRes.Coins += hp.BagCoins;
+        hp.ClearBag();
+
+        ILogger.Log($"[HelperPlayerExchangeSystem] Main player picked up bag from helper-player {hpRef.Entity.Id}");
+        InteractFeedback.Success(ctx, playerEntity, hpRef.Entity, string.IsNullOrEmpty(gainedKey) ? null : gainedKey);
+    }
+
+    private static bool LoadMilkIntoSeller(HelperPlayerRef hpRef, Entity grEntity, EntityWorld state)
+    {
+        ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+        int amount = System.Math.Min(hpRef.HelperPlayer.BagCapacity - hpRef.HelperPlayer.GetBagTotal(), globalRes.Milk);
+        if (amount <= 0) return false;
+        globalRes.Milk -= amount;
+        hpRef.HelperPlayer.BagMilk += amount;
+        return true;
+    }
+
+    private static bool LoadCoinsIntoBuilder(HelperPlayerRef hpRef, Entity grEntity, EntityWorld state)
+    {
+        ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+        int amount = System.Math.Max(0, System.Math.Min(hpRef.HelperPlayer.BagCapacity - hpRef.HelperPlayer.BagCoins, globalRes.Coins));
+        if (amount <= 0) return false;
+        globalRes.Coins -= amount;
+        hpRef.HelperPlayer.BagCoins += amount;
+        return true;
+    }
+
+    private static bool LoadFoodIntoMilker(HelperPlayerRef hpRef, Entity grEntity, EntityWorld state)
+    {
+        ref var globalRes = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+        int foodType = hpRef.HelperPlayer.WantedFoodType;
+        int amount = System.Math.Max(0, System.Math.Min(hpRef.HelperPlayer.BagCapacity - hpRef.HelperPlayer.GetBagTotal(), globalRes.GetFood(foodType)));
+        if (amount <= 0) return false;
+
+        for (int i = 0; i < amount; i++) globalRes.ConsumeFood(foodType);
+        switch (foodType)
+        {
+            case FoodType.Grass: hpRef.HelperPlayer.BagGrass += amount; break;
+            case FoodType.Carrot: hpRef.HelperPlayer.BagCarrot += amount; break;
+            case FoodType.Apple: hpRef.HelperPlayer.BagApple += amount; break;
+            case FoodType.Mushroom: hpRef.HelperPlayer.BagMushroom += amount; break;
+        }
+
+        int prereq = FoodType.PrerequisiteProduct(foodType);
+        if (prereq >= 0)
+        {
+            int prereqNeeded = System.Math.Max(1, amount / 4);
+            int prereqCapacity = hpRef.HelperPlayer.BagCapacity - hpRef.HelperPlayer.GetBagTotal();
+            int prereqAvailable = globalRes.GetMilkProduct(prereq);
+            int prereqAmount = System.Math.Min(prereqNeeded, System.Math.Min(prereqCapacity, prereqAvailable));
+            for (int i = 0; i < prereqAmount; i++) globalRes.ConsumeMilkProduct(prereq);
+            hpRef.HelperPlayer.AddBagMilkProduct(prereq, prereqAmount);
+        }
+
+        return true;
     }
 }

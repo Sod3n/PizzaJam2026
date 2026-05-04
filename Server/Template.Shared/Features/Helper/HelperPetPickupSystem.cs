@@ -1,11 +1,10 @@
 using Deterministic.GameFramework.ECS;
-using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Types;
-using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 
 namespace Template.Shared.Systems;
 
@@ -27,80 +26,63 @@ public class HelperPetPickupSystem : ISystem
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
             if (state.HasComponent<HelperPlayerComponent>(playerEntity)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var petEntity = req.Target;
-            if (!state.HasComponent<HelperPetComponent>(petEntity)) continue;
+            var petEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<HelperPetArchetype>(petEntity, out var petRef)) continue;
 
-            HandlePetInteraction(state, playerEntity, petEntity);
+            HandlePetInteraction(state, playerEntity, petRef);
         }
     }
 
-    private static void HandlePetInteraction(EntityWorld state, Entity playerEntity, Entity petEntity)
+    private static void HandlePetInteraction(EntityWorld state, Entity playerEntity, HelperPetRef petRef)
     {
         var ctx = state.Ctx(playerEntity);
+        var carried = state.GetComponent<PlayerStateComponent>(playerEntity).CarriedEntity;
 
-        Entity carried;
+        if (carried == petRef.Entity)
         {
-            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
-            carried = ps.CarriedEntity;
-        }
-
-        if (carried == petEntity)
-        {
-            {
-                ref var pet = ref state.GetComponent<HelperPetComponent>(petEntity);
-                DropPetToIdle(state, petEntity, ref pet);
-            }
-            {
-                ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-                ps.CarriedEntity = Entity.Null;
-            }
-            ILogger.Log($"[HelperPetPickupSystem] Player {playerEntity.Id} dropped pet {petEntity.Id} at idle spawn");
-            InteractFeedback.Success(ctx, playerEntity, petEntity);
+            DropCarriedPet(ctx, playerEntity, petRef);
             return;
         }
 
         if (carried != Entity.Null)
-        {
-            if (state.HasComponent<HelperPetComponent>(carried))
-            {
-                ref var prev = ref state.GetComponent<HelperPetComponent>(carried);
-                DropPetToIdle(state, carried, ref prev);
-            }
-            {
-                ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-                ps.CarriedEntity = Entity.Null;
-            }
-        }
+            DropPreviouslyCarried(state, playerEntity, carried);
 
-        {
-            ref var pet = ref state.GetComponent<HelperPetComponent>(petEntity);
-            pet.State = PetState.Carried;
-            pet.FollowTarget = playerEntity;
-            pet.AssignedTo = Entity.Null;
-        }
-        {
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.CarriedEntity = petEntity;
-        }
-        ILogger.Log($"[HelperPetPickupSystem] Player {playerEntity.Id} picked up pet {petEntity.Id}");
-        InteractFeedback.Success(ctx, playerEntity, petEntity);
+        PickupPet(ctx, playerEntity, petRef);
     }
 
-    private static void DropPetToIdle(EntityWorld state, Entity petEntity, ref HelperPetComponent pet)
+    private static void DropCarriedPet(Context ctx, Entity playerEntity, HelperPetRef petRef)
     {
+        DropPetToIdle(petRef);
+        ctx.State.GetComponent<PlayerStateComponent>(playerEntity).CarriedEntity = Entity.Null;
+        ILogger.Log($"[HelperPetPickupSystem] Player {playerEntity.Id} dropped pet {petRef.Entity.Id} at idle spawn");
+        InteractFeedback.Success(ctx, playerEntity, petRef.Entity);
+    }
+
+    private static void DropPreviouslyCarried(EntityWorld state, Entity playerEntity, Entity carried)
+    {
+        if (state.TryResolve<HelperPetArchetype>(carried, out var prevRef))
+            DropPetToIdle(prevRef);
+        state.GetComponent<PlayerStateComponent>(playerEntity).CarriedEntity = Entity.Null;
+    }
+
+    private static void PickupPet(Context ctx, Entity playerEntity, HelperPetRef petRef)
+    {
+        ref var pet = ref petRef.HelperPet;
+        pet.State = PetState.Carried;
+        pet.FollowTarget = playerEntity;
+        pet.AssignedTo = Entity.Null;
+        ctx.State.GetComponent<PlayerStateComponent>(playerEntity).CarriedEntity = petRef.Entity;
+        ILogger.Log($"[HelperPetPickupSystem] Player {playerEntity.Id} picked up pet {petRef.Entity.Id}");
+        InteractFeedback.Success(ctx, playerEntity, petRef.Entity);
+    }
+
+    private static void DropPetToIdle(HelperPetRef petRef)
+    {
+        ref var pet = ref petRef.HelperPet;
         pet.State = PetState.Idle;
         pet.FollowTarget = Entity.Null;
         pet.AssignedTo = Entity.Null;
-        if (state.HasComponent<Transform2D>(petEntity))
-        {
-            ref var t = ref state.GetComponent<Transform2D>(petEntity);
-            t.Position = new Vector2((Float)pet.IdleSpawnX, (Float)pet.IdleSpawnY);
-        }
-        if (state.HasComponent<CharacterBody2D>(petEntity))
-        {
-            ref var body = ref state.GetComponent<CharacterBody2D>(petEntity);
-            body.Velocity = Vector2.Zero;
-        }
+        petRef.Transform2D.Position = new Vector2((Float)pet.IdleSpawnX, (Float)pet.IdleSpawnY);
+        petRef.CharacterBody2D.Velocity = Vector2.Zero;
     }
 }

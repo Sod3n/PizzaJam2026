@@ -6,6 +6,7 @@ using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 using Template.Shared.GameData;
 
 namespace Template.Shared.Systems;
@@ -31,66 +32,80 @@ public class HouseMilkSystem : ISystem
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
             if (!state.HasComponent<StateComponent>(playerEntity)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var houseEntity = req.Target;
-            if (!state.HasComponent<HouseComponent>(houseEntity)) continue;
+            var houseEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<HouseArchetype>(houseEntity, out var houseRef)) continue;
             if (state.HasComponent<HelperPlayerComponent>(playerEntity)) continue;
 
-            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
-            if (ps.FollowingCow != Entity.Null) continue;
+            if (state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow != Entity.Null) continue;
 
-            var house = state.GetComponent<HouseComponent>(houseEntity);
-            var cowEntity = house.CowId;
+            var cowEntity = houseRef.CowSlot;
             if (cowEntity == Entity.Null || !state.HasComponent<CowComponent>(cowEntity)) continue;
 
-            TryStartMilking(state, playerEntity, houseEntity, cowEntity);
+            TryStartMilking(state, playerEntity, houseRef, cowEntity);
         }
     }
 
-    private static void TryStartMilking(EntityWorld state, Entity playerEntity, Entity houseEntity, Entity cowEntity)
+    private static void TryStartMilking(EntityWorld state, Entity playerEntity, HouseRef houseRef, Entity cowEntity)
     {
         var ctx = state.Ctx(playerEntity);
+        var houseEntity = houseRef.Entity;
 
-        var cow = state.GetComponent<CowComponent>(cowEntity);
-        if (cow.IsMilking) return;        // silent — fallback shows InfoHouse
-        if (cow.IsDepressed) return;      // silent — fallback shows InfoHouse
+        if (!CowReadyToMilk(ctx, playerEntity, houseEntity, cowEntity)) return;
+        if (!ResourcesAvailable(ctx, state, playerEntity, houseEntity, cowEntity)) return;
+
+        BeginMilking(state, playerEntity, cowEntity);
+
+        ILogger.Log($"[HouseMilkSystem] Player {playerEntity.Id} milking cow {cowEntity.Id} at house {houseEntity.Id}");
+        InteractFeedback.Success(ctx, playerEntity, houseEntity);
+    }
+
+    private static bool CowReadyToMilk(Context ctx, Entity playerEntity, Entity houseEntity, Entity cowEntity)
+    {
+        var cow = ctx.State.GetComponent<CowComponent>(cowEntity);
+        if (cow.IsMilking) return false;
+        if (cow.IsDepressed) return false;
 
         if (cow.Exhaust >= cow.MaxExhaust)
         {
             InteractFeedback.MissingResource(ctx, playerEntity, houseEntity, StateKeys.CowTired);
-            return;
+            return false;
         }
 
-        int selectedFood = cow.SelectedFood;
         int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-        if (selectedFood < 0 || selectedFood > cowMaxTier)
+        if (cow.SelectedFood < 0 || cow.SelectedFood > cowMaxTier)
         {
-            InteractFeedback.MissingResource(ctx, playerEntity, houseEntity, InteractFeedback.FoodTypeToKey(selectedFood));
-            return;
+            InteractFeedback.MissingResource(ctx, playerEntity, houseEntity, InteractFeedback.FoodTypeToKey(cow.SelectedFood));
+            return false;
         }
+        return true;
+    }
 
+    private static bool ResourcesAvailable(Context ctx, EntityWorld state, Entity playerEntity, Entity houseEntity, Entity cowEntity)
+    {
         var grEntity = InteractFeedback.GetGlobalResourcesEntity(state);
-        if (grEntity == Entity.Null) return;
+        if (grEntity == Entity.Null) return false;
 
+        int selectedFood = state.GetComponent<CowComponent>(cowEntity).SelectedFood;
         var globalRes = state.GetComponent<GlobalResourcesComponent>(grEntity);
         if (globalRes.GetFood(selectedFood) <= 0)
         {
             InteractFeedback.MissingResource(ctx, playerEntity, houseEntity, InteractFeedback.FoodTypeToKey(selectedFood));
-            return;
+            return false;
         }
 
         int prereq = FoodType.PrerequisiteProduct(selectedFood);
         if (prereq >= 0 && globalRes.GetMilkProduct(prereq) <= 0)
         {
             InteractFeedback.MissingResource(ctx, playerEntity, houseEntity, InteractFeedback.MilkProductToKey(prereq));
-            return;
+            return false;
         }
+        return true;
+    }
 
-        // All gates passed — start the milking state.
-        {
-            ref var c = ref state.GetComponent<CowComponent>(cowEntity);
-            c.IsMilking = true;
-        }
+    private static void BeginMilking(EntityWorld state, Entity playerEntity, Entity cowEntity)
+    {
+        state.GetComponent<CowComponent>(cowEntity).IsMilking = true;
+
         StatePhase phase;
         {
             ref var sc = ref state.GetComponent<StateComponent>(playerEntity);
@@ -99,16 +114,9 @@ public class HouseMilkSystem : ISystem
         }
         state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Milking, Phase = phase, Age = 0 });
 
-        Vector2 returnPos = default;
-        bool hasReturnPos = state.HasComponent<Transform2D>(playerEntity);
-        if (hasReturnPos) returnPos = state.GetComponent<Transform2D>(playerEntity).Position;
-        {
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.InteractionTarget = cowEntity;
-            if (hasReturnPos) ps.ReturnPosition = returnPos;
-        }
-
-        ILogger.Log($"[HouseMilkSystem] Player {playerEntity.Id} milking cow {cowEntity.Id} at house {houseEntity.Id}");
-        InteractFeedback.Success(ctx, playerEntity, houseEntity);
+        ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+        ps.InteractionTarget = cowEntity;
+        if (state.TryGetComponent<Transform2D>(playerEntity, out var pt))
+            ps.ReturnPosition = pt.Position;
     }
 }

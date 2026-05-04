@@ -24,9 +24,12 @@ public class CowInteractionSystem : ISystem
             var exit = state.GetComponent<ExitStateComponent>(playerEntity);
             if (exit.Age > 0) continue;
 
-            if (exit.Key == StateKeys.Milking) HandleMilkingComplete(state, playerEntity);
-            else if (exit.Key == StateKeys.Taming) HandleTamingComplete(state, playerEntity);
-            else if (exit.Key == StateKeys.Assign) HandleAssignComplete(state, playerEntity);
+            switch (exit.Key)
+            {
+                case StateKeys.Milking: HandleMilkingComplete(state, playerEntity); break;
+                case StateKeys.Taming: HandleTamingComplete(state, playerEntity); break;
+                case StateKeys.Assign: HandleAssignComplete(state, playerEntity); break;
+            }
         }
     }
 
@@ -68,43 +71,43 @@ public class CowInteractionSystem : ISystem
     {
         ILogger.Log($"[CowInteractionSystem] Assign complete for player {playerEntity.Id}");
 
-        Entity houseEntity;
-        Entity cowEntity;
-        {
-            var ps0 = state.GetComponent<PlayerStateComponent>(playerEntity);
-            houseEntity = ps0.InteractionTarget;
-            cowEntity = ps0.FollowingCow;
-        }
+        var ps0 = state.GetComponent<PlayerStateComponent>(playerEntity);
+        Entity houseEntity = ps0.InteractionTarget;
+        Entity cowEntity = ps0.FollowingCow;
 
         Entity oldCow = Entity.Null;
 
         if (state.TryResolve<HouseArchetype>(houseEntity, out var house) && state.HasComponent<CowComponent>(cowEntity))
         {
-            Entity nextCow = CowSystemHelpers.FindNextCowInChain(state, cowEntity);
-
-            // First cow leaves the chain and is bound to the house
-            state.GetComponent<CowComponent>(cowEntity).SettleIntoHouse(houseEntity);
-            oldCow = house.AssignCow(cowEntity);
-
-            // agent-helpers-in-house: replace any role sign with a food sign reflecting cow.SelectedFood.
-            // Resizes possible — no held refs across this call.
-            InteractActionService.EnsureFoodSignForHouse(state.Ctx(playerEntity), houseEntity, cowEntity);
-
-            // Promote next-in-chain to head (or null head out if chain is empty now)
-            if (nextCow != Entity.Null)
-                state.GetComponent<CowComponent>(nextCow).FollowTarget = playerEntity;
-            state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow = nextCow;
-
-            // Displaced cow joins the end of the chain
-            if (oldCow != Entity.Null)
-            {
-                state.GetComponent<CowComponent>(oldCow).HouseId = Entity.Null;
-                CowSystemHelpers.AddCowToFollowChain(state, playerEntity, oldCow);
-            }
+            oldCow = AssignCowToHouse(state, playerEntity, house, cowEntity);
         }
 
         CowSystemHelpers.ClearInteractionAndIdle(state, playerEntity);
 
         ILogger.Log($"[CowInteractionSystem] Player {playerEntity.Id} assigned cow to house. Old cow following: {oldCow != Entity.Null}");
+    }
+
+    private static Entity AssignCowToHouse(EntityWorld state, Entity playerEntity, HouseRef house, Entity cowEntity)
+    {
+        Entity nextCow = CowSystemHelpers.FindNextCowInChain(state, cowEntity);
+
+        state.GetComponent<CowComponent>(cowEntity).SettleIntoHouse(house.Entity);
+        Entity oldCow = house.AssignCow(cowEntity);
+
+        // agent-helpers-in-house: replace any role sign with a food sign reflecting cow.SelectedFood.
+        // Resizes possible — no held refs across this call.
+        InteractActionService.EnsureFoodSignForHouse(state.Ctx(playerEntity), house.Entity, cowEntity);
+
+        if (nextCow != Entity.Null)
+            state.GetComponent<CowComponent>(nextCow).FollowTarget = playerEntity;
+        state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow = nextCow;
+
+        if (oldCow != Entity.Null)
+        {
+            state.GetComponent<CowComponent>(oldCow).HouseId = Entity.Null;
+            CowSystemHelpers.AddCowToFollowChain(state, playerEntity, oldCow);
+        }
+
+        return oldCow;
     }
 }

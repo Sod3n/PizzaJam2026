@@ -1,10 +1,10 @@
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Types;
-using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 
 namespace Template.Shared.Systems;
 
@@ -28,41 +28,28 @@ public class HelperPickupSystem : ISystem
     {
         foreach (var playerEntity in state.Filter<InteractRequestComponent>())
         {
-            if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
+            if (!state.TryGetComponent<PlayerStateComponent>(playerEntity, out var ps)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var helperEntity = req.Target;
-            if (!state.HasComponent<HelperComponent>(helperEntity)) continue;
+            var helperEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<HelperArchetype>(helperEntity, out var helperRef)) continue;
 
-            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
             if (ps.FollowingHelper != Entity.Null) continue;
 
             var ctx = state.Ctx(playerEntity);
             if (IsHelperAssignedToHouse(ctx, helperEntity)) continue;
 
-            PickupHelper(state, ctx, playerEntity, helperEntity);
+            PickupHelper(ctx, playerEntity, helperRef);
         }
     }
 
-    private static void PickupHelper(EntityWorld state, Context ctx, Entity playerEntity, Entity helperEntity)
+    private static void PickupHelper(Context ctx, Entity playerEntity, HelperRef helperRef)
     {
-        {
-            ref var helper = ref state.GetComponent<HelperComponent>(helperEntity);
-            helper.OwnerPlayer = playerEntity;
-        }
-        {
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.FollowingHelper = helperEntity;
-        }
+        helperRef.Helper.OwnerPlayer = playerEntity;
+        ctx.State.GetComponent<PlayerStateComponent>(playerEntity).FollowingHelper = helperRef.Entity;
+        helperRef.CharacterBody2D.Velocity = Vector2.Zero;
 
-        if (state.HasComponent<CharacterBody2D>(helperEntity))
-        {
-            ref var hb = ref state.GetComponent<CharacterBody2D>(helperEntity);
-            hb.Velocity = Vector2.Zero;
-        }
-
-        ILogger.Log($"[HelperPickupSystem] Player {playerEntity.Id} picked up helper {helperEntity.Id}");
-        InteractFeedback.Success(ctx, playerEntity, helperEntity);
+        ILogger.Log($"[HelperPickupSystem] Player {playerEntity.Id} picked up helper {helperRef.Entity.Id}");
+        InteractFeedback.Success(ctx, playerEntity, helperRef.Entity);
     }
 
     private static bool IsHelperAssignedToHouse(Context ctx, Entity helperEntity)

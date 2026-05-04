@@ -5,6 +5,7 @@ using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 
 namespace Template.Shared.Systems;
 
@@ -19,80 +20,52 @@ public class LoveHouseAssignSystem : ISystem
         {
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var loveHouseEntity = req.Target;
-            if (!state.HasComponent<LoveHouseComponent>(loveHouseEntity)) continue;
+            var loveHouseEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<LoveHouseArchetype>(loveHouseEntity, out var loveHouseRef)) continue;
             if (state.HasComponent<HelperPlayerComponent>(playerEntity)) continue;
 
             var ctx = state.Ctx(playerEntity);
             if (InteractActionService.IsOnCooldown(ctx, loveHouseEntity)) continue;
 
-            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
-            if (ps.FollowingCow == Entity.Null) continue;
+            if (state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow == Entity.Null) continue;
 
-            var lh = state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-            bool slotAvailable = lh.CowId1 == Entity.Null || lh.CowId2 == Entity.Null;
-            if (!slotAvailable) continue;
+            if (loveHouseRef.CowSlot1 != Entity.Null && loveHouseRef.CowSlot2 != Entity.Null) continue;
 
-            AssignCowToLoveHouse(state, playerEntity, loveHouseEntity);
+            AssignCowToLoveHouse(state, playerEntity, loveHouseRef);
         }
     }
 
-    private static void AssignCowToLoveHouse(EntityWorld state, Entity playerEntity, Entity loveHouseEntity)
+    private static void AssignCowToLoveHouse(EntityWorld state, Entity playerEntity, LoveHouseRef loveHouseRef)
     {
         Entity cowToAssign = state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow;
         if (cowToAssign == Entity.Null) return;
 
-        Entity nextCow = Entity.Null;
-        foreach (var ce in state.Filter<CowComponent>())
-        {
-            var c = state.GetComponent<CowComponent>(ce);
-            if (c.FollowTarget == cowToAssign && c.FollowingPlayer != Entity.Null)
-            { nextCow = ce; break; }
-        }
+        var loveHouseEntity = loveHouseRef.Entity;
+        Entity nextCow = CowSystemHelpers.FindNextCowInChain(state, cowToAssign);
 
         {
             ref var cow = ref state.GetComponent<CowComponent>(cowToAssign);
             if (cow.PreviousHouseId == Entity.Null)
                 cow.PreviousHouseId = cow.HouseId;
-            cow.FollowingPlayer = Entity.Null;
-            cow.FollowTarget = Entity.Null;
+            cow.ClearFollowChain();
             cow.HouseId = loveHouseEntity;
         }
 
         if (state.HasComponent<CharacterBody2D>(cowToAssign))
-        {
-            ref var body = ref state.GetComponent<CharacterBody2D>(cowToAssign);
-            body.Velocity = Vector2.Zero;
-        }
+            state.GetComponent<CharacterBody2D>(cowToAssign).Velocity = Vector2.Zero;
 
         {
-            ref var loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-            bool isFirstSlot = loveHouse.CowId1 == Entity.Null;
-            if (isFirstSlot)
-                loveHouse.CowId1 = cowToAssign;
-            else
-                loveHouse.CowId2 = cowToAssign;
+            ref var lh = ref loveHouseRef.LoveHouse;
+            if (lh.CowId1 == Entity.Null) lh.CowId1 = cowToAssign;
+            else lh.CowId2 = cowToAssign;
         }
 
         if (nextCow != Entity.Null)
-        {
-            {
-                ref var nextCowComp = ref state.GetComponent<CowComponent>(nextCow);
-                nextCowComp.FollowTarget = playerEntity;
-            }
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.FollowingCow = nextCow;
-        }
-        else
-        {
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.FollowingCow = Entity.Null;
-        }
+            state.GetComponent<CowComponent>(nextCow).FollowTarget = playerEntity;
+        state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow = nextCow;
 
         ILogger.Log($"[LoveHouseAssignSystem] Assigned cow {cowToAssign.Id} to love house {loveHouseEntity.Id}");
 
-        var ctx = state.Ctx(playerEntity);
-        InteractFeedback.Success(ctx, playerEntity, loveHouseEntity);
+        InteractFeedback.Success(state.Ctx(playerEntity), playerEntity, loveHouseEntity);
     }
 }

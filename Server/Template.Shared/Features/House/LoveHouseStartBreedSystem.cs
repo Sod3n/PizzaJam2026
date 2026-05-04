@@ -5,6 +5,7 @@ using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 using Template.Shared.GameData;
 
 namespace Template.Shared.Systems;
@@ -21,85 +22,99 @@ public class LoveHouseStartBreedSystem : ISystem
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
             if (!state.HasComponent<StateComponent>(playerEntity)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var loveHouseEntity = req.Target;
-            if (!state.HasComponent<LoveHouseComponent>(loveHouseEntity)) continue;
+            var loveHouseEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<LoveHouseArchetype>(loveHouseEntity, out var loveHouseRef)) continue;
             if (state.HasComponent<HelperPlayerComponent>(playerEntity)) continue;
 
             var ctx = state.Ctx(playerEntity);
             if (InteractActionService.IsOnCooldown(ctx, loveHouseEntity)) continue;
 
-            var lh = state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-            if (lh.CowId1 == Entity.Null || lh.CowId2 == Entity.Null) continue;
+            if (loveHouseRef.CowSlot1 == Entity.Null || loveHouseRef.CowSlot2 == Entity.Null) continue;
 
-            StartBreed(state, playerEntity, loveHouseEntity);
+            StartBreed(state, playerEntity, loveHouseRef);
         }
     }
 
-    private static void StartBreed(EntityWorld state, Entity playerEntity, Entity loveHouseEntity)
+    private static void StartBreed(EntityWorld state, Entity playerEntity, LoveHouseRef loveHouseRef)
+    {
+        var loveHouseEntity = loveHouseRef.Entity;
+        Entity cow1 = loveHouseRef.CowSlot1;
+        Entity cow2 = loveHouseRef.CowSlot2;
+
+        var (breedCost, heartPercent) = ComputeBreedOutcome(state, cow1, cow2);
+
+        {
+            ref var lh = ref loveHouseRef.LoveHouse;
+            lh.BreedProgress = 0;
+            lh.BreedCost = breedCost;
+            lh.HeartPercent = heartPercent;
+        }
+
+        BeginBreedState(state, playerEntity, loveHouseEntity);
+
+        ILogger.Log($"[LoveHouseStartBreedSystem] Started breeding at love house {loveHouseEntity.Id}, cost={breedCost}");
+
+        InteractFeedback.Success(state.Ctx(playerEntity), playerEntity, loveHouseEntity);
+    }
+
+    private static (int breedCost, int heartPercent) ComputeBreedOutcome(EntityWorld state, Entity cow1, Entity cow2)
     {
         int breedCost = Balance.Breed.MinCost;
         int heartPercent = Balance.Breed.HeartDefault;
 
-        Entity cow1, cow2;
+        if (!state.HasComponent<CowComponent>(cow1) || !state.HasComponent<CowComponent>(cow2))
+            return (breedCost, heartPercent);
+
+        var c1 = state.GetComponent<CowComponent>(cow1);
+        var c2 = state.GetComponent<CowComponent>(cow2);
+        breedCost = System.Math.Max(Balance.Breed.MinCost, (c1.MaxExhaust + c2.MaxExhaust) / 2);
+
+        bool isLovePair = c1.LoveTarget == cow2 || c2.LoveTarget == cow1;
+        bool sameTier = c1.PreferredFood == c2.PreferredFood;
+
+        if (isLovePair)
         {
-            var loveHouse = state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-            cow1 = loveHouse.CowId1;
-            cow2 = loveHouse.CowId2;
+            heartPercent = Balance.Breed.HeartLovePair;
+        }
+        else if (sameTier)
+        {
+            heartPercent = Balance.Breed.HeartSameTierPre;
+        }
+        else
+        {
+            int tierGap = System.Math.Abs(c1.PreferredFood - c2.PreferredFood);
+            heartPercent = TierGapHeart(tierGap);
+
+            if (Balance.Cow.DepressionEnabled && RollBreedFail(state, cow1, cow2, tierGap))
+                breedCost *= Balance.Breed.FailCostMultiplier;
         }
 
-        if (state.HasComponent<CowComponent>(cow1) && state.HasComponent<CowComponent>(cow2))
+        return (breedCost, heartPercent);
+    }
+
+    private static int TierGapHeart(int tierGap) => tierGap switch
+    {
+        1 => Balance.Breed.HeartTierGap1,
+        2 => Balance.Breed.HeartTierGap2,
+        _ => Balance.Breed.HeartTierGap3Plus,
+    };
+
+    private static bool RollBreedFail(EntityWorld state, Entity cow1, Entity cow2, int tierGap)
+    {
+        var gameTime = state.GetCustomData<IGameTime>();
+        uint breedSeed = (uint)((cow1.Id * 7919 + cow2.Id * 104729) ^ (gameTime?.CurrentTick ?? 0));
+        var breedRandom = new DeterministicRandom(breedSeed);
+        int failChance = tierGap switch
         {
-            var c1 = state.GetComponent<CowComponent>(cow1);
-            var c2 = state.GetComponent<CowComponent>(cow2);
-            breedCost = System.Math.Max(Balance.Breed.MinCost, (c1.MaxExhaust + c2.MaxExhaust) / 2);
+            1 => Balance.Breed.FailChanceTier1,
+            2 => Balance.Breed.FailChanceTier2,
+            _ => Balance.Breed.FailChanceTier3Plus,
+        };
+        return breedRandom.NextInt(100) < failChance;
+    }
 
-            bool sameTier = c1.PreferredFood == c2.PreferredFood;
-            bool isLovePair = c1.LoveTarget == cow2 || c2.LoveTarget == cow1;
-
-            if (isLovePair)
-            {
-                heartPercent = Balance.Breed.HeartLovePair;
-            }
-            else if (sameTier)
-            {
-                heartPercent = Balance.Breed.HeartSameTierPre;
-            }
-            else
-            {
-                int tierGap = System.Math.Abs(c1.PreferredFood - c2.PreferredFood);
-                heartPercent = tierGap switch
-                {
-                    1 => Balance.Breed.HeartTierGap1,
-                    2 => Balance.Breed.HeartTierGap2,
-                    _ => Balance.Breed.HeartTierGap3Plus,
-                };
-
-                if (Balance.Cow.DepressionEnabled)
-                {
-                    var gameTime = state.GetCustomData<IGameTime>();
-                    uint breedSeed = (uint)((cow1.Id * 7919 + cow2.Id * 104729) ^ (gameTime?.CurrentTick ?? 0));
-                    var breedRandom = new DeterministicRandom(breedSeed);
-                    int failChance = tierGap switch
-                    {
-                        1 => Balance.Breed.FailChanceTier1,
-                        2 => Balance.Breed.FailChanceTier2,
-                        _ => Balance.Breed.FailChanceTier3Plus,
-                    };
-                    bool willFail = breedRandom.NextInt(100) < failChance;
-                    if (willFail)
-                        breedCost *= Balance.Breed.FailCostMultiplier;
-                }
-            }
-        }
-
-        {
-            ref var loveHouse = ref state.GetComponent<LoveHouseComponent>(loveHouseEntity);
-            loveHouse.BreedProgress = 0;
-            loveHouse.BreedCost = breedCost;
-            loveHouse.HeartPercent = heartPercent;
-        }
-
+    private static void BeginBreedState(EntityWorld state, Entity playerEntity, Entity loveHouseEntity)
+    {
         StatePhase phase;
         {
             ref var sc = ref state.GetComponent<StateComponent>(playerEntity);
@@ -107,20 +122,11 @@ public class LoveHouseStartBreedSystem : ISystem
             phase = sc.Phase;
         }
 
-        Vector2 returnPos = default;
-        bool hasReturnPos = state.HasComponent<Transform2D>(playerEntity);
-        if (hasReturnPos) returnPos = state.GetComponent<Transform2D>(playerEntity).Position;
-        {
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.InteractionTarget = loveHouseEntity;
-            if (hasReturnPos) ps.ReturnPosition = returnPos;
-        }
+        ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+        ps.InteractionTarget = loveHouseEntity;
+        if (state.TryGetComponent<Transform2D>(playerEntity, out var pt))
+            ps.ReturnPosition = pt.Position;
 
         state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Breed, Phase = phase, Age = 0 });
-
-        ILogger.Log($"[LoveHouseStartBreedSystem] Started breeding at love house {loveHouseEntity.Id}, cost={breedCost}");
-
-        var ctx = state.Ctx(playerEntity);
-        InteractFeedback.Success(ctx, playerEntity, loveHouseEntity);
     }
 }

@@ -3,6 +3,7 @@ using Deterministic.GameFramework.DAR;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 
 namespace Template.Shared.Systems;
 
@@ -45,12 +46,9 @@ public class CowClickSystem : ISystem
         if (cow.FollowingPlayer == playerEntity)
         {
             if (cow.LoveTarget != Entity.Null)
-            {
                 HandleLoveCow(state, ctx, playerEntity, cowEntity);
-                return;
-            }
-
-            HandleDismissFromChain(state, ctx, playerEntity, cowEntity);
+            else
+                HandleDismissFromChain(state, ctx, playerEntity, cowEntity);
             return;
         }
 
@@ -65,6 +63,11 @@ public class CowClickSystem : ISystem
 
         if (cow.FollowingPlayer != Entity.Null) return;
 
+        BeginTaming(state, ctx, playerEntity, cowEntity);
+    }
+
+    private static void BeginTaming(EntityWorld state, Context ctx, Entity playerEntity, Entity cowEntity)
+    {
         StatePhase phase;
         {
             ref var sc = ref state.GetComponent<StateComponent>(playerEntity);
@@ -73,9 +76,7 @@ public class CowClickSystem : ISystem
         }
 
         state.GetComponent<PlayerStateComponent>(playerEntity).InteractionTarget = cowEntity;
-
         state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Taming, Phase = phase, Age = 0 });
-
         InteractFeedback.Success(ctx, playerEntity, cowEntity);
 
         ILogger.Log($"[CowClickSystem] Player {playerEntity.Id} taming cow {cowEntity.Id}");
@@ -85,39 +86,30 @@ public class CowClickSystem : ISystem
     {
         var cow = state.GetComponent<CowComponent>(cowEntity);
 
-        if (!cow.LoveConfessed)
-        {
-            string targetName = "???";
-            if (state.TryGetComponent<NameComponent>(cow.LoveTarget, out var loveTargetName))
-                targetName = loveTargetName.Name.ToString();
-
-            state.GetComponent<CowComponent>(cowEntity).LoveConfessed = true;
-
-            InteractFeedback.Success(ctx, playerEntity, cowEntity);
-            state.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
-
-            ILogger.Log($"[CowClickSystem] Love cow {cowEntity.Id} confessed — loves {targetName} (cow {cow.LoveTarget.Id})");
-        }
-        else
+        if (cow.LoveConfessed)
         {
             InteractFeedback.Success(ctx, playerEntity, cowEntity);
             ILogger.Log($"[CowClickSystem] Love cow {cowEntity.Id} already confessed — still following player");
+            return;
         }
+
+        string targetName = "???";
+        if (state.TryGetComponent<NameComponent>(cow.LoveTarget, out var loveTargetName))
+            targetName = loveTargetName.Name.ToString();
+
+        state.GetComponent<CowComponent>(cowEntity).LoveConfessed = true;
+
+        InteractFeedback.Success(ctx, playerEntity, cowEntity);
+        state.AddComponent(cowEntity, new EnterStateComponent { Key = StateKeys.LoveCow, Param = targetName, Age = 0 });
+
+        ILogger.Log($"[CowClickSystem] Love cow {cowEntity.Id} confessed — loves {targetName} (cow {cow.LoveTarget.Id})");
     }
 
     private static void HandleDismissFromChain(EntityWorld state, Context ctx, Entity playerEntity, Entity cowEntity)
     {
         var cow = state.GetComponent<CowComponent>(cowEntity);
 
-        Entity next = Entity.Null;
-        foreach (var ce in state.Filter<CowComponent>())
-        {
-            if (ce == cowEntity) continue;
-            var c = state.GetComponent<CowComponent>(ce);
-            if (c.FollowTarget == cowEntity && c.FollowingPlayer == playerEntity)
-            { next = ce; break; }
-        }
-
+        Entity next = FindNextChainLink(state, playerEntity, cowEntity);
         bool isHead = state.GetComponent<PlayerStateComponent>(playerEntity).FollowingCow == cowEntity;
 
         if (isHead)
@@ -126,16 +118,26 @@ public class CowClickSystem : ISystem
             if (next != Entity.Null)
                 state.GetComponent<CowComponent>(next).FollowTarget = playerEntity;
         }
-        else
+        else if (next != Entity.Null)
         {
-            Entity myTarget = cow.FollowTarget;
-            if (next != Entity.Null)
-                state.GetComponent<CowComponent>(next).FollowTarget = myTarget;
+            state.GetComponent<CowComponent>(next).FollowTarget = cow.FollowTarget;
         }
 
         state.GetComponent<CowComponent>(cowEntity).ClearFollowChain();
 
         InteractFeedback.Success(ctx, playerEntity, cowEntity);
         ILogger.Log($"[CowClickSystem] Player {playerEntity.Id} dismissed cow {cowEntity.Id} from follow chain");
+    }
+
+    private static Entity FindNextChainLink(EntityWorld state, Entity playerEntity, Entity cowEntity)
+    {
+        foreach (var ce in state.Filter<CowComponent>())
+        {
+            if (ce == cowEntity) continue;
+            var c = state.GetComponent<CowComponent>(ce);
+            if (c.FollowTarget == cowEntity && c.FollowingPlayer == playerEntity)
+                return ce;
+        }
+        return Entity.Null;
     }
 }

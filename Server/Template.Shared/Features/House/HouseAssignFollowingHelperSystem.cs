@@ -6,6 +6,7 @@ using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Actions;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 using Template.Shared.GameData;
 
 namespace Template.Shared.Systems;
@@ -27,53 +28,43 @@ public class HouseAssignFollowingHelperSystem : ISystem
         {
             if (!state.HasComponent<PlayerStateComponent>(playerEntity)) continue;
 
-            var req = state.GetComponent<InteractRequestComponent>(playerEntity);
-            var houseEntity = req.Target;
-            if (!state.HasComponent<HouseComponent>(houseEntity)) continue;
+            var houseEntity = state.GetComponent<InteractRequestComponent>(playerEntity).Target;
+            if (!state.TryResolve<HouseArchetype>(houseEntity, out var houseRef)) continue;
             if (state.HasComponent<HelperPlayerComponent>(playerEntity)) continue;
 
-            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
-            var helperEntity = ps.FollowingHelper;
+            var helperEntity = state.GetComponent<PlayerStateComponent>(playerEntity).FollowingHelper;
             if (helperEntity == Entity.Null) continue;
             if (!state.HasComponent<HelperComponent>(helperEntity)) continue;
 
-            var house = state.GetComponent<HouseComponent>(houseEntity);
-            if (house.CowId != Entity.Null) continue;
-            if (house.HelperId != Entity.Null) continue;
+            if (houseRef.CowSlot != Entity.Null) continue;
+            if (houseRef.House.HelperId != Entity.Null) continue;
 
-            AssignHelperToHouse(state, playerEntity, houseEntity, helperEntity);
+            AssignHelperToHouse(state, playerEntity, houseRef, helperEntity);
         }
     }
 
-    private static void AssignHelperToHouse(EntityWorld state, Entity playerEntity, Entity houseEntity, Entity helperEntity)
+    private static void AssignHelperToHouse(EntityWorld state, Entity playerEntity, HouseRef houseRef, Entity helperEntity)
     {
         var ctx = state.Ctx(playerEntity);
+        var houseEntity = houseRef.Entity;
 
-        {
-            ref var house = ref state.GetComponent<HouseComponent>(houseEntity);
-            house.HelperId = helperEntity;
-        }
+        houseRef.House.HelperId = helperEntity;
 
-        if (state.HasComponent<Transform2D>(houseEntity) && state.HasComponent<Transform2D>(helperEntity))
-        {
-            var housePos = state.GetComponent<Transform2D>(houseEntity).Position;
-            ref var ht = ref state.GetComponent<Transform2D>(helperEntity);
-            ht.Position = housePos;
-        }
-        if (state.HasComponent<CharacterBody2D>(helperEntity))
-        {
-            ref var hb = ref state.GetComponent<CharacterBody2D>(helperEntity);
-            hb.Velocity = Vector2.Zero;
-        }
+        TeleportHelperToHouse(state, houseRef, helperEntity);
 
         InteractActionService.EnsureRoleSignForHouse(ctx, houseEntity, helperEntity);
 
-        {
-            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
-            ps.FollowingHelper = Entity.Null;
-        }
+        state.GetComponent<PlayerStateComponent>(playerEntity).FollowingHelper = Entity.Null;
 
         ILogger.Log($"[HouseAssignFollowingHelperSystem] Player {playerEntity.Id} assigned carried helper {helperEntity.Id} to house {houseEntity.Id}");
         InteractFeedback.Success(ctx, playerEntity, houseEntity);
+    }
+
+    private static void TeleportHelperToHouse(EntityWorld state, HouseRef houseRef, Entity helperEntity)
+    {
+        if (state.HasComponent<Transform2D>(helperEntity))
+            state.GetComponent<Transform2D>(helperEntity).Position = houseRef.Transform2D.Position;
+        if (state.HasComponent<CharacterBody2D>(helperEntity))
+            state.GetComponent<CharacterBody2D>(helperEntity).Velocity = Vector2.Zero;
     }
 }

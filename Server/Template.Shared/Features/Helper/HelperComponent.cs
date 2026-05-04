@@ -53,6 +53,10 @@ public struct HelperComponent : IComponent
     /// </summary>
     public int WantedFoodType;
 
+    // Set true by HelperSystem when the helper is carried or its owner is hidden;
+    // per-type/warehouse systems early-exit on this. Reset at the start of each tick.
+    public bool SuppressTickUpdate;
+
     // Breeding lineage — which cows were bred to produce this helper
     public Entity ParentA;
     public Entity ParentB;
@@ -113,5 +117,17 @@ public struct HelperComponent : IComponent
     public void AddBagMilkProduct(int milkProduct, int amount)
     {
         BagMilk += amount;
+    }
+
+    /// <summary>Add food of a specific type to the bag.</summary>
+    public void AddBagFood(int foodType, int amount)
+    {
+        switch (foodType)
+        {
+            case FoodType.Grass: BagGrass += amount; break;
+            case FoodType.Carrot: BagCarrot += amount; break;
+            case FoodType.Apple: BagApple += amount; break;
+            case FoodType.Mushroom: BagMushroom += amount; break;
+        }
     }
 }
