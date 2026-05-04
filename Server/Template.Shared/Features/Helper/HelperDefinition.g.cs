@@ -43,6 +43,7 @@ public static partial class HelperDefinition
         component.BagCoins = 0;
         component.BagCapacity = 0;
         component.WantedFoodType = 0;
+        component.SuppressTickUpdate = false;
         component.ParentA = Entity.Null;
         component.ParentB = Entity.Null;
         component.PetCount = 0;
