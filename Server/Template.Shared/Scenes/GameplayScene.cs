@@ -31,8 +31,6 @@ public class GameplayScene : IScene
         {
             if (system is NavigationSystem)
                 continue;
-            if (system is Template.Shared.Systems.DebugObstacleSpawnSystem)
-                continue;
             if (system is Template.Shared.Systems.InteractFallbackSystem fb)
             {
                 fallback = fb;

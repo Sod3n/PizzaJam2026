@@ -55,8 +55,6 @@ public class AddPlayerActionService : ActionService<AddPlayerAction, World>
 
         ILogger.Log($"[AddPlayerAction] Created Player Entity {playerEntity.Id} for User {action.UserId} at {position} (helperPlayer={isHelperPlayer}). NextEntityId After: {ctx.State.NextEntityId}");
 
-        ctx.State.AddComponent(playerEntity, new ScoreComponent { Value = 0 });
-
         if (isHelperPlayer)
         {
             // A helper-player replaces one auto-spawned breed helper from the unlock pool:

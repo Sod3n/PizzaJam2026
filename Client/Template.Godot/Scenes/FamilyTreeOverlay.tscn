@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Visuals/FamilyTreeOverlay.cs" id="1_script"]
+[ext_resource type="Script" path="res://Scripts/Visuals/UI/FamilyTreeOverlay.cs" id="1_script"]
 [ext_resource type="Theme" uid="uid://chxeajla0yriy" path="res://Styles/default_theme.tres" id="2_theme"]
 
 [node name="FamilyTreeOverlay" type="CanvasLayer"]
