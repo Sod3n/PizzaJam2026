@@ -43,8 +43,20 @@ public partial class InteractOutlineView : Node3D
         SetupOutlineComposite();
         if (GameManager.Instance != null && GameManager.Instance.IsGameRunning)
             Register();
+        // Priority 200 > ViewSmoother (100), so by the time we sync the outline
+        // camera, the player visual (which the main camera is parented to) has
+        // already been updated this frame.
         ProcessPriority = 200;
-        RenderingServer.Singleton.FramePreDraw += SyncOutlineCamera;
+        GetViewport().SizeChanged += OnViewportSizeChanged;
+        OnViewportSizeChanged();
+    }
+
+    private void OnViewportSizeChanged()
+    {
+        var size = GetViewport().GetVisibleRect().Size;
+        var sizeI = new Vector2I(Mathf.Max(1, (int)size.X), Mathf.Max(1, (int)size.Y));
+        if (_viewport != null && _viewport.Size != sizeI)
+            _viewport.Size = sizeI;
     }
 
     private void SetupOutlineComposite()
@@ -58,8 +70,14 @@ public partial class InteractOutlineView : Node3D
             RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
         };
 
-        // Outline camera renders entity layer + depth occluder layer
-        _outlineCamera = new Camera3D { CullMask = OutlineLayer | DepthLayer };
+        // Outline camera renders entity layer + depth occluder layer.
+        // Interpolation Off — its transform is driven by a RemoteTransform3D
+        // parented to the main camera (see Register), so each write must snap.
+        _outlineCamera = new Camera3D
+        {
+            CullMask = OutlineLayer | DepthLayer,
+            PhysicsInterpolationMode = Node.PhysicsInterpolationModeEnum.Off,
+        };
         _viewport.AddChild(_outlineCamera);
         AddChild(_viewport);
 
@@ -83,6 +101,7 @@ public partial class InteractOutlineView : Node3D
             Mesh = new PlaneMesh { Size = new Vector2(2000f, 2000f) },
             MaterialOverride = groundMat,
             Layers = OutlineLayer,
+            PhysicsInterpolationMode = Node.PhysicsInterpolationModeEnum.Off,
         };
         AddChild(_groundDepthPlane);
 
@@ -120,12 +139,14 @@ public partial class InteractOutlineView : Node3D
 
         if (_currentEntityId >= 0 && _sourceVisual != null && !IsInstanceValid(_sourceVisual))
             ClearOutline();
+
+        SyncOutlineCamera();
     }
 
-    /// <summary>
-    /// Syncs the outline camera right before rendering so there is no
-    /// one-frame lag when the main camera moves.
-    /// </summary>
+    // Syncs the outline camera right before rendering. Uses the main camera's
+    // interpolated transform (matches its rendered pose between physics
+    // ticks); outline camera has PhysicsInterpolationMode = Off so the
+    // assignment lands directly without being re-lerped.
     private void SyncOutlineCamera()
     {
         if (!IsInsideTree()) return;
@@ -135,9 +156,6 @@ public partial class InteractOutlineView : Node3D
 
         mainCamera.CullMask &= ~OutlineLayer;
 
-        // Use the interpolated transform so the outline camera matches the
-        // exact visual position the main camera renders at, avoiding any
-        // physics-interpolation lag.
         var transform = mainCamera.GetGlobalTransformInterpolated();
         _outlineCamera.GlobalTransform = transform;
         _outlineCamera.Projection = mainCamera.Projection;
@@ -219,7 +237,8 @@ public partial class InteractOutlineView : Node3D
 
     public override void _ExitTree()
     {
-        RenderingServer.Singleton.FramePreDraw -= SyncOutlineCamera;
+        if (IsInsideTree())
+            GetViewport().SizeChanged -= OnViewportSizeChanged;
         _disposables.Dispose();
         ClearOutline();
 

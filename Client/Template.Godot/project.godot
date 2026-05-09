@@ -8,6 +8,10 @@
 
 config_version=5
 
+[Fmod]
+
+General/banks_path="res://FMOD/PizzaJam2026/Build/Desktop"
+
 [animation]
 
 compatibility/default_parent_skeleton_in_mesh_instance_3d=true
@@ -23,6 +27,7 @@ config/icon="res://icon.svg"
 
 Global="*uid://c6aa26vlcpjcm"
 DebugVisualizer="*uid://78q8j1dkr8gg"
+FmodManager="*uid://cds10pm7hwn3p"
 
 [display]
 
@@ -40,7 +45,7 @@ use_incremental_gc=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/framework_tools/plugin.cfg", "res://addons/psd_importer/plugin.cfg")
+enabled=PackedStringArray("res://addons/fmod/plugin.cfg", "res://addons/framework_tools/plugin.cfg", "res://addons/psd_importer/plugin.cfg")
 
 [input_devices]
 
@@ -57,6 +62,7 @@ limits/debugger/max_warnings_per_second=4000
 
 textures/canvas_textures/default_texture_filter=0
 textures/vram_compression/import_etc2_astc=true
+lights_and_shadows/directional_shadow/size=8192
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
 lights_and_shadows/directional_shadow/16_bits=false
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=0

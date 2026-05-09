@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_muct3"]
 [ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="2_chjm5"]
-[ext_resource type="Script" uid="uid://bin2tkdo8ql7q" path="res://Scripts/Visuals/UI.cs" id="3_k554n"]
+[ext_resource type="Script" uid="uid://bin2tkdo8ql7q" path="res://Scripts/Visuals/UI/UI.cs" id="3_k554n"]
 [ext_resource type="PackedScene" uid="uid://cuh1yaoty6gvf" path="res://Scenes/camera.tscn" id="3_lwepe"]
 [ext_resource type="Texture2D" uid="uid://pbxh4yjmurfo" path="res://sprites/export/Devochka/Hair/1.png" id="4_c7qr6"]
 [ext_resource type="Texture2D" uid="uid://cffi5cdejfvo1" path="res://sprites/gg.PNG" id="5_0pq82"]
@@ -150,6 +150,15 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("10_6q1hw")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 0.5
+shader_parameter/pixels_per_unit = 32.0
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_povw8"]
+render_priority = 0
+shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("5_0pq82")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
@@ -313,6 +322,8 @@ material_override = SubResource("ShaderMaterial_frewt")
 [node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223347, 1423863731) index="1" unique_id=661096088]
 transform = Transform3D(0.99999976, 0, 0, 0, 0.9999998, 4.4703484e-08, 0, -4.4703484e-08, 0.9999998, 4.9999995, 5.2107387, 0.17353888)
 sorting_offset = -10.0
+material_override = SubResource("ShaderMaterial_povw8")
+shaded = true
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_ei75f")
@@ -322,6 +333,8 @@ script = ExtResource("7_rapy0")
 transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 20.943493, 34.389595)
 size = 20.0
 pixels_per_meter = 32.0
+
+[node name="FmodListener2D" type="FmodListener2D" parent="Camera" unique_id=549109981]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915661]
 layer = 100

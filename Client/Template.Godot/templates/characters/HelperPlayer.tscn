@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bgfiftgc25jbw" path="res://templates/characters/Character.tscn" id="1_muct3"]
 [ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="2_chjm5"]
-[ext_resource type="Script" uid="uid://bin2tkdo8ql7q" path="res://Scripts/Visuals/UI.cs" id="3_k554n"]
+[ext_resource type="Script" uid="uid://bin2tkdo8ql7q" path="res://Scripts/Visuals/UI/UI.cs" id="3_k554n"]
 [ext_resource type="PackedScene" uid="uid://cuh1yaoty6gvf" path="res://Scenes/camera.tscn" id="3_lwepe"]
 [ext_resource type="Texture2D" uid="uid://pbxh4yjmurfo" path="res://sprites/export/Devochka/Hair/1.png" id="4_c7qr6"]
 [ext_resource type="Texture2D" uid="uid://cffi5cdejfvo1" path="res://sprites/gg.PNG" id="5_0pq82"]
@@ -43,7 +43,7 @@
 atlas = ExtResource("6_xl50o")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_udp0q"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fs5v2"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -56,7 +56,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("4_c7qr6")
 region = Rect2(0, 0, 512, 498)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fs5v2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n8brg"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_3iv28")
@@ -65,7 +65,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_n8brg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rgw3y"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("12_hgbuf")
@@ -78,7 +78,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("5_xydrf")
 region = Rect2(0, 0, 658, 166)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_rgw3y"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gjli1"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_dqt6i")
@@ -91,7 +91,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("6_vhitc")
 region = Rect2(0, 0, 632, 142)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_gjli1"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pj3fa"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_qhcqh")
@@ -100,7 +100,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pj3fa"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ex1bp"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("14_y80ge")
@@ -113,7 +113,7 @@ shader_parameter/color_replace = Color(1, 1, 1, 1)
 atlas = ExtResource("8_lkh7d")
 region = Rect2(0, 0, 337, 191)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ex1bp"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nq4og"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_egwm2")
@@ -122,7 +122,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_nq4og"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0m45m"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("17_wl1od")
@@ -131,7 +131,7 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0m45m"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5hf2j"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("9_u7nxn")
@@ -140,15 +140,16 @@ shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5hf2j"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wre2s"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
+shader_parameter/albedo_texture = ExtResource("22_fs5v2")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 0.5
 shader_parameter/pixels_per_unit = 32.0
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_wre2s"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aahip"]
 render_priority = 0
 shader = ExtResource("2_chjm5")
 shader_parameter/albedo_texture = ExtResource("10_6q1hw")
@@ -277,41 +278,42 @@ transform = Transform3D(1.2141037, 0, 0, 0, 1.2141037, 0, 0, 0, 1, -0.05092001, 
 visible = false
 
 [node name="Body" parent="Character/ScaleAnchor/Skin" index="0" unique_id=1133601551]
-material_override = SubResource("ShaderMaterial_udp0q")
-
-[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
 material_override = SubResource("ShaderMaterial_fs5v2")
 
-[node name="BackHair" parent="Character/ScaleAnchor/Skin" index="2" unique_id=232127656]
+[node name="Hair" parent="Character/ScaleAnchor/Skin" index="1" unique_id=610589464]
 material_override = SubResource("ShaderMaterial_n8brg")
 
-[node name="Torns" parent="Character/ScaleAnchor/Skin" index="3" unique_id=2031229694]
+[node name="BackHair" parent="Character/ScaleAnchor/Skin" index="2" unique_id=232127656]
 material_override = SubResource("ShaderMaterial_rgw3y")
 
-[node name="Ears" parent="Character/ScaleAnchor/Skin" index="4" unique_id=1368322551]
+[node name="Torns" parent="Character/ScaleAnchor/Skin" index="3" unique_id=2031229694]
 material_override = SubResource("ShaderMaterial_gjli1")
 
-[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="5" unique_id=50470159]
+[node name="Ears" parent="Character/ScaleAnchor/Skin" index="4" unique_id=1368322551]
 material_override = SubResource("ShaderMaterial_pj3fa")
 
-[node name="Top" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2106512903]
+[node name="Eyes" parent="Character/ScaleAnchor/Skin" index="5" unique_id=50470159]
 material_override = SubResource("ShaderMaterial_ex1bp")
 
-[node name="Hand" parent="Character/ScaleAnchor/Skin" index="7" unique_id=599028963]
+[node name="Top" parent="Character/ScaleAnchor/Skin" index="6" unique_id=2106512903]
 material_override = SubResource("ShaderMaterial_nq4og")
 
-[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="8" unique_id=2120793389]
+[node name="Hand" parent="Character/ScaleAnchor/Skin" index="7" unique_id=599028963]
 material_override = SubResource("ShaderMaterial_0m45m")
 
-[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="9" unique_id=294789255]
+[node name="Bottom1" parent="Character/ScaleAnchor/Skin" index="8" unique_id=2120793389]
 material_override = SubResource("ShaderMaterial_5hf2j")
 
-[node name="Tail" parent="Character/ScaleAnchor/Skin" index="10" unique_id=543932425]
+[node name="Bottom2" parent="Character/ScaleAnchor/Skin" index="9" unique_id=294789255]
 material_override = SubResource("ShaderMaterial_wre2s")
+
+[node name="Tail" parent="Character/ScaleAnchor/Skin" index="10" unique_id=543932425]
+material_override = SubResource("ShaderMaterial_aahip")
 
 [node name="Skin2" type="AnimatedSprite3D" parent="Character/ScaleAnchor" parent_id_path=PackedInt32Array(1227223348, 1423863731) index="1" unique_id=661096089]
 transform = Transform3D(0.9999998, 0, 0, 0, 0.9999998, 2.9802322e-08, 0, -2.9802322e-08, 0.9999998, -0.12651977, 4.299885, -0.084164545)
 sorting_offset = -10.0
+material_override = SubResource("ShaderMaterial_wre2s")
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_ei75f")
@@ -322,6 +324,8 @@ script = ExtResource("7_rapy0")
 transform = Transform3D(1, 0, 0, 0, 0.87828374, 0.47813988, 0, -0.47813988, 0.87828374, -0.057099342, 20.943493, 34.389595)
 size = 20.0
 pixels_per_meter = 32.0
+
+[node name="FmodListener2D" type="FmodListener2D" parent="Camera" unique_id=1190825932]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Camera" unique_id=916915662]
 layer = 100

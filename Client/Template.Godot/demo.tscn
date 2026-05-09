@@ -3,7 +3,9 @@
 [ext_resource type="Script" uid="uid://d0qq7fg0nvuxu" path="res://Scripts/Core/GameManager.cs" id="1_884kg"]
 [ext_resource type="Script" uid="uid://c3uhh25dk0mh8" path="res://Scripts/Input/InputManager.cs" id="2_d4o4o"]
 [ext_resource type="Script" uid="uid://g7fxc4iexti3" path="res://main_subviewport.gd" id="3_y4vt1"]
+[ext_resource type="Shader" uid="uid://dtey3q6l34nvo" path="res://shaders/clouds.gdshader" id="4_4be7j"]
 [ext_resource type="Material" uid="uid://bra6ug2wjmj0j" path="res://BinbunGrass/src/materials/grass_01/grass_ground_01.tres" id="4_6bw2v"]
+[ext_resource type="FastNoiseLite" uid="uid://b2mpx5cd1rwpl" path="res://shaders/clouds_noise.tres" id="5_gmxcm"]
 [ext_resource type="Material" uid="uid://c2to67v55oatp" path="res://BinbunGrass/src/materials/grass_01/grass_01.tres" id="5_kem5a"]
 [ext_resource type="PackedScene" uid="uid://kfx6yeh1o5yq" path="res://templates/environment/grass.tscn" id="6_gxmxl"]
 [ext_resource type="PackedScene" uid="uid://de55uopw2vwaa" path="res://templates/environment/Land.tscn" id="7_gdsc3"]
@@ -15,7 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://ci00jj84e50un" path="res://templates/environment/carrot.tscn" id="11_mioy6"]
 [ext_resource type="PackedScene" uid="uid://cyytxfg62tvax" path="res://templates/environment/apple.tscn" id="12_n55vl"]
 [ext_resource type="PackedScene" uid="uid://dvf1flcw08lyw" path="res://templates/environment/mushroom.tscn" id="13_rn1d6"]
-[ext_resource type="Script" uid="uid://b8k3m7outln1v" path="res://Scripts/Visuals/InteractOutlineView.cs" id="38_hsrf8"]
+[ext_resource type="Script" uid="uid://b8k3m7outln1v" path="res://Scripts/Visuals/Common/InteractOutlineView.cs" id="38_hsrf8"]
 [ext_resource type="PackedScene" uid="uid://yeyaphli5ypt" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
 [ext_resource type="PackedScene" uid="uid://jqqcg2w5j6v4" path="res://templates/environment/AppleOrchard.tscn" id="tpl_appleorchard"]
 [ext_resource type="PackedScene" uid="uid://bgt7qedtjqn55" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
@@ -42,34 +44,34 @@
 [ext_resource type="PackedScene" uid="uid://c1nvklhoxhbvc" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
 [ext_resource type="PackedScene" uid="uid://ce1ugbrcr6mp5" path="res://templates/environment/Warehouse.tscn" id="tpl_warehouse"]
 [ext_resource type="PackedScene" uid="uid://cfbgjw4hegeie" path="res://templates/environment/WarehouseSign.tscn" id="tpl_warehousesign"]
-[ext_resource type="Script" uid="uid://c0hln4wxe6hyd" path="res://Scripts/Visuals/AppleOrchardView.cs" id="view_appleorchard"]
-[ext_resource type="Script" uid="uid://o67l46k5a8dj" path="res://Scripts/Visuals/CarrotFarmView.cs" id="view_carrotfarm"]
-[ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/CowView.cs" id="view_cow"]
-[ext_resource type="Script" uid="uid://bg7mgleujg5ot" path="res://Scripts/Visuals/DecorationView.cs" id="view_decoration"]
-[ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/FinalStructureView.cs" id="view_finalstructure"]
-[ext_resource type="Script" uid="uid://bqhe6g3n1ei8l" path="res://Scripts/Visuals/FoodFarmView.cs" id="view_foodfarm"]
-[ext_resource type="Script" uid="uid://f4sfvakprfvw" path="res://Scripts/Visuals/FoodSignView.cs" id="view_foodsign"]
-[ext_resource type="Script" uid="uid://q2pn1v0kf6de" path="res://Scripts/Visuals/GrassView.cs" id="view_grass"]
-[ext_resource type="Script" uid="uid://b3kkcsarmv3fv" path="res://Scripts/Visuals/HelperView.cs" id="view_helper"]
-[ext_resource type="Script" uid="uid://83ewsjl0u4i8" path="res://Scripts/Visuals/HelperAssistantView.cs" id="view_helperassistant"]
-[ext_resource type="Script" uid="uid://md41ojyrlwd2" path="res://Scripts/Visuals/HelperPetView.cs" id="view_helperpet"]
-[ext_resource type="Script" uid="uid://bjlvosits0xno" path="res://Scripts/Visuals/HelperPlayerView.cs" id="view_helperplayer"]
-[ext_resource type="Script" uid="uid://0qcopw55cs1e" path="res://Scripts/Visuals/HouseView.cs" id="view_house"]
-[ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/LandView.cs" id="view_land"]
-[ext_resource type="Script" uid="uid://yn3ecby06imi" path="res://Scripts/Visuals/LandPriceSignView.cs" id="view_landpricesign"]
-[ext_resource type="Script" uid="uid://c8yvxqnq0hnc3" path="res://Scripts/Visuals/LandSignView.cs" id="view_landsign"]
-[ext_resource type="Script" uid="uid://bajw4330g2icp" path="res://Scripts/Visuals/LibraryView.cs" id="view_library"]
-[ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/LoveHouseView.cs" id="view_lovehouse"]
-[ext_resource type="Script" uid="uid://dbqbtifw2l624" path="res://Scripts/Visuals/MushroomCaveView.cs" id="view_mushroomcave"]
-[ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/PlayerView.cs" id="view_player"]
-[ext_resource type="Script" uid="uid://dojw82wqc7syt" path="res://Scripts/Visuals/PlayerHouseView.cs" id="view_playerhouse"]
-[ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/PropView.cs" id="view_prop"]
-[ext_resource type="Script" uid="uid://pp2xdb74f6j4" path="res://Scripts/Visuals/RoleSignView.cs" id="view_rolesign"]
-[ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/SellPointView.cs" id="view_sellpoint"]
-[ext_resource type="Script" uid="uid://ch0pi2drlqo61" path="res://Scripts/Visuals/SellPointSignView.cs" id="view_sellpointsign"]
-[ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/WallView.cs" id="view_wall"]
-[ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/WarehouseView.cs" id="view_warehouse"]
-[ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/WarehouseSignView.cs" id="view_warehousesign"]
+[ext_resource type="Script" uid="uid://c0hln4wxe6hyd" path="res://Scripts/Visuals/Features/Building/FoodFarm/AppleOrchardView.cs" id="view_appleorchard"]
+[ext_resource type="Script" uid="uid://o67l46k5a8dj" path="res://Scripts/Visuals/Features/Building/FoodFarm/CarrotFarmView.cs" id="view_carrotfarm"]
+[ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/Features/Cow/CowView.cs" id="view_cow"]
+[ext_resource type="Script" uid="uid://bg7mgleujg5ot" path="res://Scripts/Visuals/Features/World/DecorationView.cs" id="view_decoration"]
+[ext_resource type="Script" uid="uid://dcuk84ttfc8nb" path="res://Scripts/Visuals/Features/Building/FinalStructure/FinalStructureView.cs" id="view_finalstructure"]
+[ext_resource type="Script" uid="uid://bqhe6g3n1ei8l" path="res://Scripts/Visuals/Features/Building/FoodFarm/FoodFarmView.cs" id="view_foodfarm"]
+[ext_resource type="Script" uid="uid://f4sfvakprfvw" path="res://Scripts/Visuals/Features/Building/FoodFarm/FoodSignView.cs" id="view_foodsign"]
+[ext_resource type="Script" uid="uid://q2pn1v0kf6de" path="res://Scripts/Visuals/Features/Food/GrassView.cs" id="view_grass"]
+[ext_resource type="Script" uid="uid://b3kkcsarmv3fv" path="res://Scripts/Visuals/Features/Helper/HelperView.cs" id="view_helper"]
+[ext_resource type="Script" uid="uid://83ewsjl0u4i8" path="res://Scripts/Visuals/Features/Helper/Assistant/HelperAssistantView.cs" id="view_helperassistant"]
+[ext_resource type="Script" uid="uid://md41ojyrlwd2" path="res://Scripts/Visuals/Features/Pet/HelperPetView.cs" id="view_helperpet"]
+[ext_resource type="Script" uid="uid://bjlvosits0xno" path="res://Scripts/Visuals/Features/Helper/HelperPlayerView.cs" id="view_helperplayer"]
+[ext_resource type="Script" uid="uid://0qcopw55cs1e" path="res://Scripts/Visuals/Features/Building/House/HouseView.cs" id="view_house"]
+[ext_resource type="Script" uid="uid://dy1wgt11f7bq3" path="res://Scripts/Visuals/Features/Land/LandView.cs" id="view_land"]
+[ext_resource type="Script" uid="uid://yn3ecby06imi" path="res://Scripts/Visuals/Features/Land/LandPriceSignView.cs" id="view_landpricesign"]
+[ext_resource type="Script" uid="uid://c8yvxqnq0hnc3" path="res://Scripts/Visuals/Features/Land/LandSignView.cs" id="view_landsign"]
+[ext_resource type="Script" uid="uid://bajw4330g2icp" path="res://Scripts/Visuals/Features/Building/Library/LibraryView.cs" id="view_library"]
+[ext_resource type="Script" uid="uid://cm18iswbd6fw4" path="res://Scripts/Visuals/Features/Building/House/LoveHouseView.cs" id="view_lovehouse"]
+[ext_resource type="Script" uid="uid://dbqbtifw2l624" path="res://Scripts/Visuals/Features/Building/FoodFarm/MushroomCaveView.cs" id="view_mushroomcave"]
+[ext_resource type="Script" uid="uid://2316evyy8icb" path="res://Scripts/Visuals/Features/Player/PlayerView.cs" id="view_player"]
+[ext_resource type="Script" uid="uid://dojw82wqc7syt" path="res://Scripts/Visuals/Features/Building/House/PlayerHouseView.cs" id="view_playerhouse"]
+[ext_resource type="Script" uid="uid://clgo7lejeysj2" path="res://Scripts/Visuals/Features/World/PropView.cs" id="view_prop"]
+[ext_resource type="Script" uid="uid://pp2xdb74f6j4" path="res://Scripts/Visuals/Features/Helper/RoleSign/RoleSignView.cs" id="view_rolesign"]
+[ext_resource type="Script" uid="uid://bfs41dtt73djg" path="res://Scripts/Visuals/Features/Building/SellPoint/SellPointView.cs" id="view_sellpoint"]
+[ext_resource type="Script" uid="uid://ch0pi2drlqo61" path="res://Scripts/Visuals/Features/Building/SellPoint/SellPointSignView.cs" id="view_sellpointsign"]
+[ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/Features/World/WallView.cs" id="view_wall"]
+[ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/Features/Building/Warehouse/WarehouseView.cs" id="view_warehouse"]
+[ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/Features/Building/Warehouse/WarehouseSignView.cs" id="view_warehousesign"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -82,6 +84,24 @@ sdfgi_min_cell_size = 0.4
 volumetric_fog_density = 0.1026
 volumetric_fog_emission = Color(0.941176, 0.470588, 0.337255, 1)
 adjustment_saturation = 0.01
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4be7j"]
+width = 1024
+height = 1024
+noise = ExtResource("5_gmxcm")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gmxcm"]
+render_priority = 0
+shader = ExtResource("4_4be7j")
+shader_parameter/cloud_tex = SubResource("NoiseTexture2D_4be7j")
+shader_parameter/wind = Vector2(0.3, 0.1)
+shader_parameter/cloud_scale = 0.008
+shader_parameter/coverage = 0.70000003325
+shader_parameter/softness = 0.150000007125
+shader_parameter/layer2_mix = 0.1290000061275
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_k6ds3"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_gxmxl"]
 size = Vector2(20, 20)
@@ -113,6 +133,9 @@ RecordInputs = true
 [node name="InputManager" type="Node" parent="Main" unique_id=366168345]
 script = ExtResource("2_d4o4o")
 
+[node name="FmodBankLoader" type="FmodBankLoader" parent="Main" unique_id=565461656]
+bank_paths = ["res://FMOD/PizzaJam2026/Build/Desktop/Master.strings.bank", "res://FMOD/PizzaJam2026/Build/Desktop/Master.bank", "res://FMOD/PizzaJam2026/Build/Desktop/SFX.bank", "res://FMOD/PizzaJam2026/Build/Desktop/Music.bank"]
+
 [node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=294793928]
 anchors_preset = 15
 anchor_right = 1.0
@@ -133,12 +156,20 @@ script = ExtResource("3_y4vt1")
 transform = Transform3D(0.05523772, -0.9084246, -0.41438335, 0.48217082, -0.3391493, 0.807768, -0.8743341, -0.24442281, 0.41928202, 0, 2.58754, 0)
 light_color = Color(0.893, 0.94, 0.9360833, 1)
 shadow_enabled = true
+shadow_bias = 0.3
+shadow_blur = 1.5
 directional_shadow_mode = 1
-directional_shadow_split_1 = 0.032
+directional_shadow_split_1 = 0.02
 directional_shadow_split_3 = 0.54
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport" unique_id=6311489]
 environment = SubResource("Environment_t4b23")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport" unique_id=1848038747]
+transform = Transform3D(150, 0, 0, 0, 1, 0, 0, 0, 150, 0, 60, 0)
+material_override = SubResource("ShaderMaterial_gmxcm")
+cast_shadow = 3
+mesh = SubResource("PlaneMesh_k6ds3")
 
 [node name="Props" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=1134196663]
 

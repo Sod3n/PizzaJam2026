@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://pijssbtjn8jk" path="res://sprites/export/homes/Sell_Point_.png" id="3_ijeiq"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="4_ijeiq"]
 [ext_resource type="Script" uid="uid://yo263sjf6vnf" path="res://Scripts/Framework/Components/SellPointComponentNode.cs" id="fw_sellpoint"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y8smx"]
 albedo_color = Color(1, 0.9372549, 0, 1)
@@ -42,6 +43,9 @@ animations = [{
 [node name="SellPoint" type="Node3D" unique_id=1520497427]
 
 [node name="Entity" type="Node3D" parent="." unique_id=1313762873]
+script = ExtResource("fw_entity")
+EntityName = "SellPoint"
+StableIdSeed = "sellpoint-entity-seed"
 
 [node name="SellPointComponent" type="Node" parent="Entity" unique_id=429680044]
 script = ExtResource("fw_sellpoint")
