@@ -65,6 +65,8 @@ public static partial class PlayerDefinition
         {
             DisableSlide = false,
             DisablePushOut = false,
+            SlideFactor = (Float)1.0f,
+            MaxSlideAngleDegrees = (Float)90.0f,
         });
 
         // Child entity: InteractionZone

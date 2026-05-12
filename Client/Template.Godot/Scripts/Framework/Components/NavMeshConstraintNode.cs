@@ -8,4 +8,6 @@ public partial class NavMeshConstraintNode : Node
 {
     [Export] public bool DisableSlide;
     [Export] public bool DisablePushOut;
+    [Export] public float SlideFactor;
+    [Export] public float MaxSlideAngleDegrees;
 }

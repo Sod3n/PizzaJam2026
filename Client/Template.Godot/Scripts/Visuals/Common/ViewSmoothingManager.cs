@@ -43,8 +43,9 @@ public partial class ViewSmoothingManager : Node
         _instance = this;
 
         // Ensure we are always processed last relative to ViewModel tick-driven
-        // updates, so the smoother reads the freshest ECS value each frame.
+        // updates, so the smoother reads the freshest ECS value each tick.
         ProcessPriority = 100;
+        ProcessPhysicsPriority = 100;
     }
 
     public override void _Ready()
@@ -77,12 +78,21 @@ public partial class ViewSmoothingManager : Node
         }
     }
 
+    public override void _PhysicsProcess(double delta)
+    {
+        // Sample fresh authoritative state once per physics tick (60 Hz). This
+        // runs AFTER the game loop has advanced ECS for this tick (ProcessPriority
+        // = 100 ensures we're late in the tick).
+        if (Smoother == null) EnsureSmoother();
+        Smoother?.Sample();
+    }
+
     public override void _Process(double delta)
     {
-        // Belt-and-braces: if something created the manager before the game
-        // was ready, keep polling until state is bound.
-        if (Smoother == null) EnsureSmoother();
-        Smoother?.Update((float)delta);
+        // Render-frame apply: lerp Prev→Current using Godot's physics-interp
+        // fraction. This is invariant to render rate / vsync jitter — constant
+        // velocity within each tick window.
+        Smoother?.Apply((float)Engine.GetPhysicsInterpolationFraction());
     }
 
     private bool _resetHookInstalled;

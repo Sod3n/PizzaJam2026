@@ -143,10 +143,11 @@ public partial class InteractOutlineView : Node3D
         SyncOutlineCamera();
     }
 
-    // Syncs the outline camera right before rendering. Uses the main camera's
-    // interpolated transform (matches its rendered pose between physics
-    // ticks); outline camera has PhysicsInterpolationMode = Off so the
-    // assignment lands directly without being re-lerped.
+    // Syncs the outline camera right before rendering. Reads the main camera's
+    // plain GlobalTransform — the ViewSmoother writes positions every render
+    // frame at the engine-provided interpolation fraction, so GlobalTransform
+    // already matches the rendered pose. Using the *interpolated* getter here
+    // applies a second, independent lerp and shifts the outline off-target.
     private void SyncOutlineCamera()
     {
         if (!IsInsideTree()) return;
@@ -156,7 +157,7 @@ public partial class InteractOutlineView : Node3D
 
         mainCamera.CullMask &= ~OutlineLayer;
 
-        var transform = mainCamera.GetGlobalTransformInterpolated();
+        var transform = mainCamera.GlobalTransform;
         _outlineCamera.GlobalTransform = transform;
         _outlineCamera.Projection = mainCamera.Projection;
         _outlineCamera.Size = mainCamera.Size;

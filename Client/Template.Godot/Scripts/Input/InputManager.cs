@@ -201,11 +201,14 @@ public partial class InputManager : Node
 
         var fixedDirection = new Deterministic.GameFramework.Types.Vector2((float)direction.X, (float)direction.Y);
 
-        // Send action if direction or speed changed
+        // Send action if direction or speed changed, OR re-send every frame while the player
+        // is actively moving — the navmesh slide rewrites body.Velocity, so without a fresh
+        // action each tick the player would keep drifting along the wall after the corner ends.
         bool dirChanged = direction.DistanceSquaredTo(_lastDirection) > 0.001f;
         bool speedChanged = Math.Abs(speed - _lastSpeed) > 0.01f;
+        bool moving = direction.LengthSquared() > 0.001f;
 
-        if (dirChanged || speedChanged)
+        if (dirChanged || speedChanged || moving)
         {
             _lastDirection = direction;
             _lastSpeed = speed;

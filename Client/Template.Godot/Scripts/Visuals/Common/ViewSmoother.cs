@@ -57,11 +57,16 @@ public class ViewSmoother : IDisposable
         public bool Disposed;
 
         /// <summary>
-        /// Called once per render frame. Reads the authoritative target,
-        /// lerps visual state, and applies to the view target.
-        /// Returns false if the tracker should be removed (e.g. entity destroyed).
+        /// Called once per physics tick. Shifts the buffered sample window
+        /// (prev = current, current = newSample). Returns false to drop.
         /// </summary>
-        public abstract bool Update(float deltaSeconds);
+        public abstract bool Sample();
+
+        /// <summary>
+        /// Called every render frame with Godot's physics-interpolation fraction
+        /// (0..1, where 0 = last physics tick, 1 = next physics tick).
+        /// </summary>
+        public abstract void Apply(float fraction);
 
         /// <summary>Snap visual value to the current ECS value (no lerp).</summary>
         public abstract void Reset();
@@ -75,66 +80,52 @@ public class ViewSmoother : IDisposable
     }
 
     // Generic tracker with selector/applier/lerp trio.
+    // Two-phase pipeline: Sample() shifts Prev=Current/Current=newSample on
+    // physics tick; Apply(fraction) lerps Prev→Current using Godot's
+    // physics-interpolation fraction in the render loop. This decouples sampling
+    // (60 Hz, regular) from rendering (vsync, irregular), giving rock-solid
+    // constant-velocity motion regardless of render rate.
     private sealed class Tracker<TValue> : Tracker
     {
         public Func<EntityWorld, Entity, TValue> Selector;
         public Action<TValue> Applier;
         public Func<TValue, TValue, float, TValue> Lerp;
         public Func<EntityWorld, Entity, bool> Exists;
-        public float Tau;
-        public TValue Visual;
+        public float Tau; // legacy — kept for callsite compatibility, unused.
+        public TValue Prev;
+        public TValue Current;
         public bool Initialized;
 
-        public override bool Update(float deltaSeconds)
+        public override bool Sample()
         {
             var state = Owner._state;
-            if (state == null) return true; // State not yet bound — skip.
-
-            // Entity existence check — if the entity or required component is gone,
-            // signal removal. We never mutate ECS here.
-            if (Exists != null && !Exists(state, Entity))
-            {
-                return false;
-            }
+            if (state == null) return true;
+            if (Exists != null && !Exists(state, Entity)) return false;
 
             TValue target;
-            try
-            {
-                target = Selector(state, Entity);
-            }
-            catch
-            {
-                // Entity may have lost the component between frames during delta
-                // apply — drop the tracker silently.
-                return false;
-            }
+            try { target = Selector(state, Entity); }
+            catch { return false; }
 
             if (!Initialized)
             {
-                Visual = target;
+                Prev = target;
+                Current = target;
                 Initialized = true;
             }
             else
             {
-                // Exponential smoothing: t = 1 - exp(-dt / tau).
-                // Large dt (frame drop) saturates toward 1, so visual catches up
-                // without overshoot. Zero tau = snap. Huge tau = no movement.
-                float t = Tau <= 0f ? 1f : 1f - MathF.Exp(-deltaSeconds / Tau);
-                if (t > 1f) t = 1f;
-                Visual = Lerp(Visual, target, t);
+                Prev = Current;
+                Current = target;
             }
-
-            try
-            {
-                Applier(Visual);
-            }
-            catch
-            {
-                // Applier failed (e.g. Godot node disposed mid-frame) — drop tracker.
-                return false;
-            }
-
             return true;
+        }
+
+        public override void Apply(float fraction)
+        {
+            if (!Initialized) return;
+            var visual = Lerp(Prev, Current, fraction);
+            try { Applier(visual); }
+            catch { Disposed = true; }
         }
 
         public override void Reset()
@@ -144,14 +135,15 @@ public class ViewSmoother : IDisposable
             try
             {
                 if (Exists != null && !Exists(state, Entity)) return;
-                Visual = Selector(state, Entity);
+                var target = Selector(state, Entity);
+                Prev = target;
+                Current = target;
                 Initialized = true;
-                // Apply immediately so the node snaps to the authoritative value.
-                Applier(Visual);
+                Applier(target);
             }
             catch
             {
-                // Entity not ready — leave uninitialized; next Update() handles it.
+                // Entity not ready — leave uninitialized; next Sample() handles it.
             }
         }
     }
@@ -294,20 +286,14 @@ public class ViewSmoother : IDisposable
     // ── Update loop ───────────────────────────────────────────────────
 
     /// <summary>
-    /// Call from the render loop each frame (e.g. Godot's _Process(double delta))
-    /// with elapsed seconds since last frame. Zero per-frame allocations.
+    /// Call once per physics tick (Godot's _PhysicsProcess) — AFTER the game
+    /// loop has advanced ECS state for this tick. Shifts every tracker's
+    /// (prev, current) sample window.
     /// </summary>
-    public void Update(float deltaSeconds)
+    public void Sample()
     {
         if (_disposed || _trackers.Count == 0) return;
 
-        // Clamp deltaSeconds to avoid huge jumps after a breakpoint / stall.
-        // 0.25s cap means one visible frame of catch-up; anything larger likely
-        // indicates the game was paused and we don't want to rocket the visual.
-        if (deltaSeconds < 0f) deltaSeconds = 0f;
-        else if (deltaSeconds > 0.25f) deltaSeconds = 0.25f;
-
-        // Copy into reused buffer to allow Dispose() during iteration.
         _updateBuffer.Clear();
         _updateBuffer.AddRange(_trackers);
 
@@ -315,8 +301,31 @@ public class ViewSmoother : IDisposable
         {
             var tracker = _updateBuffer[i];
             if (tracker.Disposed) continue;
-            bool alive = tracker.Update(deltaSeconds);
+            bool alive = tracker.Sample();
             if (!alive) tracker.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Call every render frame (Godot's _Process) with
+    /// Engine.GetPhysicsInterpolationFraction() — Godot's (0..1) progress
+    /// between the last physics tick and the next.
+    /// </summary>
+    public void Apply(float fraction)
+    {
+        if (_disposed || _trackers.Count == 0) return;
+        if (fraction < 0f) fraction = 0f;
+        else if (fraction > 1f) fraction = 1f;
+
+        _updateBuffer.Clear();
+        _updateBuffer.AddRange(_trackers);
+
+        for (int i = 0; i < _updateBuffer.Count; i++)
+        {
+            var tracker = _updateBuffer[i];
+            if (tracker.Disposed) continue;
+            tracker.Apply(fraction);
+            if (tracker.Disposed) tracker.Dispose();
         }
     }
 

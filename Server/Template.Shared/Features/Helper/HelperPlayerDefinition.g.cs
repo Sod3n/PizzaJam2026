@@ -83,6 +83,8 @@ public static partial class HelperPlayerDefinition
         {
             DisableSlide = false,
             DisablePushOut = false,
+            SlideFactor = (Float)0f,
+            MaxSlideAngleDegrees = (Float)0f,
         });
 
         // Child entity: InteractionZone

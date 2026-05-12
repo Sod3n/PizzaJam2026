@@ -29,12 +29,11 @@ public partial class PlayerView
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, vm.Player.CharacterBody2D.Velocity, flipPivot, characterNode);
 
-        // Local player: bypass exponential smoothing (tau=0) so the visual exactly
-        // mirrors the server-clamped Transform2D position each frame. With tau=0.08
-        // the visual lags ~80 ms behind authoritative state and lerps in a straight
-        // line, which can clip through thin obstacles even when the server has
-        // already clamped the player out. Remote players keep the smooth lerp.
-        IDisposable currentPositionTracker = ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode, tau: 0.08f);
+        // ViewSmoother does inter-tick linear interpolation for all entities,
+        // so the tau parameter is a no-op now. The local-player and remote-player
+        // paths follow the same code; the second Track call is harmless re-attachment
+        // when local player resolution races spawn — kept for ordering reasons.
+        IDisposable currentPositionTracker = ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode);
         vm.Disposables.Add(Disposable.Create(() => currentPositionTracker?.Dispose()));
         GameManager.Instance.LocalPlayerIdReactive.Subscribe(localId =>
         {
@@ -42,7 +41,7 @@ public partial class PlayerView
             Callable.From(() =>
             {
                 currentPositionTracker?.Dispose();
-                currentPositionTracker = ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode, tau: 0f);
+                currentPositionTracker = ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
 

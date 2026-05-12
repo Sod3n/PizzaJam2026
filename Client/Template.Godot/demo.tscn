@@ -19,7 +19,6 @@
 [ext_resource type="PackedScene" uid="uid://dvf1flcw08lyw" path="res://templates/environment/mushroom.tscn" id="13_rn1d6"]
 [ext_resource type="Script" uid="uid://b8k3m7outln1v" path="res://Scripts/Visuals/Common/InteractOutlineView.cs" id="38_hsrf8"]
 [ext_resource type="PackedScene" uid="uid://yeyaphli5ypt" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
-[ext_resource type="PackedScene" path="res://Scenes/HornyIndicatorOverlay.tscn" id="tpl_hornyoverlay"]
 [ext_resource type="PackedScene" uid="uid://jqqcg2w5j6v4" path="res://templates/environment/AppleOrchard.tscn" id="tpl_appleorchard"]
 [ext_resource type="PackedScene" uid="uid://bgt7qedtjqn55" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
 [ext_resource type="PackedScene" uid="uid://bchydbc8gnk5j" path="res://templates/environment/props/Bush1.tscn" id="tpl_bush1"]
@@ -33,6 +32,7 @@
 [ext_resource type="PackedScene" uid="uid://cq5b48p21sib3" path="res://templates/environment/HelperAssistant.tscn" id="tpl_helperassistant"]
 [ext_resource type="PackedScene" uid="uid://dgjkt2nsjuyuj" path="res://templates/characters/HelperPet.tscn" id="tpl_helperpet"]
 [ext_resource type="PackedScene" uid="uid://be6m0gnkahsxm" path="res://templates/characters/HelperPlayer.tscn" id="tpl_helperplayer"]
+[ext_resource type="PackedScene" path="res://Scenes/HornyIndicatorOverlay.tscn" id="tpl_hornyoverlay"]
 [ext_resource type="PackedScene" uid="uid://bpyx7deuqxtsc" path="res://templates/environment/LandPriceSign.tscn" id="tpl_landpricesign"]
 [ext_resource type="PackedScene" uid="uid://b7vmdt6hkk18w" path="res://templates/environment/LandSign.tscn" id="tpl_landsign"]
 [ext_resource type="PackedScene" uid="uid://dwsrlkwr4ej6g" path="res://templates/environment/Library.tscn" id="tpl_library"]
@@ -78,7 +78,7 @@
 background_mode = 1
 background_color = Color(0.317647, 0.541176, 0.713726, 1)
 ambient_light_source = 3
-ambient_light_color = Color(0.607843, 0.756863, 0.92549, 1)
+ambient_light_color = Color(0.3731162, 0.6030077, 0.849291, 1)
 ambient_light_sky_contribution = 0.17
 tonemap_mode = 2
 sdfgi_min_cell_size = 0.4
@@ -133,7 +133,7 @@ render_target_update_mode = 4
 script = ExtResource("3_y4vt1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport" unique_id=1830865638]
-transform = Transform3D(0.05523772, -0.9084246, -0.41438335, 0.48217082, -0.3391493, 0.807768, -0.8743341, -0.24442281, 0.41928202, 0, 2.58754, 0)
+transform = Transform3D(-0.8653984, -0.32810104, 0.37872815, 0.48205078, -0.33879092, 0.80799, -0.13679262, 0.88179946, 0.45135063, 0, 2.58754, 0)
 light_color = Color(0.893, 0.94, 0.9360833, 1)
 shadow_enabled = true
 shadow_bias = 0.3
@@ -174,1204 +174,1204 @@ chunk_scene = ExtResource("7_k6ds3")
 grid_size = Vector2i(20, 20)
 chunk_spacing = 20.0
 
-[node name="Ground10" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=911710973 instance=ExtResource("7_k6ds3")]
+[node name="Ground10" parent="SubViewportContainer/SubViewport/Node3D" unique_id=911710973 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -190)
 
-[node name="@Node3D@44421" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1938861966 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44421" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1938861966 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -170)
 
-[node name="@Node3D@44422" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1419896912 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44422" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1419896912 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -150)
 
-[node name="@Node3D@44423" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=198312191 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44423" parent="SubViewportContainer/SubViewport/Node3D" unique_id=198312191 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -130)
 
-[node name="@Node3D@44424" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1228410567 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44424" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1228410567 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -110)
 
-[node name="@Node3D@44425" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1919723100 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44425" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1919723100 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -90)
 
-[node name="@Node3D@44426" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1394756472 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44426" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1394756472 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -70)
 
-[node name="@Node3D@44427" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1740352414 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44427" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1740352414 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -50)
 
-[node name="@Node3D@44428" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=376978131 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44428" parent="SubViewportContainer/SubViewport/Node3D" unique_id=376978131 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -30)
 
-[node name="@Node3D@44429" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1515623549 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44429" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1515623549 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, -10)
 
-[node name="@Node3D@44430" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1847448338 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44430" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1847448338 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 10)
 
-[node name="@Node3D@44431" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2113432572 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44431" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2113432572 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 30)
 
-[node name="@Node3D@44432" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=382916166 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44432" parent="SubViewportContainer/SubViewport/Node3D" unique_id=382916166 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 50)
 
-[node name="@Node3D@44433" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1208157661 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44433" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1208157661 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 70)
 
-[node name="@Node3D@44434" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1259437389 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44434" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1259437389 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 90)
 
-[node name="@Node3D@44435" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=947586445 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44435" parent="SubViewportContainer/SubViewport/Node3D" unique_id=947586445 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 110)
 
-[node name="@Node3D@44436" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=640130137 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44436" parent="SubViewportContainer/SubViewport/Node3D" unique_id=640130137 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 130)
 
-[node name="@Node3D@44437" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=384980629 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44437" parent="SubViewportContainer/SubViewport/Node3D" unique_id=384980629 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 150)
 
-[node name="@Node3D@44438" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=611812598 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44438" parent="SubViewportContainer/SubViewport/Node3D" unique_id=611812598 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 170)
 
-[node name="@Node3D@44439" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1511791722 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44439" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1511791722 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -190, 0, 190)
 
-[node name="@Node3D@44440" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=756393861 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44440" parent="SubViewportContainer/SubViewport/Node3D" unique_id=756393861 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -190)
 
-[node name="@Node3D@44441" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1077378395 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44441" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1077378395 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -170)
 
-[node name="@Node3D@44442" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1368133873 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44442" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1368133873 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -150)
 
-[node name="@Node3D@44443" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1318391399 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44443" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1318391399 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -130)
 
-[node name="@Node3D@44444" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=273600935 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44444" parent="SubViewportContainer/SubViewport/Node3D" unique_id=273600935 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -110)
 
-[node name="@Node3D@44445" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=216311484 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44445" parent="SubViewportContainer/SubViewport/Node3D" unique_id=216311484 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -90)
 
-[node name="@Node3D@44446" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=729635505 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44446" parent="SubViewportContainer/SubViewport/Node3D" unique_id=729635505 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -70)
 
-[node name="@Node3D@44447" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1791617941 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44447" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1791617941 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -50)
 
-[node name="@Node3D@44448" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2056876234 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44448" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2056876234 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -30)
 
-[node name="@Node3D@44449" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=837097072 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44449" parent="SubViewportContainer/SubViewport/Node3D" unique_id=837097072 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, -10)
 
-[node name="@Node3D@44450" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=593077994 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44450" parent="SubViewportContainer/SubViewport/Node3D" unique_id=593077994 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 10)
 
-[node name="@Node3D@44451" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1925696697 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44451" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1925696697 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 30)
 
-[node name="@Node3D@44452" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1545384078 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44452" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1545384078 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 50)
 
-[node name="@Node3D@44453" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=348925094 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44453" parent="SubViewportContainer/SubViewport/Node3D" unique_id=348925094 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 70)
 
-[node name="@Node3D@44454" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1825533316 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44454" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1825533316 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 90)
 
-[node name="@Node3D@44455" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1135061589 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44455" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1135061589 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 110)
 
-[node name="@Node3D@44456" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1703479995 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44456" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1703479995 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 130)
 
-[node name="@Node3D@44457" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=810535503 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44457" parent="SubViewportContainer/SubViewport/Node3D" unique_id=810535503 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 150)
 
-[node name="@Node3D@44458" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1383478873 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44458" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1383478873 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 170)
 
-[node name="@Node3D@44459" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1976455623 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44459" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1976455623 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -170, 0, 190)
 
-[node name="@Node3D@44460" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1900536224 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44460" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1900536224 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -190)
 
-[node name="@Node3D@44461" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=955823767 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44461" parent="SubViewportContainer/SubViewport/Node3D" unique_id=955823767 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -170)
 
-[node name="@Node3D@44462" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=247711673 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44462" parent="SubViewportContainer/SubViewport/Node3D" unique_id=247711673 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -150)
 
-[node name="@Node3D@44463" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=260003931 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44463" parent="SubViewportContainer/SubViewport/Node3D" unique_id=260003931 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -130)
 
-[node name="@Node3D@44464" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=503358691 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44464" parent="SubViewportContainer/SubViewport/Node3D" unique_id=503358691 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -110)
 
-[node name="@Node3D@44465" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=63104368 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44465" parent="SubViewportContainer/SubViewport/Node3D" unique_id=63104368 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -90)
 
-[node name="@Node3D@44466" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2049350329 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44466" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2049350329 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -70)
 
-[node name="@Node3D@44467" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1835726171 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44467" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1835726171 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -50)
 
-[node name="@Node3D@44468" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=526043151 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44468" parent="SubViewportContainer/SubViewport/Node3D" unique_id=526043151 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -30)
 
-[node name="@Node3D@44469" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1507810105 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44469" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1507810105 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, -10)
 
-[node name="@Node3D@44470" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1255134007 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44470" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1255134007 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 10)
 
-[node name="@Node3D@44471" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=720870995 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44471" parent="SubViewportContainer/SubViewport/Node3D" unique_id=720870995 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 30)
 
-[node name="@Node3D@44472" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=935655228 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44472" parent="SubViewportContainer/SubViewport/Node3D" unique_id=935655228 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 50)
 
-[node name="@Node3D@44473" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1518244504 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44473" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1518244504 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 70)
 
-[node name="@Node3D@44474" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1007059058 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44474" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1007059058 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 90)
 
-[node name="@Node3D@44475" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=592837229 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44475" parent="SubViewportContainer/SubViewport/Node3D" unique_id=592837229 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 110)
 
-[node name="@Node3D@44476" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=16822811 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44476" parent="SubViewportContainer/SubViewport/Node3D" unique_id=16822811 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 130)
 
-[node name="@Node3D@44477" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1248147596 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44477" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1248147596 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 150)
 
-[node name="@Node3D@44478" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1439223035 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44478" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1439223035 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 170)
 
-[node name="@Node3D@44479" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1561524991 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44479" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1561524991 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150, 0, 190)
 
-[node name="@Node3D@44480" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1162402591 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44480" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1162402591 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -190)
 
-[node name="@Node3D@44481" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2110042289 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44481" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2110042289 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -170)
 
-[node name="@Node3D@44482" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1498912223 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44482" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1498912223 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -150)
 
-[node name="@Node3D@44483" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=319899800 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44483" parent="SubViewportContainer/SubViewport/Node3D" unique_id=319899800 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -130)
 
-[node name="@Node3D@44484" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1749210457 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44484" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1749210457 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -110)
 
-[node name="@Node3D@44485" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1313316910 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44485" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1313316910 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -90)
 
-[node name="@Node3D@44486" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1461551034 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44486" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1461551034 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -70)
 
-[node name="@Node3D@44487" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1043916233 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44487" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1043916233 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -50)
 
-[node name="@Node3D@44488" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=416479222 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44488" parent="SubViewportContainer/SubViewport/Node3D" unique_id=416479222 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -30)
 
-[node name="@Node3D@44489" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1953908850 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44489" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1953908850 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, -10)
 
-[node name="@Node3D@44490" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=196452573 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44490" parent="SubViewportContainer/SubViewport/Node3D" unique_id=196452573 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 10)
 
-[node name="@Node3D@44491" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1776682387 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44491" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1776682387 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 30)
 
-[node name="@Node3D@44492" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1484139559 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44492" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1484139559 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 50)
 
-[node name="@Node3D@44493" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1798559096 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44493" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1798559096 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 70)
 
-[node name="@Node3D@44494" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1317537214 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44494" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1317537214 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 90)
 
-[node name="@Node3D@44495" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1107239403 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44495" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1107239403 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 110)
 
-[node name="@Node3D@44496" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=434602813 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44496" parent="SubViewportContainer/SubViewport/Node3D" unique_id=434602813 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 130)
 
-[node name="@Node3D@44497" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=994491397 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44497" parent="SubViewportContainer/SubViewport/Node3D" unique_id=994491397 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 150)
 
-[node name="@Node3D@44498" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1539654272 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44498" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1539654272 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 170)
 
-[node name="@Node3D@44499" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=985955436 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44499" parent="SubViewportContainer/SubViewport/Node3D" unique_id=985955436 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -130, 0, 190)
 
-[node name="@Node3D@44500" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1516583839 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44500" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1516583839 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -190)
 
-[node name="@Node3D@44501" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=165181345 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44501" parent="SubViewportContainer/SubViewport/Node3D" unique_id=165181345 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -170)
 
-[node name="@Node3D@44502" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=195011630 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44502" parent="SubViewportContainer/SubViewport/Node3D" unique_id=195011630 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -150)
 
-[node name="@Node3D@44503" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1299478071 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44503" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1299478071 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -130)
 
-[node name="@Node3D@44504" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=390053223 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44504" parent="SubViewportContainer/SubViewport/Node3D" unique_id=390053223 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -110)
 
-[node name="@Node3D@44505" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=373844783 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44505" parent="SubViewportContainer/SubViewport/Node3D" unique_id=373844783 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -90)
 
-[node name="@Node3D@44506" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2011591069 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44506" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2011591069 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -70)
 
-[node name="@Node3D@44507" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1360181429 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44507" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1360181429 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -50)
 
-[node name="@Node3D@44508" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1722339550 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44508" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1722339550 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -30)
 
-[node name="@Node3D@44509" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1757481060 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44509" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1757481060 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, -10)
 
-[node name="@Node3D@44510" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2064402158 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44510" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2064402158 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 10)
 
-[node name="@Node3D@44511" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=538038037 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44511" parent="SubViewportContainer/SubViewport/Node3D" unique_id=538038037 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 30)
 
-[node name="@Node3D@44512" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2101482383 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44512" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2101482383 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 50)
 
-[node name="@Node3D@44513" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2116725516 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44513" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2116725516 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 70)
 
-[node name="@Node3D@44514" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=137939326 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44514" parent="SubViewportContainer/SubViewport/Node3D" unique_id=137939326 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 90)
 
-[node name="@Node3D@44515" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=345992745 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44515" parent="SubViewportContainer/SubViewport/Node3D" unique_id=345992745 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 110)
 
-[node name="@Node3D@44516" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1702983171 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44516" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1702983171 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 130)
 
-[node name="@Node3D@44517" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1596578680 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44517" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1596578680 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 150)
 
-[node name="@Node3D@44518" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1403548133 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44518" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1403548133 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 170)
 
-[node name="@Node3D@44519" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2005941349 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44519" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2005941349 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 0, 190)
 
-[node name="@Node3D@44520" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1214170520 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44520" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1214170520 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -190)
 
-[node name="@Node3D@44521" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=215008533 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44521" parent="SubViewportContainer/SubViewport/Node3D" unique_id=215008533 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -170)
 
-[node name="@Node3D@44522" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1653032245 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44522" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1653032245 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -150)
 
-[node name="@Node3D@44523" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=381470405 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44523" parent="SubViewportContainer/SubViewport/Node3D" unique_id=381470405 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -130)
 
-[node name="@Node3D@44524" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1751142811 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44524" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1751142811 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -110)
 
-[node name="@Node3D@44525" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1604285529 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44525" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1604285529 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -90)
 
-[node name="@Node3D@44526" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=929425837 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44526" parent="SubViewportContainer/SubViewport/Node3D" unique_id=929425837 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -70)
 
-[node name="@Node3D@44527" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=825520843 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44527" parent="SubViewportContainer/SubViewport/Node3D" unique_id=825520843 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -50)
 
-[node name="@Node3D@44528" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2080968141 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44528" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2080968141 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -30)
 
-[node name="@Node3D@44529" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=890224427 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44529" parent="SubViewportContainer/SubViewport/Node3D" unique_id=890224427 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, -10)
 
-[node name="@Node3D@44530" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1072709441 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44530" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1072709441 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 10)
 
-[node name="@Node3D@44531" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1477270396 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44531" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1477270396 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 30)
 
-[node name="@Node3D@44532" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1005324227 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44532" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1005324227 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 50)
 
-[node name="@Node3D@44533" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=272176059 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44533" parent="SubViewportContainer/SubViewport/Node3D" unique_id=272176059 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 70)
 
-[node name="@Node3D@44534" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=643360557 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44534" parent="SubViewportContainer/SubViewport/Node3D" unique_id=643360557 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 90)
 
-[node name="@Node3D@44535" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=864825119 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44535" parent="SubViewportContainer/SubViewport/Node3D" unique_id=864825119 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 110)
 
-[node name="@Node3D@44536" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=383029400 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44536" parent="SubViewportContainer/SubViewport/Node3D" unique_id=383029400 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 130)
 
-[node name="@Node3D@44537" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1326862999 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44537" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1326862999 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 150)
 
-[node name="@Node3D@44538" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=247894897 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44538" parent="SubViewportContainer/SubViewport/Node3D" unique_id=247894897 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 170)
 
-[node name="@Node3D@44539" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=91459825 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44539" parent="SubViewportContainer/SubViewport/Node3D" unique_id=91459825 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90, 0, 190)
 
-[node name="@Node3D@44540" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=415297746 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44540" parent="SubViewportContainer/SubViewport/Node3D" unique_id=415297746 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -190)
 
-[node name="@Node3D@44541" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=798458432 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44541" parent="SubViewportContainer/SubViewport/Node3D" unique_id=798458432 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -170)
 
-[node name="@Node3D@44542" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=310283831 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44542" parent="SubViewportContainer/SubViewport/Node3D" unique_id=310283831 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -150)
 
-[node name="@Node3D@44543" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=653686227 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44543" parent="SubViewportContainer/SubViewport/Node3D" unique_id=653686227 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -130)
 
-[node name="@Node3D@44544" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=181504641 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44544" parent="SubViewportContainer/SubViewport/Node3D" unique_id=181504641 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -110)
 
-[node name="@Node3D@44545" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2038610365 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44545" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2038610365 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -90)
 
-[node name="@Node3D@44546" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1089018277 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44546" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1089018277 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -70)
 
-[node name="@Node3D@44547" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1562588669 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44547" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1562588669 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -50)
 
-[node name="@Node3D@44548" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=82532421 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44548" parent="SubViewportContainer/SubViewport/Node3D" unique_id=82532421 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -30)
 
-[node name="@Node3D@44549" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2053244157 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44549" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2053244157 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, -10)
 
-[node name="@Node3D@44550" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1218423067 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44550" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1218423067 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 10)
 
-[node name="@Node3D@44551" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=323187745 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44551" parent="SubViewportContainer/SubViewport/Node3D" unique_id=323187745 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 30)
 
-[node name="@Node3D@44552" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2038531267 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44552" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2038531267 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 50)
 
-[node name="@Node3D@44553" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1122347376 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44553" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1122347376 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 70)
 
-[node name="@Node3D@44554" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=748362617 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44554" parent="SubViewportContainer/SubViewport/Node3D" unique_id=748362617 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 90)
 
-[node name="@Node3D@44555" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1519163960 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44555" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1519163960 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 110)
 
-[node name="@Node3D@44556" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=434110794 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44556" parent="SubViewportContainer/SubViewport/Node3D" unique_id=434110794 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 130)
 
-[node name="@Node3D@44557" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1605802570 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44557" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1605802570 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 150)
 
-[node name="@Node3D@44558" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=18093159 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44558" parent="SubViewportContainer/SubViewport/Node3D" unique_id=18093159 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 170)
 
-[node name="@Node3D@44559" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1574734792 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44559" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1574734792 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, 0, 190)
 
-[node name="@Node3D@44560" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=724380332 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44560" parent="SubViewportContainer/SubViewport/Node3D" unique_id=724380332 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -190)
 
-[node name="@Node3D@44561" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=739056720 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44561" parent="SubViewportContainer/SubViewport/Node3D" unique_id=739056720 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -170)
 
-[node name="@Node3D@44562" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1557704184 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44562" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1557704184 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -150)
 
-[node name="@Node3D@44563" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1499441025 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44563" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1499441025 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -130)
 
-[node name="@Node3D@44564" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=642605185 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44564" parent="SubViewportContainer/SubViewport/Node3D" unique_id=642605185 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -110)
 
-[node name="@Node3D@44565" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1873628330 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44565" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1873628330 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -90)
 
-[node name="@Node3D@44566" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=417588076 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44566" parent="SubViewportContainer/SubViewport/Node3D" unique_id=417588076 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -70)
 
-[node name="@Node3D@44567" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=726004702 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44567" parent="SubViewportContainer/SubViewport/Node3D" unique_id=726004702 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -50)
 
-[node name="@Node3D@44568" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=474055260 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44568" parent="SubViewportContainer/SubViewport/Node3D" unique_id=474055260 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -30)
 
-[node name="@Node3D@44569" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1291386032 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44569" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1291386032 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, -10)
 
-[node name="@Node3D@44570" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=671064091 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44570" parent="SubViewportContainer/SubViewport/Node3D" unique_id=671064091 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 10)
 
-[node name="@Node3D@44571" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1990821746 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44571" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1990821746 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 30)
 
-[node name="@Node3D@44572" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=627010524 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44572" parent="SubViewportContainer/SubViewport/Node3D" unique_id=627010524 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 50)
 
-[node name="@Node3D@44573" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1014665623 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44573" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1014665623 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 70)
 
-[node name="@Node3D@44574" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1895520221 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44574" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1895520221 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 90)
 
-[node name="@Node3D@44575" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1811966135 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44575" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1811966135 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 110)
 
-[node name="@Node3D@44576" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1329443621 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44576" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1329443621 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 130)
 
-[node name="@Node3D@44577" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=804038809 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44577" parent="SubViewportContainer/SubViewport/Node3D" unique_id=804038809 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 150)
 
-[node name="@Node3D@44578" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1381690341 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44578" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1381690341 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 170)
 
-[node name="@Node3D@44579" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1469635238 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44579" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1469635238 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, 0, 190)
 
-[node name="@Node3D@44580" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1312671620 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44580" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1312671620 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -190)
 
-[node name="@Node3D@44581" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=847334201 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44581" parent="SubViewportContainer/SubViewport/Node3D" unique_id=847334201 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -170)
 
-[node name="@Node3D@44582" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=559282284 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44582" parent="SubViewportContainer/SubViewport/Node3D" unique_id=559282284 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -150)
 
-[node name="@Node3D@44583" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=661830320 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44583" parent="SubViewportContainer/SubViewport/Node3D" unique_id=661830320 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -130)
 
-[node name="@Node3D@44584" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2138439187 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44584" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2138439187 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -110)
 
-[node name="@Node3D@44585" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1662029916 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44585" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1662029916 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -90)
 
-[node name="@Node3D@44586" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=832159282 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44586" parent="SubViewportContainer/SubViewport/Node3D" unique_id=832159282 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -70)
 
-[node name="@Node3D@44587" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=581206974 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44587" parent="SubViewportContainer/SubViewport/Node3D" unique_id=581206974 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -50)
 
-[node name="@Node3D@44588" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2125986368 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44588" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2125986368 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -30)
 
-[node name="@Node3D@44589" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1847373004 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44589" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1847373004 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -10)
 
-[node name="@Node3D@44590" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1146622822 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44590" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1146622822 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 10)
 
-[node name="@Node3D@44591" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=128707231 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44591" parent="SubViewportContainer/SubViewport/Node3D" unique_id=128707231 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 30)
 
-[node name="@Node3D@44592" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1770398268 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44592" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1770398268 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 50)
 
-[node name="@Node3D@44593" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=930558964 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44593" parent="SubViewportContainer/SubViewport/Node3D" unique_id=930558964 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 70)
 
-[node name="@Node3D@44594" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1084645720 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44594" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1084645720 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 90)
 
-[node name="@Node3D@44595" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1657801970 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44595" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1657801970 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 110)
 
-[node name="@Node3D@44596" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2043288780 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44596" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2043288780 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 130)
 
-[node name="@Node3D@44597" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=981986452 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44597" parent="SubViewportContainer/SubViewport/Node3D" unique_id=981986452 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 150)
 
-[node name="@Node3D@44598" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1430169252 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44598" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1430169252 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 170)
 
-[node name="@Node3D@44599" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1009685136 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44599" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1009685136 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, 190)
 
-[node name="@Node3D@44600" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1356465184 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44600" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1356465184 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -190)
 
-[node name="@Node3D@44601" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1509226749 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44601" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1509226749 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -170)
 
-[node name="@Node3D@44602" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1945551915 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44602" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1945551915 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -150)
 
-[node name="@Node3D@44603" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1557788302 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44603" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1557788302 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -130)
 
-[node name="@Node3D@44604" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1702267435 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44604" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1702267435 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -110)
 
-[node name="@Node3D@44605" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=499496992 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44605" parent="SubViewportContainer/SubViewport/Node3D" unique_id=499496992 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -90)
 
-[node name="@Node3D@44606" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1661317743 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44606" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1661317743 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -70)
 
-[node name="@Node3D@44607" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1614506776 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44607" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1614506776 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -50)
 
-[node name="@Node3D@44608" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=873783492 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44608" parent="SubViewportContainer/SubViewport/Node3D" unique_id=873783492 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -30)
 
-[node name="@Node3D@44609" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1342136854 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44609" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1342136854 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
 
-[node name="@Node3D@44610" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=67211708 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44610" parent="SubViewportContainer/SubViewport/Node3D" unique_id=67211708 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 10)
 
-[node name="@Node3D@44611" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=902385289 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44611" parent="SubViewportContainer/SubViewport/Node3D" unique_id=902385289 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 30)
 
-[node name="@Node3D@44612" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1395798647 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44612" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1395798647 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 50)
 
-[node name="@Node3D@44613" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1520624568 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44613" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1520624568 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 70)
 
-[node name="@Node3D@44614" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=782248510 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44614" parent="SubViewportContainer/SubViewport/Node3D" unique_id=782248510 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 90)
 
-[node name="@Node3D@44615" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=285829378 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44615" parent="SubViewportContainer/SubViewport/Node3D" unique_id=285829378 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 110)
 
-[node name="@Node3D@44616" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1443635549 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44616" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1443635549 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 130)
 
-[node name="@Node3D@44617" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=457427403 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44617" parent="SubViewportContainer/SubViewport/Node3D" unique_id=457427403 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 150)
 
-[node name="@Node3D@44618" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1928767060 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44618" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1928767060 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 170)
 
-[node name="@Node3D@44619" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1531633196 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44619" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1531633196 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 190)
 
-[node name="@Node3D@44620" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1403408546 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44620" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1403408546 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -190)
 
-[node name="@Node3D@44621" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1504792728 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44621" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1504792728 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -170)
 
-[node name="@Node3D@44622" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=221473221 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44622" parent="SubViewportContainer/SubViewport/Node3D" unique_id=221473221 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -150)
 
-[node name="@Node3D@44623" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1532106160 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44623" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1532106160 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -130)
 
-[node name="@Node3D@44624" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=981958738 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44624" parent="SubViewportContainer/SubViewport/Node3D" unique_id=981958738 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -110)
 
-[node name="@Node3D@44625" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=295176690 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44625" parent="SubViewportContainer/SubViewport/Node3D" unique_id=295176690 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -90)
 
-[node name="@Node3D@44626" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1252384095 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44626" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1252384095 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -70)
 
-[node name="@Node3D@44627" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=241079798 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44627" parent="SubViewportContainer/SubViewport/Node3D" unique_id=241079798 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -50)
 
-[node name="@Node3D@44628" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=719189739 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44628" parent="SubViewportContainer/SubViewport/Node3D" unique_id=719189739 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -30)
 
-[node name="@Node3D@44629" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1988114483 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44629" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1988114483 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -10)
 
-[node name="@Node3D@44630" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1774917983 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44630" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1774917983 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10)
 
-[node name="@Node3D@44631" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2068462676 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44631" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2068462676 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 30)
 
-[node name="@Node3D@44632" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=987472055 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44632" parent="SubViewportContainer/SubViewport/Node3D" unique_id=987472055 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 50)
 
-[node name="@Node3D@44633" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=556846414 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44633" parent="SubViewportContainer/SubViewport/Node3D" unique_id=556846414 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 70)
 
-[node name="@Node3D@44634" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2024854157 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44634" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2024854157 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 90)
 
-[node name="@Node3D@44635" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=418572934 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44635" parent="SubViewportContainer/SubViewport/Node3D" unique_id=418572934 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 110)
 
-[node name="@Node3D@44636" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=467724815 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44636" parent="SubViewportContainer/SubViewport/Node3D" unique_id=467724815 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 130)
 
-[node name="@Node3D@44637" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=681770343 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44637" parent="SubViewportContainer/SubViewport/Node3D" unique_id=681770343 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 150)
 
-[node name="@Node3D@44638" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1022049945 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44638" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1022049945 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 170)
 
-[node name="@Node3D@44639" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=301573451 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44639" parent="SubViewportContainer/SubViewport/Node3D" unique_id=301573451 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 190)
 
-[node name="@Node3D@44640" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=909714438 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44640" parent="SubViewportContainer/SubViewport/Node3D" unique_id=909714438 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -190)
 
-[node name="@Node3D@44641" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1003343633 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44641" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1003343633 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -170)
 
-[node name="@Node3D@44642" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=583494723 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44642" parent="SubViewportContainer/SubViewport/Node3D" unique_id=583494723 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -150)
 
-[node name="@Node3D@44643" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=393681679 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44643" parent="SubViewportContainer/SubViewport/Node3D" unique_id=393681679 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -130)
 
-[node name="@Node3D@44644" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=207012721 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44644" parent="SubViewportContainer/SubViewport/Node3D" unique_id=207012721 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -110)
 
-[node name="@Node3D@44645" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=220977441 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44645" parent="SubViewportContainer/SubViewport/Node3D" unique_id=220977441 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -90)
 
-[node name="@Node3D@44646" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=413402940 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44646" parent="SubViewportContainer/SubViewport/Node3D" unique_id=413402940 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -70)
 
-[node name="@Node3D@44647" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=490077810 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44647" parent="SubViewportContainer/SubViewport/Node3D" unique_id=490077810 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -50)
 
-[node name="@Node3D@44648" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=801820685 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44648" parent="SubViewportContainer/SubViewport/Node3D" unique_id=801820685 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -30)
 
-[node name="@Node3D@44649" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1535458086 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44649" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1535458086 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -10)
 
-[node name="@Node3D@44650" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1378404195 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44650" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1378404195 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 10)
 
-[node name="@Node3D@44651" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=436761784 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44651" parent="SubViewportContainer/SubViewport/Node3D" unique_id=436761784 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 30)
 
-[node name="@Node3D@44652" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1150814506 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44652" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1150814506 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 50)
 
-[node name="@Node3D@44653" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=349907339 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44653" parent="SubViewportContainer/SubViewport/Node3D" unique_id=349907339 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 70)
 
-[node name="@Node3D@44654" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=931701234 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44654" parent="SubViewportContainer/SubViewport/Node3D" unique_id=931701234 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 90)
 
-[node name="@Node3D@44655" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=433145033 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44655" parent="SubViewportContainer/SubViewport/Node3D" unique_id=433145033 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 110)
 
-[node name="@Node3D@44656" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=712248260 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44656" parent="SubViewportContainer/SubViewport/Node3D" unique_id=712248260 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 130)
 
-[node name="@Node3D@44657" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1776479439 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44657" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1776479439 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 150)
 
-[node name="@Node3D@44658" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1777220160 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44658" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1777220160 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 170)
 
-[node name="@Node3D@44659" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=152266739 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44659" parent="SubViewportContainer/SubViewport/Node3D" unique_id=152266739 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 190)
 
-[node name="@Node3D@44660" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1390593116 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44660" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1390593116 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -190)
 
-[node name="@Node3D@44661" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=409017835 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44661" parent="SubViewportContainer/SubViewport/Node3D" unique_id=409017835 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -170)
 
-[node name="@Node3D@44662" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=242075238 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44662" parent="SubViewportContainer/SubViewport/Node3D" unique_id=242075238 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -150)
 
-[node name="@Node3D@44663" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=541359781 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44663" parent="SubViewportContainer/SubViewport/Node3D" unique_id=541359781 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -130)
 
-[node name="@Node3D@44664" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=950350560 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44664" parent="SubViewportContainer/SubViewport/Node3D" unique_id=950350560 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -110)
 
-[node name="@Node3D@44665" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=630762059 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44665" parent="SubViewportContainer/SubViewport/Node3D" unique_id=630762059 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -90)
 
-[node name="@Node3D@44666" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1938277440 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44666" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1938277440 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -70)
 
-[node name="@Node3D@44667" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=388436360 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44667" parent="SubViewportContainer/SubViewport/Node3D" unique_id=388436360 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -50)
 
-[node name="@Node3D@44668" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2040810117 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44668" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2040810117 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -30)
 
-[node name="@Node3D@44669" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=714734300 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44669" parent="SubViewportContainer/SubViewport/Node3D" unique_id=714734300 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, -10)
 
-[node name="@Node3D@44670" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1363218403 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44670" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1363218403 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 10)
 
-[node name="@Node3D@44671" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1472645853 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44671" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1472645853 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 30)
 
-[node name="@Node3D@44672" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1367865552 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44672" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1367865552 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 50)
 
-[node name="@Node3D@44673" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=387822522 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44673" parent="SubViewportContainer/SubViewport/Node3D" unique_id=387822522 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 70)
 
-[node name="@Node3D@44674" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1098716634 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44674" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1098716634 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 90)
 
-[node name="@Node3D@44675" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=148124956 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44675" parent="SubViewportContainer/SubViewport/Node3D" unique_id=148124956 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 110)
 
-[node name="@Node3D@44676" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1215340813 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44676" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1215340813 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 130)
 
-[node name="@Node3D@44677" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=271634860 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44677" parent="SubViewportContainer/SubViewport/Node3D" unique_id=271634860 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 150)
 
-[node name="@Node3D@44678" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1597076804 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44678" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1597076804 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 170)
 
-[node name="@Node3D@44679" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1596010901 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44679" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1596010901 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 0, 190)
 
-[node name="@Node3D@44680" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1574745569 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44680" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1574745569 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -190)
 
-[node name="@Node3D@44681" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1582495323 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44681" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1582495323 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -170)
 
-[node name="@Node3D@44682" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=742838182 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44682" parent="SubViewportContainer/SubViewport/Node3D" unique_id=742838182 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -150)
 
-[node name="@Node3D@44683" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=716573213 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44683" parent="SubViewportContainer/SubViewport/Node3D" unique_id=716573213 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -130)
 
-[node name="@Node3D@44684" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1528700069 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44684" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1528700069 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -110)
 
-[node name="@Node3D@44685" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=695971024 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44685" parent="SubViewportContainer/SubViewport/Node3D" unique_id=695971024 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -90)
 
-[node name="@Node3D@44686" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1524091254 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44686" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1524091254 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -70)
 
-[node name="@Node3D@44687" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=449025548 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44687" parent="SubViewportContainer/SubViewport/Node3D" unique_id=449025548 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -50)
 
-[node name="@Node3D@44688" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=470469253 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44688" parent="SubViewportContainer/SubViewport/Node3D" unique_id=470469253 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -30)
 
-[node name="@Node3D@44689" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1814686442 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44689" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1814686442 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, -10)
 
-[node name="@Node3D@44690" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=924054377 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44690" parent="SubViewportContainer/SubViewport/Node3D" unique_id=924054377 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 10)
 
-[node name="@Node3D@44691" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=227540650 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44691" parent="SubViewportContainer/SubViewport/Node3D" unique_id=227540650 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 30)
 
-[node name="@Node3D@44692" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=134268163 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44692" parent="SubViewportContainer/SubViewport/Node3D" unique_id=134268163 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 50)
 
-[node name="@Node3D@44693" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1050637686 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44693" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1050637686 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 70)
 
-[node name="@Node3D@44694" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=639941354 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44694" parent="SubViewportContainer/SubViewport/Node3D" unique_id=639941354 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 90)
 
-[node name="@Node3D@44695" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=27590087 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44695" parent="SubViewportContainer/SubViewport/Node3D" unique_id=27590087 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 110)
 
-[node name="@Node3D@44696" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2127198651 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44696" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2127198651 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 130)
 
-[node name="@Node3D@44697" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=775654777 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44697" parent="SubViewportContainer/SubViewport/Node3D" unique_id=775654777 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 150)
 
-[node name="@Node3D@44698" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1935710098 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44698" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1935710098 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 170)
 
-[node name="@Node3D@44699" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=988314373 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44699" parent="SubViewportContainer/SubViewport/Node3D" unique_id=988314373 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, 0, 190)
 
-[node name="@Node3D@44700" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=471326403 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44700" parent="SubViewportContainer/SubViewport/Node3D" unique_id=471326403 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -190)
 
-[node name="@Node3D@44701" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1994953040 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44701" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1994953040 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -170)
 
-[node name="@Node3D@44702" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=63613722 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44702" parent="SubViewportContainer/SubViewport/Node3D" unique_id=63613722 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -150)
 
-[node name="@Node3D@44703" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=471336065 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44703" parent="SubViewportContainer/SubViewport/Node3D" unique_id=471336065 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -130)
 
-[node name="@Node3D@44704" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=461910247 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44704" parent="SubViewportContainer/SubViewport/Node3D" unique_id=461910247 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -110)
 
-[node name="@Node3D@44705" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1151725580 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44705" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1151725580 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -90)
 
-[node name="@Node3D@44706" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1931436201 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44706" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1931436201 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -70)
 
-[node name="@Node3D@44707" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=508320309 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44707" parent="SubViewportContainer/SubViewport/Node3D" unique_id=508320309 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -50)
 
-[node name="@Node3D@44708" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=671880137 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44708" parent="SubViewportContainer/SubViewport/Node3D" unique_id=671880137 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -30)
 
-[node name="@Node3D@44709" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=680961731 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44709" parent="SubViewportContainer/SubViewport/Node3D" unique_id=680961731 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, -10)
 
-[node name="@Node3D@44710" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1394583850 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44710" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1394583850 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 10)
 
-[node name="@Node3D@44711" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=907309093 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44711" parent="SubViewportContainer/SubViewport/Node3D" unique_id=907309093 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 30)
 
-[node name="@Node3D@44712" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=950500667 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44712" parent="SubViewportContainer/SubViewport/Node3D" unique_id=950500667 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 50)
 
-[node name="@Node3D@44713" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=562498753 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44713" parent="SubViewportContainer/SubViewport/Node3D" unique_id=562498753 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 70)
 
-[node name="@Node3D@44714" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1054261596 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44714" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1054261596 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 90)
 
-[node name="@Node3D@44715" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=508184780 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44715" parent="SubViewportContainer/SubViewport/Node3D" unique_id=508184780 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 110)
 
-[node name="@Node3D@44716" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1645408738 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44716" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1645408738 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 130)
 
-[node name="@Node3D@44717" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2081001689 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44717" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2081001689 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 150)
 
-[node name="@Node3D@44718" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=76527505 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44718" parent="SubViewportContainer/SubViewport/Node3D" unique_id=76527505 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 170)
 
-[node name="@Node3D@44719" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1025997964 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44719" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1025997964 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0, 190)
 
-[node name="@Node3D@44720" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=755584265 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44720" parent="SubViewportContainer/SubViewport/Node3D" unique_id=755584265 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -190)
 
-[node name="@Node3D@44721" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=858195793 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44721" parent="SubViewportContainer/SubViewport/Node3D" unique_id=858195793 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -170)
 
-[node name="@Node3D@44722" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=757100429 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44722" parent="SubViewportContainer/SubViewport/Node3D" unique_id=757100429 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -150)
 
-[node name="@Node3D@44723" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1478203512 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44723" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1478203512 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -130)
 
-[node name="@Node3D@44724" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=828194562 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44724" parent="SubViewportContainer/SubViewport/Node3D" unique_id=828194562 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -110)
 
-[node name="@Node3D@44725" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2066293173 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44725" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2066293173 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -90)
 
-[node name="@Node3D@44726" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2114751451 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44726" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2114751451 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -70)
 
-[node name="@Node3D@44727" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=339146398 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44727" parent="SubViewportContainer/SubViewport/Node3D" unique_id=339146398 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -50)
 
-[node name="@Node3D@44728" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1948574408 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44728" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1948574408 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -30)
 
-[node name="@Node3D@44729" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1877386325 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44729" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1877386325 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, -10)
 
-[node name="@Node3D@44730" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=436728918 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44730" parent="SubViewportContainer/SubViewport/Node3D" unique_id=436728918 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 10)
 
-[node name="@Node3D@44731" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1122250330 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44731" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1122250330 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 30)
 
-[node name="@Node3D@44732" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1078944586 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44732" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1078944586 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 50)
 
-[node name="@Node3D@44733" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1089267382 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44733" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1089267382 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 70)
 
-[node name="@Node3D@44734" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1528733116 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44734" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1528733116 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 90)
 
-[node name="@Node3D@44735" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=534189805 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44735" parent="SubViewportContainer/SubViewport/Node3D" unique_id=534189805 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 110)
 
-[node name="@Node3D@44736" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1566992496 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44736" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1566992496 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 130)
 
-[node name="@Node3D@44737" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=398727523 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44737" parent="SubViewportContainer/SubViewport/Node3D" unique_id=398727523 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 150)
 
-[node name="@Node3D@44738" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1198257583 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44738" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1198257583 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 170)
 
-[node name="@Node3D@44739" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=177032512 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44739" parent="SubViewportContainer/SubViewport/Node3D" unique_id=177032512 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 0, 190)
 
-[node name="@Node3D@44740" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=924222173 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44740" parent="SubViewportContainer/SubViewport/Node3D" unique_id=924222173 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -190)
 
-[node name="@Node3D@44741" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=488406256 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44741" parent="SubViewportContainer/SubViewport/Node3D" unique_id=488406256 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -170)
 
-[node name="@Node3D@44742" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=321468634 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44742" parent="SubViewportContainer/SubViewport/Node3D" unique_id=321468634 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -150)
 
-[node name="@Node3D@44743" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=241640880 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44743" parent="SubViewportContainer/SubViewport/Node3D" unique_id=241640880 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -130)
 
-[node name="@Node3D@44744" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=823967303 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44744" parent="SubViewportContainer/SubViewport/Node3D" unique_id=823967303 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -110)
 
-[node name="@Node3D@44745" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=220396541 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44745" parent="SubViewportContainer/SubViewport/Node3D" unique_id=220396541 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -90)
 
-[node name="@Node3D@44746" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=640125326 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44746" parent="SubViewportContainer/SubViewport/Node3D" unique_id=640125326 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -70)
 
-[node name="@Node3D@44747" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=747246731 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44747" parent="SubViewportContainer/SubViewport/Node3D" unique_id=747246731 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -50)
 
-[node name="@Node3D@44748" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1794867357 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44748" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1794867357 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -30)
 
-[node name="@Node3D@44749" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=649889304 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44749" parent="SubViewportContainer/SubViewport/Node3D" unique_id=649889304 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, -10)
 
-[node name="@Node3D@44750" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1599535348 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44750" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1599535348 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 10)
 
-[node name="@Node3D@44751" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=387519670 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44751" parent="SubViewportContainer/SubViewport/Node3D" unique_id=387519670 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 30)
 
-[node name="@Node3D@44752" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=465227525 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44752" parent="SubViewportContainer/SubViewport/Node3D" unique_id=465227525 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 50)
 
-[node name="@Node3D@44753" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1554571469 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44753" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1554571469 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 70)
 
-[node name="@Node3D@44754" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1899616188 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44754" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1899616188 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 90)
 
-[node name="@Node3D@44755" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1811683285 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44755" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1811683285 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 110)
 
-[node name="@Node3D@44756" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1123016770 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44756" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1123016770 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 130)
 
-[node name="@Node3D@44757" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1028709398 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44757" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1028709398 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 150)
 
-[node name="@Node3D@44758" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2046449960 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44758" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2046449960 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 170)
 
-[node name="@Node3D@44759" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1036376192 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44759" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1036376192 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 130, 0, 190)
 
-[node name="@Node3D@44760" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=250051411 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44760" parent="SubViewportContainer/SubViewport/Node3D" unique_id=250051411 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -190)
 
-[node name="@Node3D@44761" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1544076101 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44761" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1544076101 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -170)
 
-[node name="@Node3D@44762" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=900263176 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44762" parent="SubViewportContainer/SubViewport/Node3D" unique_id=900263176 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -150)
 
-[node name="@Node3D@44763" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=153113772 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44763" parent="SubViewportContainer/SubViewport/Node3D" unique_id=153113772 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -130)
 
-[node name="@Node3D@44764" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=709414471 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44764" parent="SubViewportContainer/SubViewport/Node3D" unique_id=709414471 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -110)
 
-[node name="@Node3D@44765" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1148739893 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44765" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1148739893 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -90)
 
-[node name="@Node3D@44766" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=740837347 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44766" parent="SubViewportContainer/SubViewport/Node3D" unique_id=740837347 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -70)
 
-[node name="@Node3D@44767" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=9401230 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44767" parent="SubViewportContainer/SubViewport/Node3D" unique_id=9401230 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -50)
 
-[node name="@Node3D@44768" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1520837738 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44768" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1520837738 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -30)
 
-[node name="@Node3D@44769" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=196171322 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44769" parent="SubViewportContainer/SubViewport/Node3D" unique_id=196171322 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, -10)
 
-[node name="@Node3D@44770" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=134343 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44770" parent="SubViewportContainer/SubViewport/Node3D" unique_id=134343 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 10)
 
-[node name="@Node3D@44771" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=215854853 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44771" parent="SubViewportContainer/SubViewport/Node3D" unique_id=215854853 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 30)
 
-[node name="@Node3D@44772" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=807397201 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44772" parent="SubViewportContainer/SubViewport/Node3D" unique_id=807397201 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 50)
 
-[node name="@Node3D@44773" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1545264047 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44773" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1545264047 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 70)
 
-[node name="@Node3D@44774" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=557164319 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44774" parent="SubViewportContainer/SubViewport/Node3D" unique_id=557164319 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 90)
 
-[node name="@Node3D@44775" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=907092749 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44775" parent="SubViewportContainer/SubViewport/Node3D" unique_id=907092749 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 110)
 
-[node name="@Node3D@44776" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2107305262 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44776" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2107305262 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 130)
 
-[node name="@Node3D@44777" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1331708624 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44777" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1331708624 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 150)
 
-[node name="@Node3D@44778" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1850551687 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44778" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1850551687 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 170)
 
-[node name="@Node3D@44779" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1025223468 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44779" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1025223468 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150, 0, 190)
 
-[node name="@Node3D@44780" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=68860171 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44780" parent="SubViewportContainer/SubViewport/Node3D" unique_id=68860171 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -190)
 
-[node name="@Node3D@44781" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1623279692 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44781" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1623279692 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -170)
 
-[node name="@Node3D@44782" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=501217354 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44782" parent="SubViewportContainer/SubViewport/Node3D" unique_id=501217354 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -150)
 
-[node name="@Node3D@44783" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=455165728 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44783" parent="SubViewportContainer/SubViewport/Node3D" unique_id=455165728 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -130)
 
-[node name="@Node3D@44784" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1788061347 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44784" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1788061347 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -110)
 
-[node name="@Node3D@44785" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=397229166 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44785" parent="SubViewportContainer/SubViewport/Node3D" unique_id=397229166 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -90)
 
-[node name="@Node3D@44786" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=594209126 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44786" parent="SubViewportContainer/SubViewport/Node3D" unique_id=594209126 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -70)
 
-[node name="@Node3D@44787" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1028813294 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44787" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1028813294 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -50)
 
-[node name="@Node3D@44788" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=812379503 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44788" parent="SubViewportContainer/SubViewport/Node3D" unique_id=812379503 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -30)
 
-[node name="@Node3D@44789" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=63044955 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44789" parent="SubViewportContainer/SubViewport/Node3D" unique_id=63044955 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, -10)
 
-[node name="@Node3D@44790" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1346589477 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44790" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1346589477 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 10)
 
-[node name="@Node3D@44791" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1983412259 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44791" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1983412259 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 30)
 
-[node name="@Node3D@44792" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1072734919 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44792" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1072734919 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 50)
 
-[node name="@Node3D@44793" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1917937745 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44793" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1917937745 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 70)
 
-[node name="@Node3D@44794" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1966198532 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44794" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1966198532 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 90)
 
-[node name="@Node3D@44795" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1382894394 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44795" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1382894394 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 110)
 
-[node name="@Node3D@44796" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=181427222 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44796" parent="SubViewportContainer/SubViewport/Node3D" unique_id=181427222 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 130)
 
-[node name="@Node3D@44797" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=340974566 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44797" parent="SubViewportContainer/SubViewport/Node3D" unique_id=340974566 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 150)
 
-[node name="@Node3D@44798" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=885716911 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44798" parent="SubViewportContainer/SubViewport/Node3D" unique_id=885716911 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 170)
 
-[node name="@Node3D@44799" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2133391338 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44799" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2133391338 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 170, 0, 190)
 
-[node name="@Node3D@44800" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=349737214 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44800" parent="SubViewportContainer/SubViewport/Node3D" unique_id=349737214 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -190)
 
-[node name="@Node3D@44801" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=372543375 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44801" parent="SubViewportContainer/SubViewport/Node3D" unique_id=372543375 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -170)
 
-[node name="@Node3D@44802" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1891688963 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44802" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1891688963 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -150)
 
-[node name="@Node3D@44803" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1216963403 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44803" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1216963403 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -130)
 
-[node name="@Node3D@44804" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=507114203 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44804" parent="SubViewportContainer/SubViewport/Node3D" unique_id=507114203 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -110)
 
-[node name="@Node3D@44805" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1027360583 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44805" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1027360583 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -90)
 
-[node name="@Node3D@44806" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=581564511 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44806" parent="SubViewportContainer/SubViewport/Node3D" unique_id=581564511 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -70)
 
-[node name="@Node3D@44807" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2123668320 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44807" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2123668320 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -50)
 
-[node name="@Node3D@44808" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2039773095 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44808" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2039773095 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -30)
 
-[node name="@Node3D@44809" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=260752537 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44809" parent="SubViewportContainer/SubViewport/Node3D" unique_id=260752537 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, -10)
 
-[node name="@Node3D@44810" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1007021971 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44810" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1007021971 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 10)
 
-[node name="@Node3D@44811" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=359980736 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44811" parent="SubViewportContainer/SubViewport/Node3D" unique_id=359980736 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 30)
 
-[node name="@Node3D@44812" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=225580242 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44812" parent="SubViewportContainer/SubViewport/Node3D" unique_id=225580242 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 50)
 
-[node name="@Node3D@44813" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=822244838 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44813" parent="SubViewportContainer/SubViewport/Node3D" unique_id=822244838 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 70)
 
-[node name="@Node3D@44814" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1879926391 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44814" parent="SubViewportContainer/SubViewport/Node3D" unique_id=1879926391 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 90)
 
-[node name="@Node3D@44815" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=591344344 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44815" parent="SubViewportContainer/SubViewport/Node3D" unique_id=591344344 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 110)
 
-[node name="@Node3D@44816" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2111200420 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44816" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2111200420 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 130)
 
-[node name="@Node3D@44817" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2057987060 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44817" parent="SubViewportContainer/SubViewport/Node3D" unique_id=2057987060 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 150)
 
-[node name="@Node3D@44818" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=642635985 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44818" parent="SubViewportContainer/SubViewport/Node3D" unique_id=642635985 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 170)
 
-[node name="@Node3D@44819" type="Node3D" parent="SubViewportContainer/SubViewport/Node3D" unique_id=652696299 instance=ExtResource("7_k6ds3")]
+[node name="@Node3D@44819" parent="SubViewportContainer/SubViewport/Node3D" unique_id=652696299 instance=ExtResource("7_k6ds3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 190, 0, 190)
 
 [node name="Views" type="Node3D" parent="SubViewportContainer/SubViewport" unique_id=196273130]
@@ -1498,6 +1498,6 @@ Prefab = ExtResource("tpl_prop")
 [node name="InteractOutlineView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1734003225]
 script = ExtResource("38_hsrf8")
 
-[node name="HornyIndicatorOverlay" parent="SubViewportContainer/SubViewport" instance=ExtResource("tpl_hornyoverlay")]
+[node name="HornyIndicatorOverlay" parent="SubViewportContainer/SubViewport" unique_id=1254389570 instance=ExtResource("tpl_hornyoverlay")]
 
 [node name="LobbyMenu" parent="." unique_id=1082308088 instance=ExtResource("lobby_menu")]

@@ -265,6 +265,9 @@ script = ExtResource("fw_playerstate")
 
 [node name="NavMeshConstraint" type="Node" parent="Entity" unique_id=1575246103]
 script = ExtResource("fw_navconstraint")
+DisableSlide = false
+SlideFactor = 1.0
+MaxSlideAngleDegrees = 90.0
 
 [node name="InteractionZone" type="Node" parent="Entity" unique_id=2034575380]
 script = ExtResource("fw_child")
