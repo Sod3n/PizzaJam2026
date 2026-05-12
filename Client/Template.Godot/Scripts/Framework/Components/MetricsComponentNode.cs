@@ -10,6 +10,9 @@ public partial class MetricsComponentNode : Node
     [Export] public int CumFood;
     [Export] public int CumMilk;
     [Export] public int CumCoins;
+    [Export] public int FoodPerSecond;
+    [Export] public int MilkPerSecond;
+    [Export] public int CoinsPerSecond;
     [Export] public int PeakCoins;
     [Export] public int PeakFood;
     [Export] public int PeakMilk;

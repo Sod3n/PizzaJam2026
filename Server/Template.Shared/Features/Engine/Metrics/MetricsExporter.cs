@@ -20,6 +20,7 @@ public class MetricsExporter
         "Grass,Carrot,Apple,Mushroom,TotalFood," +
         "Milk,CarrotMilkshake,VitaminMix,PurplePotion,TotalMilk," +
         "Coins,CumFood,CumMilk,CumCoins," +
+        "FoodPerSec,MilkPerSec,CoinsPerSec," +
         "Houses,LoveHouses,SellPoints,FoodFarms,Helpers,Pets," +
         "Cows,HousedCows,WildCows," +
         "LandPlots,TotalLandCost," +
@@ -85,15 +86,17 @@ public class MetricsExporter
             "{3},{4},{5},{6},{7}," +
             "{8},{9},{10},{11},{12}," +
             "{13},{14},{15},{16}," +
-            "{17},{18},{19},{20},{21},{22}," +
-            "{23},{24},{25}," +
-            "{26},{27}," +
-            "{28},{29},{30},{31},{32}," +
-            "{33}",
+            "{17},{18},{19}," +
+            "{20},{21},{22},{23},{24},{25}," +
+            "{26},{27},{28}," +
+            "{29},{30}," +
+            "{31},{32},{33},{34},{35}," +
+            "{36}",
             m.ElapsedTicks, m.ElapsedTicks / 60f, m.ElapsedTicks / 3600f,
             grass, carrot, apple, mushroom, totalFood,
             milk, carrotMilkshake, vitaminMix, purplePotion, totalMilk,
             coins, m.CumFood, m.CumMilk, m.CumCoins,
+            m.FoodPerSecond, m.MilkPerSecond, m.CoinsPerSecond,
             m.Houses, m.LoveHouses, m.SellPoints, m.FoodFarms, m.Helpers, m.Pets,
             m.Cows, m.HousedCows, m.WildCows,
             m.LandPlots, m.TotalLandCost,

@@ -64,7 +64,7 @@ public static class InteractionLogic
     /// clicks are allowed past MaxExhaust so the cow can finish the in-progress milk —
     /// this fixes the "kicked out with X clicks left" bug.
     /// </summary>
-    public const int ClicksPerMilk = GameData.Balance.Cow.ClicksPerMilk;
+    public static int ClicksPerMilk => GameData.Balance.Cow.ClicksPerMilk;
 
     public static bool MilkCow(EntityWorld state, Entity cowEntity, int hintFoodType, int exhaustPerClick, out bool cowDone)
     {

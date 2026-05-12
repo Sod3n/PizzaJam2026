@@ -29,9 +29,15 @@ public class MetricsSystem : ISystem
             }
 
             // Cumulative deltas: any increase from previous sample = new production
-            if (curFood > m.PrevFood) m.CumFood += curFood - m.PrevFood;
-            if (curMilk > m.PrevMilk) m.CumMilk += curMilk - m.PrevMilk;
-            if (curCoins > m.PrevCoins) m.CumCoins += curCoins - m.PrevCoins;
+            int dFood = curFood > m.PrevFood ? curFood - m.PrevFood : 0;
+            int dMilk = curMilk > m.PrevMilk ? curMilk - m.PrevMilk : 0;
+            int dCoins = curCoins > m.PrevCoins ? curCoins - m.PrevCoins : 0;
+            m.CumFood += dFood;
+            m.CumMilk += dMilk;
+            m.CumCoins += dCoins;
+            m.FoodPerSecond = dFood;
+            m.MilkPerSecond = dMilk;
+            m.CoinsPerSecond = dCoins;
             m.PrevFood = curFood;
             m.PrevMilk = curMilk;
             m.PrevCoins = curCoins;

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MlBotHost</RootNamespace>
+    <AssemblyName>MlBotHost</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Framework\Core\Deterministic.GameFramework.Common\Deterministic.GameFramework.Common.csproj" />
+    <ProjectReference Include="..\..\Framework\2D\Deterministic.GameFramework.TwoD.Physics\Deterministic.GameFramework.TwoD.Physics.csproj" />
+    <ProjectReference Include="..\..\Framework\2D\Deterministic.GameFramework.TwoD.Navigation\Deterministic.GameFramework.TwoD.Navigation.csproj" />
+    <ProjectReference Include="..\..\Template.Shared\Template.Shared.csproj" />
+    <ProjectReference Include="..\MlBot.Lib\MlBot.Lib.csproj" />
+  </ItemGroup>
+
+</Project>

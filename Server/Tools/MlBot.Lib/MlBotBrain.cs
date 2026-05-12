@@ -20,7 +20,7 @@ public sealed class MlBotBrain
 {
     public const int FeatureCount = 10;
 
-    private enum BotAction
+    public enum BotAction
     {
         Gather,
         Milk,
@@ -29,8 +29,10 @@ public sealed class MlBotBrain
         Tame,
         AssignHouse,
         Breed,
-        Helper
+        Helper,
     }
+
+    public const int ActionCount = 8;
 
     private readonly Game _game;
     private readonly Entity _player;
@@ -415,6 +417,58 @@ public sealed class MlBotBrain
         foreach (var e in _game.State.Filter<GlobalResourcesComponent>())
             return _game.State.GetComponent<GlobalResourcesComponent>(e);
         return default;
+    }
+
+    /// <summary>
+    /// External-policy entry point: an outside agent (Python) picks an action index
+    /// (0..7 mapping to <see cref="BotAction"/>); we look up the hand-coded target
+    /// for that intent in the current world state and emit move + interact. Bypasses
+    /// the internal Q-learning scorer entirely.
+    /// Returns false if the action is not currently valid (no target exists, e.g.
+    /// "Milk" when no cow is milkable).
+    /// </summary>
+    public bool TryExecuteAction(int actionIdx)
+    {
+        WantsToInteract = false;
+        CurrentTarget = Entity.Null;
+        DesiredDirection = Vector2.Zero;
+
+        if (!_game.State.HasComponent<PlayerStateComponent>(_player)) return false;
+        if (!_game.State.HasComponent<StateComponent>(_player)) return false;
+        if (HandleActiveState()) return WantsToInteract;
+
+        if (actionIdx < 0 || actionIdx >= ActionCount) return false;
+        var wanted = (BotAction)actionIdx;
+
+        foreach (var c in GetCandidates())
+        {
+            if (c.Action != wanted) continue;
+            MoveToward(c.Target);
+            WantsToInteract = true;
+            CurrentTarget = c.Target;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Returns the subset of action indices that have a valid target in the current state.</summary>
+    public int[] GetValidActions()
+    {
+        var seen = new bool[ActionCount];
+        foreach (var c in GetCandidates()) seen[(int)c.Action] = true;
+        var list = new List<int>(ActionCount);
+        for (int i = 0; i < ActionCount; i++) if (seen[i]) list.Add(i);
+        return list.ToArray();
+    }
+
+    /// <summary>
+    /// Public read-only view of (action, target) candidates for the player at the current state.
+    /// Used by DemoExtractor to classify a recorded InteractAction by finding the candidate
+    /// whose target entity is closest to the player at action time.
+    /// </summary>
+    public IEnumerable<(BotAction Action, Entity Target)> EnumerateCandidates()
+    {
+        foreach (var c in GetCandidates()) yield return (c.Action, c.Target);
     }
 
     private readonly record struct Candidate(BotAction Action, Entity Target, float PriorityBias);

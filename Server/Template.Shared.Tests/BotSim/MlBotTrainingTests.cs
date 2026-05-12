@@ -63,6 +63,51 @@ public sealed class MlBotTrainingTests
         result.Fitness.Should().BeGreaterThan(0);
     }
 
+    [Fact]
+    public void BenchmarkSimWallTime()
+    {
+        if (Environment.GetEnvironmentVariable("RUN_BOT_BENCH") != "1")
+        {
+            _output.WriteLine("Skipped. Set RUN_BOT_BENCH=1 to time a 30-min sim episode.");
+            return;
+        }
+
+        int maxMinutes = ReadInt("ML_BOT_MAX_MINUTES", 30);
+        int seed = ReadInt("ML_BOT_SEED", 20260429);
+
+        var trainer = new MlBotTrainer(_output.WriteLine);
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var result = trainer.Evaluate_NoPolicy(maxMinutes, seed);
+        sw.Stop();
+
+        double simSeconds = result.Ticks / 60.0;
+        double wallSeconds = sw.Elapsed.TotalSeconds;
+        _output.WriteLine($"Sim: ticks={result.Ticks} simSec={simSeconds:F1} wallSec={wallSeconds:F2} ratio={simSeconds / wallSeconds:F1}x realtime  all={result.OpenedAllBuildings} final={result.OpenedFinalStructure} built={result.BuiltCount} rem={result.RemainingLandCount}");
+        _output.WriteLine(MlBotTrainer.LastPerformanceReport);
+    }
+
+    [Fact]
+    public void BalanceJsonOverride_AppliesValues()
+    {
+        var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(
+            System.IO.Path.GetDirectoryName(typeof(MlBotTrainingTests).Assembly.Location)!,
+            "..", "..", "..", "..", "Template.Shared", "GameData", "balance_easy.json"));
+        System.IO.File.Exists(path).Should().BeTrue($"balance_easy.json should exist at {path}");
+
+        int beforeCoins = Template.Shared.GameData.Balance.Match.StartingCoins;
+        int beforeClicks = Template.Shared.GameData.Balance.Cow.ClicksPerMilk;
+
+        Template.Shared.GameData.Balance.LoadFromJson(System.IO.File.ReadAllText(path));
+
+        Template.Shared.GameData.Balance.Match.StartingCoins.Should().Be(300);
+        Template.Shared.GameData.Balance.Cow.ClicksPerMilk.Should().Be(1);
+        Template.Shared.GameData.Balance.JsonHash.Should().NotBeEmpty();
+
+        _output.WriteLine($"StartingCoins {beforeCoins} → {Template.Shared.GameData.Balance.Match.StartingCoins}");
+        _output.WriteLine($"ClicksPerMilk {beforeClicks} → {Template.Shared.GameData.Balance.Cow.ClicksPerMilk}");
+        _output.WriteLine($"JsonHash = {Template.Shared.GameData.Balance.JsonHash}");
+    }
+
     private static int ReadInt(string key, int fallback)
     {
         string value = Environment.GetEnvironmentVariable(key);

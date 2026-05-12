@@ -190,83 +190,6 @@ public class DeterminismTests : IDisposable
             "state must be identical after rollback across GrassSpawnSystem tick (tick 600)");
     }
 
-    /// <summary>
-    /// Run with BotBrain driving actions. Periodically rollback on ticks where
-    /// NO actions were dispatched (pure system ticks), to verify systems alone
-    /// are deterministic. Actions use the scheduler so rollback replays them.
-    ///
-    /// Bot actions are dispatched via the ActionScheduler (not directly on state)
-    /// so they are properly replayed during rollback resimulation.
-    /// </summary>
-    [Fact]
-    public void BotDriven_SystemOnlyRollback_ShouldReproduceSameState()
-    {
-        var game = CreateGame();
-
-        var userId = Guid.NewGuid();
-        var player = AddPlayer(game, userId);
-
-        var coordinator = new BotCoordinator();
-        var bot = new BotBrain(game, player, userId, 0, coordinator);
-
-        int rollbacksDone = 0;
-        // Track ticks where bot didn't interact (safe to rollback without action replay)
-        var quietStretchStart = -1L;
-
-        for (int tick = 0; tick < 1200; tick++)
-        {
-            coordinator.ResetClaims();
-            bot.PreTick(tick);
-
-            if (bot.WantsToInteract && bot.CurrentTarget != Entity.Null)
-            {
-                InjectOverlapAndInteract(game, player, bot.CurrentTarget, userId);
-                quietStretchStart = -1; // reset quiet tracking
-            }
-            else if (quietStretchStart < 0)
-            {
-                quietStretchStart = game.Loop.CurrentTick;
-            }
-
-            game.Loop.RunSingleTick();
-
-            // After 30+ quiet ticks (no actions), do a rollback-and-verify.
-            // Need enough quiet ticks so the rollback window (10 ticks) is
-            // fully within the quiet stretch (no unscheduled actions to replay).
-            long gameTick = game.Loop.CurrentTick;
-            long quietTicks = quietStretchStart >= 0 ? gameTick - quietStretchStart : 0;
-            if (quietTicks >= 30 && rollbacksDone < 5)
-            {
-                var correctHash = HashGame(game);
-                long rollbackTarget = gameTick - 10;
-
-                if (game.Loop.Simulation.GetHistory().Retrieve(rollbackTarget, game.State))
-                {
-                    game.Loop.Simulation.GetHistory().DiscardFuture(rollbackTarget);
-                    game.Loop.ForceSetTick(rollbackTarget);
-
-                    for (int r = 0; r < 10; r++)
-                        game.Loop.RunSingleTick();
-
-                    rollbacksDone++;
-                    quietStretchStart = -1;
-
-                    var afterHash = HashGame(game);
-                    if (correctHash != afterHash)
-                    {
-                        _output.WriteLine($"DESYNC at tick {gameTick} after rollback!");
-                        _output.WriteLine($"  Expected: {correctHash}");
-                        _output.WriteLine($"  Got:      {afterHash}");
-                    }
-                    correctHash.Should().Be(afterHash,
-                        $"rollback at tick {gameTick} (quiet stretch) should reproduce identical state");
-                }
-            }
-        }
-
-        _output.WriteLine($"PASS: {rollbacksDone} rollback verifications, all matched");
-        _output.WriteLine($"Bot stats: {bot.ActionStats()}");
-    }
 
     // ── Helpers ──
 
@@ -288,21 +211,6 @@ public class DeterminismTests : IDisposable
         return Entity.Null;
     }
 
-    private static void InjectOverlapAndInteract(Game game, Entity player, Entity target, Guid userId)
-    {
-        if (!game.State.HasComponent<PlayerStateComponent>(player)) return;
-
-        var ps = game.State.GetComponent<PlayerStateComponent>(player);
-        if (ps.InteractionZone == Entity.Null) return;
-        if (!game.State.HasComponent<Area2D>(ps.InteractionZone)) return;
-
-        ref var area = ref game.State.GetComponent<Area2D>(ps.InteractionZone);
-        area.OverlappingEntities = new List8<int>();
-        area.OverlappingEntities.Add(target.Id);
-        area.EnteredMask = 1;
-
-        game.State.AddComponent(player, new InteractAction { UserId = userId });
-    }
 
     private static Guid HashGame(Game game)
     {

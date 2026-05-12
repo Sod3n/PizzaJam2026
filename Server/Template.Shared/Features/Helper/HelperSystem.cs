@@ -11,10 +11,10 @@ public class HelperSystem : ISystem
     internal static readonly Float TargetReachedDistSq = (Float)Template.Shared.GameData.Balance.Helper.TargetReachedDistSq;
     internal static readonly Float PlayerReturnDistSq = (Float)Template.Shared.GameData.Balance.Helper.PlayerReturnDistSq;
     internal static readonly Float GatherReachedDistSq = (Float)Template.Shared.GameData.Balance.Helper.GatherReachedDistSq;
-    internal const int GatherWorkDuration = Template.Shared.GameData.Balance.Helper.GatherWorkDuration;
-    internal const int SellWorkDuration = Template.Shared.GameData.Balance.Helper.SellWorkDuration;
-    internal const int BuildWorkDuration = Template.Shared.GameData.Balance.Helper.BuildWorkDuration;
-    internal const int MilkWorkDuration = Template.Shared.GameData.Balance.Helper.MilkWorkDuration;
+    internal static int GatherWorkDuration => Template.Shared.GameData.Balance.Helper.GatherWorkDuration;
+    internal static int SellWorkDuration => Template.Shared.GameData.Balance.Helper.SellWorkDuration;
+    internal static int BuildWorkDuration => Template.Shared.GameData.Balance.Helper.BuildWorkDuration;
+    internal static int MilkWorkDuration => Template.Shared.GameData.Balance.Helper.MilkWorkDuration;
 
     /// <summary>
     /// Helpers do 1 unit of work per cycle — pets shrink the cycle instead of

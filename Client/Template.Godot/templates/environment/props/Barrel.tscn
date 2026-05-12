@@ -17,6 +17,7 @@ shader_parameter/albedo_texture = ExtResource("1")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_vu4u3"]
 animations = [{
@@ -57,7 +58,7 @@ animations = [{
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05350381, 0, -0.16719437)
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="." unique_id=676996787]
-transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0, 0.4782728, -0.43979532)
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0, 0.33583534, -0.43979532)
 material_override = SubResource("ShaderMaterial_kdq62")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_vu4u3")

@@ -152,7 +152,7 @@ public class CowBreedingSystem : ISystem
     private static void ApplyBreedFailure(EntityWorld state, Entity cow1, Entity cow2, BreedOutcome outcome)
     {
         ILogger.Log($"[CowBreedingSystem] Breed FAILED! Cows {cow1.Id} and {cow2.Id} are depressed (tier gap: {outcome.TierGap})");
-        const int DepressionDurationTicks = Balance.Cow.DepressionTicks;
+        int DepressionDurationTicks = Balance.Cow.DepressionTicks;
         if (state.HasComponent<CowComponent>(cow1))
             state.GetComponent<CowComponent>(cow1).EnterDepression(DepressionDurationTicks);
         if (state.HasComponent<CowComponent>(cow2))

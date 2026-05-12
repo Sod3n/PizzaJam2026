@@ -1,0 +1,54 @@
+{
+  "Match": {
+    "StartingCoins": 300,
+    "StartingCowCount": 3
+  },
+  "Cow": {
+    "ClicksPerMilk": 1,
+    "DepressionTicks": 600,
+    "NonPreferredFoodFailPercent": 20,
+    "TwinChancePercent": 25,
+    "BreedInheritParentChancePercent": 50,
+    "SecondaryPreferenceChancePercent": 50
+  },
+  "Breed": {
+    "MinCost": 1,
+    "FailChanceTier1": 10,
+    "FailChanceTier2": 25,
+    "FailChanceTier3Plus": 40
+  },
+  "PlayerHouse": {
+    "SleepCooldownTicks": 1200,
+    "ClickToSkipTicks": 6
+  },
+  "Sell": {
+    "DayCycle": 2,
+    "CowTierPrice": 30,
+    "CowRestedPrice": 6
+  },
+  "Sleep": {
+    "Grass":    { "BasePerDay": 30, "PerFarm": 0 },
+    "Carrot":   { "BasePerDay": 6,  "PerFarm": 12 },
+    "Apple":    { "BasePerDay": 6,  "PerFarm": 12 },
+    "Mushroom": { "BasePerDay": 6,  "PerFarm": 12 }
+  },
+  "Helper": {
+    "GatherWorkDuration": 10,
+    "SellWorkDuration": 3,
+    "BuildWorkDuration": 5,
+    "MilkWorkDuration": 6,
+    "HelperUnlockBreeds": [1, 2, 3, 4],
+    "GuaranteedMegaBreed": 5
+  },
+  "FoodSpawn": {
+    "IntervalTicks": 200
+  },
+  "Build": {
+    "BasePriceMultiplier": 3,
+    "EraMultiplier_Ring6Plus": 2,
+    "EraMultiplier_Ring5": 2,
+    "EraMultiplier_Ring4": 1,
+    "EraMultiplier_Ring3": 1,
+    "EraMultiplier_RingDefault": 1
+  }
+}

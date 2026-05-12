@@ -22,6 +22,7 @@ public sealed class MlBotTrainer
     private static readonly object CreateLock = new();
     private static bool _servicesReady;
     private readonly Action<string> _log;
+    public static string LastPerformanceReport { get; private set; } = "";
 
     public MlBotTrainer(Action<string> log = null)
     {
@@ -80,6 +81,9 @@ public sealed class MlBotTrainer
         return RunEpisode(0, 0, maxMinutes, seed, policy.Weights, learningEnabled: false);
     }
 
+    public MlBotTrainingResult Evaluate_NoPolicy(int maxMinutes, int seed)
+        => RunEpisode(0, 0, maxMinutes, seed, null, learningEnabled: false);
+
     public static MlBotTrainingResult LoadPolicy(string policyPath)
     {
         var json = File.ReadAllText(policyPath);
@@ -120,7 +124,6 @@ public sealed class MlBotTrainer
             }
 
             game.Dispatcher.Update(game.State);
-            runner.RunSystems();
             MockNavigation(game);
             runner.Tick();
 
@@ -128,6 +131,7 @@ public sealed class MlBotTrainer
             if (openedAll) break;
         }
 
+        LastPerformanceReport = runner.PerformanceReport();
         var snapshot = Capture(game);
         bool openedFinal = CountBuilt<FinalStructureComponent>(game) > 0;
         float fitness = CalculateFitness(snapshot, tick, openedFinal, openedAll);

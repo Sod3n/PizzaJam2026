@@ -15,6 +15,11 @@ public struct MetricsComponent : IComponent
     public int CumMilk;
     public int CumCoins;
 
+    // Instantaneous per-second gain rates (delta over last sample interval)
+    public int FoodPerSecond;
+    public int MilkPerSecond;
+    public int CoinsPerSecond;
+
     // Peak values
     public int PeakCoins;
     public int PeakFood;

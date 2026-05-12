@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Deterministic.GameFramework.Common;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Physics2D.Systems;
 using Deterministic.GameFramework.Scenes;
+using Template.Shared.GameData;
 using Template.Shared.Scenes;
 
 namespace Template.Shared.Factories;
@@ -10,7 +14,7 @@ public static class TemplateGameFactory
 {
     private static bool _appInitialized = false;
 
-    public static Game CreateGame(int tickRate = 60, string? gameDataPath = null, System.Collections.Generic.Dictionary<string, string>? gameDataJson = null)
+    public static Game CreateGame(int tickRate = 60, string? gameDataPath = null, Dictionary<string, string>? gameDataJson = null)
     {
         if (!_appInitialized)
         {
@@ -27,11 +31,20 @@ public static class TemplateGameFactory
             // Initialize GameData
             if (gameDataJson != null)
             {
-                Template.Shared.GameData.GD.LoadFromJson(gameDataJson);
+                GD.LoadFromJson(gameDataJson);
             }
             else
             {
-                Template.Shared.GameData.GD.Load(gameDataPath);
+                GD.Load(gameDataPath);
+            }
+
+            // Optional Balance override — set BALANCE_JSON_PATH=/path/to/balance_easy.json
+            // before launching to scale the game (recording demos, training curricula, etc.).
+            // Hash is exposed via Balance.JsonHash for the world-state determinism check.
+            var balancePath = Environment.GetEnvironmentVariable("BALANCE_JSON_PATH");
+            if (!string.IsNullOrWhiteSpace(balancePath) && File.Exists(balancePath))
+            {
+                Balance.LoadFromJson(File.ReadAllText(balancePath));
             }
         }
 

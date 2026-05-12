@@ -12,7 +12,7 @@ namespace Template.Shared.Systems;
 
 public class GrassSpawnSystem : ISystem
 {
-    private const int SpawnInterval = Balance.FoodSpawn.IntervalTicks;
+    private static int SpawnInterval => Balance.FoodSpawn.IntervalTicks;
 
     private readonly Vector2 _minPos = new Vector2(-30, -30);
     private readonly Vector2 _maxPos = new Vector2(30, 30);
@@ -100,7 +100,7 @@ public class GrassSpawnSystem : ISystem
         }
     }
 
-    private const int MaxSpawnAttempts = Balance.FoodSpawn.MaxSpawnAttempts;
+    private static int MaxSpawnAttempts => Balance.FoodSpawn.MaxSpawnAttempts;
 
     private bool SpawnFood(Context context, uint seed, int foodType)
     {

@@ -31,7 +31,7 @@ public struct GlobalResourcesComponent : IComponent
     public int FoodSpawnedTodayMushroom;
 
     // Helper unlock thresholds live in GameData.Balance.Helper.HelperUnlockBreeds — single source of truth.
-    public const int GuaranteedMegaBreed = GameData.Balance.Helper.GuaranteedMegaBreed;
+    public static int GuaranteedMegaBreed => GameData.Balance.Helper.GuaranteedMegaBreed;
     public int HelpersSpawned; // How many helpers have been spawned (index into Balance.Helper.HelperUnlockBreeds)
     public int NextLoveBreedCount; // Breed count at which the next love event triggers (0 = not yet set)
     public int LoveEventTimer; // Countdown ticks until the pending love event fires (0 = no pending event)

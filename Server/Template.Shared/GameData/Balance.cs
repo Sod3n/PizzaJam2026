@@ -3,277 +3,263 @@ using Template.Shared.Components;
 namespace Template.Shared.GameData;
 
 /// <summary>
-/// Single source of truth for tunable balance values. Anything you'd realistically
-/// adjust to change game feel / economy lives here. Structural numbers (collision
-/// sizes, struct defaults, the star map's geometry) stay near their definitions.
+/// Single source of truth for tunable balance values.
 ///
-/// All values are <c>const</c> so they remain compile-time constants — no runtime
-/// dispatch, deterministic across server and client.
+/// Values are mutable (<c>static</c> with private setter) so they can be overridden
+/// at process startup via <see cref="LoadFromJson"/>. Defaults baked here are the
+/// "hard" production values; pass a different JSON to override.
+///
+/// DETERMINISM NOTE: because values can differ between processes, a JSON content
+/// hash must be stored in world state so a divergent balance config produces a
+/// divergent state hash (desync detection). TODO: emit <c>BalanceHashComponent</c>
+/// from <see cref="LoadFromJson"/> and include it in the world entity at scene init.
 /// </summary>
 public static class Balance
 {
-    public const int TickRate = 60; // 60 ticks per second — used to convert seconds → ticks
+    public static int TickRate { get; private set; } = 60;
 
     public static class Match
     {
-        public const int StartingCoins = 60;
-        public const int StartingCowCount = 2;
+        public static int StartingCoins { get; private set; } = 60;
+        public static int StartingCowCount { get; private set; } = 2;
         /// <summary>
         /// Primary food preference per starter cow. Index N is applied to starter cow N.
         /// If <see cref="StartingCowCount"/> exceeds the array length, the indexing wraps modulo length.
-        /// Edit this list to change the starter line-up.
         /// </summary>
-        public static readonly int[] StarterCowFoods = [FoodType.Grass, FoodType.Grass];
+        public static int[] StarterCowFoods { get; private set; } = [FoodType.Grass, FoodType.Grass];
     }
 
     public static class Player
     {
-        public const float WalkSpeed = 14f;
-        public const float SprintSpeed = 16f;
-        /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact. 60 TPS / 14 ≈ 4.3 Hz.</summary>
-        public const int HoldRepeatThreshold = 20;
+        public static float WalkSpeed { get; private set; } = 14f;
+        public static float SprintSpeed { get; private set; } = 16f;
+        /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact.</summary>
+        public static int HoldRepeatThreshold { get; private set; } = 20;
     }
 
     public static class HelperPlayer
     {
-        public const float WalkSpeed = 20f;
-        public const float SprintSpeed = 22f;
-        /// <summary>Effective "infinite" — high enough that no realistic gather session fills it.</summary>
-        public const int BagCapacity = 999_999;
-        /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact.</summary>
-        public const int HoldRepeatThreshold = 14;
+        public static float WalkSpeed { get; private set; } = 20f;
+        public static float SprintSpeed { get; private set; } = 22f;
+        public static int BagCapacity { get; private set; } = 999_999;
+        public static int HoldRepeatThreshold { get; private set; } = 14;
     }
 
     public static class Cow
     {
-        /// <summary>Clicks needed to produce one milk (4-click cycle).</summary>
-        public const int ClicksPerMilk = 3;
-
-        /// <summary>Failed-breed depression duration: 30s at 60 TPS.</summary>
-        public const int DepressionTicks = 1800;
-
-        /// <summary>Per-milk fail roll for non-preferred food (percent 0-100).</summary>
-        public const int NonPreferredFoodFailPercent = 50;
-
-        /// <summary>
-        /// Master switch for failed-breed depression. False = breeds never fail (cross-tier
-        /// always upgrades, no depression). Set true to re-enable the original mechanic.
-        /// </summary>
-        public const bool DepressionEnabled = false;
-
-        /// <summary>Roll-under percent for twins on a same-pref breed. 1 = ~1% chance.</summary>
-        public const int TwinChancePercent = 1;
-
-        /// <summary>Per-parent inherit chance for offspring's primary food (each parent rolled separately).</summary>
-        public const int BreedInheritParentChancePercent = 25;
-
-        /// <summary>Chance the offspring (or starter cow) also has a secondary food preference.</summary>
-        public const int SecondaryPreferenceChancePercent = 20;
+        public static int ClicksPerMilk { get; private set; } = 3;
+        public static int DepressionTicks { get; private set; } = 1800;
+        public static int NonPreferredFoodFailPercent { get; private set; } = 50;
+        public static bool DepressionEnabled { get; private set; } = false;
+        public static int TwinChancePercent { get; private set; } = 1;
+        public static int BreedInheritParentChancePercent { get; private set; } = 25;
+        public static int SecondaryPreferenceChancePercent { get; private set; } = 20;
     }
 
     public static class Breed
     {
-        /// <summary>Floor on breed cost no matter what the parent exhausts add up to.</summary>
-        public const int MinCost = 3;
-
-        /// <summary>Cost multiplier applied when the pre-roll predicts failure (only with DepressionEnabled).</summary>
-        public const int FailCostMultiplier = 2;
-
-        /// <summary>Failed-breed roll percent when parents are 1 tier apart in food preference.</summary>
-        public const int FailChanceTier1 = 50;
-        /// <summary>Failed-breed roll percent when parents are 2 tiers apart.</summary>
-        public const int FailChanceTier2 = 75;
-        /// <summary>Failed-breed roll percent when parents are 3+ tiers apart.</summary>
-        public const int FailChanceTier3Plus = 90;
-
-        // Heart popup percentage shown to the player as a "luck" hint.
-        public const int HeartDefault = 50;
-        public const int HeartLovePair = 95;
-        /// <summary>During-breed heart hint for same-tier pairs (after breeding has started).</summary>
-        public const int HeartSameTierDuring = 70;
-        /// <summary>Pre-breed heart hint for same-tier pairs (when the player decides to start).</summary>
-        public const int HeartSameTierPre = 85;
-        public const int HeartTierGap1 = 45;
-        public const int HeartTierGap2 = 25;
-        public const int HeartTierGap3Plus = 15;
+        public static int MinCost { get; private set; } = 3;
+        public static int FailCostMultiplier { get; private set; } = 2;
+        public static int FailChanceTier1 { get; private set; } = 50;
+        public static int FailChanceTier2 { get; private set; } = 75;
+        public static int FailChanceTier3Plus { get; private set; } = 90;
+        public static int HeartDefault { get; private set; } = 50;
+        public static int HeartLovePair { get; private set; } = 95;
+        public static int HeartSameTierDuring { get; private set; } = 70;
+        public static int HeartSameTierPre { get; private set; } = 85;
+        public static int HeartTierGap1 { get; private set; } = 45;
+        public static int HeartTierGap2 { get; private set; } = 25;
+        public static int HeartTierGap3Plus { get; private set; } = 15;
     }
 
     public static class Love
     {
-        /// <summary>
-        /// Master switch. When false, love events never fire — no threshold init, no
-        /// timer scheduling, no deferred-event tick-down. Set true to re-enable.
-        /// </summary>
-        public const bool Enabled = true;
-
-        /// <summary>Inclusive lower bound of breed-counter increment when scheduling next love event.</summary>
-        public const int NextEventBreedsMin = 2;
-        /// <summary>Exclusive upper bound (passed directly to NextInt) — actual range is Min..Max-1.</summary>
-        public const int NextEventBreedsMax = 5;
-
-        /// <summary>Min ticks before deferred love event fires after threshold trigger.</summary>
-        public const int EventDelayTicksMin = 0;
-        /// <summary>Exclusive upper bound for love-event delay roll. 10801 = up to 3 minutes at 60 TPS.</summary>
-        public const int EventDelayTicksMax = 10801;
+        public static bool Enabled { get; private set; } = true;
+        public static int NextEventBreedsMin { get; private set; } = 2;
+        public static int NextEventBreedsMax { get; private set; } = 5;
+        public static int EventDelayTicksMin { get; private set; } = 0;
+        public static int EventDelayTicksMax { get; private set; } = 10801;
     }
-
-    // LoveHouse cooldown is binary now — set on breed, cleared on sleep, no per-tick decay.
-    // No tunable here; CooldownTicksRemaining is used as a flag (any non-zero = on cooldown).
 
     public static class PlayerHouse
     {
-        /// <summary>Sleep cooldown: 120s at 60 TPS.</summary>
-        public const int SleepCooldownTicks = 7200;
-
-        /// <summary>Per-click skip while on cooldown: 1s at 60 TPS.</summary>
-        public const int ClickToSkipTicks = 60;
+        public static int SleepCooldownTicks { get; private set; } = 7200;
+        public static int ClickToSkipTicks { get; private set; } = 60;
     }
 
     public static class Sell
     {
-        /// <summary>How often (in days) the sell point accepts cows instead of milk. Cycle = 3 days.</summary>
-        public const int DayCycle = 3;
-
-        /// <summary>Day-counter remainder that means "today is cow-day": (Day % 3) == 2.</summary>
-        public const int CowDayRemainder = 2;
-
-        // Cow sale formula (cow-buyer day):
-        //   price = CowBasePrice + (PreferredFood + 1) * CowTierPrice + rested * CowRestedPrice
-        // where `rested = MaxExhaust - Exhaust` (clamped to 0).
-
-        /// <summary>Flat coin offset added to every cow sale, regardless of tier or rest.</summary>
-        public const int CowBasePrice = 0;
-
-        /// <summary>Coins per food-tier step (Grass=1×, Carrot=2×, Apple=3×, Mushroom=4×).</summary>
-        public const int CowTierPrice = 10;
-
-        /// <summary>Coin bonus per unit of remaining (rested) exhaust at sale time.</summary>
-        public const int CowRestedPrice = 3;
+        public static int DayCycle { get; private set; } = 3;
+        public static int CowDayRemainder { get; private set; } = 2;
+        public static int CowBasePrice { get; private set; } = 0;
+        public static int CowTierPrice { get; private set; } = 10;
+        public static int CowRestedPrice { get; private set; } = 3;
     }
 
     public static class Sleep
     {
-        // Per-food per-day spawn cap = BasePerDay + PerFarm * <count of matching farm>.
-        // Counters reset on AdvanceDay. Tune each food type independently.
         public static class Grass
         {
-            public const int BasePerDay = 12; // grass spawns without a farm
-            public const int PerFarm = 0;     // there is no grass farm
+            public static int BasePerDay { get; private set; } = 12;
+            public static int PerFarm { get; private set; } = 0;
         }
         public static class Carrot
         {
-            public const int BasePerDay = 0;
-            public const int PerFarm = 5;
+            public static int BasePerDay { get; private set; } = 0;
+            public static int PerFarm { get; private set; } = 5;
         }
         public static class Apple
         {
-            public const int BasePerDay = 0;
-            public const int PerFarm = 5;
+            public static int BasePerDay { get; private set; } = 0;
+            public static int PerFarm { get; private set; } = 5;
         }
         public static class Mushroom
         {
-            public const int BasePerDay = 0;
-            public const int PerFarm = 5;
+            public static int BasePerDay { get; private set; } = 0;
+            public static int PerFarm { get; private set; } = 5;
         }
     }
 
     public static class Helper
     {
-        // Work durations — ticks per work cycle. Each cycle produces 1 unit of work
-        // (1 food, 1 milk, 1 coin sold/deposited). Pets accelerate the cycle, not the yield.
-        public const int GatherWorkDuration = 30; // 0.5s per food
-        public const int SellWorkDuration = 10;   // per item sold
-        public const int BuildWorkDuration = 15;  // per coin deposited
-        public const int MilkWorkDuration = 20;   // per milk action
-
-        // Helper unlocks: breed counter thresholds for spawning the Nth helper.
-        // All helpers are mechanically identical — the player cycles their role via the role sign —
-        // so this is a pure ladder of "spawn another helper" gates, not a per-type unlock.
-        public static readonly int[] HelperUnlockBreeds = [2, 4, 6, 10];
-        public const int GuaranteedMegaBreed = 12;
-
-        // Distance-squared thresholds for helper navigation
-        public const float TargetReachedDistSq = 9f;   // 3 units from sell points / land
-        public const float PlayerReturnDistSq = 36f;   // 6 units from owner player
-        public const float GatherReachedDistSq = 4f;   // 2 units from food
-        /// <summary>Owner-switch hysteresis: new player must be this much closer (squared units) to steal ownership.</summary>
-        public const float OwnerSwitchThresholdSq = 25f;
+        public static int GatherWorkDuration { get; private set; } = 30;
+        public static int SellWorkDuration { get; private set; } = 10;
+        public static int BuildWorkDuration { get; private set; } = 15;
+        public static int MilkWorkDuration { get; private set; } = 20;
+        public static int[] HelperUnlockBreeds { get; private set; } = [2, 4, 6, 10];
+        public static int GuaranteedMegaBreed { get; private set; } = 12;
+        public static float TargetReachedDistSq { get; private set; } = 9f;
+        public static float PlayerReturnDistSq { get; private set; } = 36f;
+        public static float GatherReachedDistSq { get; private set; } = 4f;
+        public static float OwnerSwitchThresholdSq { get; private set; } = 25f;
     }
 
     public static class Pets
     {
-        /// <summary>Additive base of the pet boost formula (Capacity, Speed scale by base + perPet * petCount).</summary>
-        public const int AdditiveBoostBase = 1;
-        /// <summary>Per-pet additive multiplier (capacity / speed scale).</summary>
-        public const int BoostPerPet = 1;
-        /// <summary>Movement-speed bonus added per cat carried (additive, applies to both player types).</summary>
-        public const float SpeedPerPet = 3f;
-        /// <summary>Ticks shaved off the player's hold-repeat threshold per pet carried. Floor below.</summary>
-        public const int HoldRepeatReductionPerPet = 1;
-        /// <summary>Floor for the hold-repeat threshold after pet reductions. Stops cadence from going absurdly fast.</summary>
-        public const int HoldRepeatFloor = 3;
+        public static int AdditiveBoostBase { get; private set; } = 1;
+        public static int BoostPerPet { get; private set; } = 1;
+        public static float SpeedPerPet { get; private set; } = 3f;
+        public static int HoldRepeatReductionPerPet { get; private set; } = 1;
+        public static int HoldRepeatFloor { get; private set; } = 3;
     }
 
     public static class FoodSpawn
     {
-        /// <summary>How often the grass-spawn system fires: 10s at 60 TPS.</summary>
-        public const int IntervalTicks = 600;
-
-        public const int MaxSpawnAttempts = 10;
+        public static int IntervalTicks { get; private set; } = 600;
+        public static int MaxSpawnAttempts { get; private set; } = 10;
     }
 
     public static class Props
     {
-        public const int Count = 350;
-        public const float MinPropDistance = 4f;
-        public const float MinSameTypeDistance = 8f;
-        public const float MinLandLabelBuffer = 2f;
-        public const uint Seed = 98765u;
+        public static int Count { get; private set; } = 350;
+        public static float MinPropDistance { get; private set; } = 4f;
+        public static float MinSameTypeDistance { get; private set; } = 8f;
+        public static float MinLandLabelBuffer { get; private set; } = 2f;
+        public static uint Seed { get; private set; } = 98765u;
     }
 
     public static class Build
     {
-        /// <summary>Cost base — every land threshold = gridDist * EraMultiplier * priceMultiplier * BasePriceMultiplier.</summary>
-        public const int BasePriceMultiplier = 10;
+        public static int BasePriceMultiplier { get; private set; } = 10;
+        public static int EraMultiplier_Ring6Plus { get; private set; } = 6;
+        public static int EraMultiplier_Ring5 { get; private set; } = 4;
+        public static int EraMultiplier_Ring4 { get; private set; } = 3;
+        public static int EraMultiplier_Ring3 { get; private set; } = 2;
+        public static int EraMultiplier_RingDefault { get; private set; } = 1;
 
-        /// <summary>Era cost multipliers by Manhattan ring distance from origin.</summary>
-        public const int EraMultiplier_Ring6Plus = 6;
-        public const int EraMultiplier_Ring5 = 4;
-        public const int EraMultiplier_Ring4 = 3;
-        public const int EraMultiplier_Ring3 = 2;
-        public const int EraMultiplier_RingDefault = 1;
-
-        /// <summary>Manhattan grid distance at which each LandType first becomes selectable on a cycle sign.</summary>
         public static class UnlockRing
         {
-            public const int CarrotFarm = 2;
-            public const int AppleOrchard = 4;
-            public const int MushroomCave = 6;
-            public const int Warehouse = 3;
-            public const int Library = 3;
-            public const int LoveHouse = 3;
-            public const int SellPoint = 5;
-            public const int HelperAssistant = 2;
-            public const int Smithy = 4;
+            public static int CarrotFarm { get; private set; } = 2;
+            public static int AppleOrchard { get; private set; } = 4;
+            public static int MushroomCave { get; private set; } = 6;
+            public static int Warehouse { get; private set; } = 3;
+            public static int Library { get; private set; } = 3;
+            public static int LoveHouse { get; private set; } = 3;
+            public static int SellPoint { get; private set; } = 5;
+            public static int HelperAssistant { get; private set; } = 2;
+            public static int Smithy { get; private set; } = 4;
         }
 
-        /// <summary>
-        /// Per-building cap config. Each type has both a <c>World</c> (worldwide max)
-        /// and <c>PerRing</c> (max within a single Manhattan-distance ring) axis.
-        /// <c>-1</c> on either axis disables that check; both checks must pass to
-        /// keep the type in the cycle pool.
-        /// </summary>
         public static class Limit
         {
-            public static class CarrotFarm     { public const int World = 2;  public const int PerRing = -1; }
-            public static class AppleOrchard   { public const int World = 2;  public const int PerRing = -1; }
-            public static class MushroomCave   { public const int World = 2;  public const int PerRing = -1; }
-            public static class Warehouse      { public const int World = 1;  public const int PerRing = -1; }
-            public static class Library        { public const int World = 1;  public const int PerRing = -1; }
-            public static class HelperAssistant{ public const int World = -1; public const int PerRing = 1;  }
-            public static class LoveHouse      { public const int World = -1; public const int PerRing = -1; }
-            public static class SellPoint      { public const int World = -1; public const int PerRing = -1; }
-            public static class Smithy         { public const int World = -1; public const int PerRing = -1; }
+            public static class CarrotFarm      { public static int World { get; private set; } = 2;  public static int PerRing { get; private set; } = -1; }
+            public static class AppleOrchard    { public static int World { get; private set; } = 2;  public static int PerRing { get; private set; } = -1; }
+            public static class MushroomCave    { public static int World { get; private set; } = 2;  public static int PerRing { get; private set; } = -1; }
+            public static class Warehouse       { public static int World { get; private set; } = 1;  public static int PerRing { get; private set; } = -1; }
+            public static class Library         { public static int World { get; private set; } = 1;  public static int PerRing { get; private set; } = -1; }
+            public static class HelperAssistant { public static int World { get; private set; } = -1; public static int PerRing { get; private set; } = 1;  }
+            public static class LoveHouse       { public static int World { get; private set; } = -1; public static int PerRing { get; private set; } = -1; }
+            public static class SellPoint       { public static int World { get; private set; } = -1; public static int PerRing { get; private set; } = -1; }
+            public static class Smithy          { public static int World { get; private set; } = -1; public static int PerRing { get; private set; } = -1; }
         }
+    }
+
+    /// <summary>
+    /// SHA-256 of the JSON content used to override defaults. Empty string if defaults
+    /// were used. Persist this on the world entity so divergent balance configs produce
+    /// divergent state hashes (desync detection).
+    /// </summary>
+    public static string JsonHash { get; private set; } = "";
+
+    /// <summary>
+    /// Override any subset of values from a JSON object. Missing keys keep their default.
+    /// Schema mirrors the static class hierarchy: { "Match": { "StartingCoins": 200 }, ... }.
+    /// Calls are idempotent and order-independent. Not thread-safe — call once at startup.
+    /// </summary>
+    public static void LoadFromJson(string json)
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(json);
+        Apply(typeof(Balance), doc.RootElement);
+
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+        var hash = sha.ComputeHash(bytes);
+        JsonHash = System.BitConverter.ToString(hash).Replace("-", "");
+    }
+
+    private static void Apply(System.Type owner, System.Text.Json.JsonElement element)
+    {
+        if (element.ValueKind != System.Text.Json.JsonValueKind.Object) return;
+
+        foreach (var prop in owner.GetProperties(
+                     System.Reflection.BindingFlags.Public |
+                     System.Reflection.BindingFlags.NonPublic |
+                     System.Reflection.BindingFlags.Static))
+        {
+            if (!element.TryGetProperty(prop.Name, out var val)) continue;
+            var setter = prop.GetSetMethod(nonPublic: true);
+            if (setter == null) continue;
+            var converted = Convert(val, prop.PropertyType);
+            if (converted == null && prop.PropertyType.IsValueType) continue;
+            setter.Invoke(null, new[] { converted });
+        }
+
+        foreach (var nested in owner.GetNestedTypes(
+                     System.Reflection.BindingFlags.Public |
+                     System.Reflection.BindingFlags.NonPublic))
+        {
+            if (!element.TryGetProperty(nested.Name, out var val)) continue;
+            Apply(nested, val);
+        }
+    }
+
+    private static object? Convert(System.Text.Json.JsonElement val, System.Type targetType)
+    {
+        if (targetType == typeof(int)) return val.GetInt32();
+        if (targetType == typeof(long)) return val.GetInt64();
+        if (targetType == typeof(uint)) return val.GetUInt32();
+        if (targetType == typeof(float)) return val.GetSingle();
+        if (targetType == typeof(double)) return val.GetDouble();
+        if (targetType == typeof(bool)) return val.GetBoolean();
+        if (targetType == typeof(string)) return val.GetString();
+        if (targetType == typeof(int[]))
+        {
+            var len = val.GetArrayLength();
+            var arr = new int[len];
+            int i = 0;
+            foreach (var e in val.EnumerateArray()) arr[i++] = e.GetInt32();
+            return arr;
+        }
+        return null;
     }
 }

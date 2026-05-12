@@ -10,5 +10,5 @@ public struct PlayerHouseComponent : IComponent
     // Cooldown lives on a sibling CooldownComponent (Unit=Ticks).
 
     /// <summary>Forwards to <see cref="GameData.Balance.PlayerHouse.SleepCooldownTicks"/> for back-compat.</summary>
-    public const int SleepCooldownTicks = GameData.Balance.PlayerHouse.SleepCooldownTicks;
+    public static int SleepCooldownTicks => GameData.Balance.PlayerHouse.SleepCooldownTicks;
 }
