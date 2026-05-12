@@ -1,5 +1,6 @@
 using Deterministic.GameFramework.ECS;
 using Template.Shared.Components;
+using Template.Shared.Definitions;
 
 namespace Template.Shared.Systems;
 
@@ -50,9 +51,21 @@ public class CowVisibilitySystem : ISystem
 
     private static void UpdateUnhide(EntityWorld state)
     {
-        foreach (var cowEntity in state.Filter<CowComponent>())
+        foreach (var cowRef in state.Filter<CowArchetype>())
         {
-            var cow = state.GetComponent<CowComponent>(cowEntity);
+            var cowEntity = cowRef.Entity;
+            var cow = cowRef.Cow;
+
+            if (cow.IsExhausted && CowFollowSystem.TryGetHouseStandPosition(state, cowRef, out var standPos))
+            {
+                var distSq = (standPos - cowRef.Transform2D.Position).SqrMagnitude;
+                if (distSq < (Deterministic.GameFramework.Types.Float)0.25f)
+                {
+                    if (!state.HasComponent<HiddenComponent>(cowEntity))
+                        state.HideEntity(cowEntity);
+                    continue;
+                }
+            }
 
             if (cow.IsDepressed)
             {

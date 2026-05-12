@@ -5,6 +5,8 @@ using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Types;
 using Template.Shared.Components;
+using Deterministic.GameFramework.Navigation2D.Components;
+using Deterministic.GameFramework.Utils.Logging;
 
 namespace Template.Shared.Definitions;
 

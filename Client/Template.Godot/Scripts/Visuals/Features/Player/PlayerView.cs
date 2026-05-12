@@ -28,7 +28,24 @@ public partial class PlayerView
     {
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, vm.Player.CharacterBody2D.Velocity, flipPivot, characterNode);
-        ViewHelpers.SetupPositionTween(vm, visualNode);
+
+        // Local player: bypass exponential smoothing (tau=0) so the visual exactly
+        // mirrors the server-clamped Transform2D position each frame. With tau=0.08
+        // the visual lags ~80 ms behind authoritative state and lerps in a straight
+        // line, which can clip through thin obstacles even when the server has
+        // already clamped the player out. Remote players keep the smooth lerp.
+        IDisposable currentPositionTracker = ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode, tau: 0.08f);
+        vm.Disposables.Add(Disposable.Create(() => currentPositionTracker?.Dispose()));
+        GameManager.Instance.LocalPlayerIdReactive.Subscribe(localId =>
+        {
+            if (localId != vm.Entity.Id) return;
+            Callable.From(() =>
+            {
+                currentPositionTracker?.Dispose();
+                currentPositionTracker = ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode, tau: 0f);
+            }).CallDeferred();
+        }).AddTo(vm.Disposables);
+
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
 
         // Zoom camera when player is hidden (milking, breeding)

@@ -12,6 +12,7 @@ public class CowFollowSystem : ISystem
     {
         foreach (var cowRef in state.Filter<CowArchetype>())
         {
+            if (cowRef.Cow.IsAttacking || cowRef.Cow.IsExhausted) continue;
             if (cowRef.Cow.FollowTarget == Entity.Null || cowRef.Cow.FollowingPlayer == Entity.Null)
                 UpdateIdle(state, cowRef);
             else
@@ -37,7 +38,7 @@ public class CowFollowSystem : ISystem
         cowRef.StopMoving();
     }
 
-    private static bool TryGetHouseStandPosition(EntityWorld state, CowRef cowRef, out Vector2 standPos)
+    internal static bool TryGetHouseStandPosition(EntityWorld state, CowRef cowRef, out Vector2 standPos)
     {
         if (!state.TryGetComponent<Transform2D>(cowRef.Cow.HouseId, out var houseTransform))
         {

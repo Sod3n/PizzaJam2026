@@ -7,6 +7,7 @@ using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.DAR;
 using Template.Shared.Components;
 using System.Collections.Generic;
+using Deterministic.GameFramework.Navigation2D.Components;
 
 namespace Template.Shared.Definitions;
 
@@ -14,6 +15,7 @@ namespace Template.Shared.Definitions;
     typeof(Transform2D),
     typeof(PlayerEntity),
     typeof(PlayerStateComponent),
+    typeof(NavMeshConstraint),
     typeof(CharacterBody2D),
     typeof(CollisionShape2D),
     typeof(StateComponent),
@@ -57,6 +59,12 @@ public static partial class PlayerDefinition
             CarriedEntity = Entity.Null,
             FollowingHelper = Entity.Null,
             PetCount = 0,
+        });
+
+        ctx.AddComponent(entity, new NavMeshConstraint
+        {
+            DisableSlide = false,
+            DisablePushOut = false,
         });
 
         // Child entity: InteractionZone

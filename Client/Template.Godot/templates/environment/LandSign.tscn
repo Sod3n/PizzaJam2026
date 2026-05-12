@@ -76,14 +76,14 @@ CollisionLayer = 5
 CollisionMask = 8
 
 [node name="Sign" type="AnimatedSprite3D" parent="." unique_id=629436190]
-transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18816209, 2.9524488, -1.436373)
+transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18816209, 2.6912923, -1.3160279)
 material_override = SubResource("ShaderMaterial_1ck7r")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_1f6sc")
 script = ExtResource("7_5jc8c")
 
 [node name="TypeIcon" type="AnimatedSprite3D" parent="." unique_id=128478463]
-transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.016919158, 0.92900264, -0.38808632)
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.016919158, 0.72007746, -0.29181027)
 material_override = SubResource("ShaderMaterial_q2gur")
 modulate = Color(0.538588, 0.56305635, 0.56306595, 1)
 alpha_cut = 2
@@ -92,9 +92,8 @@ frame_progress = 0.0024409618
 script = ExtResource("7_5jc8c")
 
 [node name="SelectedBadge" type="Sprite3D" parent="." unique_id=128478464]
-transform = Transform3D(0.06918491, 0.010475525, 0.012689096, -0.0103976, 0.0636762, 0.17881538, 0.0023106106, -0.027122043, 0.42471758, 0.46212372, 1.0827757, -0.54568845)
+transform = Transform3D(0.06918491, 0.010475525, 0.012689096, -0.0103976, 0.0636762, 0.17881538, 0.0023106106, -0.027122043, 0.42471758, 0.42580348, 0.86200064, -0.4516522)
 visible = false
-no_depth_test = true
 alpha_cut = 2
-render_priority = 4
+render_priority = 0
 texture = ExtResource("9_selected")

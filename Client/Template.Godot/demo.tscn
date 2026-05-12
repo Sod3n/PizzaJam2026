@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://dvf1flcw08lyw" path="res://templates/environment/mushroom.tscn" id="13_rn1d6"]
 [ext_resource type="Script" uid="uid://b8k3m7outln1v" path="res://Scripts/Visuals/Common/InteractOutlineView.cs" id="38_hsrf8"]
 [ext_resource type="PackedScene" uid="uid://yeyaphli5ypt" path="res://Scenes/LobbyMenu.tscn" id="lobby_menu"]
+[ext_resource type="PackedScene" path="res://Scenes/HornyIndicatorOverlay.tscn" id="tpl_hornyoverlay"]
 [ext_resource type="PackedScene" uid="uid://jqqcg2w5j6v4" path="res://templates/environment/AppleOrchard.tscn" id="tpl_appleorchard"]
 [ext_resource type="PackedScene" uid="uid://bgt7qedtjqn55" path="res://templates/environment/props/Barrel.tscn" id="tpl_barrel"]
 [ext_resource type="PackedScene" uid="uid://bchydbc8gnk5j" path="res://templates/environment/props/Bush1.tscn" id="tpl_bush1"]
@@ -1496,5 +1497,7 @@ Prefab = ExtResource("tpl_prop")
 
 [node name="InteractOutlineView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1734003225]
 script = ExtResource("38_hsrf8")
+
+[node name="HornyIndicatorOverlay" parent="SubViewportContainer/SubViewport" instance=ExtResource("tpl_hornyoverlay")]
 
 [node name="LobbyMenu" parent="." unique_id=1082308088 instance=ExtResource("lobby_menu")]

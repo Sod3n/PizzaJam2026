@@ -23,4 +23,8 @@ public partial class CowComponentNode : Node
     [Export] public bool LoveConfessed;
     [Export] public int PetCount;
     [Export] public int MilkClickCounter;
+    [Export] public int Horny;
+    [Export] public int MaxHorny;
+    [Export] public bool IsExhausted;
+    [Export] public bool IsAttacking;
 }

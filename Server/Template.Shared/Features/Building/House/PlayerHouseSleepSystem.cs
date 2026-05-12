@@ -39,6 +39,18 @@ public class PlayerHouseSleepSystem : ISystem
             }
         }
 
+        bool anyAttacking = false;
+        foreach (var cowEntity in state.Filter<CowComponent>())
+        {
+            if (state.GetComponent<CowComponent>(cowEntity).IsAttacking) { anyAttacking = true; break; }
+        }
+        if (anyAttacking)
+        {
+            state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.GameOver, Param = "caught_sleeping", Age = 0 });
+            state.RemoveComponent<InteractRequestComponent>(playerEntity);
+            return;
+        }
+
         SleepLogic.AdvanceDay(state);
         if (state.HasComponent<CooldownComponent>(houseEntity))
         {

@@ -35,6 +35,10 @@ public struct CowComponent : IComponent
     public Entity ParentB; // Second parent entity (Entity.Null for wild/starter cows)
     public int PetCount;
     public int MilkClickCounter; // Clicks accumulated toward the next milk (4 per milk)
+    public int Horny;
+    public int MaxHorny;
+    public bool IsExhausted;
+    public bool IsAttacking;
 
     /// <summary>True if <paramref name="foodType"/> matches this cow's primary or secondary preference.</summary>
     public bool IsFoodPreferred(int foodType) =>

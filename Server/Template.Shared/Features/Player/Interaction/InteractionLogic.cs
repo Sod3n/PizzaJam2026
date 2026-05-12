@@ -125,6 +125,7 @@ public static class InteractionLogic
             cow.RecordFed(foodToUse);
             if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
             cow.MilkClickCounter++;
+            cow.Horny = System.Math.Max(0, cow.Horny - GameData.Balance.Cow.HornyPerMilkClick);
             if (cow.MilkClickCounter >= ClicksPerMilk)
             {
                 cow.MilkClickCounter = 0;
@@ -277,6 +278,7 @@ public static class InteractionLogic
             cow.RecordFed(foodToUse);
             if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
             cow.MilkClickCounter++;
+            cow.Horny = System.Math.Max(0, cow.Horny - GameData.Balance.Cow.HornyPerMilkClick);
             if (cow.MilkClickCounter >= ClicksPerMilk)
             {
                 cow.MilkClickCounter = 0;
@@ -343,6 +345,7 @@ public static class InteractionLogic
             cow.RecordFed(foodToUse);
             if (cow.Exhaust < cow.MaxExhaust) cow.Exhaust++;
             cow.MilkClickCounter++;
+            cow.Horny = System.Math.Max(0, cow.Horny - GameData.Balance.Cow.HornyPerMilkClick);
             if (cow.MilkClickCounter >= ClicksPerMilk)
             {
                 cow.MilkClickCounter = 0;

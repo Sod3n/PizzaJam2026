@@ -65,7 +65,7 @@ CollisionLayer = 5
 CollisionMask = 8
 
 [node name="Sign" type="AnimatedSprite3D" parent="." unique_id=-765531106]
-transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18766919, 2.9602835, -1.4402816)
+transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18766919, 2.666802, -1.3050406)
 material_override = SubResource("ShaderMaterial_qgp40")
 modulate = Color(0.85, 0.7, 0.3, 1)
 alpha_cut = 2
@@ -73,17 +73,20 @@ sprite_frames = SubResource("SpriteFrames_signbg")
 script = ExtResource("4_animsprite")
 
 [node name="CoinIcon" type="AnimatedSprite3D" parent="." unique_id=-366488833]
-transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.38425887, 0.95170426, -0.2602727)
+transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.38425887, 0.66386425, -0.12763146)
 material_override = SubResource("ShaderMaterial_fb4yq")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_coin")
 script = ExtResource("4_animsprite")
 
 [node name="Remaining" type="Label3D" parent="." unique_id=-797692249]
-transform = Transform3D(0.5, 0, 0, 0, 0.4511347, 0.21558635, 0, -0.21558635, 0.4511347, 0.18707645, 0.918281, -0.36360815)
-no_depth_test = true
-render_priority = 2
-outline_render_priority = 1
+transform = Transform3D(0.5, 0, 0, 0, 0.4511347, 0.21558635, 0, -0.21558635, 0.4511347, 0.18707645, 0.6232965, -0.22264218)
+shaded = true
+double_sided = false
+alpha_cut = 1
+render_priority = 0
+outline_render_priority = 0
 modulate = Color(1, 1, 0, 1)
+outline_size = 12
 text = "0"
 font_size = 128

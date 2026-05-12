@@ -76,9 +76,11 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         bool carryingHammer = playerState.CarriedEntity != Entity.Null
                               && ctx.State.HasComponent<HammerComponent>(playerState.CarriedEntity);
 
-        // Cooldown gate (hammer-related interactions are exempt — demolishing a cooled-down building is fine)
+        // Cooldown gate (hammer-related interactions are exempt — demolishing a cooled-down building is fine;
+        // PlayerHouse is exempt because clicking it on cooldown is the canonical skip-cooldown action).
         if (IsOnCooldown(ctx, nearestTarget)
             && !ctx.State.HasComponent<HammerComponent>(nearestTarget)
+            && !ctx.State.HasComponent<PlayerHouseComponent>(nearestTarget)
             && !carryingHammer)
         {
             ctx.State.AddComponent(nearestTarget, new EnterStateComponent { Key = StateKeys.NotEnoughResource, Param = "cooldown", Age = 0 });
@@ -424,6 +426,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 MaxTicks = carryCooldown.Value.MaxTicks,
                 TicksRemaining = carryCooldown.Value.MaxTicks,
                 Unit = carryCooldown.Value.Unit,
+            });
+        }
+        else if (landType == LandType.PlayerHouse && built != Entity.Null)
+        {
+            ctx.State.AddComponent(built, new CooldownComponent
+            {
+                MaxTicks = PlayerHouseComponent.SleepCooldownTicks,
+                TicksRemaining = PlayerHouseComponent.SleepCooldownTicks,
+                Unit = CooldownUnit.Ticks,
             });
         }
 

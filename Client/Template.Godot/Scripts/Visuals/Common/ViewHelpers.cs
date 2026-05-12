@@ -102,8 +102,18 @@ public static class ViewHelpers
 
     public static void PlayDisappear(Node3D node, float duration = 0.5f, bool freeAfter = true)
     {
+        var baseScale = node.Scale;
+        float squashTime = Mathf.Min(0.12f, duration * 0.35f);
+        float fallTime = Mathf.Max(0.05f, duration - squashTime);
+
+        var squashScale = new GVector3(baseScale.X * 1.3f, baseScale.Y * 0.5f, baseScale.Z * 1.3f);
+
         var tween = node.CreateTween();
-        tween.TweenProperty(node, "rotation_degrees:x", -60f, duration)
+        tween.TweenProperty(node, "scale", squashScale, squashTime)
+            .SetTrans(Tween.TransitionType.Quad)
+            .SetEase(Tween.EaseType.Out);
+        tween.Parallel().TweenProperty(node, "rotation_degrees:x", -60f, fallTime)
+            .SetDelay(squashTime)
             .SetTrans(Tween.TransitionType.Back)
             .SetEase(Tween.EaseType.In);
         if (freeAfter)

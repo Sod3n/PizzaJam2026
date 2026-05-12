@@ -57,7 +57,6 @@ script = ExtResource("anim_script")
 
 [node name="Capacity" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49015197, 2.1158667, 0)
-no_depth_test = true
 render_priority = 2
 outline_render_priority = 1
 text = "10/10"

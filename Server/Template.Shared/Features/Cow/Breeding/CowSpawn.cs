@@ -32,6 +32,7 @@ public static class CowSpawn
 
         ref var newCowComp = ref state.GetComponent<CowComponent>(newCow);
         newCowComp.MaxExhaust = totalExhaust;
+        newCowComp.MaxHorny = CowDefinition.ComputeMaxHorny(totalExhaust);
         newCowComp.ParentA = parentA;
         newCowComp.ParentB = parentB;
         newCowComp.PreferredFood = preferredFood;

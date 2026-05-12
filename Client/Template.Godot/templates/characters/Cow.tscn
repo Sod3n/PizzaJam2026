@@ -10,12 +10,22 @@
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
 [ext_resource type="Script" uid="uid://dinx5371fnt6o" path="res://Scripts/Framework/FrameworkSkin.cs" id="fw_skin"]
 [ext_resource type="Script" uid="uid://w882ltaxhyd6" path="res://Scripts/Framework/FrameworkState.cs" id="fw_state"]
+[ext_resource type="Shader" uid="uid://b2lwm5rrjmu64" path="res://shaders/heart_fill.gdshader" id="heart_fill_shader"]
+[ext_resource type="Texture2D" uid="uid://dxmatkaairuac" path="res://sprites/heart.png" id="heart_sprite"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hornyheart"]
+render_priority = 6
+shader = ExtResource("heart_fill_shader")
+shader_parameter/albedo_texture = ExtResource("heart_sprite")
+shader_parameter/fill = 0.0
+shader_parameter/empty_tint = Color(0.3137255, 0.32156864, 0.36078432, 1)
+shader_parameter/empty_tint_strength = 0.999999977648
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
 atlas = ExtResource("9_y4s3p")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3rmc5"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ft5rl"]
 render_priority = 0
 shader = ExtResource("8_6eqyr")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -53,9 +63,20 @@ script = ExtResource("fw_skin")
 
 [node name="Character" parent="." unique_id=1927392941 instance=ExtResource("1_7tc83")]
 
+[node name="HornyHeart" type="Sprite3D" parent="." unique_id=362814662]
+transform = Transform3D(2, 0, 0, 0, 1.9525694, 0.43298146, 0, -0.43298146, 1.9525694, 0, 2.2797527, -0.4461522)
+material_override = SubResource("ShaderMaterial_hornyheart")
+pixel_size = 0.0005
+billboard = 1
+no_depth_test = true
+alpha_cut = 1
+texture_filter = 0
+render_priority = 6
+texture = ExtResource("heart_sprite")
+
 [node name="Rain" type="AnimatedSprite3D" parent="." unique_id=1223436512]
 sorting_offset = -10.0
-material_override = SubResource("ShaderMaterial_3rmc5")
+material_override = SubResource("ShaderMaterial_ft5rl")
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_ea47w")

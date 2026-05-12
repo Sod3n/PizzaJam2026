@@ -94,6 +94,7 @@ public partial class GameManager : Node
 
         // Initialize Twitch integration when the game starts
         OnGameStarted += TwitchIntegration.Initialize;
+        OnGameStarted += Template.Godot.Visuals.GameOverOverlay.InstallWatcher;
 
         ILogger.SetLogger(new GodotLogger());
 
@@ -667,15 +668,15 @@ public partial class GameManager : Node
             _orphanPrunePending = false;
             _orphanOfflineUserIdToPrune = Guid.Empty;
 
-            var menu = GetTree()?.Root?.FindChild("LobbyMenu", recursive: true, owned: false);
-            if (menu is Template.Godot.UI.LobbyMenu lobby)
+            var tree = GetTree();
+            if (tree != null)
             {
-                lobby.Visible = true;
-                lobby.ShowMainMenu();
+                tree.Paused = false;
+                tree.CallDeferred("reload_current_scene");
             }
             else
             {
-                GD.PrintErr("[GameManager] EndSession: LobbyMenu node not found in scene tree.");
+                GD.PrintErr("[GameManager] EndSession: SceneTree unavailable, cannot reload scene.");
             }
         }
         catch (Exception e)

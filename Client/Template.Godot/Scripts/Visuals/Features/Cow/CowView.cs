@@ -13,6 +13,9 @@ public partial class CowView
     private static readonly Texture2D _heartSprite =
         GD.Load<Texture2D>("res://sprites/heart.png");
 
+    private static readonly Shader _heartFillShader =
+        GD.Load<Shader>("res://shaders/heart_fill.gdshader");
+
     partial void OnSpawned(CowViewModel vm, Node3D visualNode)
     {
         DespawnDelay = 0.3f;
@@ -109,6 +112,36 @@ public partial class CowView
         heartTimer.Timeout += () => UpdateLoveIcons(vm.Entity, heartIcon, needIcon);
         visualNode.AddChild(heartTimer);
 
+        var hornyIcon = visualNode.GetNodeOrNull<Sprite3D>("HornyHeart");
+        if (hornyIcon != null)
+        {
+            var sharedMat = hornyIcon.MaterialOverride as ShaderMaterial;
+            var hornyMaterial = sharedMat != null
+                ? (ShaderMaterial)sharedMat.Duplicate()
+                : new ShaderMaterial { Shader = _heartFillShader };
+            hornyIcon.MaterialOverride = hornyMaterial;
+            hornyMaterial.SetShaderParameter("fill", 0f);
+
+            var hornyState = new HornyIconState();
+            UpdateHornyIcon(vm.Entity, hornyIcon, hornyMaterial, hornyState);
+            var hornyTimer = new Timer();
+            hornyTimer.WaitTime = 0.05f;
+            hornyTimer.Autostart = true;
+            hornyTimer.Timeout += () => UpdateHornyIcon(vm.Entity, hornyIcon, hornyMaterial, hornyState);
+            visualNode.AddChild(hornyTimer);
+        }
+
+        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
+            .Where(x => x == vm.Entity && ReactiveSystem.Instance.BoundState != null
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.CowAttack)
+            .Subscribe(_ =>
+            {
+                Callable.From(() =>
+                {
+                    GD.Print($"[CowView] CowAttack entered for entity {vm.Entity.Id}");
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
+
         // Love popup — when this cow is interacted with as a love cow, show the popup
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
             .Where(x => x == vm.Entity && ReactiveSystem.Instance.BoundState != null
@@ -132,6 +165,55 @@ public partial class CowView
                 }
                 Callable.From(() => LovePopupOverlay.Show(GetTree(), vm.Entity, targetName)).CallDeferred();
             }).AddTo(vm.Disposables);
+    }
+
+    private sealed class HornyIconState
+    {
+        public bool IsAttacking;
+        public Tween PulseTween;
+        public Vector3 BaseScale = Vector3.One;
+    }
+
+    private static void UpdateHornyIcon(Entity thisEntity, Sprite3D hornyIcon, ShaderMaterial mat, HornyIconState state)
+    {
+        if (!Node.IsInstanceValid(hornyIcon)) return;
+        var s = ReactiveSystem.Instance.BoundState;
+        if (s == null || !s.HasComponent<CowComponent>(thisEntity))
+        {
+            hornyIcon.Visible = false;
+            return;
+        }
+        var cow = s.GetComponent<CowComponent>(thisEntity);
+        if (cow.MaxHorny <= 0)
+        {
+            hornyIcon.Visible = false;
+            return;
+        }
+        float fill = cow.Horny / (float)cow.MaxHorny;
+        mat.SetShaderParameter("fill", fill);
+        hornyIcon.Visible = cow.Horny > 0 || cow.IsExhausted;
+        hornyIcon.Modulate = cow.IsExhausted
+            ? new Color(0.4f, 0.5f, 0.9f)
+            : new Color(1, 1, 1);
+
+        if (cow.IsAttacking && !state.IsAttacking)
+        {
+            state.IsAttacking = true;
+            state.BaseScale = hornyIcon.Scale;
+            state.PulseTween?.Kill();
+            var tw = hornyIcon.CreateTween();
+            tw.SetLoops();
+            tw.TweenProperty(hornyIcon, "scale", state.BaseScale * 1.25f, 0.25f);
+            tw.TweenProperty(hornyIcon, "scale", state.BaseScale, 0.25f);
+            state.PulseTween = tw;
+        }
+        else if (!cow.IsAttacking && state.IsAttacking)
+        {
+            state.IsAttacking = false;
+            state.PulseTween?.Kill();
+            state.PulseTween = null;
+            hornyIcon.Scale = state.BaseScale;
+        }
     }
 
     private static void UpdateLoveIcons(Entity thisEntity, Sprite3D heartIcon, Label3D needIcon)

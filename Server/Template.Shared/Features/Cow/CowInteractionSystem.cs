@@ -43,7 +43,13 @@ public class CowInteractionSystem : ISystem
 
         if (state.HasComponent<CowComponent>(cowEntity))
         {
-            state.GetComponent<CowComponent>(cowEntity).EndMilking();
+            ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+            cow.EndMilking();
+            if (cow.Exhaust >= cow.MaxExhaust)
+            {
+                cow.IsExhausted = true;
+                cow.Horny = 0;
+            }
             state.UnhideEntity(cowEntity);
         }
 

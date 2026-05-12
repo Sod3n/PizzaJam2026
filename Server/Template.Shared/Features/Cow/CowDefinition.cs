@@ -53,6 +53,7 @@ public static partial class CowDefinition
 
         ILogger.Log($"[CowDefinition] Created Cow {entity.Id} MaxExhaust={totalExhaust} Pref={component.PreferredFood} Pref2={component.SecondaryPreferredFood}");
         component.MaxExhaust = totalExhaust;
+        component.MaxHorny = ComputeMaxHorny(totalExhaust);
 
         ctx.AddComponent(entity, NameComponent.RandomCow(ref random));
 
@@ -61,6 +62,13 @@ public static partial class CowDefinition
         navAgent.TargetDesiredDistance = 4f;
         navAgent.AvoidanceEnabled = true;
         navAgent.AvoidanceMask = 1u; // Detect player on collision layer 1
+    }
+
+    internal static int ComputeMaxHorny(int totalExhaust)
+    {
+        double ratio = (double)Balance.Cow.HornyExhaustBaseline / System.Math.Max(1, totalExhaust);
+        double scaled = Balance.Cow.MaxHorny * System.Math.Pow(ratio, Balance.Cow.HornyExhaustCurve);
+        return System.Math.Max(60, (int)System.Math.Round(scaled));
     }
 
     private static ref SkinSpawnCountsComponent GetSpawnCounts(Context ctx)

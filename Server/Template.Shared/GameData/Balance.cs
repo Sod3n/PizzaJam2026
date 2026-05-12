@@ -31,10 +31,10 @@ public static class Balance
 
     public static class Player
     {
-        public static float WalkSpeed { get; private set; } = 14f;
-        public static float SprintSpeed { get; private set; } = 16f;
+        public static float WalkSpeed { get; private set; } = 20f;
+        public static float SprintSpeed { get; private set; } = 22f;
         /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact.</summary>
-        public static int HoldRepeatThreshold { get; private set; } = 20;
+        public static int HoldRepeatThreshold { get; private set; } = 15;
     }
 
     public static class HelperPlayer
@@ -47,13 +47,23 @@ public static class Balance
 
     public static class Cow
     {
-        public static int ClicksPerMilk { get; private set; } = 3;
+        public static int ClicksPerMilk { get; private set; } = 1;
         public static int DepressionTicks { get; private set; } = 1800;
         public static int NonPreferredFoodFailPercent { get; private set; } = 50;
         public static bool DepressionEnabled { get; private set; } = false;
         public static int TwinChancePercent { get; private set; } = 1;
         public static int BreedInheritParentChancePercent { get; private set; } = 25;
         public static int SecondaryPreferenceChancePercent { get; private set; } = 20;
+        public static int MaxHorny { get; private set; } = 7200;
+        // Per-cow MaxHorny = MaxHorny * (HornyExhaustBaseline / cow.MaxExhaust)^HornyExhaustCurve.
+        // A cow with MaxExhaust == HornyExhaustBaseline always fills in exactly MaxHorny ticks.
+        // HornyExhaustCurve controls steepness: 1.0 = linear, 2.0 = quadratic (current default —
+        // strong cows fill much faster, weak cows much slower), 0.5 = square-root (gentler spread).
+        public static int HornyExhaustBaseline { get; private set; } = 66;
+        public static float HornyExhaustCurve { get; private set; } = 0.35f;
+        public static int HornyPerMilkClick { get; private set; } = 300;
+        public static int AttackCatchDistanceSq { get; private set; } = 4;
+        public static int HornyOffscreenIndicatorThresholdPercent { get; private set; } = 75;
     }
 
     public static class Breed

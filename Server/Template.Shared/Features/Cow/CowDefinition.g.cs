@@ -50,6 +50,10 @@ public static partial class CowDefinition
         component.ParentB = Entity.Null;
         component.PetCount = 0;
         component.MilkClickCounter = 0;
+        component.Horny = 0;
+        component.MaxHorny = 0;
+        component.IsExhausted = false;
+        component.IsAttacking = false;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

@@ -30,6 +30,9 @@ public static class SleepLogic
             if (cow.IsMilking) continue;
             cow.Exhaust = 0;
             cow.MilkClickCounter = 0;
+            cow.IsExhausted = false;
+            cow.IsAttacking = false;
+            cow.Horny = 0;
         }
 
         int product = (newDay % Balance.Sell.DayCycle) == Balance.Sell.CowDayRemainder ? SellProduct.Cow : SellProduct.Milk;

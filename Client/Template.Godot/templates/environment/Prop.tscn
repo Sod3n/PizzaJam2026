@@ -19,7 +19,7 @@ PropType = 0
 [node name="Physics" type="Node3D" parent="Entity"]
 script = ExtResource("fw_phys")
 ShapeRadius = 0.5
-CollisionLayer = 4
+CollisionLayer = 5
 CollisionMask = 8
 
 [node name="Sprite3D" type="Sprite3D" parent="."]

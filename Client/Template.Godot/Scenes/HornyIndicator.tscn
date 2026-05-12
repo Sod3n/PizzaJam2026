@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://53sn32u171yb"]
+
+[ext_resource type="Shader" uid="uid://cvju3yo5kokmj" path="res://shaders/heart_fill_2d.gdshader" id="heart_fill_shader"]
+[ext_resource type="Texture2D" uid="uid://dxmatkaairuac" path="res://sprites/heart.png" id="heart_tex"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_horny"]
+shader = ExtResource("heart_fill_shader")
+shader_parameter/fill = 0.0
+shader_parameter/empty_tint = Color(0.3137255, 0.3137255, 0.3137255, 1)
+shader_parameter/empty_tint_strength = 0.999999977648
+shader_parameter/wave_amplitude = 0.035
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.045
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
+
+[node name="HornyIndicator" type="TextureRect" unique_id=1053412335]
+material = SubResource("ShaderMaterial_horny")
+custom_minimum_size = Vector2(20, 20)
+offset_right = 10.0
+offset_bottom = 10.0
+pivot_offset = Vector2(5, 5)
+mouse_filter = 2
+texture = ExtResource("heart_tex")
+expand_mode = 3
+stretch_mode = 5

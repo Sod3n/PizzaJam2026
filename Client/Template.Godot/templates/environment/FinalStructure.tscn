@@ -88,7 +88,7 @@ BodyType = 1
 ShapeType = 1
 ShapeWidth = 2.0
 ShapeHeight = 2.0
-CollisionLayer = 4
+CollisionLayer = 5
 CollisionMask = 8
 
 [node name="Finale" type="AnimatedSprite3D" parent="."]
@@ -103,7 +103,6 @@ script = ExtResource("2_c6usd")
 
 [node name="Remaining" type="Label3D" parent="Node3D"]
 transform = Transform3D(0.7, 0, 0, 0, 0.67212373, 0.19557531, 0, -0.19557531, 0.67212373, -0.080786616, 1.2520609, -0.3480498)
-no_depth_test = true
 render_priority = 2
 outline_render_priority = 1
 modulate = Color(1, 1, 0, 1)

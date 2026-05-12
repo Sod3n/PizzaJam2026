@@ -12,7 +12,9 @@ namespace Template.Shared.Definitions;
 
 [EntityDefinition(
     typeof(Transform2D),
-    typeof(SellPointComponent))]
+    typeof(SellPointComponent),
+    typeof(StaticBody2D),
+    typeof(CollisionShape2D))]
 public static partial class SellPointDefinition
 {
     public static Entity Create(Context ctx, Vector2 position)
@@ -22,6 +24,13 @@ public static partial class SellPointDefinition
         ref var component = ref ctx.GetComponent<SellPointComponent>(entity);
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
+
+        var entityBody = StaticBody2D.Default;
+        entityBody.CollisionLayer = 1u;
+        entityBody.CollisionMask = 1u;
+        ctx.AddComponent(entity, entityBody);
+
+        ctx.AddComponent(entity, CollisionShape2D.CreateRectangle(new Vector2(2f, 2f)));
 
         var childEntities = new Dictionary<string, Entity>
         {

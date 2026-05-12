@@ -28,7 +28,7 @@ public static partial class FinalStructureDefinition
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
         var entityBody = StaticBody2D.Default;
-        entityBody.CollisionLayer = 4u;
+        entityBody.CollisionLayer = 5u;
         entityBody.CollisionMask = 8u;
         ctx.AddComponent(entity, entityBody);
 
