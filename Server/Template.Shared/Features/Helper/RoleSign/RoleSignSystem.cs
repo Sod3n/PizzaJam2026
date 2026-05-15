@@ -76,22 +76,13 @@ public class RoleSignSystem : ISystem
             {
                 ref var helper = ref state.GetComponent<HelperComponent>(helperId);
                 helper.Type = next;
-                helper.State = HelperState.Idle;
                 helper.WantedFoodType = -1;
                 helper.TargetEntity = Entity.Null;
                 helper.WorkTimer = 0;
                 helper.WorkDuration = 0;
                 var info = HelperConfig.GetByType(next);
                 helper.BagCapacity = info.BaseCapacity;
-                helper.BagGrass = 0;
-                helper.BagCarrot = 0;
-                helper.BagApple = 0;
-                helper.BagMushroom = 0;
-                helper.BagMilk = 0;
-                helper.BagCarrotMilkshake = 0;
-                helper.BagVitaminMix = 0;
-                helper.BagPurplePotion = 0;
-                helper.BagCoins = 0;
+                helper.State = helper.GetBagTotal() > 0 ? HelperState.WaitingForPickup : HelperState.Idle;
             }
         }
 

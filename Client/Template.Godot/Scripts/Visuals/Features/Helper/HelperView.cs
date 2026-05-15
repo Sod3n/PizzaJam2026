@@ -1,5 +1,6 @@
 using Godot;
 using R3;
+using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using Template.Shared.Components;
 
@@ -7,6 +8,9 @@ namespace Template.Godot.Visuals;
 
 public partial class HelperView
 {
+    private static readonly Texture2D _sleepTexture =
+        GD.Load<Texture2D>("res://sprites/sleep.png");
+
     private static readonly System.Collections.Generic.Dictionary<int, string> WantIcons = new()
     {
         { HelperType.Seller, "res://sprites/export/icons/Milky_/1.png" },
@@ -33,87 +37,69 @@ public partial class HelperView
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, vm.Helper.CharacterBody2D.Velocity, flipPivot, characterNode);
         ViewHelpers.SetupPositionTween(vm, visualNode);
-        ViewHelpers.SetupInteractAnimation(vm, visualNode);
+        // Squish the inner character node, not the root — the root is driven by ViewSmoother
+        // every frame, so animating its position fights with the smoother and yanks the helper
+        // back to a stale cached "orig_pos" each interact.
+        ViewHelpers.SetupInteractAnimation(vm, visualNode, animateNode: characterNode);
 
-        int helperType = vm.Helper.Helper.Type.CurrentValue;
-
-        // Setup want icon (shown when helper wants resources from player: seller wants milk, builder wants coins, milker wants food)
+        // Want icon — server flags `Helper.IsAsking` whenever the helper is idle AND the
+        // player has the requested resource. View just subscribes and toggles visibility.
+        // Texture is keyed off Type / WantedFoodType (also reactive).
         var wantIcon = visualNode.GetNodeOrNull<AnimatedSprite3D>("WantIcon");
         if (wantIcon != null)
         {
-            // For seller and builder, set a static icon
-            if (WantIcons.TryGetValue(helperType, out var iconPath))
+            void RefreshTexture()
             {
-                SetWantIconTexture(wantIcon, iconPath);
+                int t = vm.Helper.Helper.Type.CurrentValue;
+                int wf = vm.Helper.Helper.WantedFoodType.CurrentValue;
+                string iconPath = null;
+                if (t == HelperType.Milker && wf >= 0) FoodIcons.TryGetValue(wf, out iconPath);
+                else if (t == HelperType.Seller || t == HelperType.Builder) WantIcons.TryGetValue(t, out iconPath);
+                if (iconPath != null) SetWantIconTexture(wantIcon, iconPath);
             }
 
-            // For milker, dynamically update the icon based on WantedFoodType
-            if (helperType == HelperType.Milker)
-            {
-                vm.Helper.Helper.WantedFoodType.Subscribe(wantedFood =>
-                {
-                    Callable.From(() =>
-                    {
-                        if (!IsInstanceValid(wantIcon)) return;
-                        if (wantedFood >= 0 && FoodIcons.TryGetValue(wantedFood, out var foodIconPath))
-                        {
-                            SetWantIconTexture(wantIcon, foodIconPath);
-                        }
-                    }).CallDeferred();
-                }).AddTo(vm.Disposables);
-            }
-
-            // Show/hide based on helper state — visible when idle (wanting resources)
-            vm.Helper.Helper.State.Subscribe(helperState =>
-            {
-                Callable.From(() =>
-                {
-                    if (!IsInstanceValid(wantIcon)) return;
-                    bool wantsResource;
-                    if (helperType == HelperType.Milker)
-                    {
-                        // Milker shows icon only when idle AND has identified a food target
-                        wantsResource = helperState == HelperState.Idle
-                            && vm.Helper.Helper.WantedFoodType.CurrentValue >= 0;
-                    }
-                    else
-                    {
-                        // Seller wants milk, builder wants coins
-                        wantsResource = helperState == HelperState.Idle
-                            && (helperType == HelperType.Seller || helperType == HelperType.Builder);
-                    }
-                    wantIcon.Visible = wantsResource;
-                }).CallDeferred();
-            }).AddTo(vm.Disposables);
-
-            // For milker, also update visibility when WantedFoodType changes
-            if (helperType == HelperType.Milker)
-            {
-                vm.Helper.Helper.WantedFoodType.Subscribe(wantedFood =>
-                {
-                    Callable.From(() =>
-                    {
-                        if (!IsInstanceValid(wantIcon)) return;
-                        bool wantsResource = vm.Helper.Helper.State.CurrentValue == HelperState.Idle
-                            && wantedFood >= 0;
-                        wantIcon.Visible = wantsResource;
-                    }).CallDeferred();
-                }).AddTo(vm.Disposables);
-            }
+            vm.Helper.Helper.Type.Subscribe(_ =>
+                Callable.From(() => { if (IsInstanceValid(wantIcon)) RefreshTexture(); }).CallDeferred()
+            ).AddTo(vm.Disposables);
+            vm.Helper.Helper.WantedFoodType.Subscribe(_ =>
+                Callable.From(() => { if (IsInstanceValid(wantIcon)) RefreshTexture(); }).CallDeferred()
+            ).AddTo(vm.Disposables);
+            vm.Helper.Helper.IsAsking.Subscribe(asking =>
+                Callable.From(() => { if (IsInstanceValid(wantIcon)) wantIcon.Visible = asking; }).CallDeferred()
+            ).AddTo(vm.Disposables);
         }
 
-        // Setup ready icon (exclamation mark) — shown when helper has resources ready for pickup
+        // Sleep icon — server flags `Helper.IsSleeping` whenever there's no work the helper
+        // can do. View just subscribes.
+        var sleepIcon = new Sprite3D
+        {
+            Texture = _sleepTexture,
+            PixelSize = 0.0015f,
+            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
+            AlphaCut = SpriteBase3D.AlphaCutMode.OpaquePrepass,
+            Shaded = false,
+            Position = new Vector3(0, 2.27f, 0),
+            NoDepthTest = true,
+            RenderPriority = 4,
+            Visible = false,
+        };
+        visualNode.AddChild(sleepIcon);
+
+        vm.Helper.Helper.IsSleeping.Subscribe(sleeping =>
+            Callable.From(() => { if (IsInstanceValid(sleepIcon)) sleepIcon.Visible = sleeping; }).CallDeferred()
+        ).AddTo(vm.Disposables);
+
+        // Ready icon (exclamation) — shown when helper has resources ready for pickup
         var readyIcon = visualNode.GetNodeOrNull<Sprite3D>("ReadyIcon");
         if (readyIcon != null)
         {
             vm.Helper.Helper.State.Subscribe(helperState =>
-            {
                 Callable.From(() =>
                 {
-                    if (!IsInstanceValid(readyIcon)) return;
-                    readyIcon.Visible = helperState == HelperState.WaitingForPickup;
-                }).CallDeferred();
-            }).AddTo(vm.Disposables);
+                    if (IsInstanceValid(readyIcon))
+                        readyIcon.Visible = helperState == HelperState.WaitingForPickup;
+                }).CallDeferred()
+            ).AddTo(vm.Disposables);
         }
     }
 

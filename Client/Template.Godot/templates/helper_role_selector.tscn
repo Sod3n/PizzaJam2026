@@ -2,9 +2,9 @@
 
 [ext_resource type="StyleBox" uid="uid://dpullp6lwhxbx" path="res://Styles/main_panel_small.tres" id="1_wuoom"]
 [ext_resource type="StyleBox" uid="uid://dym127vgo8tvn" path="res://Styles/sub_container_round.tres" id="2_omg2i"]
-[ext_resource type="Texture2D" uid="uid://drdehcqwro81t" path="res://sprites/girl_portrait.png" id="3_omg2i"]
 [ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="3_u6nc4"]
 [ext_resource type="Theme" uid="uid://chxeajla0yriy" path="res://Styles/default_theme.tres" id="4_60e4i"]
+[ext_resource type="Texture2D" uid="uid://clsdx8mb03ghe" path="res://sprites/sleep.png" id="5_omg2i"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_milk"]
 bg_color = Color(0.522, 0.737, 0.561, 1)
@@ -38,6 +38,67 @@ shadow_offset = Vector2(0, 4)
 
 [node name="HelperRoleSelector" type="HBoxContainer" unique_id=418934780]
 
+[node name="RolePreview" type="Control" parent="." unique_id=425131888]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+
+[node name="Back" type="Panel" parent="RolePreview" unique_id=213505425]
+layout_mode = 0
+offset_left = 94.0
+offset_top = 1.0
+offset_right = 193.0
+offset_bottom = 101.0
+scale = Vector2(-1, 1)
+theme_override_styles/panel = SubResource("StyleBoxFlat_milk")
+
+[node name="BackIcon" type="Panel" parent="RolePreview" unique_id=2098760864]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 14.0
+offset_right = 86.0
+offset_bottom = 88.0
+theme_override_styles/panel = ExtResource("2_omg2i")
+
+[node name="RoleIcon" type="TextureRect" parent="RolePreview" unique_id=103777675]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 13.0
+offset_top = 16.0
+offset_right = 85.0
+offset_bottom = 78.0
+texture = ExtResource("3_u6nc4")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackHint" type="Panel" parent="RolePreview" unique_id=1665627679]
+layout_mode = 0
+offset_left = -19.0
+offset_top = 58.0
+offset_right = 41.0
+offset_bottom = 118.60606
+theme_override_styles/panel = SubResource("StyleBoxFlat_wuoom")
+
+[node name="BackHint2" type="Panel" parent="RolePreview" unique_id=760567937]
+layout_mode = 0
+offset_left = -11.0
+offset_top = 66.0
+offset_right = 34.0
+offset_bottom = 111.0
+theme_override_styles/panel = ExtResource("2_omg2i")
+
+[node name="ButtonHint" type="Label" parent="RolePreview" unique_id=1126372207]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -9.0
+offset_top = 69.0
+offset_right = 33.0
+offset_bottom = 108.0
+theme = ExtResource("4_60e4i")
+theme_type_variation = &"MainTitle"
+text = "Z"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="CharacterPreview" type="MarginContainer" parent="." unique_id=620530070]
 custom_minimum_size = Vector2(310, 100)
 layout_mode = 2
@@ -55,81 +116,29 @@ theme_override_styles/panel = ExtResource("1_wuoom")
 
 [node name="BackIcon" type="Panel" parent="CharacterPreview/PanelContainer" unique_id=513863206]
 layout_mode = 0
-offset_left = 210.0
+offset_left = 15.0
 offset_top = 14.0
-offset_right = 284.0
+offset_right = 89.0
 offset_bottom = 88.0
 theme_override_styles/panel = ExtResource("2_omg2i")
 
 [node name="HelperIcon" type="TextureRect" parent="CharacterPreview/PanelContainer" unique_id=2145041002]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 141.0
-offset_top = 1.0
-offset_right = 271.0
-offset_bottom = 112.0
-texture = ExtResource("3_omg2i")
+offset_left = 18.0
+offset_top = 15.0
+offset_right = 85.0
+offset_bottom = 85.0
 expand_mode = 1
-stretch_mode = 4
+stretch_mode = 5
 
-[node name="RolePreview" type="Control" parent="." unique_id=425131888]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-
-[node name="Back" type="Panel" parent="RolePreview" unique_id=213505425]
-layout_mode = 0
-offset_left = -1.0
-offset_top = 1.0
-offset_right = 98.0
-offset_bottom = 101.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_milk")
-
-[node name="BackIcon" type="Panel" parent="RolePreview" unique_id=2098760864]
-layout_mode = 0
-offset_left = 12.0
-offset_top = 14.0
-offset_right = 86.0
-offset_bottom = 88.0
-theme_override_styles/panel = ExtResource("2_omg2i")
-
-[node name="RoleIcon" type="TextureRect" parent="RolePreview" unique_id=103777675]
+[node name="Sleep" type="TextureRect" parent="CharacterPreview/PanelContainer" unique_id=780357211]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 26.0
-offset_top = 13.0
-offset_right = 76.0
-offset_bottom = 80.0
-texture = ExtResource("3_u6nc4")
+offset_left = 29.0
+offset_top = -43.0
+offset_right = 96.0
+offset_bottom = 27.0
+texture = ExtResource("5_omg2i")
 expand_mode = 1
-stretch_mode = 4
-
-[node name="BackHint" type="Panel" parent="RolePreview" unique_id=1665627679]
-layout_mode = 0
-offset_left = 47.0
-offset_top = 58.0
-offset_right = 107.0
-offset_bottom = 118.60606
-theme_override_styles/panel = SubResource("StyleBoxFlat_wuoom")
-
-[node name="BackHint2" type="Panel" parent="RolePreview" unique_id=760567937]
-layout_mode = 0
-offset_left = 55.0
-offset_top = 66.0
-offset_right = 100.0
-offset_bottom = 111.0
-theme_override_styles/panel = ExtResource("2_omg2i")
-
-[node name="ButtonHint" type="Label" parent="RolePreview" unique_id=1126372207]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 27.0
-offset_top = 68.0
-offset_right = 127.0
-offset_bottom = 107.0
-theme = ExtResource("4_60e4i")
-theme_type_variation = &"MainTitle"
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
-text = "Z"
-horizontal_alignment = 1
-vertical_alignment = 1
+stretch_mode = 5

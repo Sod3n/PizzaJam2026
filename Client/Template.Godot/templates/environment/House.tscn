@@ -16,6 +16,12 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_gevk7"]
 animations = [{

@@ -100,7 +100,7 @@ public static class Balance
         public static int TwinChancePercent { get; private set; } = 1;
         public static int BreedInheritParentChancePercent { get; private set; } = 25;
         public static int SecondaryPreferenceChancePercent { get; private set; } = 20;
-        public static int MaxHorny { get; private set; } = 7200/10;
+        public static int MaxHorny { get; private set; } = 7200;
         // Per-cow MaxHorny = MaxHorny * (HornyExhaustBaseline / cow.MaxExhaust)^HornyExhaustCurve.
         // A cow with MaxExhaust == HornyExhaustBaseline always fills in exactly MaxHorny ticks.
         // HornyExhaustCurve controls steepness: 1.0 = linear, 2.0 = quadratic (current default —

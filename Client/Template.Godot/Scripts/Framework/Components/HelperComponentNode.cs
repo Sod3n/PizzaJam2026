@@ -23,4 +23,6 @@ public partial class HelperComponentNode : Node
     [Export] public int WantedFoodType;
     [Export] public bool SuppressTickUpdate;
     [Export] public int PetCount;
+    [Export] public bool IsAsking;
+    [Export] public bool IsSleeping;
 }

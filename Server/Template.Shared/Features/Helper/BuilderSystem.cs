@@ -16,6 +16,15 @@ public class BuilderSystem : ISystem
         {
             if (helperRef.Helper.Type != HelperType.Builder) continue;
             if (helperRef.Helper.SuppressTickUpdate) continue;
+            helperRef.Helper.IsAsking = false;
+            helperRef.Helper.IsSleeping = false;
+            if (!HelperUtilities.HasAssignedHouse(state, helperRef.Entity))
+            {
+                helperRef.Helper.State = HelperState.Idle;
+                if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+                    SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+                continue;
+            }
             UpdateBuilder(state, helperRef, helperRef.Helper.PetCount);
         }
     }
@@ -37,10 +46,22 @@ public class BuilderSystem : ISystem
 
     private void BuilderIdle(EntityWorld state, HelperRef helperRef)
     {
-        if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
-            SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
         if (helperRef.Helper.BagCoins > 0)
+        {
             helperRef.Helper.State = HelperState.SeekingTarget;
+            return;
+        }
+        if (HelperUtilities.PlayerCanFulfill(state, HelperType.Builder, -1)
+            && state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+        {
+            helperRef.Helper.IsAsking = true;
+            SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+        }
+        else
+        {
+            helperRef.Helper.IsSleeping = true;
+            HelperUtilities.NavigateHome(state, helperRef.Entity);
+        }
     }
 
     private void BuilderSeekLand(EntityWorld state, HelperRef helperRef)

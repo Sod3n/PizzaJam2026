@@ -86,23 +86,14 @@ public partial class InputManager : Node
         // ESC key toggles the Settings overlay (works even during other overlays so you can open/close it)
         if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.Escape }
             && !BreedResultOverlay.IsActive && !FamilyTreeOverlay.IsActive
-            && !LovePopupOverlay.IsActive && !CraftingOverlay.IsActive)
+            && !LovePopupOverlay.IsActive)
         {
             SettingsOverlay.Toggle(GetTree());
             GetViewport().SetInputAsHandled();
             return;
         }
 
-        // C key toggles the Crafting Recipes overlay
-        if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.C }
-            && !BreedResultOverlay.IsActive && !SettingsOverlay.IsActive)
-        {
-            CraftingOverlay.Toggle(GetTree());
-            GetViewport().SetInputAsHandled();
-            return;
-        }
-
-        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || LovePopupOverlay.IsActive || CraftingOverlay.IsActive || SettingsOverlay.IsActive) return;
+        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || LovePopupOverlay.IsActive || SettingsOverlay.IsActive) return;
 
         // Touch input for mobile
         if (@event is InputEventScreenTouch touch)
@@ -128,7 +119,7 @@ public partial class InputManager : Node
     public override void _PhysicsProcess(double delta)
     {
         if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
-        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || LovePopupOverlay.IsActive || CraftingOverlay.IsActive || SettingsOverlay.IsActive) return;
+        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || LovePopupOverlay.IsActive || SettingsOverlay.IsActive) return;
 
         var localPlayerId = GameManager.Instance.LocalPlayerId;
         if (localPlayerId == 0) return;

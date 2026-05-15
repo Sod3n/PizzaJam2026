@@ -50,7 +50,10 @@ public class HouseAssignFollowingHelperSystem : ISystem
 
         houseRef.House.HelperId = helperEntity;
 
-        TeleportHelperToHouse(state, houseRef, helperEntity);
+        // Don't teleport — helper navigates to its house on the next tick via NavigateHome.
+        // Just clear leftover follow-velocity so it doesn't drift before nav kicks in.
+        if (state.HasComponent<CharacterBody2D>(helperEntity))
+            state.GetComponent<CharacterBody2D>(helperEntity).Velocity = Vector2.Zero;
 
         InteractActionService.EnsureRoleSignForHouse(ctx, houseEntity, helperEntity);
 
@@ -60,11 +63,4 @@ public class HouseAssignFollowingHelperSystem : ISystem
         InteractFeedback.Success(ctx, playerEntity, houseEntity);
     }
 
-    private static void TeleportHelperToHouse(EntityWorld state, HouseRef houseRef, Entity helperEntity)
-    {
-        if (state.HasComponent<Transform2D>(helperEntity))
-            state.GetComponent<Transform2D>(helperEntity).Position = houseRef.Transform2D.Position;
-        if (state.HasComponent<CharacterBody2D>(helperEntity))
-            state.GetComponent<CharacterBody2D>(helperEntity).Velocity = Vector2.Zero;
-    }
 }

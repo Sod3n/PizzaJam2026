@@ -38,11 +38,11 @@ theme_override_styles/panel = ExtResource("2_6gpnq")
 
 [node name="ColorRect2" type="Panel" parent="." unique_id=222456094]
 layout_mode = 0
-offset_left = 22.279968
-offset_top = 24.0
-offset_right = 57.009552
-offset_bottom = 57.12671
-rotation = 0.7792625
+offset_left = 446.0
+offset_top = 66.0
+offset_right = 480.72958
+offset_bottom = 99.12671
+rotation = -2.3522234
 theme = ExtResource("1_kl5jh")
 theme_override_styles/panel = SubResource("StyleBoxFlat_7nhs3")
 

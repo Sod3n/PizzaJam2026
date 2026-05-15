@@ -63,6 +63,15 @@ public struct HelperComponent : IComponent
 
     public int PetCount;
 
+    // View-state flags driven by the role systems each tick. The view layer subscribes
+    // to these so it never needs to re-derive role/idle conditions on the client.
+    //   IsAsking  — helper is idle and the player has the resource it wants (show WantIcon)
+    //   IsSleeping — helper has nothing useful to do (show zZz)
+    // Exactly one of these is true at a time when the helper is idle; both are false when
+    // the helper is actively working.
+    public bool IsAsking;
+    public bool IsSleeping;
+
     public int GetBagTotal() => BagGrass + BagCarrot + BagApple + BagMushroom
                               + BagMilk + BagCarrotMilkshake + BagVitaminMix + BagPurplePotion
                               + BagCoins;

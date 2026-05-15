@@ -15,6 +15,15 @@ public class SellerSystem : ISystem
         {
             if (helperRef.Helper.Type != HelperType.Seller) continue;
             if (helperRef.Helper.SuppressTickUpdate) continue;
+            helperRef.Helper.IsAsking = false;
+            helperRef.Helper.IsSleeping = false;
+            if (!HelperUtilities.HasAssignedHouse(state, helperRef.Entity))
+            {
+                helperRef.Helper.State = HelperState.Idle;
+                if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+                    SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+                continue;
+            }
             UpdateSeller(state, helperRef, helperRef.Helper.PetCount);
         }
     }
@@ -36,10 +45,22 @@ public class SellerSystem : ISystem
 
     private void SellerIdle(EntityWorld state, HelperRef helperRef)
     {
-        if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
-            SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
         if (HasMilkInBag(ref helperRef.Helper))
+        {
             helperRef.Helper.State = HelperState.SeekingTarget;
+            return;
+        }
+        if (HelperUtilities.PlayerCanFulfill(state, HelperType.Seller, -1)
+            && state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+        {
+            helperRef.Helper.IsAsking = true;
+            SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+        }
+        else
+        {
+            helperRef.Helper.IsSleeping = true;
+            HelperUtilities.NavigateHome(state, helperRef.Entity);
+        }
     }
 
     private void SellerSeekSellPoint(EntityWorld state, HelperRef helperRef)

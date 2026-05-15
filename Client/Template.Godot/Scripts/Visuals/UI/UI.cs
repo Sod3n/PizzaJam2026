@@ -42,6 +42,8 @@ public partial class UI : CanvasLayer
         _sessionTimeLabel = GetNodeOrNull<Label>("%SessionTimeValue");
         _hintPopup = GetNodeOrNull<HintPopup>("%HintPopup");
         _iconSet = ResourceLoader.Load<LandTypeIconSet>("res://Resources/LandTypeIcons.tres");
+
+        AddChild(new HelperRoleSelectorsController());
     }
 
     private void Setup(string key, string labelPath, string iconPath)

@@ -142,6 +142,8 @@ public partial class CowView
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
 
+        var jumpTweens = new JumpTweens();
+
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
             .Where(x => x == vm.Entity && ReactiveSystem.Instance.BoundState != null
                 && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.CowJumpWindup)
@@ -151,9 +153,11 @@ public partial class CowView
                 {
                     if (!IsInstanceValid(characterNode)) return;
                     characterNode.SetDeferred("enable_bounce", false);
+                    KillJumpTweens(jumpTweens);
                     var tw = characterNode.CreateTween();
                     tw.SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
                     tw.TweenProperty(characterNode, "scale", new Vector3(1.4f, 0.5f, 1.4f), 0.3f);
+                    jumpTweens.Scale = tw;
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
 
@@ -168,9 +172,11 @@ public partial class CowView
                 Callable.From(() =>
                 {
                     if (!IsInstanceValid(characterNode) || !IsInstanceValid(visualNode)) return;
+                    KillJumpTweens(jumpTweens);
                     var existing = characterNode.CreateTween();
                     existing.SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
                     existing.TweenProperty(characterNode, "scale", Vector3.One, 0.1f);
+                    jumpTweens.Scale = existing;
                     characterNode.SetDeferred("enable_bounce", true);
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
@@ -183,6 +189,7 @@ public partial class CowView
                 Callable.From(() =>
                 {
                     if (!IsInstanceValid(characterNode) || !IsInstanceValid(visualNode)) return;
+                    KillJumpTweens(jumpTweens);
                     var scaleTw = characterNode.CreateTween();
                     scaleTw.SetTrans(Tween.TransitionType.Cubic).SetEase(Tween.EaseType.Out);
                     scaleTw.TweenProperty(characterNode, "scale", new Vector3(0.7f, 1.6f, 0.7f), 0.12f);
@@ -193,6 +200,8 @@ public partial class CowView
                     arcTw.TweenProperty(visualNode, "position:y", visualNode.Position.Y + 1.8f, 0.15f);
                     arcTw.Chain().SetEase(Tween.EaseType.In)
                         .TweenProperty(visualNode, "position:y", visualNode.Position.Y, 0.15f);
+                    jumpTweens.Scale = scaleTw;
+                    jumpTweens.Arc = arcTw;
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
 
@@ -219,6 +228,20 @@ public partial class CowView
                 }
                 Callable.From(() => LovePopupOverlay.Show(GetTree(), vm.Entity, targetName)).CallDeferred();
             }).AddTo(vm.Disposables);
+    }
+
+    private sealed class JumpTweens
+    {
+        public Tween Scale;
+        public Tween Arc;
+    }
+
+    private static void KillJumpTweens(JumpTweens t)
+    {
+        if (t.Scale != null && t.Scale.IsValid()) t.Scale.Kill();
+        if (t.Arc != null && t.Arc.IsValid()) t.Arc.Kill();
+        t.Scale = null;
+        t.Arc = null;
     }
 
     private sealed class HornyIconState

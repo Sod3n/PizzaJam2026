@@ -3,11 +3,57 @@ using Deterministic.GameFramework.TwoD;
 using Deterministic.GameFramework.Types;
 using Deterministic.GameFramework.Physics2D.Components;
 using Deterministic.GameFramework.Navigation2D.Components;
+using Template.Shared.Actions;
+using Template.Shared.Components;
 
 namespace Template.Shared.Systems;
 
 public static class HelperUtilities
 {
+    public static Entity FindAssignedHouse(EntityWorld state, Entity helperEntity)
+    {
+        foreach (var houseEntity in state.Filter<HouseComponent>())
+        {
+            if (state.GetComponent<HouseComponent>(houseEntity).HelperId == helperEntity)
+                return houseEntity;
+        }
+        return Entity.Null;
+    }
+
+    public static bool HasAssignedHouse(EntityWorld state, Entity helperEntity)
+        => FindAssignedHouse(state, helperEntity) != Entity.Null;
+
+    // True if the player has the resource this helper would ask for; false when the player
+    // can't possibly fulfill the request (so the helper should go home and idle instead of
+    // chasing the player for nothing).
+    public static bool PlayerCanFulfill(EntityWorld state, int helperType, int wantedFoodType)
+    {
+        var grEntity = InteractFeedback.GetGlobalResourcesEntity(state);
+        if (grEntity == Entity.Null) return false;
+        var gr = state.GetComponent<GlobalResourcesComponent>(grEntity);
+        return helperType switch
+        {
+            HelperType.Seller => gr.Milk > 0,
+            HelperType.Builder => gr.Coins > 0,
+            HelperType.Milker => wantedFoodType >= 0 && gr.GetFood(wantedFoodType) > 0,
+            _ => false,
+        };
+    }
+
+    // Navigates the helper toward its assigned house. Returns true if at house (idle there).
+    public static bool NavigateHome(EntityWorld state, Entity helperEntity)
+    {
+        var house = FindAssignedHouse(state, helperEntity);
+        if (house == Entity.Null || !state.HasComponent<Transform2D>(house))
+        {
+            StopMovement(state, helperEntity);
+            return false;
+        }
+        var housePos = state.GetComponent<Transform2D>(house).Position;
+        return NavigateToward(state, helperEntity, housePos, HelperSystem.PlayerReturnDistSq);
+    }
+
+
     // Steers the entity toward targetPos via navigation agent + ORCA velocity blending.
     // Returns true when the entity is within desiredDistSq of the target.
     public static bool NavigateToward(EntityWorld state, Entity entity, Vector2 targetPos, Float desiredDistSq)

@@ -47,6 +47,8 @@ public static partial class HelperDefinition
         component.ParentA = Entity.Null;
         component.ParentB = Entity.Null;
         component.PetCount = 0;
+        component.IsAsking = false;
+        component.IsSleeping = false;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

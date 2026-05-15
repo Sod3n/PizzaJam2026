@@ -16,6 +16,15 @@ public class GathererSystem : ISystem
         {
             if (helperRef.Helper.Type != HelperType.Gatherer) continue;
             if (helperRef.Helper.SuppressTickUpdate) continue;
+            helperRef.Helper.IsAsking = false;
+            helperRef.Helper.IsSleeping = false;
+            if (!HelperUtilities.HasAssignedHouse(state, helperRef.Entity))
+            {
+                helperRef.Helper.State = HelperState.Idle;
+                if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+                    SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+                continue;
+            }
             UpdateGatherer(state, helperRef, helperRef.Helper.PetCount);
         }
     }
@@ -46,7 +55,8 @@ public class GathererSystem : ISystem
                 helperRef.Helper.State = HelperState.Returning;
                 return;
             }
-            HelperUtilities.StopMovement(state, helperRef.Entity);
+            helperRef.Helper.IsSleeping = true;
+            HelperUtilities.NavigateHome(state, helperRef.Entity);
             return;
         }
         helperRef.Helper.TargetEntity = foodEntity;

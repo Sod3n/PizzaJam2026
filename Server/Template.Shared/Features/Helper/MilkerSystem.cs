@@ -16,6 +16,15 @@ public class MilkerSystem : ISystem
         {
             if (helperRef.Helper.Type != HelperType.Milker) continue;
             if (helperRef.Helper.SuppressTickUpdate) continue;
+            helperRef.Helper.IsAsking = false;
+            helperRef.Helper.IsSleeping = false;
+            if (!HelperUtilities.HasAssignedHouse(state, helperRef.Entity))
+            {
+                helperRef.Helper.State = HelperState.Idle;
+                if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+                    SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+                continue;
+            }
             UpdateMilker(state, helperRef, helperRef.Helper.PetCount);
         }
     }
@@ -42,9 +51,10 @@ public class MilkerSystem : ISystem
             var milkTarget = FindMilkableHouse(state, helperRef.Entity);
             if (milkTarget == Entity.Null)
             {
+                // Truly nothing to do — no milkable cow in the world. Go home and idle.
                 helperRef.Helper.WantedFoodType = -1;
-                if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
-                    SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+                helperRef.Helper.IsSleeping = true;
+                HelperUtilities.NavigateHome(state, helperRef.Entity);
                 return;
             }
             helperRef.Helper.TargetEntity = milkTarget;
@@ -67,8 +77,17 @@ public class MilkerSystem : ISystem
             return;
         }
 
-        if (state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+        if (HelperUtilities.PlayerCanFulfill(state, HelperType.Milker, helperRef.Helper.WantedFoodType)
+            && state.HasComponent<Transform2D>(helperRef.Helper.OwnerPlayer))
+        {
+            helperRef.Helper.IsAsking = true;
             SwarmFollow.Follow(state, helperRef.Entity, helperRef.Helper.OwnerPlayer);
+        }
+        else
+        {
+            helperRef.Helper.IsSleeping = true;
+            HelperUtilities.NavigateHome(state, helperRef.Entity);
+        }
     }
 
     private void MilkerReevaluate(HelperRef helperRef)
