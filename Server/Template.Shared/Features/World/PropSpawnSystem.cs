@@ -9,7 +9,6 @@ namespace Template.Shared.Systems;
 
 public class PropSpawnSystem : ISystem
 {
-    private const int SpawnTick = 0;
     private static int PropCount => Template.Shared.GameData.Balance.Props.Count;
     // Match the wall bounds set up in GameplayScene so props fill the whole walled box.
     private static readonly Float MapHalfSize = (Float)(StarGrid.OuterRadius + StarGrid.GridStep);
@@ -32,10 +31,9 @@ public class PropSpawnSystem : ISystem
 
     public void Update(EntityWorld state)
     {
-        var gameTime = state.GetCustomData<IGameTime>();
-        if (gameTime == null || gameTime.CurrentTick != SpawnTick) return;
-
-        // Only spawn once — check if any props already exist in this world
+        // Spawn once on the first tick that has no PropComponent yet. Tying this to
+        // an exact tick number was fragile: any missed tick-0 update (gameTime not
+        // ready, system order shuffle) meant props never spawned.
         foreach (var _ in state.Filter<PropComponent>())
             return;
 

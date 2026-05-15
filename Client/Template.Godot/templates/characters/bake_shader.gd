@@ -17,54 +17,16 @@ func bake_background() -> void:
 		push_warning("bake_background: no game viewport available, skipping bake")
 		return
 
-	await RenderingServer.frame_post_draw
-
-	var img := game_viewport.get_texture().get_image()
-	if img.is_empty():
-		push_error("Failed to capture game viewport")
-		return
-
-	var screen_size := img.get_size()
-	var screen_tex := ImageTexture.create_from_image(img)
-
-	# Temporarily make this ColorRect visible with the shader
-	# and feed it the captured screen
-	original_material.set_shader_parameter("screen_texture", screen_tex)
+	# Feed the shader the live ViewportTexture instead of a baked snapshot so the
+	# blurred background keeps updating while the gacha reveal plays.
+	original_material.set_shader_parameter("screen_texture", game_viewport.get_texture())
 	material = original_material
 	visible = true
-
-	# Force a few frames so the shader actually renders on screen
-	await get_tree().process_frame
-	await get_tree().process_frame
-
-	# Now capture the final composited result from the main viewport
-	var final_img := get_viewport().get_texture().get_image()
-	if final_img.is_empty():
-		push_error("Failed to capture final result")
-		return
-
-	var result_tex := ImageTexture.create_from_image(final_img)
-
-	# Replace with static baked image
-	visible = false
-	baked_rect = TextureRect.new()
-	baked_rect.texture = result_tex
-	baked_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	baked_rect.stretch_mode = TextureRect.STRETCH_SCALE
-	baked_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	get_parent().add_child(baked_rect)
-	get_parent().move_child(baked_rect, get_index())
-	# Apply full-rect anchors AFTER add_child so offsets evaluate against the real parent.
-	baked_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 0)
 	baked = true
-	print("Bake complete: ", final_img.get_size(), " rect size: ", baked_rect.size)
 
 func unbake() -> void:
 	if not baked:
 		return
-	if baked_rect:
-		baked_rect.queue_free()
-		baked_rect = null
 	material = original_material
 	visible = true
 	baked = false

@@ -154,8 +154,10 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         // agent-helpers-in-house: source of truth is cow.SelectedFood (travels with cow)
         int foodToUse = cow.SelectedFood;
 
-        int cowBoost = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase + Template.Shared.GameData.Balance.Pets.BoostPerPet * cow.PetCount;
-        int exhaustPerClick = cowBoost;
+        // Pets on the cow no longer make each click consume more exhaust — instead the player
+        // simply auto-clicks faster (handled client-side in InputManager) and the cow's horny
+        // meter accrues slower (CowHornySystem).
+        int exhaustPerClick = Template.Shared.GameData.Balance.Pets.AdditiveBoostBase;
         bool produced = InteractionLogic.MilkCow(ctx.State, cowEntity, foodToUse, exhaustPerClick, out bool cowDone);
 
         Entity target = cowEntity;
@@ -345,6 +347,17 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         pet.AssignedTo = targetEntity;
         pet.FollowTarget = targetEntity;
         playerState.CarriedEntity = Entity.Null;
+
+        // Snap to the player's feet on release. While carried, SwarmFollow leaves
+        // the pet's ECS position anywhere within its StopDist (~5 units) of the
+        // player, so without this the dropped pet appears a few units away.
+        if (ctx.State.HasComponent<Transform2D>(petEntity)
+            && ctx.State.HasComponent<Transform2D>(playerEntity))
+        {
+            ref var petTr = ref ctx.State.GetComponent<Transform2D>(petEntity);
+            petTr.Position = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+        }
+
         ILogger.Log($"[Pet] Player {playerEntity.Id} assigned pet {petEntity.Id} to target {targetEntity.Id}");
         return true;
     }

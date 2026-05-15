@@ -1,0 +1,9 @@
+[gd_resource type="FontVariation" format=3 uid="uid://dc0vxuawh0nu2"]
+
+[ext_resource type="FontFile" uid="uid://cfpessk0mjdvr" path="res://fonts/Martian_Mono/MartianMono-VariableFont_wdth,wght.ttf" id="1_base"]
+
+[resource]
+base_font = ExtResource("1_base")
+variation_opentype = {
+&"wght": 800
+}

@@ -1,0 +1,90 @@
+[gd_scene format=3 uid="uid://ce8gpbaaiganr"]
+
+[ext_resource type="Script" uid="uid://b08ilcuq7pxl" path="res://Scripts/Visuals/UI/HintPopup.cs" id="0_script"]
+[ext_resource type="Theme" uid="uid://chxeajla0yriy" path="res://Styles/default_theme.tres" id="1_kl5jh"]
+[ext_resource type="StyleBox" uid="uid://c5dprhdr4umhb" path="res://Styles/main_panel_small_special.tres" id="2_6gpnq"]
+[ext_resource type="StyleBox" uid="uid://20yac7pqm4o4" path="res://Styles/sub_container.tres" id="3_gpxmt"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="4_dop56"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7nhs3"]
+content_margin_left = 32.0
+content_margin_top = 24.0
+content_margin_right = 32.0
+content_margin_bottom = 24.0
+bg_color = Color(0.52156866, 0.7372549, 0.56078434, 1)
+border_width_left = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+shadow_size = 4
+shadow_offset = Vector2(-4, 4)
+
+[node name="HintPopup" type="Control" unique_id=942232408]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 326.0
+offset_top = 888.0
+offset_right = 772.0
+offset_bottom = 1057.0
+script = ExtResource("0_script")
+
+[node name="ColorRect" type="Panel" parent="." unique_id=2033760353]
+layout_mode = 0
+offset_left = 22.279938
+offset_top = 1.0
+offset_right = 447.2799
+offset_bottom = 170.0
+theme = ExtResource("1_kl5jh")
+theme_override_styles/panel = ExtResource("2_6gpnq")
+
+[node name="ColorRect2" type="Panel" parent="." unique_id=222456094]
+layout_mode = 0
+offset_left = 22.279968
+offset_top = 24.0
+offset_right = 57.009552
+offset_bottom = 57.12671
+rotation = 0.7792625
+theme = ExtResource("1_kl5jh")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7nhs3")
+
+[node name="ColorRect3" type="Panel" parent="." unique_id=90791962]
+layout_mode = 0
+offset_left = 40.279938
+offset_top = 17.0
+offset_right = 430.2799
+offset_bottom = 152.0
+theme = ExtResource("1_kl5jh")
+theme_override_styles/panel = ExtResource("3_gpxmt")
+
+[node name="ColorRect4" type="Panel" parent="." unique_id=1152802532]
+layout_mode = 0
+offset_left = 53.279938
+offset_top = 25.0
+offset_right = 108.01169
+offset_bottom = 76.0
+theme = ExtResource("1_kl5jh")
+theme_override_styles/panel = ExtResource("3_gpxmt")
+
+[node name="HintText" type="RichTextLabel" parent="." unique_id=1724881201]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 122.0
+offset_top = 38.0
+offset_right = 416.0
+offset_bottom = 144.0
+theme = ExtResource("1_kl5jh")
+theme_type_variation = &"SectionHeader"
+theme_override_font_sizes/normal_font_size = 18
+text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+autowrap_mode = 1
+
+[node name="HintIcon" type="TextureRect" parent="." unique_id=704380076]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 53.0
+offset_top = 24.0
+offset_right = 109.0
+offset_bottom = 76.29999
+pivot_offset = Vector2(25, 33)
+texture = ExtResource("4_dop56")
+expand_mode = 1
+stretch_mode = 5

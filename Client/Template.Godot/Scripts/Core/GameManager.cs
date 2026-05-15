@@ -60,8 +60,9 @@ public partial class GameManager : Node
     public event Action<string> OnError;
 
     private const string SaveFilePath = "user://savegame.dat";
-    private const int AutoSaveInterval = 300; // 5 seconds at 60hz
+    private const int AutoSaveInterval = 1800; // 30 seconds at 60hz
     private int _autoSaveCounter;
+    private volatile int _saveInFlight;
     private byte[] _pendingLoadState;
 
     private Task _gameLoopTask;
@@ -99,6 +100,7 @@ public partial class GameManager : Node
         OnGameStarted += TwitchIntegration.Initialize;
         OnGameStarted += Template.Godot.Visuals.GameOverOverlay.InstallWatcher;
         OnGameStarted += Template.Godot.Visuals.SleepFadeOverlay.InstallWatcher;
+        OnGameStarted += Template.Godot.Visuals.CaughtCensorView.InstallWatcher;
 
         ILogger.SetLogger(new GodotLogger());
 
@@ -354,26 +356,49 @@ public partial class GameManager : Node
 
     public void SaveGame()
     {
+        // Skip if a previous save is still writing — saves are 1.5MB+ and
+        // overlapping them can pile up I/O and stutter the main loop.
+        if (System.Threading.Interlocked.CompareExchange(ref _saveInFlight, 1, 0) != 0)
+            return;
+
+        byte[] saveData;
+        long tick;
         try
         {
+            // Serialization touches ECS state, so it has to stay on the game-loop thread.
             byte[] stateData = StateSerializer.Serialize(Game.State);
-            long tick = Game.Loop.CurrentTick;
-
-            byte[] saveData = new byte[8 + stateData.Length];
+            tick = Game.Loop.CurrentTick;
+            saveData = new byte[8 + stateData.Length];
             BitConverter.TryWriteBytes(new Span<byte>(saveData, 0, 8), tick);
             stateData.CopyTo(saveData, 8);
-
-            using var file = FileAccess.Open(SaveFilePath, FileAccess.ModeFlags.Write);
-            if (file != null)
-            {
-                file.StoreBuffer(saveData);
-                GD.Print($"[GameManager] Game saved at tick {tick} ({stateData.Length} bytes)");
-            }
         }
         catch (Exception e)
         {
-            GD.PrintErr($"[GameManager] Save failed: {e.Message}");
+            GD.PrintErr($"[GameManager] Save (serialize) failed: {e.Message}");
+            System.Threading.Interlocked.Exchange(ref _saveInFlight, 0);
+            return;
         }
+
+        // The Godot FileAccess API is main-thread only; use System.IO so the
+        // ~1.5MB write doesn't block the simulation tick.
+        string absPath = ProjectSettings.GlobalizePath(SaveFilePath);
+        int len = saveData.Length;
+        Task.Run(() =>
+        {
+            try
+            {
+                System.IO.File.WriteAllBytes(absPath, saveData);
+                GD.Print($"[GameManager] Game saved at tick {tick} ({len - 8} bytes)");
+            }
+            catch (Exception e)
+            {
+                GD.PrintErr($"[GameManager] Save (write) failed: {e.Message}");
+            }
+            finally
+            {
+                System.Threading.Interlocked.Exchange(ref _saveInFlight, 0);
+            }
+        });
     }
 
     public byte[] LoadGameFromDisk()

@@ -206,6 +206,9 @@ public class ViewSmoother : IDisposable
             _byEntity[entity.Id] = list;
         }
         list.Add(tracker);
+        // Snap immediately so the node renders at its real position on the very first
+        // frame instead of flying in from the scene-instance default (usually origin).
+        tracker.Reset();
         return tracker;
     }
 

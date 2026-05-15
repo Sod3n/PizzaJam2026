@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d0cv0g4sn08pw"]
 
-[ext_resource type="Script" uid="uid://brd1v3r4y5vc1" path="res://Scripts/Visuals/BreedResultOverlay.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://brd1v3r4y5vc1" path="res://Scripts/Visuals/UI/BreedResultOverlay.cs" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://b31p6lgq304o1" path="res://sprites/character_shadow.png" id="2_8lr5e"]
 [ext_resource type="Texture2D" uid="uid://c4l6g4w7sq6yw" path="res://sprites/star.png" id="2_aa4cw"]
 [ext_resource type="FontFile" uid="uid://bexyiwisoef5j" path="res://fonts/Inter.ttf" id="2_fuvob"]
@@ -242,6 +242,7 @@ light_energy = 1.5
 
 [node name="Bottom" type="Control" parent="GachaScreen" unique_id=991094836]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -265,6 +266,7 @@ stretch_mode = 3
 
 [node name="FoodPreferenceIcon" type="TextureRect" parent="GachaScreen/Bottom/StatsBack" unique_id=1676684514]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0

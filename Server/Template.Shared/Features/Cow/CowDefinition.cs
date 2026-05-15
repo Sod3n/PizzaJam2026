@@ -29,7 +29,7 @@ public static partial class CowDefinition
             if (skinDef != null)
                 totalExhaust += skinDef.Exhaust;
         }
-        if (totalExhaust <= 0) totalExhaust = 10;
+        totalExhaust = MapExhaustWeight(totalExhaust);
 
         // Weighted random: common cows prefer cheap food, rare cows prefer expensive food
         component.PreferredFood = FoodType.RandomPreferred(ref random);
@@ -89,11 +89,29 @@ public static partial class CowDefinition
             var def = GameData.GD.SkinsData.Get(skinId);
             if (def != null) total += def.Exhaust;
         }
-        if (total <= 0) total = 10;
+        total = MapExhaustWeight(total);
 
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
         cow.MaxExhaust = total;
         cow.MaxHorny = ComputeMaxHorny(total);
+    }
+
+    /// <summary>
+    /// Remap a summed skin-Exhaust *weight* onto the balance-tunable [MinExhaust, MaxExhaust] range
+    /// using <see cref="Balance.Cow.ExhaustCurve"/>. Skin values become rank weights, actual milking
+    /// difficulty lives in balance.
+    /// </summary>
+    internal static int MapExhaustWeight(int weightSum)
+    {
+        var (wMin, wMax) = GameData.GD.SkinsData.GetExhaustWeightBounds();
+        int outMin = System.Math.Max(1, Balance.Cow.MinExhaust);
+        int outMax = System.Math.Max(outMin, Balance.Cow.MaxExhaust);
+        if (wMax <= wMin) return outMin;
+        double t = (double)(weightSum - wMin) / (wMax - wMin);
+        if (t < 0) t = 0;
+        else if (t > 1) t = 1;
+        t = System.Math.Pow(t, System.Math.Max(0.0001, Balance.Cow.ExhaustCurve));
+        return System.Math.Max(1, (int)System.Math.Round(outMin + (outMax - outMin) * t));
     }
 
     internal static int ComputeMaxHorny(int totalExhaust)

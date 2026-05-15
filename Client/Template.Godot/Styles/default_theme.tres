@@ -6,8 +6,10 @@
 [ext_resource type="StyleBox" uid="uid://clmgbavuqhc47" path="res://Styles/empty_separator.tres" id="4_empty_sep"]
 [ext_resource type="StyleBox" uid="uid://20yac7pqm4o4" path="res://Styles/sub_container.tres" id="5_sub_panel"]
 [ext_resource type="StyleBox" path="res://Styles/main_panel.tres" id="6_main_panel"]
+[ext_resource type="FontVariation" uid="uid://dc0vxuawh0nu2" path="res://fonts/Martian_Mono/martian_mono_800.tres" id="7_font"]
 
 [resource]
+default_font = ExtResource("7_font")
 Button/colors/font_color = Color(0, 0, 0, 1)
 Button/colors/font_focus_color = Color(0.52156866, 0.74509805, 0.69803923, 1)
 Button/colors/font_hover_color = Color(0.52156866, 0.74509805, 0.69803923, 1)
@@ -21,8 +23,18 @@ CheckButton/colors/font_color = Color(0.15, 0.15, 0.15, 1)
 CheckButton/colors/font_outline_color = Color(1, 1, 1, 1)
 CheckButton/constants/outline_size = 6
 CheckButton/font_sizes/font_size = 16
+DescLabel/base_type = &"Label"
+DescLabel/colors/font_color = Color(0.15, 0.15, 0.15, 1)
+DescLabel/colors/font_outline_color = Color(1, 1, 1, 1)
+DescLabel/constants/outline_size = 6
+DescLabel/font_sizes/font_size = 20
 HSeparator/constants/separation = 6
 HSeparator/styles/separator = ExtResource("4_empty_sep")
+HintLabel/base_type = &"Label"
+HintLabel/colors/font_color = Color(0.15, 0.15, 0.15, 1)
+HintLabel/colors/font_outline_color = Color(1, 1, 1, 1)
+HintLabel/constants/outline_size = 6
+HintLabel/font_sizes/font_size = 14
 Label/colors/font_color = Color(0.15, 0.15, 0.15, 1)
 Label/colors/font_outline_color = Color(1, 1, 1, 1)
 Label/constants/outline_size = 6
@@ -39,6 +51,14 @@ RangeLabel/colors/font_color = Color(0.52156866, 0.7411765, 0.69803923, 1)
 RangeLabel/colors/font_outline_color = Color(1, 1, 1, 1)
 RangeLabel/constants/outline_size = 6
 RangeLabel/font_sizes/font_size = 12
+RichTextLabel/colors/default_color = Color(0.15, 0.15, 0.15, 1)
+RichTextLabel/colors/font_outline_color = Color(1, 1, 1, 1)
+RichTextLabel/constants/outline_size = 6
+RichTextLabel/font_sizes/bold_font_size = 16
+RichTextLabel/font_sizes/bold_italics_font_size = 16
+RichTextLabel/font_sizes/italics_font_size = 16
+RichTextLabel/font_sizes/mono_font_size = 16
+RichTextLabel/font_sizes/normal_font_size = 16
 SectionHeader/base_type = &"Label"
 SectionHeader/colors/font_color = Color(0.05, 0.05, 0.05, 1)
 SectionHeader/colors/font_outline_color = Color(1, 1, 1, 1)

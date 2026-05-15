@@ -37,6 +37,13 @@ public static class Balance
         public static float SprintSpeed { get; private set; } = 22f;
         /// <summary>Hold-to-repeat threshold (ticks). Lower = faster auto-fire while holding interact.</summary>
         public static int HoldRepeatThreshold { get; private set; } = 15;
+        // How long the cow holds the player after a successful catch before the forced sleep kicks in.
+        public static int CaughtTicks { get; private set; } = 60 * 5;
+        // Final stretch of CaughtTicks during which the sleep fade fills the screen — must be ≥
+        // SleepFadeOverlay.FadeInSeconds * TickRate so the teleport happens behind black.
+        public static int CaughtFadeTicks { get; private set; } = 30;
+        // Ticks between cow "boop" interactions on the player while caught (each fires a squish + hearts).
+        public static int CaughtTapIntervalTicks { get; private set; } = 24;
     }
 
     public static class HelperPlayer
@@ -50,6 +57,14 @@ public static class Balance
     public static class Cow
     {
         public static int ClicksPerMilk { get; private set; } = 1;
+
+        // Skin Exhaust values act as a *weight* — summing them ranks cows from cheap→expensive.
+        // The actual MaxExhaust is then remapped onto [MinExhaust, MaxExhaust] using a curve:
+        // t = (sum - sumMin) / (sumMax - sumMin), MaxExhaust = lerp(Min, Max, t^Curve).
+        // Curve > 1 = exponential (rare cows much harder), Curve < 1 = logarithmic (rare cows only slightly harder).
+        public static int MinExhaust { get; private set; } = 10;
+        public static int MaxExhaust { get; private set; } = 80;
+        public static float ExhaustCurve { get; private set; } = 2f;
         public static int DepressionTicks { get; private set; } = 1800;
         public static int NonPreferredFoodFailPercent { get; private set; } = 50;
 
@@ -66,7 +81,7 @@ public static class Balance
 
             // cow.PreferredFood
             public const int PrimarySuccessPercent = 100;
-            public const int PrimaryYieldDiscovered = 3;
+            public const int PrimaryYieldDiscovered = 2;
             public const int PrimaryYieldUndiscovered = 1;
             // cow.SecondaryPreferredFood
             public const int SecondarySuccessPercent = 80;
@@ -85,7 +100,7 @@ public static class Balance
         public static int TwinChancePercent { get; private set; } = 1;
         public static int BreedInheritParentChancePercent { get; private set; } = 25;
         public static int SecondaryPreferenceChancePercent { get; private set; } = 20;
-        public static int MaxHorny { get; private set; } = 7200;
+        public static int MaxHorny { get; private set; } = 7200/10;
         // Per-cow MaxHorny = MaxHorny * (HornyExhaustBaseline / cow.MaxExhaust)^HornyExhaustCurve.
         // A cow with MaxExhaust == HornyExhaustBaseline always fills in exactly MaxHorny ticks.
         // HornyExhaustCurve controls steepness: 1.0 = linear, 2.0 = quadratic (current default —
@@ -95,6 +110,17 @@ public static class Balance
         public static int HornyPerMilkClick { get; private set; } = 150;
         public static int AttackCatchDistanceSq { get; private set; } = 4;
         public static int HornyOffscreenIndicatorThresholdPercent { get; private set; } = 75;
+        // Slightly below player sprint (22) so the player must actually run to escape.
+        public static float AttackChaseSpeed { get; private set; } = 8f;
+        public static float DefaultMaxSpeed { get; private set; } = 10f;
+        // Finisher leap: once the chasing cow is within JumpTriggerDistance it freezes for a
+        // windup, then arcs onto the player and always lands the catch.
+        public static float AttackJumpTriggerDistance { get; private set; } = 8f;
+        public static int AttackJumpWindupTicks { get; private set; } = 24;
+        public static int AttackJumpLeapTicks { get; private set; } = 24;
+        // World-space distance the cow stops short of the player after a catch — keeps them
+        // visually beside each other instead of overlapping while CaughtSystem pins them.
+        public static float CaughtStandoffDistance { get; private set; } = 1f;
     }
 
     public static class Breed
@@ -200,6 +226,8 @@ public static class Balance
         public static float SpeedPerPet { get; private set; } = 3f;
         public static int HoldRepeatReductionPerPet { get; private set; } = 1;
         public static int HoldRepeatFloor { get; private set; } = 3;
+        /// <summary>Extra ticks added between cow.Horny ticks per pet assigned to that cow. 1 pet + value 1 = horny accrues at half rate.</summary>
+        public static int HornySlowTicksPerPet { get; private set; } = 2;
     }
 
     public static class FoodSpawn

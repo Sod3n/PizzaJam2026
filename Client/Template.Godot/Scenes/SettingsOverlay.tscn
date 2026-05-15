@@ -78,6 +78,7 @@ theme_type_variation = &"SubContainer"
 
 [node name="TwitchHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=2142907888]
 layout_mode = 2
+theme = ExtResource("2_theme")
 theme_type_variation = &"SectionHeader"
 text = "Twitch Integration"
 horizontal_alignment = 1
@@ -278,7 +279,7 @@ text = "Copy"
 [node name="LobbyStatusLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=1014442559]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"HintLabel"
 
 [node name="LobbyActionsRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer2/VBoxContainer/HBoxContainer3/MarginContainer/VBoxContainer" unique_id=739408247]
 layout_mode = 2
@@ -316,6 +317,6 @@ theme_type_variation = &"SubContainer"
 
 [node name="CloseHint" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainer3/VBoxContainer/HBoxContainer2" unique_id=628545419]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"HintLabel"
 text = "Press Escape to close"
 horizontal_alignment = 1

@@ -142,6 +142,60 @@ public partial class CowView
                 }).CallDeferred();
             }).AddTo(vm.Disposables);
 
+        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
+            .Where(x => x == vm.Entity && ReactiveSystem.Instance.BoundState != null
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.CowJumpWindup)
+            .Subscribe(_ =>
+            {
+                Callable.From(() =>
+                {
+                    if (!IsInstanceValid(characterNode)) return;
+                    characterNode.SetDeferred("enable_bounce", false);
+                    var tw = characterNode.CreateTween();
+                    tw.SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
+                    tw.TweenProperty(characterNode, "scale", new Vector3(1.4f, 0.5f, 1.4f), 0.3f);
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
+
+        // Windup disables bounce + leaves characterNode mid-squish; the leap tween
+        // restores scale but bounce stays off, and a catch can pin the cow before the
+        // tween finishes. Always reset both when CowJumpComponent goes away (catch end,
+        // attack cancel, etc.) so the cow doesn't sit squished back at its house.
+        ReactiveSystem.Instance.ObserveRemove<CowJumpComponent>()
+            .Where(x => x == vm.Entity)
+            .Subscribe(_ =>
+            {
+                Callable.From(() =>
+                {
+                    if (!IsInstanceValid(characterNode) || !IsInstanceValid(visualNode)) return;
+                    var existing = characterNode.CreateTween();
+                    existing.SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
+                    existing.TweenProperty(characterNode, "scale", Vector3.One, 0.1f);
+                    characterNode.SetDeferred("enable_bounce", true);
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
+
+        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
+            .Where(x => x == vm.Entity && ReactiveSystem.Instance.BoundState != null
+                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.CowJumpLeap)
+            .Subscribe(_ =>
+            {
+                Callable.From(() =>
+                {
+                    if (!IsInstanceValid(characterNode) || !IsInstanceValid(visualNode)) return;
+                    var scaleTw = characterNode.CreateTween();
+                    scaleTw.SetTrans(Tween.TransitionType.Cubic).SetEase(Tween.EaseType.Out);
+                    scaleTw.TweenProperty(characterNode, "scale", new Vector3(0.7f, 1.6f, 0.7f), 0.12f);
+                    scaleTw.TweenProperty(characterNode, "scale", Vector3.One, 0.18f);
+
+                    var arcTw = visualNode.CreateTween();
+                    arcTw.SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.Out);
+                    arcTw.TweenProperty(visualNode, "position:y", visualNode.Position.Y + 1.8f, 0.15f);
+                    arcTw.Chain().SetEase(Tween.EaseType.In)
+                        .TweenProperty(visualNode, "position:y", visualNode.Position.Y, 0.15f);
+                }).CallDeferred();
+            }).AddTo(vm.Disposables);
+
         // Love popup — when this cow is interacted with as a love cow, show the popup
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
             .Where(x => x == vm.Entity && ReactiveSystem.Instance.BoundState != null

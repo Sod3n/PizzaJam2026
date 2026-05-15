@@ -444,6 +444,10 @@ public static class InteractionLogic
     {
         // Cows that have been sold are visible but non-interactable.
         if (state.HasComponent<CowForSaleComponent>(entity)) return false;
+        // Carried pets sit on top of the player; without this gate they'd always win
+        // FindNearestInteractableInZone and swallow every interact click.
+        if (state.HasComponent<HelperPetComponent>(entity)
+            && state.GetComponent<HelperPetComponent>(entity).State == PetState.Carried) return false;
         return state.HasComponent<GrassComponent>(entity)
             || state.HasComponent<CowComponent>(entity)
             || state.HasComponent<HouseComponent>(entity)

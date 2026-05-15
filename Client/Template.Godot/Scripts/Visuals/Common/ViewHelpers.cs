@@ -26,14 +26,13 @@ public static class ViewHelpers
             ViewSmoothingManager.Smoother.TrackPosition3D(vm.Entity, visualNode, tau: 0.08f));
     }
 
-    public static void SetupInteractAnimation(EntityViewModel vm, Node3D visualNode, Node3D animateNode = null)
+    public static void SetupInteractAnimation(EntityViewModel vm, Node3D visualNode, Node3D animateNode = null, bool pivotAtNodeOrigin = false, float strengthMultiplier = 1f)
     {
         EntityViewModel.EntityVisualNodes[vm.Entity.Id] = visualNode;
         Disposable.Create(() => EntityViewModel.EntityVisualNodes.Remove(vm.Entity.Id)).AddTo(vm.Disposables);
 
         SetupNotEnoughResource(vm, visualNode);
         SetupGainedResource(vm, visualNode);
-        SetupBuildingInfo(vm, visualNode);
         animateNode ??= visualNode;
         vm.OnInteract.Subscribe(param =>
         {
@@ -47,25 +46,39 @@ public static class ViewHelpers
                 Vector3 origScale;
                 if (animateNode.HasMeta("orig_scale")) origScale = animateNode.GetMeta("orig_scale").AsVector3();
                 else { origScale = animateNode.Scale; animateNode.SetMeta("orig_scale", origScale); }
-                Vector3 origPos;
-                if (animateNode.HasMeta("orig_pos")) origPos = animateNode.GetMeta("orig_pos").AsVector3();
-                else { origPos = animateNode.Position; animateNode.SetMeta("orig_pos", origPos); }
-                // Squish pivots at the bottom of the visual's AABB instead of the node origin
-                // so the object squashes onto the ground instead of pinching at its center.
-                float bottomY = animateNode.HasMeta("squish_bottom_y")
-                    ? (float)animateNode.GetMeta("squish_bottom_y").AsSingle()
-                    : ComputeAndCacheBottomY(animateNode);
-                var squishScale = new Vector3(origScale.X * 1.2f, origScale.Y * 0.85f, origScale.Z);
-                // When scaleY shrinks from origScaleY → newScaleY, a point at local Y=bottomY moves
-                // up by (origScaleY - newScaleY) * |bottomY|. Push the node down by the same amount
-                // so the bottom stays put.
-                float yShift = (origScale.Y - squishScale.Y) * bottomY;
-                var squishPos = new Vector3(origPos.X, origPos.Y + yShift, origPos.Z);
+                float widen = 0.2f * strengthMultiplier;
+                float flatten = 0.15f * strengthMultiplier;
+                var squishScale = new Vector3(origScale.X * (1f + widen), origScale.Y * (1f - flatten), origScale.Z);
                 tween.SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
-                tween.TweenProperty(animateNode, "scale", squishScale, 0.1f);
-                tween.Parallel().TweenProperty(animateNode, "position", squishPos, 0.1f);
-                tween.TweenProperty(animateNode, "scale", origScale, 0.1f);
-                tween.Parallel().TweenProperty(animateNode, "position", origPos, 0.1f);
+
+                if (pivotAtNodeOrigin)
+                {
+                    // animateNode's local origin is already authored at the foot (e.g. ScaleAnchor)
+                    // — skip AABB-based bottom compensation and position tweening entirely.
+                    tween.TweenProperty(animateNode, "scale", squishScale, 0.1f);
+                    tween.TweenProperty(animateNode, "scale", origScale, 0.1f);
+                }
+                else
+                {
+                    Vector3 origPos;
+                    if (animateNode.HasMeta("orig_pos")) origPos = animateNode.GetMeta("orig_pos").AsVector3();
+                    else { origPos = animateNode.Position; animateNode.SetMeta("orig_pos", origPos); }
+                    // Squish pivots at the bottom of the visual's AABB instead of the node origin
+                    // so the object squashes onto the ground instead of pinching at its center.
+                    float bottomY = animateNode.HasMeta("squish_bottom_y")
+                        ? (float)animateNode.GetMeta("squish_bottom_y").AsSingle()
+                        : ComputeAndCacheBottomY(animateNode);
+                    // When scaleY shrinks from origScaleY → newScaleY, a point at local Y=bottomY moves
+                    // up by (origScaleY - newScaleY) * |bottomY|. Push the node down by the same amount
+                    // so the bottom stays put.
+                    float yShift = (origScale.Y - squishScale.Y) * bottomY;
+                    var squishPos = new Vector3(origPos.X, origPos.Y + yShift, origPos.Z);
+                    tween.TweenProperty(animateNode, "scale", squishScale, 0.1f);
+                    tween.Parallel().TweenProperty(animateNode, "position", squishPos, 0.1f);
+                    tween.TweenProperty(animateNode, "scale", origScale, 0.1f);
+                    tween.Parallel().TweenProperty(animateNode, "position", origPos, 0.1f);
+                }
+
                 animateNode.SetMeta("scale_tween", tween);
 
                 // Only show heart blast when milk is actually produced (every 4th click)
@@ -244,19 +257,6 @@ public static class ViewHelpers
         }).AddTo(vm.Disposables);
     }
 
-    public static void SetupBuildingInfo(EntityViewModel vm, Node3D visualNode)
-    {
-        vm.OnBuildingInfo.Subscribe(infoKey =>
-        {
-            Callable.From(() =>
-            {
-                if (!Node.IsInstanceValid(visualNode)) return;
-                BuildingInfoOverlay.Show(visualNode.GetTree(), infoKey);
-            }).CallDeferred();
-        }).AddTo(vm.Disposables);
-    }
-
-
     public static void SetupMovementAnimation(EntityViewModel vm, R3.ReadOnlyReactiveProperty<global::Godot.Vector2> velocity, Node3D flipPivot, Node3D characterNode, bool invertFlip = false)
     {
         velocity.Subscribe(v =>
@@ -312,17 +312,31 @@ public static class ViewHelpers
         }
     }
 
-    private static void SpawnFanHearts(Node3D parent, Texture2D texture)
+    public static void SpawnHeartsAtWorld(Node sceneParent, GVector3 worldPos, float halfArc = 1.2f, float baseHalfWidth = 0f)
+    {
+        if (HeartTexture == null || sceneParent == null) return;
+        var anchor = new Node3D();
+        sceneParent.AddChild(anchor);
+        anchor.GlobalPosition = worldPos;
+        SpawnFanHearts(anchor, HeartTexture, halfArc, baseHalfWidth);
+        var timer = new Timer { WaitTime = 1.5f, OneShot = true };
+        anchor.AddChild(timer);
+        timer.Timeout += () => { if (Node.IsInstanceValid(anchor)) anchor.QueueFree(); };
+        timer.Start();
+    }
+
+    private static void SpawnFanHearts(Node3D parent, Texture2D texture, float halfArc = 1.2f, float baseHalfWidth = 0f)
     {
         for (int i = 0; i < 5; i++)
         {
             float t = i / 4f;
-            float angle = Mathf.Lerp(-1.2f, 1.2f, t);
-            SpawnFanHeart(parent, texture, angle);
+            float angle = Mathf.Lerp(-halfArc, halfArc, t);
+            float startX = Mathf.Lerp(-baseHalfWidth, baseHalfWidth, t);
+            SpawnFanHeart(parent, texture, angle, startX);
         }
     }
 
-    private static void SpawnFanHeart(Node3D parent, Texture2D texture, float angle)
+    private static void SpawnFanHeart(Node3D parent, Texture2D texture, float angle, float startX = 0f)
     {
         var sprite = new Sprite3D();
         sprite.Texture = texture;
@@ -334,11 +348,11 @@ public static class ViewHelpers
         parent.AddChild(sprite);
 
         float startY = 3.8f;
-        sprite.Position = new GVector3(0f, startY, 0f);
+        sprite.Position = new GVector3(startX, startY, 0f);
 
         // Fan direction: angle controls X spread, all rise upward
         float dist = 1.2f + (float)HeartRng.NextDouble() * 0.3f;
-        float endX = Mathf.Sin(angle) * dist;
+        float endX = startX + Mathf.Sin(angle) * dist;
         float endY = startY + Mathf.Cos(angle) * dist;
 
         sprite.Scale = GVector3.Zero;

@@ -43,6 +43,14 @@ public static class SleepLogic
             sign.CurrentProduct = product;
         }
 
+        // Sweep all ground food at end-of-day so the world resets cleanly and the next day's
+        // spawn caps aren't competing with stale leftovers.
+        var foodToRemove = new System.Collections.Generic.List<Entity>();
+        foreach (var foodEntity in state.Filter<GrassComponent>())
+            foodToRemove.Add(foodEntity);
+        foreach (var foodEntity in foodToRemove)
+            state.DeleteEntity(foodEntity);
+
         // Day-unit cooldowns decrement by 1 per sleep — MaxTicks=N means N sleeps to clear.
         // Tick-unit cooldowns are handled by CooldownSystem each frame.
         foreach (var entity in state.Filter<CooldownComponent>())

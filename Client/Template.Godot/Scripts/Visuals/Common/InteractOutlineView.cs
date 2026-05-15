@@ -199,11 +199,27 @@ public partial class InteractOutlineView : Node3D
         ReactiveSystem.Instance.ObserveRemove<InteractHighlightComponent>()
             .Subscribe(entity => Callable.From(() => HideOutline(entity.Id)).CallDeferred())
             .AddTo(_disposables);
+
+        ReactiveSystem.Instance.ObserveAdd<CaughtComponent>()
+            .Subscribe(_ => Callable.From(ClearOutline).CallDeferred())
+            .AddTo(_disposables);
+    }
+
+    private static bool IsLocalPlayerCaught()
+    {
+        var gm = GameManager.Instance;
+        if (gm == null) return false;
+        var state = ReactiveSystem.Instance?.BoundState;
+        if (state == null) return false;
+        var ent = new Entity(gm.LocalPlayerId);
+        return state.HasComponent<CaughtComponent>(ent);
     }
 
     private void ShowOutline(int entityId)
     {
         ClearOutline();
+
+        if (IsLocalPlayerCaught()) return;
 
         if (!EntityViewModel.EntityVisualNodes.TryGetValue(entityId, out var visualNode))
             return;

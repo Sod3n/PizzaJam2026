@@ -32,7 +32,14 @@ public static class PlayerSharedSetup
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, velocity, flipPivot, characterNode);
         ViewHelpers.SetupPositionTween(vm, visualNode);
-        ViewHelpers.SetupInteractAnimation(vm, visualNode);
+        // Prefer the authored ScaleAnchor on character.gd — its origin is already at the foot
+        // so the squish needs no AABB compensation, and nothing else writes to it from outside.
+        var scaleAnchor = characterNode?.GetNodeOrNull<Node3D>("ScaleAnchor");
+        ViewHelpers.SetupInteractAnimation(
+            vm, visualNode,
+            animateNode: scaleAnchor ?? (Node3D)flipPivot,
+            pivotAtNodeOrigin: scaleAnchor != null,
+            strengthMultiplier: 3f);
 
         var camera = visualNode.GetNodeOrNull<Camera3D>("Camera");
         if (camera == null) return;

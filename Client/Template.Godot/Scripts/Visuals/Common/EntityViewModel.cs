@@ -21,7 +21,6 @@ public class EntityViewModel : ViewModel
     public Subject<string> OnInteract { get; } = new();
     public Subject<string> OnNotEnoughResource { get; } = new();
     public Subject<string> OnGainedResource { get; } = new();
-    public Subject<string> OnBuildingInfo { get; } = new();
 
     public EntityViewModel(Context context)
     {
@@ -60,14 +59,5 @@ public class EntityViewModel : ViewModel
                 OnNotEnoughResource.OnNext(param);
             }).AddTo(Disposables);
 
-        ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
-            .Where(x => x == Entity && ReactiveSystem.Instance.BoundState != null
-                && ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Key == StateKeys.BuildingInfo)
-            .Subscribe(x =>
-            {
-                var param = ReactiveSystem.Instance.BoundState.GetComponent<EnterStateComponent>(x).Param;
-                if (!string.IsNullOrEmpty(param))
-                    OnBuildingInfo.OnNext(param.ToString());
-            }).AddTo(Disposables);
     }
 }

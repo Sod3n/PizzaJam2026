@@ -72,11 +72,11 @@ autowrap_mode = 2
 [node name="HintLabel" type="Label" parent="Root/Panel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"HintLabel"
 horizontal_alignment = 1
 
 [node name="DismissLabel" type="Label" parent="Root/Panel/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"HintLabel"
 text = "Tap to dismiss"
 horizontal_alignment = 1

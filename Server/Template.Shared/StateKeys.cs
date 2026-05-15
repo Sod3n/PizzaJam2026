@@ -13,6 +13,9 @@ public static class StateKeys
     public const string LoveCow = "love_cow"; // Cow interaction triggers love popup
     public const string BuildingInfo = "building_info";
     public const string CowAttack = "cow_attack";
+    public const string CowJumpWindup = "cow_jump_windup";
+    public const string CowJumpLeap = "cow_jump_leap";
+    public const string Caught = "caught";
     public const string GameOver = "game_over";
 
     // Resource keys (used as Param in EnterStateComponent)

@@ -1,0 +1,9 @@
+[gd_resource type="FontVariation" format=3 uid="uid://bqgpru0e2ad40"]
+
+[ext_resource type="FontFile" uid="uid://rkodmfqo2fys" path="res://fonts/Geist_Mono/GeistMono-VariableFont_wght.ttf" id="1_base"]
+
+[resource]
+base_font = ExtResource("1_base")
+variation_opentype = {
+&"wght": 800
+}

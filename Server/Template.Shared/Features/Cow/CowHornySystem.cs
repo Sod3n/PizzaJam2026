@@ -1,5 +1,7 @@
 using Deterministic.GameFramework.ECS;
+using Deterministic.GameFramework.Common;
 using Template.Shared.Components;
+using Template.Shared.GameData;
 
 namespace Template.Shared.Systems;
 
@@ -8,6 +10,8 @@ public class CowHornySystem : ISystem
 {
     public void Update(EntityWorld state)
     {
+        var gameTime = state.GetCustomData<IGameTime>();
+        long tick = gameTime?.CurrentTick ?? 0;
         foreach (var cowEntity in state.Filter<CowComponent>())
         {
             if (state.HasComponent<HelperComponent>(cowEntity)) continue;
@@ -17,6 +21,10 @@ public class CowHornySystem : ISystem
 
             ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
             if (cow.IsExhausted || cow.IsDepressed || cow.IsAttacking) continue;
+
+            // Pets assigned to a cow slow its horny accrual: stride = 1 + petCount * HornySlowTicksPerPet.
+            int stride = 1 + cow.PetCount * Balance.Pets.HornySlowTicksPerPet;
+            if (stride > 1 && (tick + cowEntity.Id) % stride != 0) continue;
 
             if (cow.Horny < cow.MaxHorny)
                 cow.Horny++;

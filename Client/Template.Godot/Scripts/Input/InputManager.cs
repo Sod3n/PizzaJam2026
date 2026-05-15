@@ -25,17 +25,29 @@ public partial class InputManager : Node
 
     private int _holdRepeatTicks;
 
-    private static bool TryGetLocalPlayerStats(int localPlayerId, out bool isHelperPlayer, out int petCount)
+    private static bool TryGetLocalPlayerStats(int localPlayerId, out bool isHelperPlayer, out int petCount, out int targetCowPetCount)
     {
         isHelperPlayer = false;
         petCount = 0;
+        targetCowPetCount = 0;
         var state = Deterministic.GameFramework.Reactive.ReactiveSystem.Instance?.BoundState;
         if (state == null) return false;
         var ent = new Entity(localPlayerId);
         if (!state.HasComponent<PlayerStateComponent>(ent)) return false;
-        petCount = state.GetComponent<PlayerStateComponent>(ent).PetCount;
+        var ps = state.GetComponent<PlayerStateComponent>(ent);
+        petCount = ps.PetCount;
         isHelperPlayer = state.HasComponent<HelperPlayerComponent>(ent);
+        if (ps.InteractionTarget != Entity.Null && state.HasComponent<CowComponent>(ps.InteractionTarget))
+            targetCowPetCount = state.GetComponent<CowComponent>(ps.InteractionTarget).PetCount;
         return true;
+    }
+
+    private static bool IsLocalPlayerCaught(int localPlayerId)
+    {
+        var state = Deterministic.GameFramework.Reactive.ReactiveSystem.Instance?.BoundState;
+        if (state == null) return false;
+        var ent = new Entity(localPlayerId);
+        return state.HasComponent<CaughtComponent>(ent);
     }
 
     public override void _Ready()
@@ -73,7 +85,7 @@ public partial class InputManager : Node
     {
         // ESC key toggles the Settings overlay (works even during other overlays so you can open/close it)
         if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.Escape }
-            && !BreedResultOverlay.IsActive && !FamilyTreeOverlay.IsActive && !BuildingInfoOverlay.IsActive
+            && !BreedResultOverlay.IsActive && !FamilyTreeOverlay.IsActive
             && !LovePopupOverlay.IsActive && !CraftingOverlay.IsActive)
         {
             SettingsOverlay.Toggle(GetTree());
@@ -90,7 +102,7 @@ public partial class InputManager : Node
             return;
         }
 
-        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || BuildingInfoOverlay.IsActive || LovePopupOverlay.IsActive || CraftingOverlay.IsActive || SettingsOverlay.IsActive) return;
+        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || LovePopupOverlay.IsActive || CraftingOverlay.IsActive || SettingsOverlay.IsActive) return;
 
         // Touch input for mobile
         if (@event is InputEventScreenTouch touch)
@@ -116,10 +128,17 @@ public partial class InputManager : Node
     public override void _PhysicsProcess(double delta)
     {
         if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
-        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || BuildingInfoOverlay.IsActive || LovePopupOverlay.IsActive || CraftingOverlay.IsActive || SettingsOverlay.IsActive) return;
+        if (BreedResultOverlay.IsActive || FamilyTreeOverlay.IsActive || LovePopupOverlay.IsActive || CraftingOverlay.IsActive || SettingsOverlay.IsActive) return;
 
         var localPlayerId = GameManager.Instance.LocalPlayerId;
         if (localPlayerId == 0) return;
+
+        if (IsLocalPlayerCaught(localPlayerId))
+        {
+            _holdRepeatTicks = 0;
+            _touchHoldFiring = false;
+            return;
+        }
 
         // --- Interaction ---
         bool interactJustPressed = global::Godot.Input.IsActionJustPressed("ui_accept") ||
@@ -131,11 +150,13 @@ public partial class InputManager : Node
         bool touchHeldStationary = _touchIndex >= 0 &&
                                    GetViewport().GetMousePosition().DistanceTo(_touchStart) < TouchDeadzone;
 
-        TryGetLocalPlayerStats(localPlayerId, out bool isHelperPlayer, out int petCount);
+        TryGetLocalPlayerStats(localPlayerId, out bool isHelperPlayer, out int petCount, out int targetCowPetCount);
         int holdThreshold = isHelperPlayer ? Balance.HelperPlayer.HoldRepeatThreshold : Balance.Player.HoldRepeatThreshold;
+        // Pets assigned to the cow being milked accelerate the player's auto-fire as if they
+        // were the player's own pets — they're "helping" the milker click faster.
         holdThreshold = System.Math.Max(
             Balance.Pets.HoldRepeatFloor,
-            holdThreshold - petCount * Balance.Pets.HoldRepeatReductionPerPet);
+            holdThreshold - (petCount + targetCowPetCount) * Balance.Pets.HoldRepeatReductionPerPet);
 
         if (interactJustPressed)
         {

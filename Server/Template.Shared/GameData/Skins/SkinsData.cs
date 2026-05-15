@@ -15,6 +15,8 @@ public class SkinsData : GameData<Skin>
     private Dictionary<string, List<Skin>> _skinsByType = new();
     // Cache the total weight per type for performance
     private Dictionary<string, int> _totalWeightByType = new();
+    private int _minExhaustSum;
+    private int _maxExhaustSum;
 
     public override void Load(Dictionary<string, Skin> entries)
     {
@@ -34,7 +36,19 @@ public class SkinsData : GameData<Skin>
             kvp => kvp.Key,
             kvp => kvp.Value.Sum(s => s.Weight)
         );
+
+        _minExhaustSum = 0;
+        _maxExhaustSum = 0;
+        foreach (var skins in _skinsByType.Values)
+        {
+            if (skins.Count == 0) continue;
+            _minExhaustSum += skins.Min(s => s.Exhaust);
+            _maxExhaustSum += skins.Max(s => s.Exhaust);
+        }
     }
+
+    /// <summary>Min/max possible sum of Exhaust across one skin pick per type — used as the raw weight range for cow MaxExhaust mapping.</summary>
+    public (int min, int max) GetExhaustWeightBounds() => (_minExhaustSum, _maxExhaustSum);
 
     public Skin? Get(int id) => _skins.GetValueOrDefault(id);
 

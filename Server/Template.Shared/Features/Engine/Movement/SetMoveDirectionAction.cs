@@ -27,6 +27,12 @@ public class SetMoveDirectionActionService : ActionService<SetMoveDirectionActio
 {
     protected override void ExecuteProcess(SetMoveDirectionAction directionAction, ref CharacterBody2D body, Context ctx)
     {
+        if (ctx.State.HasComponent<CaughtComponent>(ctx.Entity))
+        {
+            body.Velocity = Vector2.Zero;
+            return;
+        }
+
         // Block movement while in any active state (milking, etc.)
         if (ctx.State.HasComponent<StateComponent>(ctx.Entity))
         {
