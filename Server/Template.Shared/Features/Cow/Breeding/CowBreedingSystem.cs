@@ -65,6 +65,7 @@ public class CowBreedingSystem : ISystem
         ILogger.Log($"[CowBreedingSystem] Love house breed complete for player {playerEntity.Id}");
 
         state.UnhideEntity(playerEntity);
+        state.GetComponent<PlayerStateComponent>(playerEntity).CameraTarget = Entity.Null;
 
         var loveHouse = state.GetComponent<LoveHouseComponent>(loveHouseEntity);
         Entity cow1 = loveHouse.CowId1;

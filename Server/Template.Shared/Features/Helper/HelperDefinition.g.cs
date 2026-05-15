@@ -49,6 +49,7 @@ public static partial class HelperDefinition
         component.PetCount = 0;
         component.IsAsking = false;
         component.IsSleeping = false;
+        component.IsReadyForPickup = false;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

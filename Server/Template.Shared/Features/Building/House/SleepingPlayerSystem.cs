@@ -53,6 +53,8 @@ public class SleepingPlayerSystem : ISystem
             foreach (var e in done)
             {
                 state.UnhideEntity(e);
+                if (state.HasComponent<PlayerStateComponent>(e))
+                    state.GetComponent<PlayerStateComponent>(e).CameraTarget = Entity.Null;
                 state.RemoveComponent<SleepingComponent>(e);
             }
         }

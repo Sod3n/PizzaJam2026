@@ -165,7 +165,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (cow.HouseId != Entity.Null)
             target = cow.HouseId;
 
-        ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Param = produced ? "milk_ok" : "milk_fail", Age = 0 });
+        bool preferred = cow.SelectedFood == cow.PreferredFood;
+        string milkParam = produced ? (preferred ? "milk_ok_pref" : "milk_ok") : "milk_fail";
+        ctx.State.AddComponent(target, new EnterStateComponent { Key = StateKeys.Interacted, Param = milkParam, Age = 0 });
 
         if (cowDone)
         {

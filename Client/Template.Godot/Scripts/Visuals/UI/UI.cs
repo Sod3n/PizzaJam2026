@@ -58,7 +58,6 @@ public partial class UI : CanvasLayer
     {
         if (_isInitialized) return;
         if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
-
         _isInitialized = true;
         Initialize();
     }
@@ -87,45 +86,16 @@ public partial class UI : CanvasLayer
     private void ShowHintFor(Entity entity)
     {
         if (_hintPopup == null) return;
-        if (!TryResolveLandType(entity, out var type)) return;
+        var state = ReactiveSystem.Instance?.BoundState;
+        if (state == null || !state.HasComponent<InteractHighlightComponent>(entity)) return;
+        var hl = state.GetComponent<InteractHighlightComponent>(entity);
+        if (!hl.HasHintLandType) return;
+        var type = hl.HintLandType;
         if (!BuildingHints.TryGet(type, out var text)) return;
 
         _hintPopup.SetText(text);
         if (_iconSet != null && _iconSet.TryGet(type, out var icon))
             _hintPopup.SetIcon(icon);
-    }
-
-    private static bool TryResolveLandType(Entity entity, out LandType type)
-    {
-        type = default;
-        var state = ReactiveSystem.Instance?.BoundState;
-        if (state == null) return false;
-
-        if (state.HasComponent<BuildingComponent>(entity))
-        {
-            type = state.GetComponent<BuildingComponent>(entity).Type;
-            return true;
-        }
-        if (state.HasComponent<LandSignComponent>(entity))
-        {
-            type = state.GetComponent<LandSignComponent>(entity).SelectedType;
-            return true;
-        }
-        if (state.HasComponent<LandPriceSignComponent>(entity))
-        {
-            var landId = state.GetComponent<LandPriceSignComponent>(entity).LandId;
-            if (state.HasComponent<LandComponent>(landId))
-            {
-                type = state.GetComponent<LandComponent>(landId).Type;
-                return true;
-            }
-        }
-        if (state.HasComponent<LandComponent>(entity))
-        {
-            type = state.GetComponent<LandComponent>(entity).Type;
-            return true;
-        }
-        return false;
     }
 
     private void BindResources(GlobalResourcesComponentViewModel vm)

@@ -38,6 +38,7 @@ public class CowInteractionSystem : ISystem
         ILogger.Log($"[CowInteractionSystem] Milking complete for player {playerEntity.Id}");
 
         state.UnhideEntity(playerEntity);
+        state.GetComponent<PlayerStateComponent>(playerEntity).CameraTarget = Entity.Null;
 
         Entity cowEntity = state.GetComponent<PlayerStateComponent>(playerEntity).InteractionTarget;
 

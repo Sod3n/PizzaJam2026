@@ -66,10 +66,10 @@ public partial class HelperAssistantView : Node3D
 
         var visualNode = Prefab?.Instantiate<Node3D>() ?? CreateFallbackVisual();
 
+        var pos = vm.Transform.Position.CurrentValue;
+        visualNode.Position = new GVector3((float)pos.X, 0f, (float)pos.Y);
         AddChild(visualNode);
         _spawnedEntities[vm] = visualNode;
-        var pos = vm.Transform.Position.CurrentValue;
-        visualNode.SetDeferred("position", new GVector3((float)pos.X, 0f, (float)pos.Y));
 
         OnSpawned(vm, visualNode);
     }

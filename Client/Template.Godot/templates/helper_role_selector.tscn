@@ -125,10 +125,10 @@ theme_override_styles/panel = ExtResource("2_omg2i")
 [node name="HelperIcon" type="TextureRect" parent="CharacterPreview/PanelContainer" unique_id=2145041002]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 18.0
-offset_top = 15.0
-offset_right = 85.0
-offset_bottom = 85.0
+offset_left = 24.0
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 78.0
 expand_mode = 1
 stretch_mode = 5
 

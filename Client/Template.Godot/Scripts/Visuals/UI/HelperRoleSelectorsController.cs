@@ -22,10 +22,9 @@ public partial class HelperRoleSelectorsController : Node
 
     private static readonly Dictionary<int, string> RoleIconPaths = new()
     {
-        { HelperType.Assistant, "res://sprites/export/icons/Money_/1.png" },
-        { HelperType.Gatherer, "res://sprites/export/icons/Carrot_/1.png" },
+        { HelperType.Gatherer, "res://sprites/export/icons/Grass_/1.png" },
         { HelperType.Seller, "res://sprites/export/icons/Money_/1.png" },
-        { HelperType.Builder, "res://sprites/export/icons/Money_/1.png" },
+        { HelperType.Builder, "res://sprites/export/homes/A_bar.png" },
         { HelperType.Milker, "res://sprites/export/icons/Milky_/1.png" },
     };
 
@@ -141,14 +140,12 @@ public partial class HelperRoleSelectorsController : Node
         var reactive = ReactiveSystem.Instance;
         var state = reactive.BoundState;
 
-        // Helpers — seed with existing, then watch add/remove. Each helper gets a
-        // per-component subscription that mirrors Type/IsSleeping into _helperData.
-        foreach (var e in state.Filter<HelperComponent>()) AddHelper(e);
+        // ObserveAdd's archetype observer FullScans on init and replays _onAdd for
+        // every existing matching entity, so we don't need a separate Filter seed pass —
+        // doing both was double-subscribing and leaking the first sub on overwrite.
         reactive.ObserveAdd<HelperComponent>().Subscribe(AddHelper).AddTo(_disposables);
         reactive.ObserveRemove<HelperComponent>().Subscribe(RemoveHelper).AddTo(_disposables);
 
-        // Houses — watch House.HelperId so the "has-house" tint can react to (un)assignment.
-        foreach (var e in state.Filter<HouseComponent>()) AddHouse(e);
         reactive.ObserveAdd<HouseComponent>().Subscribe(AddHouse).AddTo(_disposables);
         reactive.ObserveRemove<HouseComponent>().Subscribe(RemoveHouse).AddTo(_disposables);
     }
@@ -156,6 +153,7 @@ public partial class HelperRoleSelectorsController : Node
     private void AddHelper(Entity e)
     {
         int id = e.Id;
+        if (_helperSubs.ContainsKey(id)) return;
         _helperIds.Add(id);
         var sub = ReactiveSystem.Instance.SubscribeComponent<HelperComponent>(
             ReactiveSystem.Instance.BoundState, e, comp =>
@@ -183,6 +181,7 @@ public partial class HelperRoleSelectorsController : Node
     private void AddHouse(Entity e)
     {
         int id = e.Id;
+        if (_houseSubs.ContainsKey(id)) return;
         var sub = ReactiveSystem.Instance.SubscribeComponent<HouseComponent>(
             ReactiveSystem.Instance.BoundState, e, comp =>
             {

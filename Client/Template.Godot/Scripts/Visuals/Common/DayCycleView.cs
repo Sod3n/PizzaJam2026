@@ -1,12 +1,18 @@
 using Godot;
+using R3;
 using Template.Godot.Core;
 using Template.Shared.Components;
 using Template.Shared.GameData;
+using Deterministic.GameFramework.Reactive;
+using ObservableCollections;
 
 namespace Template.Godot.Visuals;
 
 public partial class DayCycleView : Node
 {
+    private readonly CompositeDisposable _disposables = new();
+    private bool _subscribed;
+
     [Export] public NodePath SunPath;
     [Export] public NodePath EnvPath;
 
@@ -43,7 +49,6 @@ public partial class DayCycleView : Node
     private bool _capturedInitial;
 
     private float _localSeconds;
-    private int _lastSeenDay = int.MinValue;
 
     public override void _Ready()
     {
@@ -52,9 +57,30 @@ public partial class DayCycleView : Node
         _env = envHost?.Environment;
     }
 
+    public override void _ExitTree() => _disposables.Dispose();
+
+    private void TrySubscribe()
+    {
+        if (_subscribed) return;
+        if (GameManager.Instance == null || !GameManager.Instance.IsGameRunning) return;
+        _subscribed = true;
+        var client = GameManager.Instance.GameClient;
+        var resources = client.Reactive.ObservableList<GlobalResourcesComponent, GlobalResourcesComponentViewModel>(
+            ctx => new GlobalResourcesComponentViewModel(ctx),
+            _disposables);
+        resources.ObserveAdd().Subscribe(evt => Bind(evt.Value)).AddTo(_disposables);
+        foreach (var vm in resources) Bind(vm);
+    }
+
+    private void Bind(GlobalResourcesComponentViewModel vm)
+    {
+        vm.Resources.DayCounter.Subscribe(_ => _localSeconds = 0f).AddTo(_disposables);
+    }
+
     public override void _Process(double delta)
     {
         if (_sun == null || _env == null) return;
+        TrySubscribe();
 
         if (!_capturedInitial)
         {
@@ -64,21 +90,6 @@ public partial class DayCycleView : Node
             _capturedInitial = true;
         }
 
-        int currentDay = _lastSeenDay;
-        var state = GameManager.Instance?.Game?.State;
-        if (state != null)
-        {
-            foreach (var ge in state.Filter<GlobalResourcesComponent>())
-            {
-                currentDay = state.GetComponent<GlobalResourcesComponent>(ge).DayCounter;
-                break;
-            }
-        }
-        if (currentDay != _lastSeenDay)
-        {
-            _localSeconds = 0f;
-            _lastSeenDay = currentDay;
-        }
         _localSeconds += (float)delta;
 
         float dayLenSeconds = Balance.Day.LengthTicks / (float)Balance.TickRate;

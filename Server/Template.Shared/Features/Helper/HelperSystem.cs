@@ -36,6 +36,7 @@ public class HelperSystem : ISystem
         foreach (var helperRef in state.Filter<HelperArchetype>())
         {
             helperRef.Helper.SuppressTickUpdate = false;
+            helperRef.Helper.IsReadyForPickup = helperRef.Helper.State == HelperState.WaitingForPickup;
 
             Entity carrier = FindHelperCarrier(state, helperRef.Entity);
             if (carrier != Entity.Null)

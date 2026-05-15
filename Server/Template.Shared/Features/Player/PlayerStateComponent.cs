@@ -29,4 +29,5 @@ public struct PlayerStateComponent : IComponent
     /// </summary>
     public Entity FollowingHelper;
     public int PetCount;
+    public Entity CameraTarget;
 }

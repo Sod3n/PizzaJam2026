@@ -6,6 +6,14 @@ using System.Runtime.InteropServices;
 
 namespace Template.Shared.Components;
 
+public static class HornyIconState
+{
+    public const int None = 0;
+    public const int Active = 1;
+    public const int Attacking = 2;
+    public const int Exhausted = 3;
+}
+
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 [StableId("fcf83639-f988-e35a-8fcc-1f0ebc71fb9e")]
 public struct CowComponent : IComponent
@@ -39,6 +47,13 @@ public struct CowComponent : IComponent
     public int MaxHorny;
     public bool IsExhausted;
     public bool IsAttacking;
+
+    // View-state flags, set by CowViewStateSystem each tick. Client subscribes.
+    public bool IsWanderer;
+    public int HornyIconState;
+    public bool IsLoveTarget;
+    public bool ShowLoveNeedIcon;
+    public bool IsHornyAlerting;
 
     /// <summary>True if <paramref name="foodType"/> matches this cow's primary or secondary preference.</summary>
     public bool IsFoodPreferred(int foodType) =>

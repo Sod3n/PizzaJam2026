@@ -6,4 +6,6 @@ namespace Template.Godot.Framework;
 [Tool]
 public partial class InteractHighlightComponentNode : Node
 {
+    [Export(PropertyHint.Enum, "House:0,LoveHouse:1,SellPoint:2,FinalStructure:3,CarrotFarm:4,AppleOrchard:5,MushroomCave:6,HelperAssistant:7,Decoration:12,Warehouse:13,PlayerHouse:14,Library:15,Smithy:16")] public int HintLandType;
+    [Export] public bool HasHintLandType;
 }

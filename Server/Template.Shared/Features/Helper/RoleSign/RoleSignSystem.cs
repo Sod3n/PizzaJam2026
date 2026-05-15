@@ -35,12 +35,11 @@ public class RoleSignSystem : ISystem
             prev = sign.Role;
             next = prev switch
             {
-                HelperType.Assistant => HelperType.Gatherer,
                 HelperType.Gatherer => HelperType.Seller,
                 HelperType.Seller => HelperType.Builder,
                 HelperType.Builder => HelperType.Milker,
-                HelperType.Milker => HelperType.Assistant,
-                _ => HelperType.Assistant,
+                HelperType.Milker => HelperType.Gatherer,
+                _ => HelperType.Gatherer,
             };
             sign.Role = next;
             houseId = sign.HouseId;

@@ -71,6 +71,7 @@ public struct HelperComponent : IComponent
     // the helper is actively working.
     public bool IsAsking;
     public bool IsSleeping;
+    public bool IsReadyForPickup;
 
     public int GetBagTotal() => BagGrass + BagCarrot + BagApple + BagMushroom
                               + BagMilk + BagCarrotMilkshake + BagVitaminMix + BagPurplePotion

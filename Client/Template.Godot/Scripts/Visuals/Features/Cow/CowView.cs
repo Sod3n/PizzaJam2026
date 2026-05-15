@@ -28,27 +28,12 @@ public partial class CowView
         // Twitch integration: try to assign a chatter name to this cow
         TwitchIntegration.TryAssignChatterName(vm.Entity);
 
-        // Wanderer cows (no house, not following) keep bounce but disable sway.
-        // Use a single polling observer so both fields are read atomically in the
-        // same tick, avoiding a transient isUnassigned=true when CombineLatest
-        // would fire for HouseId before FollowingPlayer's observer has polled.
-        var cowEntity = vm.Entity;
-        ReactiveSystem.Instance.Subscribe(
-            () =>
+        vm.Cow.Cow.IsWanderer.Subscribe(isWanderer =>
+            Callable.From(() =>
             {
-                var s = ReactiveSystem.Instance.BoundState;
-                if (s == null || !s.HasComponent<CowComponent>(cowEntity)) return false;
-                var cow = s.GetComponent<CowComponent>(cowEntity);
-                return cow.HouseId == Entity.Null && cow.FollowingPlayer == Entity.Null;
-            },
-            isUnassigned =>
-            {
-                Callable.From(() =>
-                {
-                    if (characterNode != null && IsInstanceValid(characterNode))
-                        characterNode.SetDeferred("enable_idle_sway", !isUnassigned);
-                }).CallDeferred();
-            }
+                if (characterNode != null && IsInstanceValid(characterNode))
+                    characterNode.SetDeferred("enable_idle_sway", !isWanderer);
+            }).CallDeferred()
         ).AddTo(vm.Disposables);
 
         // Show breed result overlay for newly-born cows (tagged server-side with BreedBornComponent)
@@ -104,13 +89,20 @@ public partial class CowView
         needIcon.Visible = false;
         visualNode.AddChild(needIcon);
 
-        // Poll heart and need icon visibility via a timer
-        UpdateLoveIcons(vm.Entity, heartIcon, needIcon);
-        var heartTimer = new Timer();
-        heartTimer.WaitTime = 0.5f;
-        heartTimer.Autostart = true;
-        heartTimer.Timeout += () => UpdateLoveIcons(vm.Entity, heartIcon, needIcon);
-        visualNode.AddChild(heartTimer);
+        vm.Cow.Cow.IsLoveTarget.Subscribe(_ =>
+            Callable.From(() =>
+            {
+                if (!IsInstanceValid(heartIcon)) return;
+                heartIcon.Visible = vm.Cow.Cow.IsLoveTarget.CurrentValue;
+            }).CallDeferred()
+        ).AddTo(vm.Disposables);
+
+        vm.Cow.Cow.ShowLoveNeedIcon.Subscribe(show =>
+            Callable.From(() =>
+            {
+                if (IsInstanceValid(needIcon)) needIcon.Visible = show;
+            }).CallDeferred()
+        ).AddTo(vm.Disposables);
 
         var hornyIcon = visualNode.GetNodeOrNull<Sprite3D>("HornyHeart");
         if (hornyIcon != null)
@@ -122,13 +114,52 @@ public partial class CowView
             hornyIcon.MaterialOverride = hornyMaterial;
             hornyMaterial.SetShaderParameter("fill", 0f);
 
-            var hornyState = new HornyIconState();
-            UpdateHornyIcon(vm.Entity, hornyIcon, hornyMaterial, hornyState);
-            var hornyTimer = new Timer();
-            hornyTimer.WaitTime = 0.05f;
-            hornyTimer.Autostart = true;
-            hornyTimer.Timeout += () => UpdateHornyIcon(vm.Entity, hornyIcon, hornyMaterial, hornyState);
-            visualNode.AddChild(hornyTimer);
+            var pulseState = new HornyIconPulseState();
+
+            void UpdateFill()
+            {
+                int max = vm.Cow.Cow.MaxHorny.CurrentValue;
+                int h = vm.Cow.Cow.Horny.CurrentValue;
+                hornyMaterial.SetShaderParameter("fill", max > 0 ? h / (float)max : 0f);
+            }
+
+            vm.Cow.Cow.Horny.Subscribe(_ =>
+                Callable.From(() => { if (IsInstanceValid(hornyIcon)) UpdateFill(); }).CallDeferred()
+            ).AddTo(vm.Disposables);
+            vm.Cow.Cow.MaxHorny.Subscribe(_ =>
+                Callable.From(() => { if (IsInstanceValid(hornyIcon)) UpdateFill(); }).CallDeferred()
+            ).AddTo(vm.Disposables);
+
+            vm.Cow.Cow.HornyIconState.Subscribe(iconState =>
+                Callable.From(() =>
+                {
+                    if (!IsInstanceValid(hornyIcon)) return;
+                    hornyIcon.Visible = iconState != HornyIconState.None;
+                    hornyIcon.Modulate = iconState == HornyIconState.Exhausted
+                        ? new Color(0.4f, 0.5f, 0.9f)
+                        : new Color(1, 1, 1);
+
+                    bool attacking = iconState == HornyIconState.Attacking;
+                    if (attacking && !pulseState.IsAttacking)
+                    {
+                        pulseState.IsAttacking = true;
+                        pulseState.BaseScale = hornyIcon.Scale;
+                        pulseState.PulseTween?.Kill();
+                        var tw = hornyIcon.CreateTween();
+                        tw.SetLoops();
+                        tw.TweenProperty(hornyIcon, "scale", pulseState.BaseScale * 1.25f, 0.25f);
+                        tw.TweenProperty(hornyIcon, "scale", pulseState.BaseScale, 0.25f);
+                        pulseState.PulseTween = tw;
+                    }
+                    else if (!attacking && pulseState.IsAttacking)
+                    {
+                        pulseState.IsAttacking = false;
+                        pulseState.PulseTween?.Kill();
+                        pulseState.PulseTween = null;
+                        hornyIcon.Scale = pulseState.BaseScale;
+                    }
+                }).CallDeferred()
+            ).AddTo(vm.Disposables);
         }
 
         ReactiveSystem.Instance.ObserveAdd<EnterStateComponent>()
@@ -244,94 +275,11 @@ public partial class CowView
         t.Arc = null;
     }
 
-    private sealed class HornyIconState
+    private sealed class HornyIconPulseState
     {
         public bool IsAttacking;
         public Tween PulseTween;
         public Vector3 BaseScale = Vector3.One;
-    }
-
-    private static void UpdateHornyIcon(Entity thisEntity, Sprite3D hornyIcon, ShaderMaterial mat, HornyIconState state)
-    {
-        if (!Node.IsInstanceValid(hornyIcon)) return;
-        var s = ReactiveSystem.Instance.BoundState;
-        if (s == null || !s.HasComponent<CowComponent>(thisEntity))
-        {
-            hornyIcon.Visible = false;
-            return;
-        }
-        var cow = s.GetComponent<CowComponent>(thisEntity);
-        if (cow.MaxHorny <= 0)
-        {
-            hornyIcon.Visible = false;
-            return;
-        }
-        float fill = cow.Horny / (float)cow.MaxHorny;
-        mat.SetShaderParameter("fill", fill);
-        hornyIcon.Visible = cow.Horny > 0 || cow.IsExhausted;
-        hornyIcon.Modulate = cow.IsExhausted
-            ? new Color(0.4f, 0.5f, 0.9f)
-            : new Color(1, 1, 1);
-
-        if (cow.IsAttacking && !state.IsAttacking)
-        {
-            state.IsAttacking = true;
-            state.BaseScale = hornyIcon.Scale;
-            state.PulseTween?.Kill();
-            var tw = hornyIcon.CreateTween();
-            tw.SetLoops();
-            tw.TweenProperty(hornyIcon, "scale", state.BaseScale * 1.25f, 0.25f);
-            tw.TweenProperty(hornyIcon, "scale", state.BaseScale, 0.25f);
-            state.PulseTween = tw;
-        }
-        else if (!cow.IsAttacking && state.IsAttacking)
-        {
-            state.IsAttacking = false;
-            state.PulseTween?.Kill();
-            state.PulseTween = null;
-            hornyIcon.Scale = state.BaseScale;
-        }
-    }
-
-    private static void UpdateLoveIcons(Entity thisEntity, Sprite3D heartIcon, Label3D needIcon)
-    {
-        if (!Node.IsInstanceValid(heartIcon)) return;
-        if (!Node.IsInstanceValid(needIcon)) return;
-        var reactiveState = ReactiveSystem.Instance.BoundState;
-        if (reactiveState == null) { heartIcon.Visible = false; needIcon.Visible = false; return; }
-
-        bool isLoveTarget = false;
-        bool isLover = false;
-        bool showNeedIcon = false;
-
-        // Check if this cow itself has a LoveTarget (meaning it IS the lover)
-        if (reactiveState.HasComponent<CowComponent>(thisEntity))
-        {
-            var thisCow = reactiveState.GetComponent<CowComponent>(thisEntity);
-            if (thisCow.LoveTarget != Entity.Null)
-            {
-                isLover = true;
-                // Show need icon if following a player but hasn't confessed yet
-                if (thisCow.FollowingPlayer != Entity.Null && !thisCow.LoveConfessed)
-                    showNeedIcon = true;
-            }
-        }
-
-        // Check if any other cow has this cow as its LoveTarget (meaning this cow is the target)
-        foreach (var cowEntity in reactiveState.Filter<CowComponent>())
-        {
-            if (cowEntity == thisEntity) continue;
-            var cow = reactiveState.GetComponent<CowComponent>(cowEntity);
-            if (cow.LoveTarget == thisEntity)
-            {
-                isLoveTarget = true;
-                break;
-            }
-        }
-
-        // Show heart on both the lover and the target
-        heartIcon.Visible = isLoveTarget || isLover;
-        needIcon.Visible = showNeedIcon;
     }
 
     partial void OnDespawned(CowViewModel vm, Node3D visualNode)

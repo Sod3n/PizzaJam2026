@@ -27,4 +27,9 @@ public partial class CowComponentNode : Node
     [Export] public int MaxHorny;
     [Export] public bool IsExhausted;
     [Export] public bool IsAttacking;
+    [Export] public bool IsWanderer;
+    [Export] public int HornyIconState;
+    [Export] public bool IsLoveTarget;
+    [Export] public bool ShowLoveNeedIcon;
+    [Export] public bool IsHornyAlerting;
 }

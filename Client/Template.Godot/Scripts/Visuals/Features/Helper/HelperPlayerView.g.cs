@@ -84,10 +84,10 @@ public partial class HelperPlayerView : Node3D
             if (IsInstanceValid(visualNode)) visualNode.SetDeferred("visible", !hidden);
         }).AddTo(vm.Disposables);
 
+        var pos = vm.Transform.Position.CurrentValue;
+        visualNode.Position = new GVector3((float)pos.X, 0f, (float)pos.Y);
         AddChild(visualNode);
         _spawnedEntities[vm] = visualNode;
-        var pos = vm.Transform.Position.CurrentValue;
-        visualNode.SetDeferred("position", new GVector3((float)pos.X, 0f, (float)pos.Y));
 
         OnSpawned(vm, visualNode);
     }

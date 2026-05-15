@@ -8,10 +8,9 @@ public partial class RoleSignView
 {
     private static readonly System.Collections.Generic.Dictionary<int, string> RoleIcons = new()
     {
-        { HelperType.Assistant, "res://sprites/export/icons/Money_/1.png" },
-        { HelperType.Gatherer, "res://sprites/export/icons/Carrot_/1.png" },
+        { HelperType.Gatherer, "res://sprites/export/icons/Grass_/1.png" },
         { HelperType.Seller, "res://sprites/export/icons/Money_/1.png" },
-        { HelperType.Builder, "res://sprites/export/icons/Money_/1.png" },
+        { HelperType.Builder, "res://sprites/export/homes/A_bar.png" },
         { HelperType.Milker, "res://sprites/export/icons/Milky_/1.png" },
     };
 

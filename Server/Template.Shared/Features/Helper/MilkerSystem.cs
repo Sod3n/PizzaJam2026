@@ -163,9 +163,11 @@ public class MilkerSystem : ISystem
                     {
                         int milkPower = 1;
                         bool produced = InteractionLogic.MilkCowFromBag(state, house.CowId, foodToUse, milkPower, ref helperRef.Helper, out bool cowDone);
+                        bool preferred = cow.SelectedFood == cow.PreferredFood;
+                        string milkParam = produced ? (preferred ? "milk_ok_pref" : "milk_ok") : "milk_fail";
                         state.AddComponent(helperRef.Helper.TargetEntity, new EnterStateComponent
                         {
-                            Key = StateKeys.Interacted, Param = produced ? "milk_ok" : "milk_fail", Age = 0
+                            Key = StateKeys.Interacted, Param = milkParam, Age = 0
                         });
                         milked = !cowDone;
                     }

@@ -85,7 +85,11 @@ public class CaughtSystem : ISystem
                     state.GetComponent<Transform2D>(playerEntity).Position = housePos;
                 state.HideEntity(playerEntity);
                 if (state.HasComponent<PlayerStateComponent>(playerEntity))
-                    state.GetComponent<PlayerStateComponent>(playerEntity).InteractionTarget = houseEntity;
+                {
+                    ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+                    ps.InteractionTarget = houseEntity;
+                    ps.CameraTarget = houseEntity;
+                }
             }
 
             if (caught.CowEntity != Entity.Null && state.HasComponent<CowComponent>(caught.CowEntity))

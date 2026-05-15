@@ -62,24 +62,12 @@ public static class PlayerSharedSetup
 
         isHidden.Subscribe(hidden =>
         {
-            // InteractionTarget is set 30 ticks before HiddenComponent (Milking.Enter
-            // duration), so it's stable by now. Capture the target entity sync; resolve
-            // its world position inside the deferred callable so Godot transforms are settled.
             Entity targetEntity = Entity.Null;
             if (hidden)
             {
                 var state = ReactiveSystem.Instance?.BoundState;
                 if (state != null && state.HasComponent<PlayerStateComponent>(vm.Entity))
-                    targetEntity = state.GetComponent<PlayerStateComponent>(vm.Entity).InteractionTarget;
-                // Player frames "the building they're inside", not the cow — when milking,
-                // resolve the cow's house so the camera centers on the house, not the cow.
-                if (targetEntity != Entity.Null
-                    && state != null
-                    && state.HasComponent<CowComponent>(targetEntity))
-                {
-                    var houseId = state.GetComponent<CowComponent>(targetEntity).HouseId;
-                    if (houseId != Entity.Null) targetEntity = houseId;
-                }
+                    targetEntity = state.GetComponent<PlayerStateComponent>(vm.Entity).CameraTarget;
             }
 
             Callable.From(() =>

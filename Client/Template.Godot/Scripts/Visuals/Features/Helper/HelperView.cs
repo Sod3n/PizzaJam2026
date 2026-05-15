@@ -8,21 +8,18 @@ namespace Template.Godot.Visuals;
 
 public partial class HelperView
 {
-    private static readonly Texture2D _sleepTexture =
-        GD.Load<Texture2D>("res://sprites/sleep.png");
-
-    private static readonly System.Collections.Generic.Dictionary<int, string> WantIcons = new()
+    private static readonly System.Collections.Generic.Dictionary<int, Texture2D> WantTextures = new()
     {
-        { HelperType.Seller, "res://sprites/export/icons/Milky_/1.png" },
-        { HelperType.Builder, "res://sprites/export/icons/Money_/1.png" },
+        { HelperType.Seller, GD.Load<Texture2D>("res://sprites/export/icons/Milky_/1.png") },
+        { HelperType.Builder, GD.Load<Texture2D>("res://sprites/export/icons/Money_/1.png") },
     };
 
-    private static readonly System.Collections.Generic.Dictionary<int, string> FoodIcons = new()
+    private static readonly System.Collections.Generic.Dictionary<int, Texture2D> FoodTextures = new()
     {
-        { FoodType.Grass, "res://sprites/export/icons/Grass_/1.png" },
-        { FoodType.Carrot, "res://sprites/export/icons/Carrot_/1.png" },
-        { FoodType.Apple, "res://sprites/export/icons/Apply_/3.png" },
-        { FoodType.Mushroom, "res://sprites/export/icons/Mashroom/1.png" },
+        { FoodType.Grass, GD.Load<Texture2D>("res://sprites/export/icons/Grass_/1.png") },
+        { FoodType.Carrot, GD.Load<Texture2D>("res://sprites/export/icons/Carrot_/1.png") },
+        { FoodType.Apple, GD.Load<Texture2D>("res://sprites/export/icons/Apply_/1.png") },
+        { FoodType.Mushroom, GD.Load<Texture2D>("res://sprites/export/icons/Mashroom/1.png") },
     };
 
     partial void OnSpawned(HelperViewModel vm, Node3D visualNode)
@@ -43,19 +40,21 @@ public partial class HelperView
         ViewHelpers.SetupInteractAnimation(vm, visualNode, animateNode: characterNode);
 
         // Want icon — server flags `Helper.IsAsking` whenever the helper is idle AND the
-        // player has the requested resource. View just subscribes and toggles visibility.
-        // Texture is keyed off Type / WantedFoodType (also reactive).
-        var wantIcon = visualNode.GetNodeOrNull<AnimatedSprite3D>("WantIcon");
+        // player has the requested resource. View swaps texture on the single WantIcon node
+        // based on Type / WantedFoodType, and scales the anchor in/out for show/hide.
+        var wantIcon = visualNode.GetNodeOrNull<Sprite3D>("%WantIcon");
+        var wantAnchor = visualNode.GetNodeOrNull<Node3D>("%WantIconScaleAnchor");
+        if (wantAnchor != null) wantAnchor.Scale = Vector3.Zero;
         if (wantIcon != null)
         {
             void RefreshTexture()
             {
                 int t = vm.Helper.Helper.Type.CurrentValue;
                 int wf = vm.Helper.Helper.WantedFoodType.CurrentValue;
-                string iconPath = null;
-                if (t == HelperType.Milker && wf >= 0) FoodIcons.TryGetValue(wf, out iconPath);
-                else if (t == HelperType.Seller || t == HelperType.Builder) WantIcons.TryGetValue(t, out iconPath);
-                if (iconPath != null) SetWantIconTexture(wantIcon, iconPath);
+                Texture2D tex = null;
+                if (t == HelperType.Milker && wf >= 0) FoodTextures.TryGetValue(wf, out tex);
+                else if (t == HelperType.Seller || t == HelperType.Builder) WantTextures.TryGetValue(t, out tex);
+                if (tex != null) wantIcon.Texture = tex;
             }
 
             vm.Helper.Helper.Type.Subscribe(_ =>
@@ -65,56 +64,41 @@ public partial class HelperView
                 Callable.From(() => { if (IsInstanceValid(wantIcon)) RefreshTexture(); }).CallDeferred()
             ).AddTo(vm.Disposables);
             vm.Helper.Helper.IsAsking.Subscribe(asking =>
-                Callable.From(() => { if (IsInstanceValid(wantIcon)) wantIcon.Visible = asking; }).CallDeferred()
+                Callable.From(() => TweenIconScale(wantAnchor, asking)).CallDeferred()
             ).AddTo(vm.Disposables);
         }
 
-        // Sleep icon — server flags `Helper.IsSleeping` whenever there's no work the helper
-        // can do. View just subscribes.
-        var sleepIcon = new Sprite3D
+        // Sleep icon — node lives in Helper.tscn so it's tweakable in the editor.
+        var sleepAnchor = visualNode.GetNodeOrNull<Node3D>("%SleepIconScaleAnchor");
+        if (sleepAnchor != null) sleepAnchor.Scale = Vector3.Zero;
+        if (sleepAnchor != null)
         {
-            Texture = _sleepTexture,
-            PixelSize = 0.0015f,
-            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
-            AlphaCut = SpriteBase3D.AlphaCutMode.OpaquePrepass,
-            Shaded = false,
-            Position = new Vector3(0, 2.27f, 0),
-            NoDepthTest = true,
-            RenderPriority = 4,
-            Visible = false,
-        };
-        visualNode.AddChild(sleepIcon);
+            vm.Helper.Helper.IsSleeping.Subscribe(sleeping =>
+                Callable.From(() => TweenIconScale(sleepAnchor, sleeping)).CallDeferred()
+            ).AddTo(vm.Disposables);
+        }
 
-        vm.Helper.Helper.IsSleeping.Subscribe(sleeping =>
-            Callable.From(() => { if (IsInstanceValid(sleepIcon)) sleepIcon.Visible = sleeping; }).CallDeferred()
-        ).AddTo(vm.Disposables);
-
-        // Ready icon (exclamation) — shown when helper has resources ready for pickup
-        var readyIcon = visualNode.GetNodeOrNull<Sprite3D>("ReadyIcon");
-        if (readyIcon != null)
+        var readyAnchor = visualNode.GetNodeOrNull<Node3D>("%ReadyIconScaleAnchor");
+        if (readyAnchor != null) readyAnchor.Scale = Vector3.Zero;
+        if (readyAnchor != null)
         {
-            vm.Helper.Helper.State.Subscribe(helperState =>
-                Callable.From(() =>
-                {
-                    if (IsInstanceValid(readyIcon))
-                        readyIcon.Visible = helperState == HelperState.WaitingForPickup;
-                }).CallDeferred()
+            vm.Helper.Helper.IsReadyForPickup.Subscribe(ready =>
+                Callable.From(() => TweenIconScale(readyAnchor, ready)).CallDeferred()
             ).AddTo(vm.Disposables);
         }
     }
 
-    private static void SetWantIconTexture(AnimatedSprite3D wantIcon, string iconPath)
+    private static void TweenIconScale(Node3D anchor, bool show)
     {
-        var texture = GD.Load<Texture2D>(iconPath);
-        if (texture != null)
-        {
-            var frames = new SpriteFrames();
-            frames.AddAnimation("default");
-            frames.AddFrame("default", texture);
-            wantIcon.SpriteFrames = frames;
-            wantIcon.Animation = "default";
-            wantIcon.Frame = 0;
-        }
+        if (!IsInstanceValid(anchor)) return;
+        if (anchor.HasMeta("scale_tween") && anchor.GetMeta("scale_tween").As<Tween>() is { } prev && IsInstanceValid(prev))
+            prev.Kill();
+        var tween = anchor.CreateTween();
+        anchor.SetMeta("scale_tween", tween);
+        var target = show ? Vector3.One : Vector3.Zero;
+        var trans = show ? Tween.TransitionType.Back : Tween.TransitionType.Quad;
+        var ease = show ? Tween.EaseType.Out : Tween.EaseType.In;
+        tween.TweenProperty(anchor, "scale", target, 0.2f).SetTrans(trans).SetEase(ease);
     }
 
     partial void OnDespawned(HelperViewModel vm, Node3D visualNode)

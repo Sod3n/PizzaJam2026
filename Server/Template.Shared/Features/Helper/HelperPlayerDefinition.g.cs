@@ -78,6 +78,7 @@ public static partial class HelperPlayerDefinition
             CarriedEntity = Entity.Null,
             FollowingHelper = Entity.Null,
             PetCount = 0,
+            CameraTarget = Entity.Null,
         });
 
         ctx.AddComponent(entity, new NavMeshConstraint

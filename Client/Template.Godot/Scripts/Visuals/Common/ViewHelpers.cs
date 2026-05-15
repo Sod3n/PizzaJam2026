@@ -81,9 +81,7 @@ public static class ViewHelpers
 
                 animateNode.SetMeta("scale_tween", tween);
 
-                // Only show heart blast when milk is actually produced (every 4th click)
-                if (param != "milk_fail")
-                    SpawnHeartBlast(visualNode, vm.Entity);
+                SpawnHeartBlast(visualNode, param);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
     }
@@ -275,40 +273,29 @@ public static class ViewHelpers
         }).AddTo(vm.Disposables);
     }
 
-    private static void SpawnHeartBlast(Node3D parent, Entity entity)
+    private static void SpawnHeartBlast(Node3D parent, string param)
     {
         if (HeartTexture == null || BrokenHeartTexture == null) return;
-        var state = ReactiveSystem.Instance.BoundState;
-        if (state == null) return;
+        if (string.IsNullOrEmpty(param)) return;
 
-        // Milking: house with a cow that is milking
-        if (state.HasComponent<HouseComponent>(entity))
+        if (param == "milk_ok_pref")
         {
-            var house = state.GetComponent<HouseComponent>(entity);
-            if (house.CowId != Entity.Null && state.HasComponent<CowComponent>(house.CowId))
-            {
-                var cow = state.GetComponent<CowComponent>(house.CowId);
-                if (cow.IsMilking)
-                {
-                    bool isPreferred = house.SelectedFood == cow.PreferredFood;
-                    var texture = isPreferred ? HeartTexture : (HeartRng.Next(2) == 0 ? HeartTexture : BrokenHeartTexture);
-                    SpawnFanHearts(parent, texture);
-                    return;
-                }
-            }
+            SpawnFanHearts(parent, HeartTexture);
+            return;
         }
-
-        // Breeding: love house with breed in progress
-        if (state.HasComponent<LoveHouseComponent>(entity))
+        if (param == "milk_ok")
         {
-            var lh = state.GetComponent<LoveHouseComponent>(entity);
-            if (lh.BreedProgress > 0)
-            {
-                int heartPercent = lh.HeartPercent > 0 ? lh.HeartPercent : 50;
-                var texture = HeartRng.Next(100) < heartPercent ? HeartTexture : BrokenHeartTexture;
-                SpawnFanHearts(parent, texture);
-                return;
-            }
+            var texture = HeartRng.Next(2) == 0 ? HeartTexture : BrokenHeartTexture;
+            SpawnFanHearts(parent, texture);
+            return;
+        }
+        if (param.StartsWith("breed_"))
+        {
+            int heartPercent = 50;
+            if (int.TryParse(param.Substring("breed_".Length), out int parsed) && parsed > 0)
+                heartPercent = parsed;
+            var texture = HeartRng.Next(100) < heartPercent ? HeartTexture : BrokenHeartTexture;
+            SpawnFanHearts(parent, texture);
         }
     }
 

@@ -60,6 +60,7 @@ public static partial class PlayerDefinition
             CarriedEntity = Entity.Null,
             FollowingHelper = Entity.Null,
             PetCount = 0,
+            CameraTarget = Entity.Null,
         });
 
         ctx.AddComponent(entity, new NavMeshConstraint

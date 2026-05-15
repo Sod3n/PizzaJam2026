@@ -28,13 +28,19 @@ public class CowVisibilitySystem : ISystem
             var sc = state.GetComponent<StateComponent>(playerEntity);
             if (!sc.IsEnabled) continue;
 
-            var ps = state.GetComponent<PlayerStateComponent>(playerEntity);
+            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
 
             if (sc.Key == StateKeys.Milking && (sc.Phase == StatePhase.Active || sc.Phase == StatePhase.Exit))
             {
                 state.HideEntity(playerEntity);
+                Entity houseTarget = ps.InteractionTarget;
                 if (state.HasComponent<CowComponent>(ps.InteractionTarget))
+                {
                     state.HideEntity(ps.InteractionTarget);
+                    var houseId = state.GetComponent<CowComponent>(ps.InteractionTarget).HouseId;
+                    if (houseId != Entity.Null) houseTarget = houseId;
+                }
+                ps.CameraTarget = houseTarget;
             }
             else if (sc.Key == StateKeys.Breed)
             {
@@ -45,6 +51,7 @@ public class CowVisibilitySystem : ISystem
                     if (lh.CowId1 != Entity.Null) state.HideEntity(lh.CowId1);
                     if (lh.CowId2 != Entity.Null) state.HideEntity(lh.CowId2);
                 }
+                ps.CameraTarget = ps.InteractionTarget;
             }
         }
     }

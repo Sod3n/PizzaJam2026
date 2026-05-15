@@ -20,12 +20,11 @@ public class SetHelperRoleActionService : ActionService<SetHelperRoleAction, Pla
             int prev = h.Type;
             int next = prev switch
             {
-                HelperType.Assistant => HelperType.Gatherer,
                 HelperType.Gatherer => HelperType.Seller,
                 HelperType.Seller => HelperType.Builder,
                 HelperType.Builder => HelperType.Milker,
-                HelperType.Milker => HelperType.Assistant,
-                _ => HelperType.Assistant,
+                HelperType.Milker => HelperType.Gatherer,
+                _ => HelperType.Gatherer,
             };
 
             h.Type = next;

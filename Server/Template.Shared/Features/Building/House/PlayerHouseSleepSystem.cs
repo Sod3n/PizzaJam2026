@@ -48,7 +48,11 @@ public class PlayerHouseSleepSystem : ISystem
         int totalTicks = Template.Shared.GameData.Balance.PlayerHouse.SleepStateTicks;
         state.HideEntity(playerEntity);
         if (state.HasComponent<PlayerStateComponent>(playerEntity))
-            state.GetComponent<PlayerStateComponent>(playerEntity).InteractionTarget = houseEntity;
+        {
+            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+            ps.InteractionTarget = houseEntity;
+            ps.CameraTarget = houseEntity;
+        }
         state.AddComponent(playerEntity, new SleepingComponent
         {
             TicksRemaining = totalTicks,

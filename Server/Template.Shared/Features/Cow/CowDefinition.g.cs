@@ -54,6 +54,11 @@ public static partial class CowDefinition
         component.MaxHorny = 0;
         component.IsExhausted = false;
         component.IsAttacking = false;
+        component.IsWanderer = false;
+        component.HornyIconState = 0;
+        component.IsLoveTarget = false;
+        component.ShowLoveNeedIcon = false;
+        component.IsHornyAlerting = false;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 
