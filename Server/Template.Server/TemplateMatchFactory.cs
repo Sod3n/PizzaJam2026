@@ -2,7 +2,6 @@ using System;
 using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Serialization;
 using Deterministic.GameFramework.Network.Server;
-using Deterministic.GameFramework.Profiler;
 using Template.Shared.Factories;
 using Template.Shared.Features.Player;
 using Guid = System.Guid;
@@ -16,7 +15,6 @@ public class TemplateMatchFactory : IMatchFactory
     {
         // 1. Create Game using Shared Factory (ensures consistent setup)
         var game = TemplateGameFactory.CreateGame(tickRate: 60);
-        GameProfiler.Enable(game);
 
         // 2. If we have a saved state, restore it (overwrites entities from scene OnEnter)
         if (initialState != null && initialState.Length > 8)

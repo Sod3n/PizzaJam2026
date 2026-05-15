@@ -10,12 +10,5 @@ namespace Template.Shared.Actions;
 public struct InteractAction : IAction
 {
     public Guid UserId;
-    
-    // We don't necessarily need a target ID if we just interact with "nearest" thing, 
-    // but explicit target is usually better for determinism and clarity. 
-    // However, the prompt says "If we near grass", implying proximity check.
-    // I'll stick to proximity check in the system for simplicity with the prompt's logic,
-    // or passing the target entity ID is safer if the client determines it.
-    // Given "If we near grass", the server should validate proximity.
-    // Let's just pass UserId, and the system finds the nearest interactable.
+    public bool IsHoldRepeat;
 }

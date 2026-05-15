@@ -70,6 +70,7 @@ public static partial class HelperPlayerDefinition
         {
             InteractionTarget = Entity.Null,
             HighlightTarget = Entity.Null,
+            HoldLockedTarget = Entity.Null,
             ReturnPosition = Vector2.Zero,
             InteractionZone = Entity.Null,
             FollowingCow = Entity.Null,

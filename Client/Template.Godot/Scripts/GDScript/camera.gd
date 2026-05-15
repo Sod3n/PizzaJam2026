@@ -14,6 +14,47 @@ var _offset: Vector3
 var _prev_target_pos: Vector3
 var _lead: Vector3 = Vector3.ZERO
 
+var _panning: bool = false
+var _pan_tween: Tween = null
+
+# Smooth release: blend from the pan position back to target+offset over a duration
+# instead of snapping. Tracks the moving target the whole time.
+var _returning: bool = false
+var _return_t: float = 0.0
+var _return_duration: float = 0.0
+var _return_start: Vector3 = Vector3.ZERO
+
+func pan_to(world_pos: Vector3, duration: float) -> void:
+	_panning = true
+	_returning = false
+	var start := global_position
+	var end := world_pos + _offset
+	if _pan_tween:
+		_pan_tween.kill()
+	_pan_tween = create_tween()
+	_pan_tween.tween_method(_apply_pan, start, end, duration)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+func _apply_pan(pos: Vector3) -> void:
+	global_position = pos
+
+func release_override(duration: float = 0.0) -> void:
+	if _pan_tween:
+		_pan_tween.kill()
+		_pan_tween = null
+	_lead = Vector3.ZERO
+	if _target:
+		_prev_target_pos = _target.global_position
+	if duration > 0.0:
+		_panning = false
+		_returning = true
+		_return_t = 0.0
+		_return_duration = duration
+		_return_start = global_position
+	else:
+		_panning = false
+		_returning = false
+
 func _ready() -> void:
 	_target = get_parent() as Node3D
 	if _target == null:
@@ -26,10 +67,25 @@ func _ready() -> void:
 	process_priority = 1000
 
 func _process(delta: float) -> void:
-	if _target == null or delta <= 0.0:
+	if _target == null or delta <= 0.0 or _panning:
 		return
 
 	var target_pos := _target.global_position
+
+	# Smooth release: ease from the panned position toward the moving target.
+	# Skip the lead lean during the blend so it doesn't fight the catch-up.
+	if _returning:
+		_return_t += delta
+		var u: float = clamp(_return_t / _return_duration, 0.0, 1.0)
+		# Sine ease-in-out matches the pan_to tween for a symmetric feel.
+		var eased: float = 0.5 - 0.5 * cos(u * PI)
+		global_position = _return_start.lerp(target_pos + _offset, eased)
+		_prev_target_pos = target_pos
+		if u >= 1.0:
+			_returning = false
+			global_position = target_pos + _offset
+		return
+
 	var vel := (target_pos - _prev_target_pos) / delta
 	_prev_target_pos = target_pos
 

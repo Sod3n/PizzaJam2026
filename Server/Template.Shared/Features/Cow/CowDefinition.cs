@@ -16,10 +16,8 @@ public static partial class CowDefinition
     {
         component.SpawnPosition = ctx.GetComponent<Transform2D>(entity).Position;
 
-        // Get spawn counts from ECS state for deterministic weight decay
         ref var spawnCounts = ref GetSpawnCounts(ctx);
 
-        // Generate random skin and calculate MaxExhaust from skin data
         var random = new DeterministicRandom((uint)entity.Id + 2000);
         var skinComponent = GameData.GD.SkinsData.GenerateRandomSkin(ref random, ref spawnCounts);
         ctx.AddComponent(entity, skinComponent);
@@ -62,6 +60,40 @@ public static partial class CowDefinition
         navAgent.TargetDesiredDistance = 4f;
         navAgent.AvoidanceEnabled = true;
         navAgent.AvoidanceMask = 1u; // Detect player on collision layer 1
+    }
+
+    /// <summary>
+    /// Re-roll <paramref name="cowEntity"/>'s skin from the budgeted pool (Exhaust ≤ budget),
+    /// then refresh <see cref="CowComponent.MaxExhaust"/> + <see cref="CowComponent.MaxHorny"/>
+    /// from the new skin. Pure state mutation — no static or process-wide context.
+    /// </summary>
+    public static void ApplyExhaustBudget(EntityWorld state, Entity cowEntity, int totalExhaustBudget)
+    {
+        if (totalExhaustBudget <= 0) return;
+        if (!state.HasComponent<CowComponent>(cowEntity)) return;
+        if (!state.HasComponent<SkinComponent>(cowEntity)) return;
+
+        Entity countsEntity = Entity.Null;
+        foreach (var e in state.Filter<SkinSpawnCountsComponent>()) { countsEntity = e; break; }
+        if (countsEntity == Entity.Null) return;
+
+        ref var spawnCounts = ref state.GetComponent<SkinSpawnCountsComponent>(countsEntity);
+        var random = new DeterministicRandom((uint)cowEntity.Id + 5000);
+        var newSkin = GameData.GD.SkinsData.GenerateRandomSkinBudgeted(ref random, ref spawnCounts, totalExhaustBudget);
+
+        state.GetComponent<SkinComponent>(cowEntity) = newSkin;
+
+        int total = 0;
+        foreach (var skinId in newSkin.Skins.Values)
+        {
+            var def = GameData.GD.SkinsData.Get(skinId);
+            if (def != null) total += def.Exhaust;
+        }
+        if (total <= 0) total = 10;
+
+        ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
+        cow.MaxExhaust = total;
+        cow.MaxHorny = ComputeMaxHorny(total);
     }
 
     internal static int ComputeMaxHorny(int totalExhaust)

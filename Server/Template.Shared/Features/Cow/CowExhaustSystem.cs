@@ -13,6 +13,7 @@ public class CowExhaustSystem : ISystem
         foreach (var cowRef in state.Filter<CowArchetype>())
         {
             if (!cowRef.Cow.IsExhausted) continue;
+            if (cowRef.Cow.FollowTarget != Entity.Null) continue;
             if (cowRef.Cow.HouseId == Entity.Null) continue;
             if (!CowFollowSystem.TryGetHouseStandPosition(state, cowRef, out var standPos)) continue;
             var distSq = (standPos - cowRef.Transform2D.Position).SqrMagnitude;

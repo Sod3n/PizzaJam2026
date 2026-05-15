@@ -15,6 +15,7 @@ public static class SleepLogic
         {
             ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
             gr.DayCounter++;
+            gr.TicksSinceDayStart = 0;
             gr.FoodSpawnedTodayGrass = 0;
             gr.FoodSpawnedTodayCarrot = 0;
             gr.FoodSpawnedTodayApple = 0;

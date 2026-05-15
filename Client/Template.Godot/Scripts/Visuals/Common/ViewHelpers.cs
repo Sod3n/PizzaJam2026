@@ -40,14 +40,32 @@ public static class ViewHelpers
             Callable.From(() =>
             {
                 if (!Node.IsInstanceValid(animateNode)) return;
-                if (animateNode.GetMeta("scale_tween").Obj is Tween tw) tw.SetSpeedScale(100000f);
+                if (animateNode.HasMeta("scale_tween") && animateNode.GetMeta("scale_tween").Obj is Tween tw)
+                    tw.SetSpeedScale(100000f);
 
                 var tween = animateNode.CreateTween();
-                var origScale = animateNode.GetMeta("orig_scale").Obj is Vector3 s ? s : animateNode.Scale;
-                if (animateNode.GetMeta("orig_scale").Obj == null) animateNode.SetMeta("orig_scale", animateNode.Scale);
+                Vector3 origScale;
+                if (animateNode.HasMeta("orig_scale")) origScale = animateNode.GetMeta("orig_scale").AsVector3();
+                else { origScale = animateNode.Scale; animateNode.SetMeta("orig_scale", origScale); }
+                Vector3 origPos;
+                if (animateNode.HasMeta("orig_pos")) origPos = animateNode.GetMeta("orig_pos").AsVector3();
+                else { origPos = animateNode.Position; animateNode.SetMeta("orig_pos", origPos); }
+                // Squish pivots at the bottom of the visual's AABB instead of the node origin
+                // so the object squashes onto the ground instead of pinching at its center.
+                float bottomY = animateNode.HasMeta("squish_bottom_y")
+                    ? (float)animateNode.GetMeta("squish_bottom_y").AsSingle()
+                    : ComputeAndCacheBottomY(animateNode);
+                var squishScale = new Vector3(origScale.X * 1.2f, origScale.Y * 0.85f, origScale.Z);
+                // When scaleY shrinks from origScaleY → newScaleY, a point at local Y=bottomY moves
+                // up by (origScaleY - newScaleY) * |bottomY|. Push the node down by the same amount
+                // so the bottom stays put.
+                float yShift = (origScale.Y - squishScale.Y) * bottomY;
+                var squishPos = new Vector3(origPos.X, origPos.Y + yShift, origPos.Z);
                 tween.SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
-                tween.TweenProperty(animateNode, "scale", new Vector3(origScale.X * 1.4f, origScale.Y * 0.7f, origScale.Z), 0.1f);
-                tween.Chain().TweenProperty(animateNode, "scale", origScale, 0.1f);
+                tween.TweenProperty(animateNode, "scale", squishScale, 0.1f);
+                tween.Parallel().TweenProperty(animateNode, "position", squishPos, 0.1f);
+                tween.TweenProperty(animateNode, "scale", origScale, 0.1f);
+                tween.Parallel().TweenProperty(animateNode, "position", origPos, 0.1f);
                 animateNode.SetMeta("scale_tween", tween);
 
                 // Only show heart blast when milk is actually produced (every 4th click)
@@ -55,6 +73,51 @@ public static class ViewHelpers
                     SpawnHeartBlast(visualNode, vm.Entity);
             }).CallDeferred();
         }).AddTo(vm.Disposables);
+    }
+
+    /// <summary>
+    /// Walk <paramref name="root"/>'s descendants for VisualInstance3D children, union their
+    /// global AABBs, then convert the min-Y back into <paramref name="root"/>'s local space.
+    /// Cached as the "squish_bottom_y" meta on the root so it's only paid once.
+    /// </summary>
+    private static float ComputeAndCacheBottomY(Node3D root)
+    {
+        bool found = false;
+        float globalMinY = 0f;
+        WalkVisuals(root, ref found, ref globalMinY);
+        float bottomY;
+        if (!found)
+        {
+            bottomY = -0.5f; // sensible default for ~1-unit-tall pivot-at-center assets
+        }
+        else
+        {
+            var localPoint = root.GlobalTransform.AffineInverse() * new Vector3(0f, globalMinY, 0f);
+            bottomY = localPoint.Y;
+        }
+        root.SetMeta("squish_bottom_y", bottomY);
+        return bottomY;
+    }
+
+    private static void WalkVisuals(Node node, ref bool found, ref float globalMinY)
+    {
+        if (node is VisualInstance3D vi)
+        {
+            var aabb = vi.GetAabb();
+            // Transform the 8 AABB corners through vi's global transform; take min Y.
+            var gt = vi.GlobalTransform;
+            for (int corner = 0; corner < 8; corner++)
+            {
+                var local = new Vector3(
+                    (corner & 1) == 0 ? aabb.Position.X : aabb.End.X,
+                    (corner & 2) == 0 ? aabb.Position.Y : aabb.End.Y,
+                    (corner & 4) == 0 ? aabb.Position.Z : aabb.End.Z);
+                float gy = (gt * local).Y;
+                if (!found || gy < globalMinY) { globalMinY = gy; found = true; }
+            }
+        }
+        foreach (var child in node.GetChildren(true))
+            WalkVisuals(child, ref found, ref globalMinY);
     }
 
     public static (Node3D flipPivot, Node3D characterNode) SetupFlipPivot(Node3D visualNode)
@@ -103,13 +166,23 @@ public static class ViewHelpers
     public static void PlayDisappear(Node3D node, float duration = 0.5f, bool freeAfter = true)
     {
         var baseScale = node.Scale;
+        var basePos = node.Position;
         float squashTime = Mathf.Min(0.12f, duration * 0.35f);
         float fallTime = Mathf.Max(0.05f, duration - squashTime);
 
-        var squashScale = new GVector3(baseScale.X * 1.3f, baseScale.Y * 0.5f, baseScale.Z * 1.3f);
+        // Relaxed squash — gentler vertical compression than before.
+        var squashScale = new GVector3(baseScale.X * 1.15f, baseScale.Y * 0.7f, baseScale.Z * 1.15f);
+        float bottomY = node.HasMeta("squish_bottom_y")
+            ? node.GetMeta("squish_bottom_y").AsSingle()
+            : ComputeAndCacheBottomY(node);
+        float yShift = (baseScale.Y - squashScale.Y) * bottomY;
+        var squashPos = new GVector3(basePos.X, basePos.Y + yShift, basePos.Z);
 
         var tween = node.CreateTween();
         tween.TweenProperty(node, "scale", squashScale, squashTime)
+            .SetTrans(Tween.TransitionType.Quad)
+            .SetEase(Tween.EaseType.Out);
+        tween.Parallel().TweenProperty(node, "position", squashPos, squashTime)
             .SetTrans(Tween.TransitionType.Quad)
             .SetEase(Tween.EaseType.Out);
         tween.Parallel().TweenProperty(node, "rotation_degrees:x", -60f, fallTime)

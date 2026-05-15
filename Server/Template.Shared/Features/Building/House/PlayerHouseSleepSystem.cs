@@ -39,37 +39,25 @@ public class PlayerHouseSleepSystem : ISystem
             }
         }
 
-        bool anyAttacking = false;
-        foreach (var cowEntity in state.Filter<CowComponent>())
+        if (state.HasComponent<SleepingComponent>(playerEntity))
         {
-            if (state.GetComponent<CowComponent>(cowEntity).IsAttacking) { anyAttacking = true; break; }
-        }
-        if (anyAttacking)
-        {
-            state.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.GameOver, Param = "caught_sleeping", Age = 0 });
             state.RemoveComponent<InteractRequestComponent>(playerEntity);
             return;
         }
 
-        SleepLogic.AdvanceDay(state);
-        if (state.HasComponent<CooldownComponent>(houseEntity))
+        int totalTicks = Template.Shared.GameData.Balance.PlayerHouse.SleepStateTicks;
+        state.HideEntity(playerEntity);
+        if (state.HasComponent<PlayerStateComponent>(playerEntity))
+            state.GetComponent<PlayerStateComponent>(playerEntity).InteractionTarget = houseEntity;
+        state.AddComponent(playerEntity, new SleepingComponent
         {
-            ref var cd = ref state.GetComponent<CooldownComponent>(houseEntity);
-            cd.MaxTicks = PlayerHouseComponent.SleepCooldownTicks;
-            cd.TicksRemaining = PlayerHouseComponent.SleepCooldownTicks;
-            cd.Unit = CooldownUnit.Ticks;
-        }
-        else
-        {
-            state.AddComponent(houseEntity, new CooldownComponent
-            {
-                MaxTicks = PlayerHouseComponent.SleepCooldownTicks,
-                TicksRemaining = PlayerHouseComponent.SleepCooldownTicks,
-                Unit = CooldownUnit.Ticks,
-            });
-        }
+            TicksRemaining = totalTicks,
+            TotalTicks = totalTicks,
+            House = houseEntity,
+            DayAdvanced = 0,
+        });
         state.AddComponent(houseEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "sleep", Age = 0 });
-        ILogger.Log($"[PlayerHouseSleepSystem] Player {playerEntity.Id} slept at PlayerHouse {houseEntity.Id} — day advanced");
+        ILogger.Log($"[PlayerHouseSleepSystem] Player {playerEntity.Id} began sleeping at PlayerHouse {houseEntity.Id}");
         state.RemoveComponent<InteractRequestComponent>(playerEntity);
     }
 }

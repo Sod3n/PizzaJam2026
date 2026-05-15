@@ -21,6 +21,7 @@ public partial class GlobalResourcesComponentNode : Node
     [Export] public int LastFarmGX;
     [Export] public int LastFarmGY;
     [Export] public int DayCounter;
+    [Export] public int TicksSinceDayStart;
     [Export] public int FoodSpawnedTodayGrass;
     [Export] public int FoodSpawnedTodayCarrot;
     [Export] public int FoodSpawnedTodayApple;

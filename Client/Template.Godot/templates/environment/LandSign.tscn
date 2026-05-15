@@ -18,6 +18,12 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_1f6sc"]
 animations = [{
@@ -41,6 +47,12 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_hygnc"]
 animations = [{
@@ -76,14 +88,14 @@ CollisionLayer = 5
 CollisionMask = 8
 
 [node name="Sign" type="AnimatedSprite3D" parent="." unique_id=629436190]
-transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18816209, 2.6912923, -1.3160279)
+transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18816209, 3.0341127, -1.474005)
 material_override = SubResource("ShaderMaterial_1ck7r")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_1f6sc")
 script = ExtResource("7_5jc8c")
 
 [node name="TypeIcon" type="AnimatedSprite3D" parent="." unique_id=128478463]
-transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.016919158, 0.72007746, -0.29181027)
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.016919158, 0.99433374, -0.4181919)
 material_override = SubResource("ShaderMaterial_q2gur")
 modulate = Color(0.538588, 0.56305635, 0.56306595, 1)
 alpha_cut = 2
@@ -92,8 +104,7 @@ frame_progress = 0.0024409618
 script = ExtResource("7_5jc8c")
 
 [node name="SelectedBadge" type="Sprite3D" parent="." unique_id=128478464]
-transform = Transform3D(0.06918491, 0.010475525, 0.012689096, -0.0103976, 0.0636762, 0.17881538, 0.0023106106, -0.027122043, 0.42471758, 0.42580348, 0.86200064, -0.4516522)
+transform = Transform3D(0.06918491, 0.010475525, 0.012689096, -0.0103976, 0.0636762, 0.17881538, 0.0023106106, -0.027122043, 0.42471758, 0.48126253, 1.1991122, -0.5952404)
 visible = false
 alpha_cut = 2
-render_priority = 0
 texture = ExtResource("9_selected")

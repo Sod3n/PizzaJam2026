@@ -12,7 +12,7 @@ public class CowFollowSystem : ISystem
     {
         foreach (var cowRef in state.Filter<CowArchetype>())
         {
-            if (cowRef.Cow.IsAttacking || cowRef.Cow.IsExhausted) continue;
+            if (cowRef.Cow.IsAttacking) continue;
             if (cowRef.Cow.FollowTarget == Entity.Null || cowRef.Cow.FollowingPlayer == Entity.Null)
                 UpdateIdle(state, cowRef);
             else

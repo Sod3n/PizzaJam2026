@@ -187,8 +187,7 @@ public class MilkerSystem : ISystem
     /// </summary>
     private static int ResolveMilkerFoodType(CowComponent cow, int houseSelectedFood)
     {
-        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-        if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier)
+        if (houseSelectedFood >= 0 && houseSelectedFood <= FoodType.Mushroom)
             return houseSelectedFood;
         return cow.PreferredFood;
     }
@@ -200,9 +199,7 @@ public class MilkerSystem : ISystem
     /// </summary>
     private static int ResolveFoodFromBag(ref HelperComponent helper, int houseSelectedFood, int cowPreferredFood)
     {
-        int cowMaxTier = FoodType.MaxTier(cowPreferredFood);
-
-        if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && helper.GetBagFood(houseSelectedFood) > 0)
+        if (houseSelectedFood >= 0 && houseSelectedFood <= FoodType.Mushroom && helper.GetBagFood(houseSelectedFood) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
             if (prereq < 0 || helper.GetBagMilkProduct(prereq) > 0)

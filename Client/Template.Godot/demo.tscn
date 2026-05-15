@@ -73,6 +73,7 @@
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/Features/World/WallView.cs" id="view_wall"]
 [ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/Features/Building/Warehouse/WarehouseView.cs" id="view_warehouse"]
 [ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/Features/Building/Warehouse/WarehouseSignView.cs" id="view_warehousesign"]
+[ext_resource type="Script" path="res://Scripts/Visuals/Common/DayCycleView.cs" id="view_daycycle"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
 background_mode = 1
@@ -82,8 +83,7 @@ ambient_light_color = Color(0.3731162, 0.6030077, 0.849291, 1)
 ambient_light_sky_contribution = 0.17
 tonemap_mode = 2
 sdfgi_min_cell_size = 0.4
-volumetric_fog_density = 0.1026
-volumetric_fog_emission = Color(0.941176, 0.470588, 0.337255, 1)
+volumetric_fog_enabled = false
 adjustment_saturation = 0.01
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4be7j"]
@@ -144,6 +144,11 @@ directional_shadow_split_3 = 0.54
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="SubViewportContainer/SubViewport" unique_id=6311489]
 environment = SubResource("Environment_t4b23")
+
+[node name="DayCycle" type="Node" parent="SubViewportContainer/SubViewport"]
+script = ExtResource("view_daycycle")
+SunPath = NodePath("../DirectionalLight3D")
+EnvPath = NodePath("../WorldEnvironment")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport" unique_id=1848038747]
 transform = Transform3D(150, 0, 0, 0, 1, 0, 0, 0, 150, 0, 60, 0)

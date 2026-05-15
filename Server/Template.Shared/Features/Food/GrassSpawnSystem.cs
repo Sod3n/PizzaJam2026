@@ -12,8 +12,6 @@ namespace Template.Shared.Systems;
 
 public class GrassSpawnSystem : ISystem
 {
-    private static int SpawnInterval => Balance.FoodSpawn.IntervalTicks;
-
     private readonly Vector2 _minPos = new Vector2(-30, -30);
     private readonly Vector2 _maxPos = new Vector2(30, 30);
 
@@ -22,7 +20,15 @@ public class GrassSpawnSystem : ISystem
     public void Update(EntityWorld state)
     {
         var gameTime = state.GetCustomData<IGameTime>();
-        if (gameTime == null || gameTime.CurrentTick % SpawnInterval != 0) return;
+        if (gameTime == null) return;
+
+        Entity grEntity = Entity.Null;
+        foreach (var ge in state.Filter<GlobalResourcesComponent>()) { grEntity = ge; break; }
+        if (grEntity == Entity.Null) return;
+
+        // Food only grows during the configured window at the start of the day.
+        int spawnWindowEnd = (int)(Balance.Day.LengthTicks * Balance.Day.FoodSpawnFraction);
+        if (state.GetComponent<GlobalResourcesComponent>(grEntity).TicksSinceDayStart >= spawnWindowEnd) return;
 
         int grassCount = 0, carrotCount = 0, appleCount = 0, mushroomCount = 0;
         foreach (var entity in state.Filter<GrassComponent>())
@@ -37,80 +43,84 @@ public class GrassSpawnSystem : ISystem
             }
         }
 
-        int carrotFarms = 0, appleFarms = 0, mushroomFarms = 0;
-        foreach (var _ in state.Filter<CarrotFarmComponent>()) carrotFarms++;
-        foreach (var _ in state.Filter<AppleOrchardComponent>()) appleFarms++;
-        foreach (var _ in state.Filter<MushroomCaveComponent>()) mushroomFarms++;
-
         var context = state.Ctx(Entity.Null);
         uint baseSeed = (uint)gameTime.CurrentTick * 2654435761u + (uint)grassCount * 31u + (uint)carrotCount * 37u + (uint)appleCount * 41u + (uint)mushroomCount * 43u;
 
-        Entity grEntity = Entity.Null;
-        foreach (var ge in state.Filter<GlobalResourcesComponent>()) { grEntity = ge; break; }
-        if (grEntity == Entity.Null) return;
+        long tick = gameTime.CurrentTick;
+        TrySpawn(state, context, grEntity, tick, baseSeed, FoodType.Grass, grassCount);
+        TrySpawn(state, context, grEntity, tick, baseSeed + 1000u, FoodType.Carrot, carrotCount);
+        TrySpawn(state, context, grEntity, tick, baseSeed + 2000u, FoodType.Apple, appleCount);
+        TrySpawn(state, context, grEntity, tick, baseSeed + 3000u, FoodType.Mushroom, mushroomCount);
+    }
 
-        int grassCap = SleepLogic.GetFoodCapForToday(state, FoodType.Grass);
-        int grassToday = state.GetComponent<GlobalResourcesComponent>(grEntity).FoodSpawnedTodayGrass;
-        if (grassToday < grassCap && grassCount < grassCap)
+    private void TrySpawn(EntityWorld state, Context context, Entity grEntity, long tick, uint seed, int foodType, int worldCount)
+    {
+        int cap = SleepLogic.GetFoodCapForToday(state, foodType);
+        if (cap <= 0) return;
+
+        // Evenly spread the cap's spawn attempts across the day's spawn window.
+        int interval = Balance.FoodSpawn.IntervalTicksForCap(cap);
+        if (tick % interval != 0) return;
+
+        int spawnedToday = state.GetComponent<GlobalResourcesComponent>(grEntity).GetFoodSpawnedToday(foodType);
+        if (spawnedToday >= cap || worldCount >= cap) return;
+
+        if (SpawnFood(context, seed, foodType))
         {
-            if (SpawnFood(context, baseSeed, FoodType.Grass))
-            {
-                ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-                gr.IncrementFoodSpawnedToday(FoodType.Grass);
-            }
-        }
-
-        if (gameTime.CurrentTick % (SpawnInterval * 2) == 0)
-        {
-            int carrotCap = SleepLogic.GetFoodCapForToday(state, FoodType.Carrot);
-            for (int i = 0; i < carrotFarms; i++)
-            {
-                int spawnedToday = state.GetComponent<GlobalResourcesComponent>(grEntity).FoodSpawnedTodayCarrot;
-                if (spawnedToday >= carrotCap || carrotCount + i >= carrotCap) break;
-                if (SpawnFood(context, baseSeed + 1000u + (uint)i * 100, FoodType.Carrot))
-                {
-                    ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-                    gr.IncrementFoodSpawnedToday(FoodType.Carrot);
-                }
-            }
-
-            int appleCap = SleepLogic.GetFoodCapForToday(state, FoodType.Apple);
-            for (int i = 0; i < appleFarms; i++)
-            {
-                int spawnedToday = state.GetComponent<GlobalResourcesComponent>(grEntity).FoodSpawnedTodayApple;
-                if (spawnedToday >= appleCap || appleCount + i >= appleCap) break;
-                if (SpawnFood(context, baseSeed + 2000u + (uint)i * 100, FoodType.Apple))
-                {
-                    ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-                    gr.IncrementFoodSpawnedToday(FoodType.Apple);
-                }
-            }
-
-            int mushroomCap = SleepLogic.GetFoodCapForToday(state, FoodType.Mushroom);
-            for (int i = 0; i < mushroomFarms; i++)
-            {
-                int spawnedToday = state.GetComponent<GlobalResourcesComponent>(grEntity).FoodSpawnedTodayMushroom;
-                if (spawnedToday >= mushroomCap || mushroomCount + i >= mushroomCap) break;
-                if (SpawnFood(context, baseSeed + 3000u + (uint)i * 100, FoodType.Mushroom))
-                {
-                    ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
-                    gr.IncrementFoodSpawnedToday(FoodType.Mushroom);
-                }
-            }
+            ref var gr = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
+            gr.IncrementFoodSpawnedToday(foodType);
         }
     }
 
     private static int MaxSpawnAttempts => Balance.FoodSpawn.MaxSpawnAttempts;
 
+    /// <summary>
+    /// Anchors for food spawning — unlocked land plots (player can reach them).
+    /// Buffer reused per call by the caller's stack frame; OK to allocate, this only
+    /// runs at the food-spawn interval.
+    /// </summary>
+    private static System.Collections.Generic.List<Vector2> CollectAnchors(EntityWorld state)
+    {
+        var list = new System.Collections.Generic.List<Vector2>();
+        foreach (var landEntity in state.Filter<LandComponent>())
+        {
+            var land = state.GetComponent<LandComponent>(landEntity);
+            if (land.Locked != 0) continue;
+            if (!state.TryGetComponent<Transform2D>(landEntity, out var t)) continue;
+            list.Add(t.Position);
+        }
+        return list;
+    }
+
     private bool SpawnFood(Context context, uint seed, int foodType)
     {
         var random = new DeterministicRandom(seed);
+        var anchors = CollectAnchors(context.State);
+        int radius = Balance.FoodSpawn.AnchorRadius;
+        int minDist = Balance.FoodSpawn.AnchorMinDistance;
 
         for (int attempt = 0; attempt < MaxSpawnAttempts; attempt++)
         {
-            var x = random.NextInt((int)_minPos.X, (int)_maxPos.X);
-            var y = random.NextInt((int)_minPos.Y, (int)_maxPos.Y);
-            var pos = new Vector2(x, y);
+            Vector2 pos;
+            if (anchors.Count > 0)
+            {
+                var anchor = anchors[random.NextInt(anchors.Count)];
+                // Offset from the anchor: pick a point in an annulus [minDist, radius].
+                int dx = random.NextInt(-radius, radius + 1);
+                int dy = random.NextInt(-radius, radius + 1);
+                if (System.Math.Abs(dx) < minDist && System.Math.Abs(dy) < minDist)
+                {
+                    // Snap to the ring edge if too close to the building footprint.
+                    dx = dx >= 0 ? minDist : -minDist;
+                }
+                pos = new Vector2((int)anchor.X + dx, (int)anchor.Y + dy);
+            }
+            else
+            {
+                int x = random.NextInt((int)_minPos.X, (int)_maxPos.X);
+                int y = random.NextInt((int)_minPos.Y, (int)_maxPos.Y);
+                pos = new Vector2(x, y);
+            }
 
             if (!NavigationQueries.IsWalkable(context.State, pos))
                 continue;

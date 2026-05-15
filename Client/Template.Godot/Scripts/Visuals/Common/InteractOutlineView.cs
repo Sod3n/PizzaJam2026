@@ -43,18 +43,25 @@ public partial class InteractOutlineView : Node3D
         SetupOutlineComposite();
         if (GameManager.Instance != null && GameManager.Instance.IsGameRunning)
             Register();
-        // Priority 200 > ViewSmoother (100), so by the time we sync the outline
-        // camera, the player visual (which the main camera is parented to) has
-        // already been updated this frame.
-        ProcessPriority = 200;
+        // Must run after camera.gd (priority 1000) so the lean it applies in
+        // _process is already written to GlobalTransform when we copy it to the
+        // outline camera. Lower priority would read last frame's pose and the
+        // outline would lag in the direction of movement.
+        ProcessPriority = 1100;
         GetViewport().SizeChanged += OnViewportSizeChanged;
         OnViewportSizeChanged();
     }
 
+    /// <summary>Render outline at 1/N the main viewport's resolution to save GPU. Outline shader
+    /// already blurs the result, so half-res is essentially indistinguishable.</summary>
+    private const int OutlineResShrink = 2;
+
     private void OnViewportSizeChanged()
     {
         var size = GetViewport().GetVisibleRect().Size;
-        var sizeI = new Vector2I(Mathf.Max(1, (int)size.X), Mathf.Max(1, (int)size.Y));
+        var sizeI = new Vector2I(
+            Mathf.Max(1, (int)size.X / OutlineResShrink),
+            Mathf.Max(1, (int)size.Y / OutlineResShrink));
         if (_viewport != null && _viewport.Size != sizeI)
             _viewport.Size = sizeI;
     }
@@ -65,9 +72,12 @@ public partial class InteractOutlineView : Node3D
 
         _viewport = new SubViewport
         {
-            Size = new Vector2I((int)screenSize.X, (int)screenSize.Y),
+            Size = new Vector2I(
+                Mathf.Max(1, (int)screenSize.X / OutlineResShrink),
+                Mathf.Max(1, (int)screenSize.Y / OutlineResShrink)),
             TransparentBg = true,
-            RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
+            // Start disabled; flipped to Always only while an outline target exists.
+            RenderTargetUpdateMode = SubViewport.UpdateMode.Disabled,
         };
 
         // Outline camera renders entity layer + depth occluder layer.
@@ -205,6 +215,7 @@ public partial class InteractOutlineView : Node3D
 
         AddOutlineLayer(visualNode);
         _textureRect.Visible = true;
+        if (_viewport != null) _viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
     }
 
     private void HideOutline(int entityId)
@@ -223,6 +234,7 @@ public partial class InteractOutlineView : Node3D
         _textureRect.Visible = false;
         _sourceVisual = null;
         _currentEntityId = -1;
+        if (_viewport != null) _viewport.RenderTargetUpdateMode = SubViewport.UpdateMode.Disabled;
     }
 
     private void AddOutlineLayer(Node node)

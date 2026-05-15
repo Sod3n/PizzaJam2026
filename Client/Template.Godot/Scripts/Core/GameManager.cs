@@ -15,7 +15,6 @@ using Deterministic.GameFramework.Reactive;
 using Deterministic.GameFramework.TwoD;
 using R3;
 using Deterministic.GameFramework.ECS;
-using Deterministic.GameFramework.Profiler;
 using Deterministic.GameFramework.Serialization;
 using Deterministic.GameFramework.Debugging;
 using Deterministic.GameFramework.Utils.Logging;
@@ -92,9 +91,14 @@ public partial class GameManager : Node
             AddChild(smoothingManager);
         }
 
+        // Performance overlay (F4 to toggle). Always present so it's available even
+        // before the game starts.
+        AddChild(new Template.Godot.Debug.PerformanceOverlay { Name = "PerformanceOverlay" });
+
         // Initialize Twitch integration when the game starts
         OnGameStarted += TwitchIntegration.Initialize;
         OnGameStarted += Template.Godot.Visuals.GameOverOverlay.InstallWatcher;
+        OnGameStarted += Template.Godot.Visuals.SleepFadeOverlay.InstallWatcher;
 
         ILogger.SetLogger(new GodotLogger());
 
@@ -172,7 +176,6 @@ public partial class GameManager : Node
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
-        GameProfiler.Enable(Game);
         OnGameStarted?.Invoke();
     }
 
@@ -214,7 +217,6 @@ public partial class GameManager : Node
         Game.Loop.OnTick += AutoSaveTick;
         _gameLoopTask = Game.Loop.Start();
         _isRunning = true;
-        GameProfiler.Enable(Game);
         OnGameStarted?.Invoke();
     }
 
@@ -281,7 +283,6 @@ public partial class GameManager : Node
             StartDesyncRecording();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
-            GameProfiler.Enable(Game);
             SetupLocalPlayerDiscovery();
             OnGameStarted?.Invoke();
         }
@@ -317,7 +318,6 @@ public partial class GameManager : Node
             StartDesyncRecording();
             _gameLoopTask = Game.Loop.Start();
             _isRunning = true;
-            GameProfiler.Enable(Game);
             SetupLocalPlayerDiscovery();
             OnGameStarted?.Invoke();
         }
@@ -405,7 +405,10 @@ public partial class GameManager : Node
     {
         if (!RecordInputs) return;
         _inputRecorder = new InputRecorder(Game);
-        _inputRecorder.CaptureStateAtCheckpoints = true;
+        // CaptureStateAtCheckpoints retains the full serialized state per second in memory
+        // — useful for byte-level diff debugging, ruinous for normal play (hundreds of MB
+        // per few minutes). Hash-only checkpoints are enough to detect desync.
+        _inputRecorder.CaptureStateAtCheckpoints = false;
         _inputRecorder.Start();
         GD.Print("[GameManager] Input recording STARTED");
 

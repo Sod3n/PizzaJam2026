@@ -51,6 +51,15 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         Entity nearestTarget = FindNearestFromZone(ctx, playerEntity, ref playerState);
         bool isHelperPlayer = ctx.State.HasComponent<HelperPlayerComponent>(playerEntity);
 
+        if (action.IsHoldRepeat)
+        {
+            if (nearestTarget == Entity.Null || nearestTarget != playerState.HoldLockedTarget) return;
+        }
+        else
+        {
+            playerState.HoldLockedTarget = nearestTarget;
+        }
+
         // Empty-air clicks: carry-only behaviors
         if (nearestTarget == Entity.Null)
         {

@@ -101,6 +101,10 @@ public class GameplayScene : IScene
             Float xOffset = (i % 2 == 0) ? (Float)2 : (Float)(-2);
             Float yOffset = (Float)2 + (Float)(i / 2) * (Float)2;
             var cow = CowDefinition.Create(context, new Vector2(xOffset, yOffset));
+            // Starter cows: re-roll skin from the budgeted pool so total Exhaust stays under
+            // the cap. Filters the pool rather than clamping the resulting stat — keeps stats
+            // and visuals consistent.
+            CowDefinition.ApplyExhaustBudget(state, cow, Balance.Match.StarterCowMaxExhaust);
             int food = Balance.Match.StarterCowFoods[i % Balance.Match.StarterCowFoods.Length];
             state.GetComponent<CowComponent>(cow).PreferredFood = food;
         }

@@ -76,6 +76,89 @@ public class SkinsData : GameData<Skin>
         return skins.Last();
     }
 
+    /// <summary>
+    /// Picks a weighted skin from <paramref name="skins"/> restricted to those with Exhaust ≤
+    /// <paramref name="maxExhaust"/>. Falls back to the lowest-Exhaust skin in the type if
+    /// nothing in the budget — that's fine, total still stays close to the budget.
+    /// </summary>
+    private static Skin PickWeightedSkinCapped(ref DeterministicRandom random, List<Skin> skins, ref SkinSpawnCountsComponent spawnCounts, int maxExhaust)
+    {
+        int totalWeight = 0;
+        foreach (var skin in skins)
+        {
+            if (skin.Exhaust > maxExhaust) continue;
+            totalWeight += GetEffectiveWeight(skin, ref spawnCounts);
+        }
+        if (totalWeight <= 0)
+        {
+            Skin cheapest = skins[0];
+            foreach (var skin in skins)
+                if (skin.Exhaust < cheapest.Exhaust) cheapest = skin;
+            return cheapest;
+        }
+
+        int target = random.NextInt(totalWeight);
+        int sum = 0;
+        foreach (var skin in skins)
+        {
+            if (skin.Exhaust > maxExhaust) continue;
+            sum += GetEffectiveWeight(skin, ref spawnCounts);
+            if (target < sum) return skin;
+        }
+        return skins[0];
+    }
+
+    /// <summary>
+    /// Like <see cref="GenerateRandomSkin"/>, but each type's pool is filtered so the
+    /// running Exhaust total never exceeds <paramref name="totalExhaustBudget"/>.
+    /// </summary>
+    public SkinComponent GenerateRandomSkinBudgeted(ref DeterministicRandom random, ref SkinSpawnCountsComponent spawnCounts, int totalExhaustBudget)
+    {
+        var component = new SkinComponent
+        {
+            Skins = new Dictionary16<FixedString32, int>(),
+            Colors = new Dictionary16<FixedString32, int>()
+        };
+
+        var sortedTypes = _skinsByType.Keys.ToList();
+        sortedTypes.Sort();
+
+        int remaining = totalExhaustBudget;
+        foreach (var type in sortedTypes)
+        {
+            var skins = _skinsByType[type];
+            if (skins.Count == 0) continue;
+
+            var selectedSkin = PickWeightedSkinCapped(ref random, skins, ref spawnCounts, remaining);
+            remaining = System.Math.Max(0, remaining - selectedSkin.Exhaust);
+
+            var key = new FixedString32(type);
+            component.Skins.Add(key, selectedSkin.Id);
+            spawnCounts.RecordSpawn(selectedSkin.Id);
+
+            var palette = GetColorPalette(type);
+            if (palette != null)
+                component.Colors.Add(key, PickWeightedColor(ref random, palette));
+        }
+
+        var hairKey = new FixedString32("Hair");
+        var backHairKey = new FixedString32("BackHair");
+        if (component.Colors.ContainsKey(hairKey) && component.Skins.ContainsKey(backHairKey))
+        {
+            if (component.Colors.ContainsKey(backHairKey))
+                component.Colors[backHairKey] = component.Colors[hairKey];
+            else
+                component.Colors.Add(backHairKey, component.Colors[hairKey]);
+        }
+
+        var skinTone = PickWeightedColor(ref random, SkinToneColors);
+        component.Colors.Add(new FixedString32("Body"), skinTone);
+        if (component.Skins.ContainsKey(new FixedString32("Top")))
+            component.Colors.Add(new FixedString32("Top"), skinTone);
+
+        return component;
+    }
+
     public SkinComponent GenerateRandomSkin(ref DeterministicRandom random, ref SkinSpawnCountsComponent spawnCounts)
     {
         var component = new SkinComponent

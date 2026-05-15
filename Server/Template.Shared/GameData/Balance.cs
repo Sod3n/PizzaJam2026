@@ -27,6 +27,8 @@ public static class Balance
         /// If <see cref="StartingCowCount"/> exceeds the array length, the indexing wraps modulo length.
         /// </summary>
         public static int[] StarterCowFoods { get; private set; } = [FoodType.Grass, FoodType.Grass];
+        /// <summary>Hard cap on MaxExhaust for the cows spawned at match start — keeps day-1 milking short.</summary>
+        public static int StarterCowMaxExhaust { get; private set; } = 30;
     }
 
     public static class Player
@@ -50,6 +52,35 @@ public static class Balance
         public static int ClicksPerMilk { get; private set; } = 1;
         public static int DepressionTicks { get; private set; } = 1800;
         public static int NonPreferredFoodFailPercent { get; private set; } = 50;
+
+        // Per-click milk scales based on how well the food matches the cow's preferences.
+        // SuccessPercent gates whether the click produces milk at all; YieldOnSuccess is how
+        // many milk units it produces when it does. Hardcoded; not exposed through JSON
+        // balance overrides on purpose — these define the core feel of the milking minigame.
+        public static class MilkScale
+        {
+            // Yield depends on whether the food is "discovered" — i.e. the player has fed
+            // the cow MaxExhaust units of it (see CowComponent.IsFoodDiscovered).
+            // Undiscovered foods give a smaller yield, rewarding the player for committing
+            // to learning a cow's preference rather than guessing every click.
+
+            // cow.PreferredFood
+            public const int PrimarySuccessPercent = 100;
+            public const int PrimaryYieldDiscovered = 3;
+            public const int PrimaryYieldUndiscovered = 1;
+            // cow.SecondaryPreferredFood
+            public const int SecondarySuccessPercent = 80;
+            public const int SecondaryYieldDiscovered = 2;
+            public const int SecondaryYieldUndiscovered = 1;
+            // non-preferred but within cow's tier
+            public const int OtherSameTierSuccessPercent = 60;
+            public const int OtherSameTierYieldDiscovered = 1;
+            public const int OtherSameTierYieldUndiscovered = 1;
+            // tier-down fallback (e.g. Grass for a Carrot cow)
+            public const int OtherLowerTierSuccessPercent = 40;
+            public const int OtherLowerTierYieldDiscovered = 1;
+            public const int OtherLowerTierYieldUndiscovered = 1;
+        }
         public static bool DepressionEnabled { get; private set; } = false;
         public static int TwinChancePercent { get; private set; } = 1;
         public static int BreedInheritParentChancePercent { get; private set; } = 25;
@@ -61,7 +92,7 @@ public static class Balance
         // strong cows fill much faster, weak cows much slower), 0.5 = square-root (gentler spread).
         public static int HornyExhaustBaseline { get; private set; } = 66;
         public static float HornyExhaustCurve { get; private set; } = 0.35f;
-        public static int HornyPerMilkClick { get; private set; } = 300;
+        public static int HornyPerMilkClick { get; private set; } = 150;
         public static int AttackCatchDistanceSq { get; private set; } = 4;
         public static int HornyOffscreenIndicatorThresholdPercent { get; private set; } = 75;
     }
@@ -93,8 +124,26 @@ public static class Balance
 
     public static class PlayerHouse
     {
-        public static int SleepCooldownTicks { get; private set; } = 7200;
+        // Cooldown is tied to the day cycle: house finishes "charging" exactly as
+        // the visual day reaches evening, so the sleep button comes back online
+        // when it actually looks like night-time. Single-tick offset keeps the
+        // first sleep available immediately after match start.
+        public static int SleepCooldownTicks => System.Math.Max(1, Day.LengthTicks);
         public static int ClickToSkipTicks { get; private set; } = 60;
+        // Total ticks the player is in the "sleeping" state — drives client fade-in/hold/fade-out.
+        // Day advance fires at the midpoint, so the world swap is hidden behind a full-black hold.
+        public static int SleepStateTicks { get; private set; } = 150; // ~2.5s @ 60 TPS
+    }
+
+    public static class Day
+    {
+        // Nominal day length in ticks — drives the visual day/night lerp on the client
+        // and the food-spawn window on the server. Independent of when the player actually
+        // sleeps (sleeping always advances the day).
+        public static int LengthTicks { get; private set; } = 60 * 60 * 2; // 1 min @ 60 TPS
+        // Fraction of the day during which food can spawn, measured from the start of the day.
+        // 0.5 = food grows during the first half only, 1.0 = grows all day.
+        public static float FoodSpawnFraction { get; private set; } = 0.1f;
     }
 
     public static class Sell
@@ -110,7 +159,7 @@ public static class Balance
     {
         public static class Grass
         {
-            public static int BasePerDay { get; private set; } = 12;
+            public static int BasePerDay { get; private set; } = 25;
             public static int PerFarm { get; private set; } = 0;
         }
         public static class Carrot
@@ -155,8 +204,29 @@ public static class Balance
 
     public static class FoodSpawn
     {
-        public static int IntervalTicks { get; private set; } = 600;
+        // Minimum gap between spawn attempts. Auto-spread math (<see cref="IntervalTicksForCap"/>)
+        // still clamps to this lower bound so a very large cap doesn't churn the system every tick.
+        public static int MinIntervalTicks { get; private set; } = 60;
+
+        /// <summary>
+        /// Auto-spread: returns the tick interval needed to evenly distribute <paramref name="cap"/>
+        /// spawn attempts across the day's food-spawn window. Lets balance be defined in terms of
+        /// "N items per day" without hand-tuning IntervalTicks.
+        /// </summary>
+        public static int IntervalTicksForCap(int cap)
+        {
+            if (cap <= 0) return int.MaxValue;
+            int window = (int)(Day.LengthTicks * Day.FoodSpawnFraction);
+            if (window <= 0) return MinIntervalTicks;
+            return System.Math.Max(MinIntervalTicks, window / cap);
+        }
         public static int MaxSpawnAttempts { get; private set; } = 10;
+        // Food spawns inside a ring around already-unlocked land plots so the player
+        // doesn't have to scour the empty edges of the map. Falls back to the wider
+        // [MinPos..MaxPos] box if no anchors exist (shouldn't happen — there's always
+        // the player house).
+        public static int AnchorRadius { get; private set; } = 12;
+        public static int AnchorMinDistance { get; private set; } = 2;
     }
 
     public static class Props
@@ -170,7 +240,7 @@ public static class Balance
 
     public static class Build
     {
-        public static int BasePriceMultiplier { get; private set; } = 10;
+        public static int BasePriceMultiplier { get; private set; } = 5;
         public static int EraMultiplier_Ring6Plus { get; private set; } = 6;
         public static int EraMultiplier_Ring5 { get; private set; } = 4;
         public static int EraMultiplier_Ring4 { get; private set; } = 3;

@@ -22,6 +22,8 @@ public class CowAttackSystem : ISystem
             break;
         }
         if (player == Entity.Null) return;
+        // Sleeping/hidden players are unreachable — reaching the house is a safe escape.
+        if (state.HasComponent<SleepingComponent>(player) || state.HasComponent<HiddenComponent>(player)) return;
 
         Float catchDistSq = (Float)Balance.Cow.AttackCatchDistanceSq;
         bool caught = false;

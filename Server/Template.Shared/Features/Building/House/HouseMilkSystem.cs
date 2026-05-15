@@ -71,8 +71,7 @@ public class HouseMilkSystem : ISystem
             return false;
         }
 
-        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-        if (cow.SelectedFood < 0 || cow.SelectedFood > cowMaxTier)
+        if (cow.SelectedFood < 0 || cow.SelectedFood > FoodType.Mushroom)
         {
             InteractFeedback.MissingResource(ctx, playerEntity, houseEntity, InteractFeedback.FoodTypeToKey(cow.SelectedFood));
             return false;

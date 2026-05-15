@@ -13,6 +13,26 @@ namespace Template.Shared.Actions;
 public static class InteractionLogic
 {
     /// <summary>
+    /// Per-click milk scale: success% gates production, yield is how many units per successful click.
+    /// Hardcoded values live in <see cref="GameData.Balance.Cow.MilkScale"/>.
+    /// </summary>
+    public static (int successPercent, int yieldOnSuccess) MilkScale(in CowComponent cow, int foodToUse)
+    {
+        bool discovered = cow.IsFoodDiscovered(foodToUse);
+        if (foodToUse == cow.PreferredFood)
+            return (GameData.Balance.Cow.MilkScale.PrimarySuccessPercent,
+                discovered ? GameData.Balance.Cow.MilkScale.PrimaryYieldDiscovered : GameData.Balance.Cow.MilkScale.PrimaryYieldUndiscovered);
+        if (cow.SecondaryPreferredFood >= 0 && foodToUse == cow.SecondaryPreferredFood)
+            return (GameData.Balance.Cow.MilkScale.SecondarySuccessPercent,
+                discovered ? GameData.Balance.Cow.MilkScale.SecondaryYieldDiscovered : GameData.Balance.Cow.MilkScale.SecondaryYieldUndiscovered);
+        if (foodToUse < cow.PreferredFood)
+            return (GameData.Balance.Cow.MilkScale.OtherLowerTierSuccessPercent,
+                discovered ? GameData.Balance.Cow.MilkScale.OtherLowerTierYieldDiscovered : GameData.Balance.Cow.MilkScale.OtherLowerTierYieldUndiscovered);
+        return (GameData.Balance.Cow.MilkScale.OtherSameTierSuccessPercent,
+            discovered ? GameData.Balance.Cow.MilkScale.OtherSameTierYieldDiscovered : GameData.Balance.Cow.MilkScale.OtherSameTierYieldUndiscovered);
+    }
+
+    /// <summary>
     /// Resolve the highest tier recipe the cow can produce given global resources.
     /// Searches from the cow's max tier down to tier 0 (Grass/Milk).
     /// Returns the food type to use for that tier, or -1 if nothing is possible.
@@ -83,11 +103,9 @@ public static class InteractionLogic
             return false;
         }
 
-        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-
         int foodToUse;
         int prereqProduct;
-        if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && globalRes.GetFood(hintFoodType) > 0)
+        if (hintFoodType >= 0 && hintFoodType <= FoodType.Mushroom && globalRes.GetFood(hintFoodType) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(hintFoodType);
             if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
@@ -107,7 +125,7 @@ public static class InteractionLogic
             return false;
         }
 
-        bool isPreferred = cow.IsFoodPreferred(foodToUse);
+        var (successPercent, yieldOnSuccess) = MilkScale(in cow, foodToUse);
         var gameTime = state.GetCustomData<IGameTime>();
 
         // Allow clicks past MaxExhaust just enough to finish a mid-cycle milk.
@@ -129,14 +147,16 @@ public static class InteractionLogic
             if (cow.MilkClickCounter >= ClicksPerMilk)
             {
                 cow.MilkClickCounter = 0;
-                bool blocked = false;
-                if (!isPreferred)
+                bool produced;
+                if (successPercent >= 100) produced = true;
+                else if (successPercent <= 0) produced = false;
+                else
                 {
                     uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
                     var milkRng = new DeterministicRandom(milkSeed);
-                    blocked = milkRng.NextInt(100) < GameData.Balance.Cow.NonPreferredFoodFailPercent;
+                    produced = milkRng.NextInt(100) < successPercent;
                 }
-                if (!blocked) milksProduced++;
+                if (produced) milksProduced += yieldOnSuccess;
             }
         }
         if (milksProduced > 0)
@@ -217,10 +237,8 @@ public static class InteractionLogic
         ref var globalRes = ref GetGlobalRes(state, out Entity gre);
         if (gre == Entity.Null) return -1;
 
-        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-
-        // Strict: only allow the selected supported food, no fallback.
-        if (houseSelectedFood >= 0 && houseSelectedFood <= cowMaxTier && globalRes.GetFood(houseSelectedFood) > 0)
+        // Allow any valid food type — yield/success is handled by MilkScale.
+        if (houseSelectedFood >= 0 && houseSelectedFood <= FoodType.Mushroom && globalRes.GetFood(houseSelectedFood) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(houseSelectedFood);
             if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
@@ -248,11 +266,9 @@ public static class InteractionLogic
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
         if (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0) { cowDone = true; return false; }
 
-        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-
         int foodToUse;
         int prereqProduct;
-        if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && globalRes.GetFood(hintFoodType) > 0)
+        if (hintFoodType >= 0 && hintFoodType <= FoodType.Mushroom && globalRes.GetFood(hintFoodType) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(hintFoodType);
             if (prereq < 0 || globalRes.GetMilkProduct(prereq) > 0)
@@ -261,7 +277,7 @@ public static class InteractionLogic
         }
         else { cowDone = true; return false; }
 
-        bool isPreferred = cow.IsFoodPreferred(foodToUse);
+        var (successPercent, yieldOnSuccess) = MilkScale(in cow, foodToUse);
         var gameTime = state.GetCustomData<IGameTime>();
 
         int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
@@ -282,14 +298,16 @@ public static class InteractionLogic
             if (cow.MilkClickCounter >= ClicksPerMilk)
             {
                 cow.MilkClickCounter = 0;
-                bool blocked = false;
-                if (!isPreferred)
+                bool produced;
+                if (successPercent >= 100) produced = true;
+                else if (successPercent <= 0) produced = false;
+                else
                 {
                     uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
                     var milkRng = new DeterministicRandom(milkSeed);
-                    blocked = milkRng.NextInt(100) < GameData.Balance.Cow.NonPreferredFoodFailPercent;
+                    produced = milkRng.NextInt(100) < successPercent;
                 }
-                if (!blocked) milksProduced++;
+                if (produced) milksProduced += yieldOnSuccess;
             }
         }
         if (milksProduced > 0)
@@ -315,11 +333,9 @@ public static class InteractionLogic
         ref var cow = ref state.GetComponent<CowComponent>(cowEntity);
         if (cow.Exhaust >= cow.MaxExhaust && cow.MilkClickCounter == 0) { cowDone = true; return false; }
 
-        int cowMaxTier = FoodType.MaxTier(cow.PreferredFood);
-
         int foodToUse;
         int prereqProduct;
-        if (hintFoodType >= 0 && hintFoodType <= cowMaxTier && helperBag.GetBagFood(hintFoodType) > 0)
+        if (hintFoodType >= 0 && hintFoodType <= FoodType.Mushroom && helperBag.GetBagFood(hintFoodType) > 0)
         {
             int prereq = FoodType.PrerequisiteProduct(hintFoodType);
             if (prereq < 0 || helperBag.GetBagMilkProduct(prereq) > 0)
@@ -328,7 +344,7 @@ public static class InteractionLogic
         }
         else { cowDone = true; return false; }
 
-        bool isPreferred = cow.IsFoodPreferred(foodToUse);
+        var (successPercent, yieldOnSuccess) = MilkScale(in cow, foodToUse);
         var gameTime = state.GetCustomData<IGameTime>();
 
         int exhaustHeadroom = System.Math.Max(0, cow.MaxExhaust - cow.Exhaust);
@@ -349,14 +365,16 @@ public static class InteractionLogic
             if (cow.MilkClickCounter >= ClicksPerMilk)
             {
                 cow.MilkClickCounter = 0;
-                bool blocked = false;
-                if (!isPreferred)
+                bool produced;
+                if (successPercent >= 100) produced = true;
+                else if (successPercent <= 0) produced = false;
+                else
                 {
                     uint milkSeed = (uint)(cowEntity.Id * 31 + (gameTime?.CurrentTick ?? 0) + (uint)(i * 17));
                     var milkRng = new DeterministicRandom(milkSeed);
-                    blocked = milkRng.NextInt(100) < GameData.Balance.Cow.NonPreferredFoodFailPercent;
+                    produced = milkRng.NextInt(100) < successPercent;
                 }
-                if (!blocked) milksProduced++;
+                if (produced) milksProduced += yieldOnSuccess;
             }
         }
         if (milksProduced > 0)
@@ -384,8 +402,14 @@ public static class InteractionLogic
         if (!state.HasComponent<Transform2D>(playerEntity)) return Entity.Null;
 
         var playerPos = state.GetComponent<Transform2D>(playerEntity).Position;
-        Entity nearest = Entity.Null;
-        Float minDistSq = (Float)999999f;
+        // Prefer targets that are "ahead" (visually above the player → smaller Y in 2D).
+        // Among ahead targets pick the closest; only fall back to behind/level targets
+        // if there is nothing ahead. Resolves ambiguity when multiple targets sit in the
+        // pickup radius.
+        Entity nearestAhead = Entity.Null;
+        Float minDistSqAhead = (Float)999999f;
+        Entity nearestFallback = Entity.Null;
+        Float minDistSqFallback = (Float)999999f;
 
         for (int i = 0; i < area.OverlappingEntities.Count; i++)
         {
@@ -397,10 +421,17 @@ public static class InteractionLogic
 
             var pos = state.GetComponent<Transform2D>(entity).Position;
             var distSq = Vector2.DistanceSquared(playerPos, pos);
-            if (distSq < minDistSq) { minDistSq = distSq; nearest = entity; }
+            if (pos.Y < playerPos.Y)
+            {
+                if (distSq < minDistSqAhead) { minDistSqAhead = distSq; nearestAhead = entity; }
+            }
+            else
+            {
+                if (distSq < minDistSqFallback) { minDistSqFallback = distSq; nearestFallback = entity; }
+            }
         }
 
-        return nearest;
+        return nearestAhead != Entity.Null ? nearestAhead : nearestFallback;
     }
 
     /// <summary>

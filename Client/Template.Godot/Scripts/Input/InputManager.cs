@@ -139,7 +139,7 @@ public partial class InputManager : Node
 
         if (interactJustPressed)
         {
-            SendInteract();
+            SendInteract(isHoldRepeat: false);
             _holdRepeatTicks = 0;
         }
         else if (interactHeld || touchHeldStationary)
@@ -147,7 +147,7 @@ public partial class InputManager : Node
             _holdRepeatTicks++;
             if (_holdRepeatTicks >= holdThreshold)
             {
-                SendInteract();
+                SendInteract(isHoldRepeat: true);
                 _holdRepeatTicks = 0;
                 if (touchHeldStationary) _touchHoldFiring = true;
             }
@@ -230,19 +230,19 @@ public partial class InputManager : Node
         }
     }
 
-    private void SendInteract()
+    private void SendInteract(bool isHoldRepeat = false)
     {
         var localPlayerId = GameManager.Instance.LocalPlayerId;
         if (localPlayerId == 0) return;
 
         if (GameManager.Instance.OfflineMode)
         {
-            var interactAction = new InteractAction { UserId = GameManager.Instance.OfflineUserId };
+            var interactAction = new InteractAction { UserId = GameManager.Instance.OfflineUserId, IsHoldRepeat = isHoldRepeat };
             GameManager.Instance.ScheduleOfflineAction(interactAction, localPlayerId);
         }
         else
         {
-            var interactAction = new InteractAction { UserId = GameManager.Instance.GameClient.PlayerId };
+            var interactAction = new InteractAction { UserId = GameManager.Instance.GameClient.PlayerId, IsHoldRepeat = isHoldRepeat };
             GameManager.Instance.GameClient.Execute(interactAction, localPlayerId);
         }
     }

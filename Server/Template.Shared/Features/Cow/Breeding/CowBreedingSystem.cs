@@ -212,14 +212,12 @@ public class CowBreedingSystem : ISystem
         {
             ref var c1 = ref state.GetComponent<CowComponent>(cow1);
             c1.IsExhausted = true;
-            c1.Exhaust = c1.MaxExhaust;
             c1.Horny = 0;
         }
         if (state.HasComponent<CowComponent>(cow2))
         {
             ref var c2 = ref state.GetComponent<CowComponent>(cow2);
             c2.IsExhausted = true;
-            c2.Exhaust = c2.MaxExhaust;
             c2.Horny = 0;
         }
 

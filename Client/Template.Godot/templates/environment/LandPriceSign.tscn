@@ -16,6 +16,12 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_signbg"]
 animations = [{
@@ -36,6 +42,12 @@ shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
 shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_coin"]
 animations = [{
@@ -65,7 +77,7 @@ CollisionLayer = 5
 CollisionMask = 8
 
 [node name="Sign" type="AnimatedSprite3D" parent="." unique_id=-765531106]
-transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18766919, 2.666802, -1.3050406)
+transform = Transform3D(0.25, 0, 0, 0, 0.22705223, 0.10462928, 0, -0.10462928, 0.22705223, -0.18766919, 2.7677748, -1.3515705)
 material_override = SubResource("ShaderMaterial_qgp40")
 modulate = Color(0.85, 0.7, 0.3, 1)
 alpha_cut = 2
@@ -73,20 +85,18 @@ sprite_frames = SubResource("SpriteFrames_signbg")
 script = ExtResource("4_animsprite")
 
 [node name="CoinIcon" type="AnimatedSprite3D" parent="." unique_id=-366488833]
-transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.38425887, 0.66386425, -0.12763146)
+transform = Transform3D(0.1, 0, 0, 0, 0.09082089, 0.041851714, 0, -0.041851714, 0.09082089, -0.38425887, 0.75946134, -0.1716841)
 material_override = SubResource("ShaderMaterial_fb4yq")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_coin")
 script = ExtResource("4_animsprite")
 
 [node name="Remaining" type="Label3D" parent="." unique_id=-797692249]
-transform = Transform3D(0.5, 0, 0, 0, 0.4511347, 0.21558635, 0, -0.21558635, 0.4511347, 0.18707645, 0.6232965, -0.22264218)
+transform = Transform3D(0.5, 0, 0, 0, 0.4511347, 0.21558635, 0, -0.21558635, 0.4511347, 0.18707645, 0.7113057, -0.26469964)
 shaded = true
 double_sided = false
 alpha_cut = 1
-render_priority = 0
 outline_render_priority = 0
 modulate = Color(1, 1, 0, 1)
-outline_size = 12
 text = "0"
 font_size = 128

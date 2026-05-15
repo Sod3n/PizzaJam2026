@@ -24,6 +24,7 @@ public struct GlobalResourcesComponent : IComponent
 
     // Day cycle (advances when player sleeps in Player House)
     public int DayCounter;     // Days elapsed since match start (0 on day 1)
+    public int TicksSinceDayStart; // Ticks elapsed since the last AdvanceDay — drives client day/night lerp and gates food spawning to the first half of the day
     // Per-day food spawn cap counters — reset to 0 on day advance
     public int FoodSpawnedTodayGrass;
     public int FoodSpawnedTodayCarrot;

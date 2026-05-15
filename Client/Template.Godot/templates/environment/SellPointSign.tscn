@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dsellpointsignsv0"]
+[gd_scene format=3 uid="uid://b24kjwuaxok00"]
 
 [ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_dpkjo"]
 [ext_resource type="Texture2D" uid="uid://bclu7k4wdsneh" path="res://sprites/IMG_0403.PNG" id="5_3ec0u"]
@@ -7,16 +7,23 @@
 [ext_resource type="Texture2D" uid="uid://dnsvyxmg0y6nn" path="res://sprites/export/icons/Milky_/1.png" id="8_milky"]
 [ext_resource type="Texture2D" uid="uid://s0mx1vf4jk7h" path="res://sprites/cow.png" id="9_cow"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/SellPointSignComponentNode.cs" id="fw_sps"]
 [ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://c4j3e4ub0f1a1" path="res://Scripts/Framework/Components/SellPointSignComponentNode.cs" id="fw_sps"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_dpkjo"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v5vcy"]
 render_priority = -1
 shader = ExtResource("4_dpkjo")
 shader_parameter/albedo_texture = ExtResource("5_3ec0u")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_signbg"]
 animations = [{
@@ -32,13 +39,20 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_icon"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vbnxr"]
 render_priority = -1
 shader = ExtResource("4_dpkjo")
 shader_parameter/albedo_texture = ExtResource("8_milky")
 shader_parameter/wind_strength = 0.0
 shader_parameter/wind_speed = 2.0000000223518
 shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_icons"]
 animations = [{
@@ -54,9 +68,9 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="SellPointSign" type="Node3D" unique_id=2191318127]
+[node name="SellPointSign" type="Node3D" unique_id=-2103649169]
 
-[node name="Entity" type="Node3D" parent="." unique_id=2551194688]
+[node name="Entity" type="Node3D" parent="." unique_id=-1743772608]
 script = ExtResource("fw_entity")
 EntityName = "SellPointSign"
 StableIdSeed = "sellpointsign-entity-seed"
@@ -64,22 +78,22 @@ StableIdSeed = "sellpointsign-entity-seed"
 [node name="SellPointSignComponent" type="Node" parent="Entity" unique_id=2097465481]
 script = ExtResource("fw_sps")
 
-[node name="Physics" type="Node3D" parent="Entity" unique_id=2778205374]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=-1516761922]
 script = ExtResource("fw_phys")
 ShapeRadius = 0.8
 CollisionLayer = 4
 CollisionMask = 8
 
-[node name="Sign" type="AnimatedSprite3D" parent="." unique_id=2529436190]
-transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.18816209, 2.389846, -1.1771166)
-material_override = SubResource("ShaderMaterial_dpkjo")
+[node name="Sign" type="AnimatedSprite3D" parent="." unique_id=-1765531106]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, -0.18816209, 2.542149, -1.1771166)
+material_override = SubResource("ShaderMaterial_v5vcy")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_signbg")
 script = ExtResource("7_5jc8c")
 
-[node name="ProductIcon" type="AnimatedSprite3D" parent="." unique_id=2928478463]
-transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0.028004616, 0.78785324, -0.32304233)
-material_override = SubResource("ShaderMaterial_icon")
+[node name="ProductIcon" type="AnimatedSprite3D" parent="." unique_id=-1366488833]
+transform = Transform3D(0.2, 0, 0, 0, 0.18164179, 0.08370342, 0, -0.08370342, 0.18164179, 0.028004616, 0.9401562, -0.32304233)
+material_override = SubResource("ShaderMaterial_vbnxr")
 alpha_cut = 2
 sprite_frames = SubResource("SpriteFrames_icons")
 frame_progress = 0.0024409618
