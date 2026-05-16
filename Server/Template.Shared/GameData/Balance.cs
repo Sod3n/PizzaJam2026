@@ -278,14 +278,14 @@ public static class Balance
         public static class UnlockRing
         {
             public static int CarrotFarm { get; private set; } = 2;
-            public static int AppleOrchard { get; private set; } = 4;
-            public static int MushroomCave { get; private set; } = 6;
-            public static int Warehouse { get; private set; } = 3;
-            public static int Library { get; private set; } = 3;
-            public static int LoveHouse { get; private set; } = 3;
-            public static int SellPoint { get; private set; } = 5;
+            public static int AppleOrchard { get; private set; } = 2;
+            public static int MushroomCave { get; private set; } = 2;
+            public static int Warehouse { get; private set; } = 2;
+            public static int Library { get; private set; } = 2;
+            public static int LoveHouse { get; private set; } = 2;
+            public static int SellPoint { get; private set; } = 2;
             public static int HelperAssistant { get; private set; } = 2;
-            public static int Smithy { get; private set; } = 4;
+            public static int Smithy { get; private set; } = 2;
         }
 
         public static class Limit

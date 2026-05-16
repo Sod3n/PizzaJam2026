@@ -124,6 +124,9 @@ func start_fancy_idle_3d() -> void:
 		bounce_tween.tween_property(skin_node, "position:y", start_skin_y + bounce_height, cycle_speed)
 		bounce_tween.chain().tween_property(skin_node, "position:y", start_skin_y, cycle_speed)
 		bounce_tween.chain().tween_callback(_spawn_land_effect).set_delay(0)
+		if not enable_bounce:
+			bounce_tween.pause()
+			skin_node.position.y = start_skin_y
 
 func _spawn_land_effect() -> void:
 	if not enable_bounce or not is_instance_valid(move_effect):

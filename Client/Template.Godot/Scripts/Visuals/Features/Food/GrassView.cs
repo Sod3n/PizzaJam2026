@@ -26,13 +26,13 @@ public partial class GrassView
         if (altPrefab != null)
         {
             var replacement = altPrefab.Instantiate<Node3D>();
-            var pos = vm.Transform.Position.CurrentValue;
-            replacement.Position = new Vector3((float)pos.X, 0f, (float)pos.Y);
             visualNode.GetParent().AddChild(replacement);
             _spawnedEntities[vm] = replacement;
             visualNode.QueueFree();
             visualNode = replacement;
         }
+
+        FoodPositionBinder.Bind(vm, visualNode);
 
         ViewHelpers.PlayAppear(visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);

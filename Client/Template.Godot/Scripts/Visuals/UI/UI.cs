@@ -18,7 +18,7 @@ public partial class UI : CanvasLayer
     private readonly Dictionary<string, NumberRoller> _rollers = new();
     private Label _sessionTimeLabel;
     private HintPopup _hintPopup;
-    private LandTypeIconSet _iconSet;
+    private Resource _iconSet;
 
     public override void _Ready()
     {
@@ -41,7 +41,7 @@ public partial class UI : CanvasLayer
 
         _sessionTimeLabel = GetNodeOrNull<Label>("%SessionTimeValue");
         _hintPopup = GetNodeOrNull<HintPopup>("%HintPopup");
-        _iconSet = ResourceLoader.Load<LandTypeIconSet>("res://Resources/LandTypeIcons.tres");
+        _iconSet = ResourceLoader.Load<Resource>("res://Resources/LandTypeIcons.tres");
 
         AddChild(new HelperRoleSelectorsController());
     }
@@ -79,22 +79,45 @@ public partial class UI : CanvasLayer
         foreach (var vm in metrics) BindMetrics(vm);
 
         ReactiveSystem.Instance.ObserveAdd<InteractHighlightComponent>()
-            .Subscribe(entity => Callable.From(() => ShowHintFor(entity)).CallDeferred())
+            .Subscribe(entity =>
+            {
+                _hintSubscription?.Dispose();
+                var state = ReactiveSystem.Instance?.BoundState;
+                if (state != null)
+                {
+                    _hintSubscription = ReactiveSystem.Instance.SubscribeComponent<InteractHighlightComponent>(
+                        state, entity,
+                        hl => Callable.From(() => ApplyHint(hl)).CallDeferred());
+                }
+            })
+            .AddTo(_disposables);
+
+        ReactiveSystem.Instance.ObserveRemove<InteractHighlightComponent>()
+            .Subscribe(_ =>
+            {
+                _hintSubscription?.Dispose();
+                _hintSubscription = null;
+                _hasLastHint = false;
+            })
             .AddTo(_disposables);
     }
 
-    private void ShowHintFor(Entity entity)
+    private System.IDisposable _hintSubscription;
+    private LandType _lastHintType;
+    private bool _hasLastHint;
+
+    private void ApplyHint(InteractHighlightComponent hl)
     {
         if (_hintPopup == null) return;
-        var state = ReactiveSystem.Instance?.BoundState;
-        if (state == null || !state.HasComponent<InteractHighlightComponent>(entity)) return;
-        var hl = state.GetComponent<InteractHighlightComponent>(entity);
         if (!hl.HasHintLandType) return;
         var type = hl.HintLandType;
+        if (_hasLastHint && _lastHintType == type) return;
         if (!BuildingHints.TryGet(type, out var text)) return;
 
+        _lastHintType = type;
+        _hasLastHint = true;
         _hintPopup.SetText(text);
-        if (_iconSet != null && _iconSet.TryGet(type, out var icon))
+        if (_iconSet != null && LandTypeIcons.TryGet(_iconSet, type, out var icon))
             _hintPopup.SetIcon(icon);
     }
 

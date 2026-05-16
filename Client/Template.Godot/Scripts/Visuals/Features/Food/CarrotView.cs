@@ -7,6 +7,7 @@ public partial class CarrotView
     partial void OnSpawned(CarrotViewModel vm, Node3D visualNode)
     {
         DespawnDelay = 0.3f;
+        FoodPositionBinder.Bind(vm, visualNode);
         ViewHelpers.PlayAppear(visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
     }

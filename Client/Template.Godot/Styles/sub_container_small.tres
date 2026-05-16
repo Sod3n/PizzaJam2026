@@ -7,4 +7,4 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 shadow_size = 3
-shadow_offset = Vector2(0, 1)
+shadow_offset = Vector2(0, 2)

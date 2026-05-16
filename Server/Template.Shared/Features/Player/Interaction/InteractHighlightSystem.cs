@@ -25,7 +25,26 @@ public class InteractHighlightSystem : ISystem
                 nearest = InteractionLogic.FindNearestInteractableInZone(state, playerEntity, playerState.InteractionZone);
 
             var prev = playerState.HighlightTarget;
-            if (prev == nearest) continue;
+            if (prev == nearest)
+            {
+                // Same target — refresh HintLandType in case it changed (e.g. LandSign.SelectedType swap).
+                // Client UI subscribes to per-field changes on this component to repaint.
+                if (nearest != Entity.Null && state.HasComponent<InteractHighlightComponent>(nearest))
+                {
+                    bool resolved = TryResolveLandType(state, nearest, out var landType);
+                    ref var existing = ref state.GetComponent<InteractHighlightComponent>(nearest);
+                    if (resolved)
+                    {
+                        existing.HintLandType = landType;
+                        existing.HasHintLandType = true;
+                    }
+                    else
+                    {
+                        existing.HasHintLandType = false;
+                    }
+                }
+                continue;
+            }
 
             if (prev != Entity.Null && state.HasComponent<InteractHighlightComponent>(prev))
                 state.RemoveComponent<InteractHighlightComponent>(prev);

@@ -134,6 +134,7 @@ Features/Building/
   LibraryComponent.cs
   LibraryDefinition.cs
   LibraryDefinition.g.cs
+  LibrarySystem.cs
  SellPoint/
   SellPointComponent.cs
   SellPointDefinition.cs
@@ -637,6 +638,7 @@ Features/Building/
   LibraryComponent.cs
   LibraryDefinition.cs
   LibraryDefinition.g.cs
+  LibrarySystem.cs
  SellPoint/
   SellPointComponent.cs
   SellPointDefinition.cs

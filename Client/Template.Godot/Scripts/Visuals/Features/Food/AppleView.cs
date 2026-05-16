@@ -7,6 +7,7 @@ public partial class AppleView
     partial void OnSpawned(AppleViewModel vm, Node3D visualNode)
     {
         DespawnDelay = 0.3f;
+        FoodPositionBinder.Bind(vm, visualNode);
         ViewHelpers.PlayAppear(visualNode);
         ViewHelpers.SetupInteractAnimation(vm, visualNode);
     }

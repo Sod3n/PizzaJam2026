@@ -9,10 +9,10 @@ namespace Template.Godot.Visuals;
 public partial class LandSignView
 {
     private const string IconSetPath = "res://Resources/LandTypeIcons.tres";
-    private static LandTypeIconSet _iconSet;
+    private static Resource _iconSet;
 
-    private static LandTypeIconSet GetIconSet()
-        => _iconSet ??= ResourceLoader.Load<LandTypeIconSet>(IconSetPath);
+    private static Resource GetIconSet()
+        => _iconSet ??= ResourceLoader.Load<Resource>(IconSetPath);
 
     partial void OnSpawned(LandSignViewModel vm, Node3D visualNode)
     {
@@ -36,7 +36,7 @@ public partial class LandSignView
             {
                 if (!IsInstanceValid(iconSprite)) return;
                 var iconSet = GetIconSet();
-                if (iconSet == null || !iconSet.TryGet(landType, out var texture)) return;
+                if (iconSet == null || !LandTypeIcons.TryGet(iconSet, landType, out var texture)) return;
                 if (texture == null) return;
 
                 var frames = new SpriteFrames();

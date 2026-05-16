@@ -1,32 +1,71 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ds6heee38tsw2"]
 
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
-[ext_resource type="Script" path="res://Scripts/Framework/Components/SmithyComponentNode.cs" id="fw_smithy"]
-[ext_resource type="Script" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Shader" uid="uid://c0171wy7tpyyl" path="res://shaders/sway.gdshader" id="4_rg6ui"]
+[ext_resource type="Texture2D" uid="uid://chvul2bnogar1" path="res://sprites/rain/production.png" id="5_dnul2"]
+[ext_resource type="Texture2D" uid="uid://b716huy5tf3td" path="res://sprites/warehouse.png" id="6_en0ru"]
+[ext_resource type="Texture2D" uid="uid://dib51wqrmhhfp" path="res://sprites/export/homes/A_bar.png" id="7_tls6p"]
+[ext_resource type="Texture2D" uid="uid://nicag28wcagv" path="res://sprites/house.png" id="8_rdw87"]
+[ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="9_h7ink"]
+[ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
+[ext_resource type="Script" uid="uid://dmj37re6atf8h" path="res://Scripts/Framework/FrameworkPhysicsBody.cs" id="fw_phys"]
+[ext_resource type="Script" uid="uid://cuwph05kf5xeg" path="res://Scripts/Framework/Components/SmithyComponentNode.cs" id="fw_smithy"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_smithy"]
-albedo_color = Color(0.45, 0.32, 0.22, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ep4vv"]
+render_priority = -1
+shader = ExtResource("4_rg6ui")
+shader_parameter/albedo_texture = ExtResource("5_dnul2")
+shader_parameter/wind_strength = 0.0
+shader_parameter/wind_speed = 2.0000000223518
+shader_parameter/color_replace = Color(1, 1, 1, 1)
+shader_parameter/cooldown_fill = 0.0
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.01
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_smithy"]
-material = SubResource("StandardMaterial3D_smithy")
+[sub_resource type="SpriteFrames" id="SpriteFrames_yc5ft"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_dnul2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_en0ru")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_tls6p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_rdw87")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
-[node name="Smithy" type="Node3D"]
+[node name="Smithy" type="Node3D" unique_id=455216203]
 
-[node name="Entity" type="Node3D" parent="."]
+[node name="Entity" type="Node3D" parent="." unique_id=1219012358]
 script = ExtResource("fw_entity")
 EntityName = "Smithy"
 StableIdSeed = "smithy-entity-seed"
 
-[node name="SmithyComponent" type="Node" parent="Entity"]
+[node name="SmithyComponent" type="Node" parent="Entity" unique_id=1522070425]
 script = ExtResource("fw_smithy")
 
-[node name="Physics" type="Node3D" parent="Entity"]
+[node name="Physics" type="Node3D" parent="Entity" unique_id=848168944]
 script = ExtResource("fw_phys")
-BodyType = 1
-ShapeType = 0
 ShapeRadius = 1.5
 CollisionLayer = 5
 CollisionMask = 8
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_smithy")
+[node name="AnimatedSprite3D" type="Node3D" parent="." unique_id=728677747]
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="AnimatedSprite3D" unique_id=1993719236]
+transform = Transform3D(0.6, 0, 0, 0, 0.5449254, 0.2511103, 0, -0.2511103, 0.5449254, 0, 1.2174047, -0.42494822)
+material_override = SubResource("ShaderMaterial_ep4vv")
+alpha_cut = 2
+sprite_frames = SubResource("SpriteFrames_yc5ft")
+script = ExtResource("9_h7ink")
