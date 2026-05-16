@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/skin_editor/skin_editor_window.gd" id="1"]
+
+[node name="SkinEditorWindow" type="Window"]
+title = "Skin Editor"
+size = Vector2i(1100, 700)
+visible = false
+script = ExtResource("1")

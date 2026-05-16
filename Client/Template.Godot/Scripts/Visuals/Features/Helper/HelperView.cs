@@ -86,6 +86,17 @@ public partial class HelperView
                 Callable.From(() => TweenIconScale(readyAnchor, ready)).CallDeferred()
             ).AddTo(vm.Disposables);
         }
+
+        var followAnchor = visualNode.GetNodeOrNull<Node3D>("%FollowCircleScaleAnchor");
+        var followCircle = visualNode.GetNodeOrNull<Node3D>("%FollowCircle");
+        if (followAnchor != null) followAnchor.Scale = Vector3.Zero;
+        if (followCircle != null) FollowCircleSpinner.Spin(followCircle);
+        if (followAnchor != null)
+        {
+            vm.Helper.Helper.IsFollowingPlayer.Subscribe(following =>
+                Callable.From(() => TweenIconScale(followAnchor, following)).CallDeferred()
+            ).AddTo(vm.Disposables);
+        }
     }
 
     private static void TweenIconScale(Node3D anchor, bool show)

@@ -46,7 +46,7 @@ use_incremental_gc=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/fmod/plugin.cfg", "res://addons/framework_tools/plugin.cfg", "res://addons/psd_importer/plugin.cfg")
+enabled=PackedStringArray("res://addons/fmod/plugin.cfg", "res://addons/framework_tools/plugin.cfg", "res://addons/psd_importer/plugin.cfg", "res://addons/skin_editor/plugin.cfg")
 
 [input_devices]
 

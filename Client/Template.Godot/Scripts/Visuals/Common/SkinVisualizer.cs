@@ -143,6 +143,16 @@ public static class SkinVisualizer
             // We will create it in the loop if "Body" is in skins.
         }
 
+        // Collect slot types hidden by any chosen piece's Empty field (e.g. id 26 "Megaaaabooba/3" sets "Bottom1;Bottom2").
+        var hiddenSlots = new HashSet<string>();
+        for (int i = 0; i < skins.Count; i++)
+        {
+            var skinDef = SharedGD.SkinsData.Get(skins.Values[i]);
+            if (skinDef == null || string.IsNullOrEmpty(skinDef.Empty)) continue;
+            foreach (var t in skinDef.Empty.Split(';', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries))
+                hiddenSlots.Add(t);
+        }
+
         // Iterate through the skins dictionary
         for (int i = 0; i < skins.Count; i++)
         {
@@ -185,6 +195,9 @@ public static class SkinVisualizer
             }
 
             ApplySkinTexture(spriteNode, skinId, bodyNode, anchorOffset);
+
+            if (hiddenSlots.Contains(slotName))
+                spriteNode.Visible = false;
         }
     }
 

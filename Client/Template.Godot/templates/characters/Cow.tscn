@@ -4,6 +4,7 @@
 [ext_resource type="Shader" uid="uid://dqs54oymgmgn" path="res://shaders/pixelated.tres" id="8_6eqyr"]
 [ext_resource type="Texture2D" uid="uid://malp5wp2cexr" path="res://sprites/export/Devochka/Body.png" id="9_y4s3p"]
 [ext_resource type="Script" uid="uid://bukmosp4ts6nq" path="res://Scripts/GDScript/animated_sprite_3d.gd" id="10_ft5rl"]
+[ext_resource type="Texture2D" uid="uid://gmj37ldpxid2" path="res://sprites/following_circle.png" id="13_3rmc5"]
 [ext_resource type="Script" uid="uid://dl84755piumrf" path="res://Scripts/Framework/Components/CowComponentNode.cs" id="fw_cow"]
 [ext_resource type="Script" uid="uid://d1kciag88rv8a" path="res://Scripts/Framework/FrameworkEntity.cs" id="fw_entity"]
 [ext_resource type="Script" uid="uid://dujhbvljlh6l3" path="res://Scripts/Framework/FrameworkNavAgent.cs" id="fw_nav"]
@@ -20,12 +21,18 @@ shader_parameter/albedo_texture = ExtResource("heart_sprite")
 shader_parameter/fill = 0.0
 shader_parameter/empty_tint = Color(0.3137255, 0.32156864, 0.36078432, 1)
 shader_parameter/empty_tint_strength = 0.999999977648
+shader_parameter/wave_amplitude = 0.0175
+shader_parameter/wave_frequency = 9.0
+shader_parameter/wave_speed = 2.5
+shader_parameter/wave_thickness = 0.045
+shader_parameter/wave_color = Color(1, 1, 1, 1)
+shader_parameter/wave_strength = 0.85
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fscsi"]
 atlas = ExtResource("9_y4s3p")
 region = Rect2(0, 0, 461, 904)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ft5rl"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3rmc5"]
 render_priority = 0
 shader = ExtResource("8_6eqyr")
 shader_parameter/albedo_texture = SubResource("AtlasTexture_fscsi")
@@ -76,8 +83,19 @@ texture = ExtResource("heart_sprite")
 
 [node name="Rain" type="AnimatedSprite3D" parent="." unique_id=1223436512]
 sorting_offset = -10.0
-material_override = SubResource("ShaderMaterial_ft5rl")
+material_override = SubResource("ShaderMaterial_3rmc5")
 alpha_cut = 2
 texture_filter = 0
 sprite_frames = SubResource("SpriteFrames_ea47w")
 script = ExtResource("10_ft5rl")
+
+[node name="FollowCircleScaleAnchor" type="Node3D" parent="." unique_id=2044281792]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, -0.1662575, -0.78395486, 0, 0.60121673, -0.21679105, 0, 0.06766194, 0.0404554)
+
+[node name="FollowCircle" type="Sprite3D" parent="FollowCircleScaleAnchor" unique_id=309060625]
+unique_name_in_owner = true
+transform = Transform3D(0.19999999, 0, 0, 0, 0.20097205, 0, 0, 0, 0.1999763, 0.002934426, -0.16827357, -0.085620075)
+alpha_cut = 2
+texture_filter = 0
+texture = ExtResource("13_3rmc5")

@@ -43,6 +43,16 @@ public static class BreedHelperUnlock
         }
         state.AddComponent(babyHelper, new BreedBornComponent());
 
+        // Auto-attach to player so they can immediately assign to a house without an
+        // extra pickup click. Only if hands are free — don't drop a helper they were
+        // already carrying.
+        if (state.HasComponent<PlayerStateComponent>(playerEntity))
+        {
+            ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);
+            if (ps.FollowingHelper == Entity.Null)
+                ps.FollowingHelper = babyHelper;
+        }
+
         ref var gr2 = ref state.GetComponent<GlobalResourcesComponent>(grEntity);
         gr2.HelpersSpawned++;
         int spawnedNow = gr2.HelpersSpawned;

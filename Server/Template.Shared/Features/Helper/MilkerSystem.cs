@@ -177,10 +177,20 @@ public class MilkerSystem : ISystem
 
         if (!milked)
         {
+            // Cow is done. If bag still has food AND another milkable cow exists,
+            // chain to the next one instead of returning — empties the bag faster
+            // and lets the player give one big batch instead of many small ones.
+            bool hasFoodLeft = helperRef.Helper.GetFoodTotal() > 0;
+            bool nextCowAvailable = hasFoodLeft && FindMilkableHouse(state, helperRef.Entity) != Entity.Null;
+
             MilkerFinishMilking(state, helperRef);
             helperRef.Helper.TargetEntity = Entity.Null;
             helperRef.Helper.WantedFoodType = -1;
-            helperRef.Helper.State = helperRef.Helper.GetMilkTotal() > 0 ? HelperState.Returning : HelperState.SeekingTarget;
+
+            if (nextCowAvailable)
+                helperRef.Helper.State = HelperState.SeekingTarget;
+            else
+                helperRef.Helper.State = helperRef.Helper.GetMilkTotal() > 0 ? HelperState.Returning : HelperState.SeekingTarget;
         }
     }
 

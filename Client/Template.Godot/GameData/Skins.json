@@ -1,322 +1,362 @@
 {
   "1": {
+    "empty": null,
+    "exhaust": 1,
     "id": 1,
+    "incompatible": null,
     "path": "Hair/1",
     "type": "Hair",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "2": {
+    "empty": null,
+    "exhaust": 3,
     "id": 2,
+    "incompatible": null,
     "path": "Hair/2",
     "type": "Hair",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "3": {
+    "empty": null,
+    "exhaust": 3,
     "id": 3,
+    "incompatible": null,
     "path": "Hair/3",
     "type": "Hair",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "4": {
+    "empty": null,
+    "exhaust": 6,
     "id": 4,
+    "incompatible": null,
     "path": "Hair/4",
     "type": "Hair",
-    "weight": 7,
-    "empty": null,
-    "exhaust": 6
+    "weight": 7
   },
   "5": {
+    "empty": null,
+    "exhaust": 9,
     "id": 5,
+    "incompatible": null,
     "path": "Hair/5",
     "type": "Hair",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 9
+    "weight": 5
   },
   "6": {
+    "empty": null,
+    "exhaust": 15,
     "id": 6,
+    "incompatible": null,
     "path": "___/1",
     "type": "Bottom1",
-    "weight": 2,
-    "empty": null,
-    "exhaust": 15
+    "weight": 2
   },
   "7": {
+    "empty": null,
+    "exhaust": 1,
     "id": 7,
+    "incompatible": null,
     "path": "___/2",
     "type": "Bottom1",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "8": {
+    "empty": null,
+    "exhaust": 1,
     "id": 8,
+    "incompatible": null,
     "path": "___/3",
     "type": "Bottom1",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "9": {
+    "empty": null,
+    "exhaust": 3,
     "id": 9,
+    "incompatible": null,
     "path": "___/4",
     "type": "Bottom1",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "10": {
+    "empty": null,
+    "exhaust": 3,
     "id": 10,
+    "incompatible": null,
     "path": "___/5",
     "type": "Bottom1",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "11": {
+    "empty": null,
+    "exhaust": 9,
     "id": 11,
+    "incompatible": null,
     "path": "___/6",
     "type": "Bottom1",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 9
+    "weight": 5
   },
   "12": {
+    "empty": null,
+    "exhaust": 6,
     "id": 12,
+    "incompatible": null,
     "path": "___/7",
     "type": "Bottom1",
-    "weight": 7,
-    "empty": null,
-    "exhaust": 6
+    "weight": 7
   },
   "13": {
+    "empty": null,
+    "exhaust": 1,
     "id": 13,
+    "incompatible": null,
     "path": "Face/Eye1",
     "type": "Eyes",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "14": {
+    "empty": null,
+    "exhaust": 3,
     "id": 14,
+    "incompatible": null,
     "path": "Face/Eye2",
     "type": "Eyes",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "15": {
+    "empty": null,
+    "exhaust": 1,
     "id": 15,
+    "incompatible": null,
     "path": "Face/Eye3",
     "type": "Eyes",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "16": {
+    "empty": null,
+    "exhaust": 1,
     "id": 16,
+    "incompatible": null,
     "path": "Face/Eye4",
     "type": "Eyes",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "17": {
+    "empty": null,
+    "exhaust": 1,
     "id": 17,
+    "incompatible": null,
     "path": "Rota/Rog1",
     "type": "Torns",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 1
+    "weight": 20
   },
   "18": {
+    "empty": null,
+    "exhaust": 9,
     "id": 18,
+    "incompatible": null,
     "path": "Rota/Rog2",
     "type": "Torns",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 9
+    "weight": 5
   },
   "19": {
+    "empty": null,
+    "exhaust": 6,
     "id": 19,
+    "incompatible": null,
     "path": "Booba1/_____38",
     "type": "Top",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 6
+    "weight": 20
   },
   "20": {
+    "empty": null,
+    "exhaust": 35,
     "id": 20,
+    "incompatible": null,
     "path": "Booba2/1",
     "type": "Top",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 35
+    "weight": 5
   },
   "21": {
+    "empty": null,
+    "exhaust": 25,
     "id": 21,
+    "incompatible": null,
     "path": "Booba2/2",
     "type": "Top",
-    "weight": 7,
-    "empty": null,
-    "exhaust": 25
+    "weight": 7
   },
   "22": {
+    "empty": null,
+    "exhaust": 35,
     "id": 22,
+    "incompatible": null,
     "path": "Booba2/3",
     "type": "Top",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 35
+    "weight": 5
   },
   "23": {
+    "empty": null,
+    "exhaust": 25,
     "id": 23,
+    "incompatible": null,
     "path": "Booba2/4",
     "type": "Top",
-    "weight": 7,
-    "empty": null,
-    "exhaust": 25
+    "weight": 7
   },
   "24": {
+    "empty": null,
+    "exhaust": 75,
     "id": 24,
+    "incompatible": null,
     "path": "Megaaaabooba/1",
     "type": "Top",
-    "weight": 2,
-    "empty": null,
-    "exhaust": 75
+    "weight": 2
   },
   "25": {
+    "empty": null,
+    "exhaust": 108,
     "id": 25,
+    "incompatible": null,
     "path": "Megaaaabooba/2",
     "type": "Top",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 108
+    "weight": 1
   },
   "26": {
+    "empty": "Bottom1;Bottom2",
+    "exhaust": 108,
     "id": 26,
+    "incompatible": null,
     "path": "Megaaaabooba/3",
     "type": "Top",
-    "weight": 1,
-    "empty": "Bottom1;Bottom2",
-    "exhaust": 108
+    "weight": 1
   },
   "27": {
+    "empty": null,
+    "exhaust": 3,
     "id": 27,
+    "incompatible": null,
     "path": "Hair/_____59",
     "type": "Hair",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "28": {
+    "empty": null,
+    "exhaust": 3,
     "id": 28,
+    "incompatible": null,
     "path": "___/_____54",
     "type": "Bottom1",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "29": {
+    "empty": null,
+    "exhaust": 3,
     "id": 29,
+    "incompatible": null,
     "path": "___/_____55",
     "type": "Bottom1",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 3
+    "weight": 10
   },
   "30": {
+    "empty": "Bottom1;Bottom2",
+    "exhaust": 15,
     "id": 30,
+    "incompatible": null,
     "path": "Booba1/_____50",
     "type": "Top",
-    "weight": 10,
-    "empty": null,
-    "exhaust": 15
+    "weight": 10
   },
   "33": {
+    "empty": null,
+    "exhaust": 1,
     "id": 33,
+    "incompatible": null,
     "path": "Hand/_____46",
     "type": "Hand",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 1
+    "weight": 1
   },
   "34": {
+    "empty": null,
+    "exhaust": 3,
     "id": 34,
+    "incompatible": null,
     "path": "Hand/_____47",
     "type": "Hand",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 3
+    "weight": 1
   },
   "35": {
+    "empty": null,
+    "exhaust": 3,
     "id": 35,
+    "incompatible": null,
     "path": "Hand/_____53",
     "type": "Hand",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 3
+    "weight": 1
   },
   "36": {
+    "empty": "Bottom1;Bottom2",
+    "exhaust": 35,
     "id": 36,
+    "incompatible": null,
     "path": "Fam_Boy/_____43",
     "type": "Top",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 35
+    "weight": 5
   },
   "37": {
+    "empty": "Bottom1;Bottom2",
+    "exhaust": 35,
     "id": 37,
+    "incompatible": null,
     "path": "Fam_Boy/_____44",
     "type": "Top",
-    "weight": 5,
-    "empty": null,
-    "exhaust": 35
+    "weight": 5
   },
   "38": {
+    "empty": null,
+    "exhaust": 0,
     "id": 38,
+    "incompatible": null,
     "path": "",
     "type": "BackHair",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 0
+    "weight": 20
   },
   "39": {
+    "empty": null,
+    "exhaust": 0,
     "id": 39,
+    "incompatible": null,
     "path": "",
     "type": "Hand",
-    "weight": 20,
-    "empty": null,
-    "exhaust": 0
+    "weight": 20
   },
   "40": {
+    "empty": null,
+    "exhaust": 1,
     "id": 40,
+    "incompatible": null,
     "path": "Back_hair/1",
     "type": "BackHair",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 1
+    "weight": 1
   },
   "41": {
+    "empty": null,
+    "exhaust": 3,
     "id": 41,
+    "incompatible": null,
     "path": "Back_hair/2",
     "type": "BackHair",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 3
+    "weight": 1
   },
   "42": {
+    "empty": null,
+    "exhaust": 3,
     "id": 42,
+    "incompatible": null,
     "path": "Back_hair/3",
     "type": "BackHair",
-    "weight": 1,
-    "empty": null,
-    "exhaust": 3
+    "weight": 1
   }
 }

@@ -23,7 +23,7 @@ public partial class CowView
         var (flipPivot, characterNode) = ViewHelpers.SetupFlipPivot(visualNode);
         ViewHelpers.SetupMovementAnimation(vm, vm.Cow.CharacterBody2D.RealVelocity, flipPivot, characterNode, invertFlip: true);
         ViewHelpers.SetupPositionTween(vm, visualNode);
-        ViewHelpers.SetupInteractAnimation(vm, visualNode);
+        ViewHelpers.SetupInteractAnimation(vm, visualNode, animateNode: characterNode);
 
         // Twitch integration: try to assign a chatter name to this cow
         TwitchIntegration.TryAssignChatterName(vm.Entity);
@@ -103,6 +103,17 @@ public partial class CowView
                 if (IsInstanceValid(needIcon)) needIcon.Visible = show;
             }).CallDeferred()
         ).AddTo(vm.Disposables);
+
+        var followAnchor = visualNode.GetNodeOrNull<Node3D>("%FollowCircleScaleAnchor");
+        var followCircle = visualNode.GetNodeOrNull<Node3D>("%FollowCircle");
+        if (followAnchor != null) followAnchor.Scale = Vector3.Zero;
+        if (followCircle != null) FollowCircleSpinner.Spin(followCircle);
+        if (followAnchor != null)
+        {
+            vm.Cow.Cow.FollowingPlayer.Subscribe(target =>
+                Callable.From(() => TweenAnchorScale(followAnchor, target > 0)).CallDeferred()
+            ).AddTo(vm.Disposables);
+        }
 
         var hornyIcon = visualNode.GetNodeOrNull<Sprite3D>("HornyHeart");
         if (hornyIcon != null)
@@ -259,6 +270,19 @@ public partial class CowView
                 }
                 Callable.From(() => LovePopupOverlay.Show(GetTree(), vm.Entity, targetName)).CallDeferred();
             }).AddTo(vm.Disposables);
+    }
+
+    private static void TweenAnchorScale(Node3D anchor, bool show)
+    {
+        if (!IsInstanceValid(anchor)) return;
+        if (anchor.HasMeta("scale_tween") && anchor.GetMeta("scale_tween").As<Tween>() is { } prev && IsInstanceValid(prev))
+            prev.Kill();
+        var tween = anchor.CreateTween();
+        anchor.SetMeta("scale_tween", tween);
+        var target = show ? Vector3.One : Vector3.Zero;
+        var trans = show ? Tween.TransitionType.Back : Tween.TransitionType.Quad;
+        var ease = show ? Tween.EaseType.Out : Tween.EaseType.In;
+        tween.TweenProperty(anchor, "scale", target, 0.2f).SetTrans(trans).SetEase(ease);
     }
 
     private sealed class JumpTweens

@@ -26,4 +26,5 @@ public partial class HelperComponentNode : Node
     [Export] public bool IsAsking;
     [Export] public bool IsSleeping;
     [Export] public bool IsReadyForPickup;
+    [Export] public bool IsFollowingPlayer;
 }

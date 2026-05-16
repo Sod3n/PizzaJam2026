@@ -50,6 +50,7 @@ public static partial class HelperDefinition
         component.IsAsking = false;
         component.IsSleeping = false;
         component.IsReadyForPickup = false;
+        component.IsFollowingPlayer = false;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

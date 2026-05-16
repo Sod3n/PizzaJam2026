@@ -39,6 +39,7 @@ public class HelperSystem : ISystem
             helperRef.Helper.IsReadyForPickup = helperRef.Helper.State == HelperState.WaitingForPickup;
 
             Entity carrier = FindHelperCarrier(state, helperRef.Entity);
+            helperRef.Helper.IsFollowingPlayer = carrier != Entity.Null;
             if (carrier != Entity.Null)
             {
                 helperRef.Helper.OwnerPlayer = carrier;

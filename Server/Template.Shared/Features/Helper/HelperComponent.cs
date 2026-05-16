@@ -72,6 +72,7 @@ public struct HelperComponent : IComponent
     public bool IsAsking;
     public bool IsSleeping;
     public bool IsReadyForPickup;
+    public bool IsFollowingPlayer;
 
     public int GetBagTotal() => BagGrass + BagCarrot + BagApple + BagMushroom
                               + BagMilk + BagCarrotMilkshake + BagVitaminMix + BagPurplePotion
