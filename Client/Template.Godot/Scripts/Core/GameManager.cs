@@ -19,6 +19,7 @@ using Deterministic.GameFramework.Serialization;
 using Deterministic.GameFramework.Debugging;
 using Deterministic.GameFramework.Utils.Logging;
 using Template.Shared.Systems;
+using Template.Godot.Audio;
 using Template.Godot.Framework.Editor;
 using Template.Godot.Twitch;
 using Template.Godot.Visuals;
@@ -78,6 +79,8 @@ public partial class GameManager : Node
     public override void _Ready()
     {
         Instance = this;
+        Template.Godot.Visuals.AudioSettings.Load();
+        FmodAudio.ApplyVolumesFromSettings();
         FrameworkDebugBridge.GetState = () => Game?.State;
         FrameworkDebugBridge.IsRunning = () => _isRunning;
         GD.Print("=== Initializing Godot Client ===");
@@ -97,6 +100,7 @@ public partial class GameManager : Node
         AddChild(new Template.Godot.Debug.PerformanceOverlay { Name = "PerformanceOverlay" });
 
         // Initialize Twitch integration when the game starts
+        OnGameStarted += () => FmodAudio.PlayOneShot("event:/game/start");
         OnGameStarted += TwitchIntegration.Initialize;
         OnGameStarted += Template.Godot.Visuals.GameOverOverlay.InstallWatcher;
         OnGameStarted += Template.Godot.Visuals.SleepFadeOverlay.InstallWatcher;

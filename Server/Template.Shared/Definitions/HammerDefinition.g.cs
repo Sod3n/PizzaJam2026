@@ -23,6 +23,7 @@ public static partial class HammerDefinition
 
         ref var component = ref ctx.GetComponent<HammerComponent>(entity);
         component.State = 0;
+        component.Carrier = Entity.Null;
 
         ctx.AddComponent(entity, new Transform2D(position, 0, Vector2.One));
 

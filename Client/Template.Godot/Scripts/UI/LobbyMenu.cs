@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Template.Godot.Audio;
 using Template.Godot.Core;
 
 namespace Template.Godot.UI;
@@ -84,6 +85,7 @@ public partial class LobbyMenu : CanvasLayer
         _createPanel.Visible = false;
         _joinPanel.Visible = false;
         _waitingPanel.Visible = false;
+        FmodAudio.PlayOneShot("event:/menu/main_open");
     }
 
     private void ShowPanel(Control panel)

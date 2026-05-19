@@ -30,6 +30,7 @@ public class HammerPickupSystem : ISystem
         {
             ref var h = ref state.GetComponent<HammerComponent>(hammerEntity);
             h.State = HammerState.Carried;
+            h.Carrier = playerEntity;
         }
         {
             ref var ps = ref state.GetComponent<PlayerStateComponent>(playerEntity);

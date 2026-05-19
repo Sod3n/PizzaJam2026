@@ -45,6 +45,8 @@
 [ext_resource type="PackedScene" uid="uid://c1nvklhoxhbvc" path="res://templates/environment/props/Tree.tscn" id="tpl_tree"]
 [ext_resource type="PackedScene" uid="uid://ce1ugbrcr6mp5" path="res://templates/environment/Warehouse.tscn" id="tpl_warehouse"]
 [ext_resource type="PackedScene" uid="uid://cfbgjw4hegeie" path="res://templates/environment/WarehouseSign.tscn" id="tpl_warehousesign"]
+[ext_resource type="PackedScene" uid="uid://ds6heee38tsw2" path="res://templates/environment/Smithy.tscn" id="tpl_smithy"]
+[ext_resource type="PackedScene" uid="uid://dqcijyphtwlh1" path="res://templates/environment/Hammer.tscn" id="tpl_hammer"]
 [ext_resource type="Script" uid="uid://c0hln4wxe6hyd" path="res://Scripts/Visuals/Features/Building/FoodFarm/AppleOrchardView.cs" id="view_appleorchard"]
 [ext_resource type="Script" uid="uid://o67l46k5a8dj" path="res://Scripts/Visuals/Features/Building/FoodFarm/CarrotFarmView.cs" id="view_carrotfarm"]
 [ext_resource type="Script" uid="uid://bm50utf52chob" path="res://Scripts/Visuals/Features/Cow/CowView.cs" id="view_cow"]
@@ -73,6 +75,8 @@
 [ext_resource type="Script" uid="uid://c4fua4vhvub4b" path="res://Scripts/Visuals/Features/World/WallView.cs" id="view_wall"]
 [ext_resource type="Script" uid="uid://cnq41333odcvj" path="res://Scripts/Visuals/Features/Building/Warehouse/WarehouseView.cs" id="view_warehouse"]
 [ext_resource type="Script" uid="uid://bfb82ws33r4ng" path="res://Scripts/Visuals/Features/Building/Warehouse/WarehouseSignView.cs" id="view_warehousesign"]
+[ext_resource type="Script" path="res://Scripts/Visuals/Features/Building/Smithy/SmithyView.cs" id="view_smithy"]
+[ext_resource type="Script" path="res://Scripts/Visuals/Features/Building/Smithy/HammerView.cs" id="view_hammer"]
 [ext_resource type="Script" path="res://Scripts/Visuals/Common/DayCycleView.cs" id="view_daycycle"]
 
 [sub_resource type="Environment" id="Environment_t4b23"]
@@ -1466,6 +1470,14 @@ Prefab = ExtResource("tpl_warehouse")
 [node name="LibraryView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1734920573]
 script = ExtResource("view_library")
 Prefab = ExtResource("tpl_library")
+
+[node name="SmithyView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1734920574]
+script = ExtResource("view_smithy")
+Prefab = ExtResource("tpl_smithy")
+
+[node name="HammerView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=1734920575]
+script = ExtResource("view_hammer")
+Prefab = ExtResource("tpl_hammer")
 
 [node name="WarehouseSignView" type="Node3D" parent="SubViewportContainer/SubViewport/Views" unique_id=795398632]
 script = ExtResource("view_warehousesign")

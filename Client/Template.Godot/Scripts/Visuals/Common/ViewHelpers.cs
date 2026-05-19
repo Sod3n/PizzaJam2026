@@ -2,6 +2,8 @@ using Deterministic.GameFramework.ECS;
 using Deterministic.GameFramework.Reactive;
 using Godot;
 using R3;
+using Template.Godot.Audio;
+using Template.Godot.Core;
 using Template.Shared.Components;
 using GVector3 = Godot.Vector3;
 
@@ -36,6 +38,7 @@ public static class ViewHelpers
         animateNode ??= visualNode;
         vm.OnInteract.Subscribe(param =>
         {
+            FireInteractFmod(vm, param);
             Callable.From(() =>
             {
                 if (!Node.IsInstanceValid(animateNode)) return;
@@ -211,6 +214,7 @@ public static class ViewHelpers
     {
         vm.OnGainedResource.Subscribe(resourceKey =>
         {
+            FmodAudio.PlayOneShotWithLabels("event:/receive_resource", ("resource", resourceKey));
             Callable.From(() =>
             {
                 if (!Node.IsInstanceValid(visualNode)) return;
@@ -321,6 +325,50 @@ public static class ViewHelpers
             float startX = Mathf.Lerp(-baseHalfWidth, baseHalfWidth, t);
             SpawnFanHeart(parent, texture, angle, startX);
         }
+    }
+
+    private static void FireInteractFmod(EntityViewModel vm, string param)
+    {
+        string who = ClassifyInteractWho(vm);
+        string what = string.IsNullOrEmpty(param) ? ClassifyInteractWhat(vm) : param;
+        FmodAudio.PlayOneShotWithLabels("event:/interact", ("who", who), ("what", what));
+    }
+
+    private static string ClassifyInteractWho(EntityViewModel vm)
+    {
+        var state = ReactiveSystem.Instance.BoundState;
+        if (state == null) return "unknown";
+        var e = vm.Entity;
+        if (state.HasComponent<PlayerEntity>(e))
+        {
+            var localId = GameManager.Instance?.LocalPlayerId ?? 0;
+            if (localId != 0 && e.Id == localId) return "local_player";
+            if (state.HasComponent<HelperPlayerComponent>(e)) return "helper_player";
+            return "remote_player";
+        }
+        return ClassifyInteractWhat(vm);
+    }
+
+    private static string ClassifyInteractWhat(EntityViewModel vm)
+    {
+        var state = ReactiveSystem.Instance.BoundState;
+        if (state == null) return "unknown";
+        var e = vm.Entity;
+        if (state.HasComponent<CowComponent>(e)) return "cow";
+        if (state.HasComponent<LoveHouseComponent>(e)) return "love_house";
+        if (state.HasComponent<PlayerHouseComponent>(e)) return "player_house";
+        if (state.HasComponent<HouseComponent>(e)) return "house";
+        if (state.HasComponent<SellPointComponent>(e)) return "sell_point";
+        if (state.HasComponent<SmithyComponent>(e)) return "smithy";
+        if (state.HasComponent<HammerComponent>(e)) return "hammer";
+        if (state.HasComponent<WarehouseComponent>(e)) return "warehouse";
+        if (state.HasComponent<LibraryComponent>(e)) return "library";
+        if (state.HasComponent<HelperComponent>(e)) return "helper";
+        if (state.HasComponent<BuildingComponent>(e))
+            return "building_" + state.GetComponent<BuildingComponent>(e).Type;
+        if (state.HasComponent<LandComponent>(e)) return "land";
+        if (state.HasComponent<PlayerEntity>(e)) return "player";
+        return "unknown";
     }
 
     private static void SpawnFanHeart(Node3D parent, Texture2D texture, float angle, float startX = 0f)

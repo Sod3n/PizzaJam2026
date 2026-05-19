@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using Template.Godot.Audio;
 using Template.Godot.Core;
 
 namespace Template.Godot.Visuals;
@@ -29,6 +30,14 @@ public partial class SettingsOverlay : CanvasLayer
     private Label _loveConfessionValueLabel;
     private HSlider _saySomethingSlider;
     private Label _saySomethingValueLabel;
+
+    // Sound UI
+    private HSlider _masterSlider;
+    private Label _masterValueLabel;
+    private HSlider _musicSlider;
+    private Label _musicValueLabel;
+    private HSlider _sfxSlider;
+    private Label _sfxValueLabel;
 
     // Lobby UI
     private Label _lobbyCodeLabel;
@@ -124,6 +133,21 @@ public partial class SettingsOverlay : CanvasLayer
             TwitchSettings.Save();
         };
 
+        // Sound section
+        _masterSlider = GetNode<HSlider>("%MasterSlider");
+        _masterValueLabel = GetNode<Label>("%MasterValueLabel");
+        _musicSlider = GetNode<HSlider>("%MusicSlider");
+        _musicValueLabel = GetNode<Label>("%MusicValueLabel");
+        _sfxSlider = GetNode<HSlider>("%SfxSlider");
+        _sfxValueLabel = GetNode<Label>("%SfxValueLabel");
+
+        _BindVolumeSlider(_masterSlider, _masterValueLabel, AudioSettings.MasterVolume,
+            v => { AudioSettings.MasterVolume = v; FmodAudio.SetBusVolume(FmodAudio.MasterBus, v); });
+        _BindVolumeSlider(_musicSlider, _musicValueLabel, AudioSettings.MusicVolume,
+            v => { AudioSettings.MusicVolume = v; FmodAudio.SetBusVolume(FmodAudio.MusicBus, v); });
+        _BindVolumeSlider(_sfxSlider, _sfxValueLabel, AudioSettings.SfxVolume,
+            v => { AudioSettings.SfxVolume = v; FmodAudio.SetBusVolume(FmodAudio.SfxBus, v); });
+
         // Lobby section
         _lobbyCodeLabel = GetNode<Label>("%CodeLabel");
         _lobbyCopyButton = GetNode<Button>("%CopyButton");
@@ -162,6 +186,21 @@ public partial class SettingsOverlay : CanvasLayer
     private static int RoundToStep(int value, int step)
     {
         return ((value + step / 2) / step) * step;
+    }
+
+    private void _BindVolumeSlider(HSlider slider, Label valueLabel, float initial, Action<float> apply)
+    {
+        int initialPct = Mathf.RoundToInt(Mathf.Clamp(initial, 0f, 1f) * 100f);
+        slider.SetValueNoSignal(initialPct);
+        valueLabel.Text = initialPct.ToString();
+        slider.ValueChanged += val =>
+        {
+            int pct = Mathf.Clamp((int)val, 0, 100);
+            valueLabel.Text = pct.ToString();
+            float v = pct / 100f;
+            apply(v);
+            AudioSettings.Save();
+        };
     }
 
     // ── Connection Logic ───────────────────────────────────────────────

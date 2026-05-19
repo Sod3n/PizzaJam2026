@@ -21,4 +21,5 @@ public static class HammerState
 public struct HammerComponent : IComponent
 {
     public int State;
+    public Entity Carrier;
 }

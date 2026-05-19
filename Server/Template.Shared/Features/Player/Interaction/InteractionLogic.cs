@@ -448,6 +448,8 @@ public static class InteractionLogic
         // FindNearestInteractableInZone and swallow every interact click.
         if (state.HasComponent<HelperPetComponent>(entity)
             && state.GetComponent<HelperPetComponent>(entity).State == PetState.Carried) return false;
+        if (state.HasComponent<HammerComponent>(entity)
+            && state.GetComponent<HammerComponent>(entity).State == HammerState.Carried) return false;
         return state.HasComponent<GrassComponent>(entity)
             || state.HasComponent<CowComponent>(entity)
             || state.HasComponent<HouseComponent>(entity)
@@ -470,7 +472,8 @@ public static class InteractionLogic
             || state.HasComponent<DecorationComponent>(entity)
             || state.HasComponent<WarehouseComponent>(entity)
             || state.HasComponent<LibraryComponent>(entity)
-            || state.HasComponent<PlayerHouseComponent>(entity);
+            || state.HasComponent<PlayerHouseComponent>(entity)
+            || state.HasComponent<HammerComponent>(entity);
     }
 
     /// <summary>Delete props inside a circle around the given position.</summary>

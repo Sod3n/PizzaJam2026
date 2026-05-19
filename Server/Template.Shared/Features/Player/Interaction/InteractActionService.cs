@@ -113,12 +113,18 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
             if (grEntity != Entity.Null)
             {
                 ref var globalRes = ref ctx.State.GetComponent<GlobalResourcesComponent>(grEntity);
-                var hammer = playerState.CarriedEntity;
                 DemolishBuilding(ctx, nearestTarget, ref globalRes);
-                playerState.CarriedEntity = Entity.Null;
-                if (ctx.State.HasComponent<HammerComponent>(hammer))
-                    ctx.State.DeleteEntity(hammer);
-                ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "demolish", Age = 0 });
+            }
+            return;
+        }
+        // Carrying the hammer but clicked something non-demolishable: drop it at the player's feet.
+        if (carryingHammer)
+        {
+            if (ctx.State.HasComponent<Transform2D>(playerEntity))
+            {
+                var pp = ctx.State.GetComponent<Transform2D>(playerEntity).Position;
+                DropCarriedHammerAt(ctx, ref playerState, pp);
+                ctx.State.AddComponent(playerEntity, new EnterStateComponent { Key = StateKeys.Interacted, Param = "drop_hammer", Age = 0 });
             }
             return;
         }
@@ -435,6 +441,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
                 break;
             case LandType.Smithy:
                 built = SmithyDefinition.Create(ctx, position);
+                HammerDefinition.Create(ctx, position + new Vector2(2, 2));
                 break;
             default:
                 built = HouseDefinition.Create(ctx, position);
@@ -478,7 +485,9 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
 
     private static bool IsDemolishableBuilding(Context ctx, Entity e)
     {
-        return ctx.State.HasComponent<BuildingComponent>(e);
+        if (!ctx.State.HasComponent<BuildingComponent>(e)) return false;
+        var type = ctx.State.GetComponent<BuildingComponent>(e).Type;
+        return type != LandType.Smithy && type != LandType.PlayerHouse;
     }
 
     private static LandType ResolveBuildingType(Context ctx, Entity e)
@@ -535,6 +544,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         }
 
         Definitions.LandDefinition.DeleteSignsForLand(ctx.State, buildingEntity);
+        DeleteBuildingSigns(ctx.State, buildingEntity);
         ctx.State.DeleteEntity(buildingEntity);
 
         int threshold = ComputeDemolishRefund(type, gx, gy);
@@ -552,6 +562,20 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         ILogger.Log($"[Demolish] Razed {type} at ({gx},{gy}); refund={refund} coins; cooldownMax={cdMax} unit={cdUnit}");
     }
 
+    private static void DeleteBuildingSigns(EntityWorld state, Entity buildingEntity)
+    {
+        var toDelete = new System.Collections.Generic.List<Entity>();
+        foreach (var e in state.Filter<FoodSignComponent>())
+            if (state.GetComponent<FoodSignComponent>(e).HouseId == buildingEntity) toDelete.Add(e);
+        foreach (var e in state.Filter<RoleSignComponent>())
+            if (state.GetComponent<RoleSignComponent>(e).HouseId == buildingEntity) toDelete.Add(e);
+        foreach (var e in state.Filter<WarehouseSignComponent>())
+            if (state.GetComponent<WarehouseSignComponent>(e).WarehouseId == buildingEntity) toDelete.Add(e);
+        foreach (var e in state.Filter<SellPointSignComponent>())
+            if (state.GetComponent<SellPointSignComponent>(e).SellPointId == buildingEntity) toDelete.Add(e);
+        foreach (var e in toDelete) state.DeleteEntity(e);
+    }
+
     private static void DropCarriedHammerAt(Context ctx, ref PlayerStateComponent playerState, Vector2 position)
     {
         var hammer = playerState.CarriedEntity;
@@ -559,6 +583,7 @@ public class InteractActionService : ActionService<InteractAction, PlayerEntity>
         if (!ctx.State.HasComponent<HammerComponent>(hammer)) return;
         ref var h = ref ctx.State.GetComponent<HammerComponent>(hammer);
         h.State = HammerState.Idle;
+        h.Carrier = Entity.Null;
         if (ctx.State.HasComponent<Transform2D>(hammer))
         {
             ref var t = ref ctx.State.GetComponent<Transform2D>(hammer);

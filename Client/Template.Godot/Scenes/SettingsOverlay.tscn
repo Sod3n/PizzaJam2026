@@ -218,6 +218,130 @@ horizontal_alignment = 2
 [node name="TwitchSeparator2" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=1736930665]
 layout_mode = 2
 
+[node name="MarginContainerSound" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=8001000]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound" unique_id=8001001]
+layout_mode = 2
+
+[node name="HeaderPanel" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer" unique_id=8001002]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_type_variation = &"SubContainer"
+
+[node name="SoundHeader" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/HeaderPanel" unique_id=8001003]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "Sound"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer" unique_id=8001004]
+layout_mode = 2
+
+[node name="BodyPanel" type="PanelContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer" unique_id=8001005]
+layout_mode = 2
+theme_type_variation = &"SubContainer"
+
+[node name="Margin" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel" unique_id=8001006]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Body" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin" unique_id=8001007]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MasterRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body" unique_id=8001010]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MasterRow" unique_id=8001011]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MasterRow/HeaderRow" unique_id=8001012]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Master volume"
+
+[node name="MasterValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MasterRow/HeaderRow" unique_id=8001013]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "100"
+horizontal_alignment = 2
+
+[node name="MasterSlider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MasterRow" unique_id=8001014]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+value = 100.0
+
+[node name="MusicRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body" unique_id=8001020]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MusicRow" unique_id=8001021]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MusicRow/HeaderRow" unique_id=8001022]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Music volume"
+
+[node name="MusicValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MusicRow/HeaderRow" unique_id=8001023]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "100"
+horizontal_alignment = 2
+
+[node name="MusicSlider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/MusicRow" unique_id=8001024]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+value = 100.0
+
+[node name="SfxRow" type="VBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body" unique_id=8001030]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/SfxRow" unique_id=8001031]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/SfxRow/HeaderRow" unique_id=8001032]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SFX volume"
+
+[node name="SfxValueLabel" type="Label" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/SfxRow/HeaderRow" unique_id=8001033]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "100"
+horizontal_alignment = 2
+
+[node name="SfxSlider" type="HSlider" parent="Root/ScrollContainer/CenterWrapper/Panel/Content/MarginContainerSound/VBoxContainer/BodyPanel/Margin/Body/SfxRow" unique_id=8001034]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+value = 100.0
+
+[node name="SoundSeparator" type="HSeparator" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=8001100]
+layout_mode = 2
+
 [node name="MarginContainer2" type="MarginContainer" parent="Root/ScrollContainer/CenterWrapper/Panel/Content" unique_id=214621500]
 layout_mode = 2
 theme_override_constants/margin_left = 10
