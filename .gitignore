@@ -34,6 +34,9 @@ bld/
 *.pdb
 *.cache
 
+# FMOD GDExtension binaries are required for export — keep them tracked
+!Client/Template.Godot/addons/fmod/libs/**
+
 # NuGet
 *.nupkg
 *.snupkg
